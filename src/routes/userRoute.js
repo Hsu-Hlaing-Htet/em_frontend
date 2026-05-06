@@ -1,10 +1,10 @@
-import UserLayout from '@/public/layouts/UserLayout.vue';
-import UserDashboardPage from './entry/UserDashboardPage.vue';
-import UserMyPropertyPage from './entry/UserMyPropertyPage.vue';
-import UserMyInvoicesPage from './entry/UserMyInvoicesPage.vue';
-import UserInvoiceDetailPage from './entry/UserInvoiceDetailPage.vue';
-import UserPaymentHistoryPage from './entry/UserPaymentHistoryPage.vue';
-import UserReceiptDetailPage from './entry/UserReceiptDetailPage.vue';
+import UserLayout from '@/layouts/UserLayout.vue';
+import UserDashboardPage from '@/pages/user/UserDashboardPage.vue';
+import UserMyPropertyPage from '@/pages/user/UserMyPropertyPage.vue';
+import UserMyInvoicesPage from '@/pages/user/UserMyInvoicesPage.vue';
+import UserInvoiceDetailPage from '@/pages/user/UserInvoiceDetailPage.vue';
+import UserPaymentHistoryPage from '@/pages/user/UserPaymentHistoryPage.vue';
+import UserReceiptDetailPage from '@/pages/user/UserReceiptDetailPage.vue';
 
 export const userRoutes = [
     {

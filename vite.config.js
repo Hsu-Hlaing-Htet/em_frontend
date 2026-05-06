@@ -8,7 +8,7 @@ export default defineConfig({
     plugins: [
         vue(),
         laravel({
-            input: ['src/assets/styles/app.css', 'src/app.js'],
+            input: ['src/assets/styles/app.css', 'src/main.js'],
             publicDirectory: '../backend/public',
             buildDirectory: 'build',
             refresh: ['../backend/resources/views/**', '../backend/routes/**', 'src/**'],

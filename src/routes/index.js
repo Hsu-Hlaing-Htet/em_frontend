@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from '@/modules/auth/authStore';
-import { publicRoutes } from '@/modules/public/publicRoute';
-import { adminRoutes } from '@/modules/admin/adminRoute';
-import { userRoutes } from '@/modules/user/userRoute';
+import { useAuthStore } from '@/stores/authStore';
+import { publicRoutes } from '@/routes/publicRoute';
+import { adminRoutes } from '@/routes/adminRoute';
+import { userRoutes } from '@/routes/userRoute';
 
 const routes = [
     ...publicRoutes,

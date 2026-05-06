@@ -28,7 +28,7 @@ import 'primeflex/primeflex.css';
 
 import './assets/styles/app.css';
 import App from '@/App.vue';
-import router from '@/router';
+import router from '@/routes';
 
 const app = createApp(App);
 

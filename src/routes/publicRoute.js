@@ -1,13 +1,13 @@
-import PublicLayout from '@/public/layouts/PublicLayout.vue';
-import LandingPage from './entry/LandingPage.vue';
-import AboutPage from './entry/AboutPage.vue';
-import PropertiesPage from './entry/PropertiesPage.vue';
-import PropertyDetailPage from './entry/PropertyDetailPage.vue';
-import BuyPage from './entry/BuyPage.vue';
-import RentPage from './entry/RentPage.vue';
-import BookingRequestPage from './entry/BookingRequestPage.vue';
-import ContactPage from './entry/ContactPage.vue';
-import { authRoutes } from '@/modules/auth/authRoute';
+import PublicLayout from '@/layouts/PublicLayout.vue';
+import LandingPage from '@/pages/public/LandingPage.vue';
+import AboutPage from '@/pages/public/AboutPage.vue';
+import PropertiesPage from '@/pages/public/PropertiesPage.vue';
+import PropertyDetailPage from '@/pages/public/PropertyDetailPage.vue';
+import BuyPage from '@/pages/public/BuyPage.vue';
+import RentPage from '@/pages/public/RentPage.vue';
+import BookingRequestPage from '@/pages/public/BookingRequestPage.vue';
+import ContactPage from '@/pages/public/ContactPage.vue';
+import { authRoutes } from '@/routes/authRoute';
 
 export const publicRoutes = [
     {

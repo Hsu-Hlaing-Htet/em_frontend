@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
-import { useAuthStore } from '@/modules/auth/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 
 const router = useRouter();
 const toast = useToast();

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { getOwnerProperties } from '@/modules/user/userService';
+import { getOwnerProperties } from '@/modules/user/service';
 
 const properties = ref([]);
 

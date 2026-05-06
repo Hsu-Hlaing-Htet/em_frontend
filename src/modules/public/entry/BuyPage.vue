@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { getPublicProperties } from '@/modules/public/publicService';
+import { getPublicProperties } from '@/modules/public/service';
 import PropertyCard from '@/modules/public/components/PropertyCard.vue';
 
 const properties = ref([]);

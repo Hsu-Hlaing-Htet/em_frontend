@@ -11,3 +11,13 @@ export function loginUser(payload) {
 export function logoutUser() {
     return api.post('/api/auth/logout');
 }
+
+export function verifyToken(payload) {
+    return api.post('/api/auth/verify-token', payload);
+}
+
+export function setPassword(token, payload) {
+    return api.post(`/api/auth/set-password/${token}`, payload);
+}
+
+export const authService = { verifyToken, setPassword };

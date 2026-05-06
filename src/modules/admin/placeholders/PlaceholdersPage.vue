@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { getAdminSectionRows } from '@/modules/admin/placeholders/placeholdersService';
+import { getAdminSectionRows } from '@/modules/admin/service';
 
 const route = useRoute();
 const loading = ref(false);

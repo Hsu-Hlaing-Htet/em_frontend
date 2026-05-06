@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { getPublicProperty } from '@/modules/public/publicService';
+import { getPublicProperty } from '@/modules/public/service';
 
 const route = useRoute();
 const property = ref(null);

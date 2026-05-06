@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, reactive } from 'vue';
-import { getOwnerDashboard } from '@/modules/user/userService';
+import { getOwnerDashboard } from '@/modules/user/service';
 
 const data = reactive({
     totals: {},

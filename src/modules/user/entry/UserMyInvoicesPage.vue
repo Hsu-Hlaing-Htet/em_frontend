@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { getOwnerInvoices } from '@/modules/user/userService';
+import { getOwnerInvoices } from '@/modules/user/service';
 import StatusBadge from '@/public/components/StatusBadge.vue';
 
 const router = useRouter();

@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import { getFeaturedProperties, getPropertyStats, getPublicProperties } from '@/modules/public/publicService';
+import { getFeaturedProperties, getPropertyStats, getPublicProperties } from '@/modules/public/service';
 import PropertyCard from '@/modules/public/components/PropertyCard.vue';
 
 const router = useRouter();

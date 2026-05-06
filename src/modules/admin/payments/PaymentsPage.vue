@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { createAdminInvoicePayment, deleteAdminPayment, getAdminInvoices, getAdminPayments, updateAdminPayment } from '@/modules/admin/payments/paymentsService';
+import { createAdminInvoicePayment, deleteAdminPayment, getAdminInvoices, getAdminPayments, updateAdminPayment } from '@/modules/admin/service';
 
 const toast = useToast();
 const loading = ref(false);

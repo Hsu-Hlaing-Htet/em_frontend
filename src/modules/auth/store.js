@@ -1,5 +1,5 @@
 import { computed, reactive } from 'vue';
-import { getCurrentUser, loginUser, logoutUser } from '@/services/auth/authService';
+import { getCurrentUser, loginUser, logoutUser } from '@/modules/auth/service';
 
 const state = reactive({ user: null, initialized: false, loading: false });
 
@@ -22,16 +22,19 @@ export function useAuthStore() {
             state.loading = false;
         }
     }
+
     async function login(payload) {
         const { data } = await loginUser(payload);
         state.user = data.user;
         state.initialized = true;
         return data;
     }
+
     async function logout() {
         await logoutUser();
         state.user = null;
     }
+
     return {
         state,
         ensureLoaded,

@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { createAdminProperty, deleteAdminProperty, getAdminOwners, getAdminProperties, updateAdminProperty } from '@/modules/admin/properties/propertiesService';
+import { createAdminProperty, deleteAdminProperty, getAdminOwners, getAdminProperties, updateAdminProperty } from '@/modules/admin/service';
 import StatusBadge from '@/public/components/StatusBadge.vue';
 import PropertyFormDialog from '@/modules/admin/components/PropertyFormDialog.vue';
 

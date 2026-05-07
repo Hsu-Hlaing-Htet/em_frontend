@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { getOwnerPayments } from '@/modules/user/userService';
+import { getOwnerPayments } from '@/modules/user/service';
 
 const router = useRouter();
 const payments = ref([]);

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
-import { getAdminDashboard } from '@/modules/admin/dashboard/dashboardService';
+import { getAdminDashboard } from '@/modules/admin/service';
 
 const loading = ref(false);
 const dashboard = reactive({

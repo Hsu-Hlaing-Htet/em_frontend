@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { getOwnerReceipt } from '@/modules/user/userService';
+import { getOwnerReceipt } from '@/modules/user/service';
 
 const route = useRoute();
 const receipt = ref(null);

@@ -19,7 +19,7 @@
               >Your token is invalid. Please contact admins.</span
             >
             <img
-              src="layout/images/asset-access.svg"
+              src="@/assets/images/file.svg"
               alt="Access denied"
               class="mt-5"
               width="80%"

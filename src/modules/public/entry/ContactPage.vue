@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { submitContactMessage } from '@/modules/public/publicService';
+import { submitContactMessage } from '@/modules/public/service';
 
 const toast = useToast();
 const sending = ref(false);

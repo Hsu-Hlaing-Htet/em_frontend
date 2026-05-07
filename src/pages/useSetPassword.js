@@ -1,7 +1,7 @@
 
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { authService } from "@/modules/auth/authService";
+import { authService } from "@/modules/auth/service";
 
 export const useSetPassword = () => {
 

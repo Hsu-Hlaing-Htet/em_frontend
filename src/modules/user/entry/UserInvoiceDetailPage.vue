@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import { getOwnerInvoice, payOwnerInvoice } from '@/modules/user/userService';
+import { getOwnerInvoice, payOwnerInvoice } from '@/modules/user/service';
 
 const route = useRoute();
 const toast = useToast();

@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { submitViewingRequest } from '@/modules/public/publicService';
+import { submitViewingRequest } from '@/modules/public/service';
 
 const toast = useToast();
 const submitting = ref(false);

@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getPublicProperties } from '@/modules/public/publicService';
+import { getPublicProperties } from '@/modules/public/service';
 import PropertyCard from '@/modules/public/components/PropertyCard.vue';
 
 const route = useRoute();

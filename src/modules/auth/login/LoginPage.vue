@@ -38,25 +38,25 @@ async function submit() {
 </script>
 
 <template>
-    <section class="rr-section">
-        <div class="rr-container" style="max-width: 520px">
-            <div class="rr-card" style="padding: 1rem">
-                <p class="rr-title" style="font-size: 0.76rem">Login</p>
+    <section class="section">
+        <div class="container" style="max-width: 520px">
+            <div class="card" style="padding: 1rem">
+                <p class="title" style="font-size: 0.76rem">Login</p>
                 <h1 style="margin: 0.2rem 0 1rem">Access Your Dashboard</h1>
-                <p class="rr-muted">Admin users are redirected to `/admin/dashboard`, owners are redirected to `/user/dashboard` based on the `role` field.</p>
+                <p class="muted">Admin users are redirected to `/admin/dashboard`, owners are redirected to `/user/dashboard` based on the `role` field.</p>
 
-                <div class="rr-grid" style="margin-top: 1rem">
+                <div class="grid" style="margin-top: 1rem">
                     <div>
-                        <label class="rr-muted">Email</label>
-                        <PvInputText v-model="form.email" type="email" style="width: 100%" />
+                        <label class="muted">Email</label>
+                        <InputText v-model="form.email" type="email" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Password</label>
-                        <PvInputText v-model="form.password" type="password" style="width: 100%" />
+                        <label class="muted">Password</label>
+                        <InputText v-model="form.password" type="password" style="width: 100%" />
                     </div>
                 </div>
 
-                <Button :loading="loading" severity="primary" class="rr-btn" style="margin-top: 1rem; width: 100%" type="button" @click="submit">
+                <Button :loading="loading" severity="primary" class="btn" style="margin-top: 1rem; width: 100%" type="button" @click="submit">
                     Login
                 </Button>
 

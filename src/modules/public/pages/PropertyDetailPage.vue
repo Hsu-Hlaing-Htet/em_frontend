@@ -22,17 +22,17 @@ onMounted(load);
 </script>
 
 <template>
-    <section class="rr-section">
-        <div class="rr-container" v-if="property">
-            <div class="rr-layout-columns">
-                <div class="rr-col-8 rr-card" style="overflow: hidden">
+    <section class="section">
+        <div class="container" v-if="property">
+            <div class="layout-columns">
+                <div class="col-8 card" style="overflow: hidden">
                     <img :src="property.featured_image" :alt="property.property_name" style="width: 100%; height: 430px; object-fit: cover">
                 </div>
-                <div class="rr-col-4 rr-card" style="padding: 1rem">
-                    <p class="rr-title" style="font-size: 0.72rem">{{ property.property_code }}</p>
+                <div class="col-4 card" style="padding: 1rem">
+                    <p class="title" style="font-size: 0.72rem">{{ property.property_code }}</p>
                     <h1 style="margin: 0.2rem 0">{{ property.property_name }}</h1>
-                    <p class="rr-muted">{{ property.township }} · {{ property.property_type }} · {{ property.purpose }}</p>
-                    <hr class="rr-divider">
+                    <p class="muted">{{ property.township }} · {{ property.property_type }} · {{ property.purpose }}</p>
+                    <hr class="divider">
                     <p><strong>Status:</strong> {{ property.status }}</p>
                     <p><strong>Bedrooms:</strong> {{ property.bedrooms ?? '-' }}</p>
                     <p><strong>Bathrooms:</strong> {{ property.bathrooms ?? '-' }}</p>
@@ -46,10 +46,10 @@ onMounted(load);
                 </div>
             </div>
 
-            <div class="rr-card" style="padding: 1rem; margin-top: 1rem">
-                <h2 class="rr-title" style="font-size: 0.75rem">Description</h2>
-                <p class="rr-muted">{{ property.description || 'No description provided.' }}</p>
-                <p class="rr-muted"><strong>Address:</strong> {{ property.address }}</p>
+            <div class="card" style="padding: 1rem; margin-top: 1rem">
+                <h2 class="title" style="font-size: 0.75rem">Description</h2>
+                <p class="muted">{{ property.description || 'No description provided.' }}</p>
+                <p class="muted"><strong>Address:</strong> {{ property.address }}</p>
             </div>
         </div>
 

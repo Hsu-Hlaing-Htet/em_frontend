@@ -87,43 +87,43 @@ onMounted(load);
 </script>
 
 <template>
-    <section class="rr-section">
-        <div class="rr-container">
-            <p class="rr-title" style="font-size: 0.75rem">Property Listings</p>
+    <section class="section">
+        <div class="container">
+            <p class="title" style="font-size: 0.75rem">Property Listings</p>
             <h1 style="margin-top: 0.2rem">Browse Residential Properties</h1>
 
-            <div class="rr-card" style="padding: 1rem; margin: 1rem 0 1.3rem">
-                <div class="rr-layout-columns">
-                    <div class="rr-col-2">
-                        <label class="rr-muted">Property ID</label>
+            <div class="card" style="padding: 1rem; margin: 1rem 0 1.3rem">
+                <div class="layout-columns">
+                    <div class="col-2">
+                        <label class="muted">Property ID</label>
                         <PvInputText v-model="filters.property_id" placeholder="RR-S-0001" style="width: 100%" />
                     </div>
-                    <div class="rr-col-2">
-                        <label class="rr-muted">Search</label>
+                    <div class="col-2">
+                        <label class="muted">Search</label>
                         <PvInputText v-model="filters.q" placeholder="Code, name, address" style="width: 100%" />
                     </div>
-                    <div class="rr-col-2">
-                        <label class="rr-muted">Purpose</label>
+                    <div class="col-2">
+                        <label class="muted">Purpose</label>
                         <PvDropdown v-model="filters.purpose" :options="purposeOptions" option-label="label" option-value="value" style="width: 100%" />
                     </div>
-                    <div class="rr-col-2">
-                        <label class="rr-muted">Type</label>
+                    <div class="col-2">
+                        <label class="muted">Type</label>
                         <PvDropdown v-model="filters.property_type" :options="typeOptions" option-label="label" option-value="value" style="width: 100%" />
                     </div>
-                    <div class="rr-col-2">
-                        <label class="rr-muted">Township</label>
+                    <div class="col-2">
+                        <label class="muted">Township</label>
                         <PvInputText v-model="filters.township" style="width: 100%" />
                     </div>
-                    <div class="rr-col-2">
-                        <label class="rr-muted">Bedrooms</label>
+                    <div class="col-2">
+                        <label class="muted">Bedrooms</label>
                         <PvDropdown v-model="filters.bedrooms" :options="bedroomOptions" option-label="label" option-value="value" style="width: 100%" />
                     </div>
-                    <div class="rr-col-1">
-                        <label class="rr-muted">Budget Min</label>
+                    <div class="col-1">
+                        <label class="muted">Budget Min</label>
                         <PvInputNumber v-model="filters.budget_min" mode="currency" currency="USD" locale="en-US" style="width: 100%" />
                     </div>
-                    <div class="rr-col-1">
-                        <label class="rr-muted">Budget Max</label>
+                    <div class="col-1">
+                        <label class="muted">Budget Max</label>
                         <PvInputNumber v-model="filters.budget_max" mode="currency" currency="USD" locale="en-US" style="width: 100%" />
                     </div>
                 </div>
@@ -138,14 +138,14 @@ onMounted(load);
                 </div>
             </div>
 
-            <div class="rr-layout-columns">
-                <div v-for="property in items" :key="property.id" class="rr-col-4">
+            <div class="layout-columns">
+                <div v-for="property in items" :key="property.id" class="col-4">
                     <PropertyCard :property="property" />
                 </div>
             </div>
 
             <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center">
-                <p class="rr-muted">Total {{ total }} properties</p>
+                <p class="muted">Total {{ total }} properties</p>
                 <div style="display: flex; gap: 0.5rem">
                     <PvButton :disabled="page <= 1" label="Prev" outlined severity="secondary" @click="router.replace({ query: { ...route.query, page: page - 1 } })" />
                     <PvButton label="Next" outlined severity="secondary" @click="router.replace({ query: { ...route.query, page: page + 1 } })" />

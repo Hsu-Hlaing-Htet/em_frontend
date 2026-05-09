@@ -34,33 +34,33 @@ function compare() {
 </script>
 
 <template>
-    <article class="rr-property-card">
-        <div class="rr-property-media">
+    <article class="property-card">
+        <div class="property-media">
             <img
                 :src="property.featured_image || 'https://images.unsplash.com/photo-1560185007-cde436f6a4d0'"
                 :alt="property.property_name"
-                class="rr-property-image"
+                class="property-image"
             >
-            <span class="rr-offer-badge" :class="property.purpose === 'rent' ? 'is-rent' : 'is-sale'">
+            <span class="offer-badge" :class="property.purpose === 'rent' ? 'is-rent' : 'is-sale'">
                 {{ offerLabel }}
             </span>
         </div>
 
-        <div class="rr-property-content">
+        <div class="property-content">
             <h3>{{ property.property_name }}</h3>
-            <p class="rr-property-price">{{ displayPrice }}</p>
+            <p class="property-price">{{ displayPrice }}</p>
 
-            <div class="rr-property-meta">
+            <div class="property-meta">
                 <span><i class="pi pi-hashtag" /> {{ property.property_code }}</span>
                 <span><i class="pi pi-map-marker" /> {{ property.township }}</span>
                 <span><i class="pi pi-home" /> {{ property.bedrooms ?? '-' }} beds</span>
                 <span><i class="pi pi-chart-line" /> {{ property.area_sqft ?? '-' }} sqft</span>
             </div>
 
-            <div class="rr-property-actions">
-                <PvButton label="Compare" class="rr-btn rr-btn-secondary" @click="compare" />
+            <div class="property-actions">
+                <PvButton label="Compare" class="btn btn-secondary" @click="compare" />
                 <router-link :to="`/properties/${property.id}`">
-                    <PvButton label="Details" class="rr-btn rr-btn-primary" />
+                    <PvButton label="Details" class="btn btn-primary" />
                 </router-link>
             </div>
         </div>

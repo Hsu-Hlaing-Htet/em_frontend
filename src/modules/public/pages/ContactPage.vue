@@ -32,34 +32,34 @@ async function submit() {
 </script>
 
 <template>
-    <section class="rr-section">
-        <div class="rr-container rr-layout-columns">
-            <div class="rr-col-6 rr-card" style="padding: 1rem">
+    <section class="section">
+        <div class="container layout-columns">
+            <div class="col-6 card" style="padding: 1rem">
                 <h1 style="margin-top: 0">Contact Rosewood Royale</h1>
-                <p class="rr-muted">Phone: +95 9 55000001</p>
-                <p class="rr-muted">Email: hello@rosewoodroyale.com</p>
-                <p class="rr-muted">Office: No. 18, Yankin Township, Yangon</p>
-                <div class="rr-card" style="margin-top: 1rem; min-height: 170px; display: grid; place-items: center">
-                    <span class="rr-muted">Map Placeholder</span>
+                <p class="muted">Phone: +95 9 55000001</p>
+                <p class="muted">Email: hello@rosewoodroyale.com</p>
+                <p class="muted">Office: No. 18, Yankin Township, Yangon</p>
+                <div class="card" style="margin-top: 1rem; min-height: 170px; display: grid; place-items: center">
+                    <span class="muted">Map Placeholder</span>
                 </div>
             </div>
-            <div class="rr-col-6 rr-card" style="padding: 1rem">
-                <p class="rr-title" style="font-size: 0.75rem">Contact Form</p>
-                <div class="rr-grid">
+            <div class="col-6 card" style="padding: 1rem">
+                <p class="title" style="font-size: 0.75rem">Contact Form</p>
+                <div class="grid">
                     <div>
-                        <label class="rr-muted">Name</label>
+                        <label class="muted">Name</label>
                         <PvInputText v-model="form.name" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Email</label>
+                        <label class="muted">Email</label>
                         <PvInputText v-model="form.email" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Phone</label>
+                        <label class="muted">Phone</label>
                         <PvInputText v-model="form.phone" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Message</label>
+                        <label class="muted">Message</label>
                         <PvTextarea v-model="form.message" rows="5" style="width: 100%" />
                     </div>
                 </div>

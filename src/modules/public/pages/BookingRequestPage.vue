@@ -49,39 +49,39 @@ async function submit() {
 </script>
 
 <template>
-    <section class="rr-section">
-        <div class="rr-container" style="max-width: 760px">
-            <div class="rr-card" style="padding: 1rem">
-                <p class="rr-title" style="font-size: 0.76rem">Viewing / Booking Request</p>
-                <p class="rr-muted">Submit your details and preferred viewing date. For booking, provide the target property ID.</p>
+    <section class="section">
+        <div class="container" style="max-width: 760px">
+            <div class="card" style="padding: 1rem">
+                <p class="title" style="font-size: 0.76rem">Viewing / Booking Request</p>
+                <p class="muted">Submit your details and preferred viewing date. For booking, provide the target property ID.</p>
 
-                <div class="rr-grid" style="grid-template-columns: 1fr 1fr">
+                <div class="grid" style="grid-template-columns: 1fr 1fr">
                     <div>
-                        <label class="rr-muted">Property ID</label>
+                        <label class="muted">Property ID</label>
                         <PvInputNumber v-model="form.property_id" :min="1" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Request Type</label>
+                        <label class="muted">Request Type</label>
                         <PvDropdown v-model="form.request_type" :options="typeOptions" option-label="label" option-value="value" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Your Name</label>
+                        <label class="muted">Your Name</label>
                         <PvInputText v-model="form.requester_name" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Phone</label>
+                        <label class="muted">Phone</label>
                         <PvInputText v-model="form.phone" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Email</label>
+                        <label class="muted">Email</label>
                         <PvInputText v-model="form.email" style="width: 100%" />
                     </div>
                     <div>
-                        <label class="rr-muted">Preferred Date</label>
+                        <label class="muted">Preferred Date</label>
                         <PvCalendar v-model="form.preferred_date" date-format="yy-mm-dd" style="width: 100%" />
                     </div>
                     <div style="grid-column: span 2">
-                        <label class="rr-muted">Message</label>
+                        <label class="muted">Message</label>
                         <PvTextarea v-model="form.message" rows="4" style="width: 100%" />
                     </div>
                 </div>

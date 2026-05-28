@@ -1,13 +1,12 @@
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 // Public Pages
-import LandingPage from '@/modules/public/pages/LandingPage.vue';
-import AboutPage from '@/modules/public/pages/AboutPage.vue';
-import PropertiesPage from '@/modules/public/pages/PropertiesPage.vue';
-import PropertyDetailPage from '@/modules/public/pages/PropertyDetailPage.vue';
-import BuyPage from '@/modules/public/pages/BuyPage.vue';
-import RentPage from '@/modules/public/pages/RentPage.vue';
-import BookingRequestPage from '@/modules/public/pages/BookingRequestPage.vue';
-import ContactPage from '@/modules/public/pages/ContactPage.vue';
+import HomePage from './home/Home.vue';
+import AboutPage from './aboutus/AboutPage.vue';
+import PropertyDetailPage from './propertyDetailPage/PropertyDetailPage.vue';
+import BuyPage from './sale/Sale.vue';
+import RentPage from './rent/Rent.vue';
+import Service from './services/Service.vue';
+import ContactPage from './contact/ContactPage.vue';
 // Auth Routes
 import { authRoutes } from '@/routes/authRoute';
 
@@ -18,18 +17,13 @@ export const publicRoutes = [
         children: [
             {
                 path: '',
-                name: 'landing',
-                component: LandingPage,
+                name: 'home',
+                component: HomePage,
             },
             {
-                path: 'about',
-                name: 'about',
+                path: 'aboutus',
+                name: 'aboutus',
                 component: AboutPage,
-            },
-            {
-                path: 'properties',
-                name: 'properties',
-                component: PropertiesPage,
             },
             {
                 path: 'properties/:id',
@@ -48,9 +42,9 @@ export const publicRoutes = [
                 component: RentPage,
             },
             {
-                path: 'booking',
-                name: 'booking',
-                component: BookingRequestPage,
+                path: 'services',
+                name: 'services',
+                component: Service,
             },
             {
                 path: 'contact',

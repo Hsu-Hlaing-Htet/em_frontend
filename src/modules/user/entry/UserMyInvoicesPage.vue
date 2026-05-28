@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getOwnerInvoices } from '@/modules/user/service';
-import StatusBadge from '@/public/components/StatusBadge.vue';
+import StatusBadge from '../../../components/StatusBadge.vue';
 
 const router = useRouter();
 const invoices = ref([]);

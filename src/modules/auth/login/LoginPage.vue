@@ -1,66 +1,131 @@
 <script setup>
-import { reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
-import Button from 'primevue/button';
-import { useAuthStore } from '@/modules/auth/store';
+import { useLogin } from './useLogin';
 
-const router = useRouter();
-const toast = useToast();
-const auth = useAuthStore();
-
-const loading = ref(false);
-
-const form = reactive({
-    email: '',
-    password: '',
-    remember: true,
-});
-
-async function submit() {
-    loading.value = true;
-
-    try {
-        const response = await auth.login(form);
-        toast.add({ severity: 'success', summary: 'Welcome', detail: 'Login successful.', life: 2500 });
-        router.push(response.redirect_to);
-    } catch (error) {
-        toast.add({
-            severity: 'error',
-            summary: 'Login Failed',
-            detail: error.response?.data?.message || 'Invalid credentials.',
-            life: 3500,
-        });
-    } finally {
-        loading.value = false;
-    }
-}
+const {
+    form,
+    loading,
+    showPassword,
+    submit,
+} = useLogin();
 </script>
 
 <template>
-    <section class="section">
-        <div class="container" style="max-width: 520px">
-            <div class="card" style="padding: 1rem">
-                <p class="title" style="font-size: 0.76rem">Login</p>
-                <h1 style="margin: 0.2rem 0 1rem">Access Your Dashboard</h1>
-                <p class="muted">Admin users are redirected to `/admin/dashboard`, owners are redirected to `/user/dashboard` based on the `role` field.</p>
+    <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <section
+            class="w-full max-w-md rounded-md border border-[#d6b8c1]/70 bg-white px-7 py-8 shadow-lg"
+        >
+            <div class="text-center">
+                <div
+                    class="mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_14px_35px_rgba(85,32,50,0.26)] ring-1 ring-[#d6b8c1]/70"
+                >
+                    <img
+                        src="@/assets/images/logo-dark.jpg"
+                        alt="Rosewood Royale"
+                        class="h-full w-full object-cover"
+                    >
+                </div>
 
-                <div class="grid" style="margin-top: 1rem">
-                    <div>
-                        <label class="muted">Email</label>
-                        <InputText v-model="form.email" type="email" style="width: 100%" />
-                    </div>
-                    <div>
-                        <label class="muted">Password</label>
-                        <InputText v-model="form.password" type="password" style="width: 100%" />
+                <h2
+                    class="mt-5 text-2xl font-semibold tracking-tight text-[#552032]"
+                >
+                    Welcome Back!
+                </h2>
+
+                <p class="mt-2 text-sm text-gray-500">
+                    Please enter your login details.
+                </p>
+            </div>
+
+            <form class="mt-7 space-y-4" @submit.prevent="submit">
+                <div>
+                    <label class="mb-2 block text-sm font-semibold text-[#552032]">
+                        Email
+                    </label>
+
+                    <input
+                        v-model="form.email"
+                        type="email"
+                        required
+                        class="w-full rounded-xl bg-[#d6b8c1]/20 px-4 py-3 outline-none"
+                        placeholder="admin@rosewoodroyale.com"
+                    >
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-semibold text-[#552032]">
+                        Password
+                    </label>
+
+                    <div
+                        class="flex items-center rounded-xl bg-[#d6b8c1]/20 px-4 py-3"
+                    >
+                        <input
+                            v-model="form.password"
+                            :type="showPassword ? 'text' : 'password'"
+                            required
+                            class="flex-1 bg-transparent outline-none"
+                            placeholder="Enter your password"
+                        >
+
+                        <button
+                            type="button"
+                            @click="showPassword = !showPassword"
+                        >
+                            <i
+                                :class="
+                                    showPassword
+                                        ? 'fas fa-eye'
+                                        : 'fas fa-eye-slash'
+                                "
+                            />
+                        </button>
                     </div>
                 </div>
 
-                <Button :loading="loading" severity="primary" class="btn" style="margin-top: 1rem; width: 100%" type="button" @click="submit">
-                    Login
-                </Button>
+                <button
+                class="flex w-full items-center justify-center group relative overflow-hidden
+                        px-4 py-2 mb-10
+                        rounded-md
+                        border-2 border-[#552032]
+                        text-[#552032]
+                        bg-white
+                        transition-all duration-300
+                        hover:text-white
+                        hover:border-2 hover:border-white
+                        hover:shadow-lg hover:shadow-[#552032]/40
+                        active:scale-95 scale-100
+                            hover:scale-105
+                            hover:invert-0
+                            transition-all duration-500 ease-out"
+                >
+                <!-- Background Animation -->
+                <span
+                    class="absolute inset-0
+                        bg-[#552032]
+                        scale-x-0
+                        origin-left
+                        transition-transform duration-500
+                        ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]
+                        group-hover:scale-x-100"
+                ></span>
 
-            </div>
-        </div>
-    </section>
+                <!-- Content -->
+                <span
+                    class="relative z-10 flex items-center gap-3"
+                >
+                    <!-- Font Awesome Icon -->
+                    <i v-if="loading"
+                    class="fas fa-spinner fa-spin
+                            text-base
+                            transition-all duration-300
+                            group-hover:rotate-[20deg]
+                            group-hover:scale-110"
+                    ></i>
+
+                    Login
+                </span>
+                            </button>
+            </form>
+        </section>
+    </div>
 </template>

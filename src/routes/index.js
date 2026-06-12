@@ -1,22 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/modules/auth/store';
 import { publicRoutes } from '../modules/public/route.js';
-import { adminRoutes } from '@/routes/adminRoute';
-import { userRoutes } from '../modules/user/route.js';
+import { authRoutes } from '../modules/auth/route.js';
+import { adminRoutes } from '../modules/admin/route.js';
+// import { userRoutes } from '../modules/user/route.js';
 
 const routes = [
     ...publicRoutes,
     ...adminRoutes,
-    ...userRoutes,
+    // ...userRoutes,
+    ...authRoutes,
     {
         path: '/:pathMatch(.*)*',
         redirect: '/',
     },
 ];
 
+function scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+        return savedPosition;
+    }
+
+    if (to.hash) {
+        return new Promise((resolve) => {
+            window.setTimeout(() => {
+                resolve({ el: to.hash, top: 96, behavior: 'smooth' });
+            }, 340);
+        });
+    }
+
+    return { top: 0, behavior: 'smooth' };
+}
+
 const router = createRouter({
     history: createWebHistory(),
     routes,
+    scrollBehavior,
 });
 
 router.beforeEach(async (to, from, next) => {

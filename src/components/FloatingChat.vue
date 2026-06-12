@@ -146,7 +146,7 @@ onBeforeUnmount(() => {
 
                         <button
                             type="button"
-                            class="flex h-7 w-7 items-center justify-center rounded-full border border-white/25 bg-white/10 text-[#552032] transition duration-300 hover:bg-white hover:text-[#552032]"
+                            class="flex h-7 w-7 items-center justify-center text-gray-400 transition duration-300 hover:text-[#552032]"
                             aria-label="Minimize chat"
                             @click="minimizeChat"
                         >

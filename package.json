@@ -7,6 +7,8 @@
         "dev": "vite"
     },
     "dependencies": {
+        "@babel/polyfill": "^7.12.1",
+        "pinia": "^3.0.4",
         "primeflex": "^4.0.0",
         "primeicons": "^7.0.0",
         "primevue": "^3.53.1",

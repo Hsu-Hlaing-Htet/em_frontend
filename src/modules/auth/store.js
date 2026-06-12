@@ -1,47 +1,78 @@
-import { computed, reactive } from 'vue';
-import { getCurrentUser, loginUser, logoutUser } from '@/modules/auth/service';
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { loginUser, logoutUser, getCurrentUser } from './service';
 
-const state = reactive({ user: null, initialized: false, loading: false });
+export const useAuthStore = defineStore('auth', () => {
+    const user = ref(null);
+    const token = ref(localStorage.getItem('token'));
 
-async function fetchUser() {
-    try {
-        const { data } = await getCurrentUser();
-        state.user = data.user;
-    } catch {
-        state.user = null;
-    } finally {
-        state.initialized = true;
-    }
-}
+    const isAuthenticated = computed(() => !!token.value);
 
-export function useAuthStore() {
-    async function ensureLoaded() {
-        if (!state.initialized && !state.loading) {
-            state.loading = true;
-            await fetchUser();
-            state.loading = false;
+    const role = computed(() => user.value?.role ?? null);
+
+    async function login(email, password) {
+        const { data } = await loginUser({
+            email,
+            password,
+        });
+
+        token.value = data.token;
+        user.value = data.user;
+
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        let redirect_to = '/user';
+
+        if (
+            data.user.role === 'super_admin' ||
+            data.user.role === 'admin'
+        ) {
+            redirect_to = '/admin';
         }
-    }
 
-    async function login(payload) {
-        const { data } = await loginUser(payload);
-        state.user = data.user;
-        state.initialized = true;
-        return data;
+        return {
+            ...data,
+            redirect_to,
+        };
     }
 
     async function logout() {
-        await logoutUser();
-        state.user = null;
+        try {
+            await logoutUser();
+        } finally {
+            token.value = null;
+            user.value = null;
+
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        }
+    }
+
+    async function ensureLoaded() {
+        if (!token.value) {
+            return;
+        }
+
+        if (user.value) {
+            return;
+        }
+
+        try {
+            const { data } = await getCurrentUser();
+            user.value = data.data;
+        } catch {
+            await logout();
+        }
     }
 
     return {
-        state,
-        ensureLoaded,
-        fetchUser,
+        user,
+        token,
+        role,
+        isAuthenticated,
         login,
         logout,
-        isAuthenticated: computed(() => Boolean(state.user)),
-        role: computed(() => state.user?.role ?? null),
+        ensureLoaded,
     };
-}
+});

@@ -7,8 +7,6 @@ import BuyPage from './sale/Sale.vue';
 import RentPage from './rent/Rent.vue';
 import Service from './services/Service.vue';
 import ContactPage from './contact/ContactPage.vue';
-// Auth Routes
-import { authRoutes } from '@/routes/authRoute';
 
 export const publicRoutes = [
     {
@@ -51,9 +49,6 @@ export const publicRoutes = [
                 name: 'contact',
                 component: ContactPage,
             },
-
-            // Authentication Routes
-            ...authRoutes,
         ],
     },
 ];

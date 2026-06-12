@@ -1,4 +1,4 @@
 <template>
-    <PvToast position="top-right" />
+    <Toast position="top-right" />
     <router-view />
 </template>

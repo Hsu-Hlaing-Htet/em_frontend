@@ -165,54 +165,49 @@ function submit() {
                     />
 
                     <!-- BUTTON -->
-
-
-<button
-  class="group relative inline-flex
-         h-12 active:scale-95
-         overflow-hidden rounded-xl
-         p-[2px]
+            <button
+  class="items-center justify-end group relative overflow-hidden
+         px-4 py-2 mb-10
+         rounded-md
+         border-2 border-[#552032]
+         text-[#552032]
+         bg-white
          transition-all duration-300
-         hover:shadow-xl hover:shadow-[#552032]/20
-         focus:outline-none"
+         hover:text-white
+         hover:border-2 hover:border-white
+         hover:shadow-lg hover:shadow-[#552032]/40
+         active:scale-95 scale-100
+             hover:scale-105
+             hover:invert-0
+             transition-all duration-500 ease-out"
 >
-  <!-- Animated Border -->
+  <!-- Background Animation -->
   <span
-    class="absolute inset-[-1000%]
-           animate-[spin_3s_linear_infinite]
-           bg-[conic-gradient(from_90deg_at_50%_50%,#552032_0%,#D086DE_50%,#B25A77_100%)]"
+    class="absolute inset-0
+           bg-[#552032]
+           scale-x-0
+           origin-left
+           transition-transform duration-500
+           ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]
+           group-hover:scale-x-100"
   ></span>
 
-  <!-- Button Content -->
+  <!-- Content -->
   <span
-    class="relative inline-flex
-           h-full w-full
-           items-center justify-center
-           gap-3
-           rounded-xl
-           bg-white
-           px-6
-           text-sm font-semibold
-           uppercase tracking-[2px]
-           text-[#552032]
-           backdrop-blur-3xl
-           transition-all duration-300
-           group-hover:bg-[#552032]
-           group-hover:text-white"
+    class="relative z-10 flex items-center gap-3"
   >
-    Send
-
     <!-- Font Awesome Icon -->
     <i
       class="fas fa-paper-plane
+             text-base
              transition-all duration-300
-             group-hover:translate-x-1
-             group-hover:-translate-y-1
-             group-hover:rotate-12"
+             group-hover:rotate-[20deg]
+             group-hover:scale-110"
     ></i>
-  </span>
-</button>
 
+    Send
+  </span>
+            </button>
 
 
                 </div>

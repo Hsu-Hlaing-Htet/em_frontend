@@ -4,7 +4,7 @@
     >
         <button
             type="button"
-            class="topbar-icon-btn lg:hidden"
+            class="min-[992px]:!hidden"
             aria-label="Open navigation"
             @click="onMenuToggle"
         >

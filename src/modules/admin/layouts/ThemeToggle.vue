@@ -1,7 +1,6 @@
 <template>
     <button
         type="button"
-        class="topbar-icon-btn"
         :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
         @click="themeStore.toggle()"
     >

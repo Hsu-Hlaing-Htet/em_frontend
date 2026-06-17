@@ -1,6 +1,7 @@
 <template>
     <div
         data-admin-layout
+        :data-admin-theme="themeMode"
         :data-sidebar-collapsed="staticMenuInactive ? 'true' : 'false'"
         :data-mobile-sidebar-open="mobileMenuActive ? 'true' : 'false'"
         class="admin-background flex min-h-screen text-[var(--admin-text)] transition-colors duration-300"
@@ -21,6 +22,7 @@
         <div class="ml-[var(--sidebar-width)] flex min-h-screen flex-1 flex-col transition-all duration-300 max-lg:ml-0">
             <TopBar @menu-toggle="onMenuToggle" />
             <main class="flex-1 p-6 pt-[calc(var(--admin-topbar-height)+1.5rem)] max-sm:p-4 max-sm:pt-[calc(var(--admin-topbar-height)+1rem)]">
+                <AppBreadcrumb />
                 <router-view />
             </main>
             <Footer />
@@ -29,7 +31,7 @@
         <transition name="layout-mask">
             <div
                 v-if="mobileMenuActive"
-                class="fixed inset-0 z-[998] bg-[rgba(20,10,14,0.55)] backdrop-blur-sm lg:hidden"
+                class="fixed inset-0 z-[998] bg-[var(--admin-mask)] backdrop-blur-sm lg:hidden"
             />
         </transition>
     </div>
@@ -37,10 +39,12 @@
 
 <script>
 import { computed, getCurrentInstance, provide } from 'vue';
+import { storeToRefs } from 'pinia';
 import TopBar from './Topbar.vue';
 import AppMenu from './Menu.vue';
 import MenuHeader from './MenuHeader.vue';
 import Footer from './Footer.vue';
+import AppBreadcrumb from './Breadcrumb.vue';
 import menuList from './menu';
 import { useThemeStore } from '@/modules/admin/themeStore';
 
@@ -50,9 +54,12 @@ export default {
         AppMenu,
         MenuHeader,
         Footer,
+        AppBreadcrumb,
     },
     setup() {
         const instance = getCurrentInstance();
+        const themeStore = useThemeStore();
+        const { mode: themeMode } = storeToRefs(themeStore);
 
         provide(
             'sidebarCollapsed',
@@ -66,6 +73,8 @@ export default {
                 return vm.staticMenuInactive && vm.layoutMode === 'static';
             }),
         );
+
+        return { themeMode };
     },
     data() {
         return {
@@ -131,17 +140,6 @@ export default {
 </script>
 
 <style scoped>
-.admin-background {
-    background:
-        radial-gradient(circle at top right, rgba(214, 184, 193, 0.28), transparent 28%),
-        radial-gradient(circle at bottom left, rgba(85, 32, 50, 0.08), transparent 32%),
-        var(--admin-bg);
-}
-
-.admin-sidebar {
-    background: linear-gradient(180deg, var(--admin-sidebar-from) 0%, var(--admin-sidebar-to) 100%);
-}
-
 .layout-mask-enter-active,
 .layout-mask-leave-active {
     transition: opacity 0.25s ease;

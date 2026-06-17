@@ -32,7 +32,10 @@ export function useLogin() {
                 life: 2500,
             });
 
-            router.push(response.redirect_to);
+            const navResult = await router.push(response.redirect_to);
+
+            // #region agent log
+            fetch('http://127.0.0.1:7923/ingest/23465e0c-eb0a-42c6-a1cf-6932802664b7',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'516e3b'},body:JSON.stringify({sessionId:'516e3b',location:'useLogin.js:afterPush',message:'after router.push',data:{navResult,currentRoute:router.currentRoute.value.fullPath},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{});
         } catch (error) {
             toast.add({
                 severity: 'error',

@@ -3,13 +3,17 @@ import { ref, computed, watch } from 'vue';
 
 const STORAGE_KEY = 'rosewood-admin-theme';
 
+function applyThemeToDocument(mode) {
+    document.documentElement.setAttribute('data-admin-theme', mode);
+}
+
 export const useThemeStore = defineStore('adminTheme', () => {
     const mode = ref(localStorage.getItem(STORAGE_KEY) || 'light');
 
     const isDark = computed(() => mode.value === 'dark');
 
     function applyTheme() {
-        document.documentElement.setAttribute('data-admin-theme', mode.value);
+        applyThemeToDocument(mode.value);
     }
 
     function setMode(nextMode) {

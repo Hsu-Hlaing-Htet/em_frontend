@@ -1,0 +1,1 @@
+class h{constructor(){this.errors={}}has(r){return this.errors.hasOwnProperty(r)}any(){return Object.keys(this.errors).length>0}get(r){if(this.errors[r]){let s=[];return this.errors[r].forEach(t=>{s.push(t)}),s}}getFlash(r){if(this.errors[r])return this.errors[r]}record(r){this.errors=r}clear(r){if(r){this.has(r)&&delete this.errors[r];return}this.errors={}}}export{h as E};

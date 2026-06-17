@@ -4,6 +4,8 @@ import { createPinia } from 'pinia';
 
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
+import ConfirmDialog from 'primevue/confirmdialog';
 import Menubar from 'primevue/menubar';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -30,14 +32,18 @@ import './assets/styles/app.css';
 import './assets/styles/admin.css';
 import App from '@/App.vue';
 import router from '@/routes';
+import { useThemeStore } from '@/modules/admin/themeStore';
 
 const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
+useThemeStore().applyTheme();
 app.use(router);
 app.use(PrimeVue, { ripple: false });
 app.use(ToastService);
+app.use(ConfirmationService);
+app.component('ConfirmDialog', ConfirmDialog);
 
 app.component('Menubar', Menubar);
 app.component('DataTable', DataTable);

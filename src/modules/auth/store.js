@@ -28,13 +28,22 @@ export const useAuthStore = defineStore('auth', () => {
             data.user.role === 'super_admin' ||
             data.user.role === 'admin'
         ) {
-            redirect_to = '/admin';
+            redirect_to = '/admin/dashboard';
         }
 
-        return {
+        const result = {
             ...data,
             redirect_to,
         };
+
+        // #region agent log
+        fetch('http://127.0.0.1:7923/ingest/23465e0c-eb0a-42c6-a1cf-6932802664b7',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'516e3b'},body:JSON.stringify({sessionId:'516e3b',location:'store.js:login',message:'login result',data:{userRole:data.user?.role,redirect_to,hasToken:!!data.token},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
+        // #endregion
+        console.log('LOGIN RESPONSE', result);
+        console.log('REDIRECT TO', result.redirect_to);
+        console.log('USER ROLE', data.user?.role);
+
+        return result;
     }
 
     async function logout() {

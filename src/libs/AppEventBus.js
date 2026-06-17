@@ -1,0 +1,27 @@
+const listeners = new Map();
+
+const EventBus = {
+    on(event, callback) {
+        if (!listeners.has(event)) {
+            listeners.set(event, new Set());
+        }
+
+        listeners.get(event).add(callback);
+
+        return () => {
+            listeners.get(event)?.delete(callback);
+        };
+    },
+
+    off(event, callback) {
+        listeners.get(event)?.delete(callback);
+    },
+
+    emit(event, payload) {
+        listeners.get(event)?.forEach((callback) => {
+            callback(payload);
+        });
+    },
+};
+
+export default EventBus;

@@ -1,13 +1,14 @@
 import api from '@/services/api';
+import { endpoint } from '@/constants/endpoint';
 
 export function loginUser(payload) {
-    return api.post('/api/auth/login', payload);
+    return api.post(endpoint.login, payload);
 }
 
 export function getCurrentUser() {
-    return api.get('/api/auth/me');
+    return api.get(endpoint.me);
 }
 
 export function logoutUser() {
-    return api.post('/api/auth/logout');
+    return api.post(endpoint.logout);
 }

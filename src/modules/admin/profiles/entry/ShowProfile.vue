@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <div v-if="!isLoading" class="admin-crud-panel grid max-w-2xl gap-4 md:grid-cols-2">
+        <div v-if="!isLoading" class="admin-panel grid max-w-2xl gap-4 md:grid-cols-2">
             <div class="field md:col-span-2">
                 <label class="mb-2 block text-sm font-semibold text-[var(--admin-text-muted)]">User</label>
                 <InputText :model-value="`${state.user_name} (${state.user_email})`" class="w-full" disabled />

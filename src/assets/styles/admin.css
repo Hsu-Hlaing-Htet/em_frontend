@@ -1,220 +1,235 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
+/* =========================
+   BRAND COLORS
+========================= */
 @theme {
     --color-rosewood: #552032;
-    --color-rosewood-secondary: #d6b8c1;
     --color-rosewood-accent: #7a3149;
+    --color-rosewood-secondary: #d6b8c1;
     --color-rosewood-bg: #f8f5f6;
     --color-rosewood-dark: #140d11;
 }
 
-html[data-admin-theme='light'],
-html:not([data-admin-theme]) {
-    --admin-primary: #552032;
-    --admin-secondary: #d6b8c1;
-    --admin-accent: #7a3149;
-    --admin-bg: #f8f5f6;
-    --admin-surface: rgba(255, 255, 255, 0.82);
-    --admin-surface-solid: #ffffff;
-    --admin-border: rgba(85, 32, 50, 0.1);
-    --admin-text: #2a1520;
-    --admin-text-muted: #7a5c68;
-    --admin-sidebar-from: #3d1728;
-    --admin-sidebar-to: #552032;
-    --admin-topbar-bg: rgba(255, 255, 255, 0.75);
-    --admin-shadow: 0 18px 48px rgba(85, 32, 50, 0.1);
-    --admin-shadow-soft: 0 8px 24px rgba(85, 32, 50, 0.06);
-    --admin-glow: 0 0 0 1px rgba(214, 184, 193, 0.45), 0 0 24px rgba(122, 49, 73, 0.22);
+/* =========================
+   SHARED TOKENS
+========================= */
+:root {
+    font-size: 15px;
     --admin-topbar-height: 76px;
-    --admin-transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    --admin-bg-accent-soft: rgba(214, 184, 193, 0.28);
-    --admin-bg-accent-muted: rgba(85, 32, 50, 0.08);
-    --admin-mask: rgba(20, 10, 14, 0.55);
-
-    --text-color: var(--admin-text);
-    --text-color-secondary: var(--admin-text-muted);
-    --surface-ground: var(--admin-bg);
-    --surface-section: var(--admin-surface-solid);
-    --surface-card: var(--admin-surface-solid);
-    --surface-overlay: var(--admin-surface-solid);
-    --surface-border: var(--admin-border);
-    --surface-hover: color-mix(in srgb, var(--admin-secondary) 16%, transparent);
-    --surface-0: var(--admin-surface-solid);
-    --surface-50: var(--admin-surface);
-    --surface-100: color-mix(in srgb, var(--admin-secondary) 20%, var(--admin-surface-solid));
-    --surface-200: var(--admin-border);
-    --primary-color: var(--admin-primary);
-    --primary-color-text: #f8f0f3;
+    --admin-transition: 0.3s ease;
 }
 
-html[data-admin-theme='dark'] {
+
+html[data-admin-theme="light"],
+html:not([data-admin-theme]) {
+    --admin-bg: #f8f5f6;
+
+    --admin-surface: rgba(255, 255, 255, 0.85);
+    --admin-surface-solid: #ffffff;
+
     --admin-primary: #552032;
     --admin-secondary: #d6b8c1;
-    --admin-accent: #7a3149;
+
+    --admin-text: #552032;
+    --admin-text-muted: #7a5c68;
+
+    --admin-border: rgba(85, 32, 50, 0.1);
+
+    --admin-shadow:
+        0 18px 48px rgba(85, 32, 50, 0.1);
+
+    --admin-shadow-soft:
+        0 8px 24px rgba(85, 32, 50, 0.06);
+
+    --admin-mask: rgba(20, 10, 14, 0.55);
+}
+
+
+html[data-admin-theme="dark"] {
     --admin-bg: #140d11;
+
     --admin-surface: rgba(36, 22, 30, 0.88);
     --admin-surface-solid: #24161e;
-    --admin-border: rgba(214, 184, 193, 0.12);
-    --admin-text: #f8f0f3;
-    --admin-text-muted: #c4a8b3;
-    --admin-sidebar-from: #1a0f15;
-    --admin-sidebar-to: #3d1728;
-    --admin-topbar-bg: rgba(26, 16, 22, 0.82);
-    --admin-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
-    --admin-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.22);
-    --admin-glow: 0 0 0 1px rgba(214, 184, 193, 0.2), 0 0 28px rgba(122, 49, 73, 0.35);
-    --admin-topbar-height: 76px;
-    --admin-transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    --admin-bg-accent-soft: rgba(214, 184, 193, 0.12);
-    --admin-bg-accent-muted: rgba(85, 32, 50, 0.22);
-    --admin-mask: rgba(0, 0, 0, 0.62);
 
-    --text-color: var(--admin-text);
-    --text-color-secondary: var(--admin-text-muted);
-    --surface-ground: var(--admin-bg);
-    --surface-section: var(--admin-surface-solid);
-    --surface-card: var(--admin-surface-solid);
-    --surface-overlay: var(--admin-surface-solid);
-    --surface-border: var(--admin-border);
-    --surface-hover: color-mix(in srgb, var(--admin-secondary) 14%, transparent);
-    --surface-0: var(--admin-surface-solid);
-    --surface-50: var(--admin-surface);
-    --surface-100: color-mix(in srgb, var(--admin-secondary) 12%, var(--admin-surface-solid));
-    --surface-200: var(--admin-border);
-    --primary-color: var(--admin-primary);
-    --primary-color-text: #f8f0f3;
+    --admin-primary: #d6b8c1;
+    --admin-secondary: #552032;
+
+    --admin-text: #f2e6eb;
+    --admin-text-muted: #c4a8b3;
+
+    --admin-border: rgba(214,184,193,.08);
+
+    --admin-shadow:
+        0 18px 48px rgba(0, 0, 0, 0.35);
+
+    --admin-shadow-soft:
+        0 8px 24px rgba(0, 0, 0, 0.22);
+
+    --admin-mask: rgba(0, 0, 0, 0.62);
 }
 
 [data-admin-layout] {
     --sidebar-width: 280px;
+
+    background: var(--admin-bg);
     color: var(--admin-text);
-    background-color: var(--admin-bg);
 }
 
-[data-admin-layout][data-sidebar-collapsed='true'] {
+[data-admin-layout][data-sidebar-collapsed="true"] {
     --sidebar-width: 88px;
 }
 
 @media (max-width: 1023px) {
-    [data-admin-layout] .admin-sidebar {
+    .admin-sidebar {
         transform: translateX(-100%);
     }
 
-    [data-admin-layout][data-mobile-sidebar-open='true'] .admin-sidebar {
+    [data-mobile-sidebar-open="true"] .admin-sidebar {
         transform: translateX(0);
     }
 }
 
 .admin-background {
-    background:
-        radial-gradient(circle at top right, var(--admin-bg-accent-soft), transparent 28%),
-        radial-gradient(circle at bottom left, var(--admin-bg-accent-muted), transparent 32%),
-        var(--admin-bg);
+    background: var(--admin-bg);
 }
 
 .admin-sidebar {
-    background: linear-gradient(180deg, var(--admin-sidebar-from) 0%, var(--admin-sidebar-to) 100%);
+    background: var(--admin-bg);
+    border-right: 1px solid var(--admin-border);
 }
 
-.admin-crud-panel {
-    border-radius: 1rem;
-    border: 1px solid var(--admin-border);
+
+.admin-panel {
+    padding: 1.875rem;
+
     background: var(--admin-surface);
-    padding: 10px 15px;
+    border: 1px solid var(--admin-border);
+
     box-shadow: var(--admin-shadow-soft);
     backdrop-filter: blur(12px);
 }
 
-.admin-crud-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-}
 
 
-.admin-crud-header p {
-    margin: 0.375rem 0 0;
-    color: var(--admin-text-muted);
-    font-size: 0.875rem;
-}
-
-.admin-crud-primary-btn {
-    background: linear-gradient(135deg, var(--admin-primary), var(--admin-accent)) !important;
-    border-color: var(--admin-primary) !important;
-    color: var(--primary-color-text) !important;
-}
-
-.admin-crud-primary-btn:hover {
-    filter: brightness(1.08);
-}
-
-.admin-breadcrumb-bar {
-    margin-bottom: 1.25rem;
-}
-
-.admin-breadcrumb-bar .p-breadcrumb {
-    border: none;
+/* Outline */
+.btn {
     background: transparent;
-    padding: 0;
-}
-
-.admin-breadcrumb-bar .p-breadcrumb .p-menuitem-link,
-.admin-breadcrumb-bar .p-breadcrumb .p-menuitem-text {
-    color: var(--admin-text-muted);
-}
-
-.admin-breadcrumb-bar .p-breadcrumb .p-menuitem-link:hover {
     color: var(--admin-primary);
+
+    border-color: 2px solid var(--admin-primary);
 }
 
-.admin-breadcrumb-title {
-    color: var(--admin-text);
+.btn:hover {
+    background: var(--admin-primary);
+    color: var(--admin-bg);
 }
 
-.topbar-icon-btn {
-    display: flex;
-    height: 2.75rem;
-    width: 2.75rem;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    color: var(--admin-text);
-    transition: all 0.3s ease;
-}
 
-.topbar-icon-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--admin-shadow-soft);
-}
-
-[data-admin-layout] .p-datatable .p-datatable-header,
-[data-admin-layout] .p-datatable .p-datatable-thead > tr > th,
-[data-admin-layout] .p-datatable .p-datatable-tbody > tr,
-[data-admin-layout] .p-datatable .p-paginator {
+.p-datatable-header,
+.p-datatable-thead > tr > th,
+.p-datatable-tbody > tr{
     background: var(--admin-surface-solid);
     color: var(--admin-text);
     border-color: var(--admin-border);
+    border-bottom: 1px solid var(--admin-border);
 }
 
-[data-admin-layout] .p-datatable .p-datatable-tbody > tr:hover {
-    background: var(--surface-hover);
+.p-datatable .p-datatable-tbody > tr:hover {
+    background: rgba(85, 32, 50, 0.05) !important;
 }
-
-[data-admin-layout] .p-inputtext,
-[data-admin-layout] .p-dropdown,
-[data-admin-layout] .p-calendar .p-inputtext,
-[data-admin-layout] .p-password input,
-[data-admin-layout] .p-textarea {
+.p-inputtext,
+.p-dropdown,
+.p-textarea,
+.p-password input,
+.p-calendar .p-inputtext {
     background: var(--admin-surface-solid);
-    color: var(--admin-text);
+    color: var(--admin-text-muted);
     border-color: var(--admin-border);
 }
 
-[data-admin-layout] .p-overlaypanel,
-[data-admin-layout] .p-dialog,
-[data-admin-layout] .p-menu {
-    background: var(--admin-surface-solid);
-    color: var(--admin-text);
-    border-color: var(--admin-border);
+
+.p-paginator {
+    background: transparent !important;
+    border: none !important;
+
+}
+
+.p-paginator-pages .p-paginator-page {
+    min-width: 2.5rem;
+    height: 2.5rem;
+
+    background: transparent;
+    color: var(--admin-text-muted);
+
+    border: 1px solid transparent;
+
+    transition: all .2s ease;
+}
+
+
+.p-inputtext:enabled:focus,
+.p-inputnumber-input:enabled:focus,
+.p-textarea:enabled:focus,
+.p-password-input:enabled:focus {
+    border-color: var(--admin-primary) !important;
+
+    box-shadow:
+        0 0 0 1px rgba(85, 32, 50, 0.35),
+        0 0 12px rgba(85, 32, 50, 0.18);
+
+    outline: none !important;
+}
+
+/* Dropdown Overlay */
+
+.p-select-overlay,
+.p-dropdown-panel {
+    background: var(--admin-surface-solid) !important;
+    border: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+}
+
+/* option */
+
+.p-select-option,
+.p-dropdown-item {
+    background: transparent !important;
+    color: var(--admin-text) !important;
+}
+
+/* hover */
+
+.p-select-option:hover,
+.p-dropdown-item:hover {
+    background: rgba(85, 32, 50, 0.12) !important;
+}
+
+/* selected */
+
+.p-select-option-selected,
+.p-dropdown-item.p-highlight {
+    background: rgba(85, 32, 50, 0.18) !important;
+    color: var(--admin-primary) !important;
+}
+
+/* focused */
+
+.p-select-option:focus,
+.p-dropdown-item:focus {
+    background: rgba(85, 32, 50, 0.15) !important;
+}
+
+/* DARK MODE DROPDOWN */
+
+html[data-admin-theme="dark"] .p-dropdown-panel,
+html[data-admin-theme="dark"] .p-select-overlay {
+    background: #24161e !important;
+    border: 1px solid rgba(214,184,193,.12) !important;
+}
+
+html[data-admin-theme="dark"] .p-dropdown-item:hover,
+html[data-admin-theme="dark"] .p-select-option:hover {
+    background: rgba(214,184,193,.12) !important;
+    color: #ffffff !important;
 }

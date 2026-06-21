@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col gap-5">
-        <div class="admin-crud-panel relative">
+        <div class="admin-panel relative">
             <DataTable
                 ref="dt"
                 data-key="id"
@@ -27,15 +27,16 @@
                         <h2 class="m-0">All Roles</h2>
                         <div class="flex flex-wrap items-center gap-2">
                             <div class="relative">
-                                <i
-                                    class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-text-muted)]"
-                                />
-                                <InputText
-                                    v-model="search"
-                                    placeholder="     Keyword search"
-                                    class="w-72 pl-10"
-                                />
-                            </div>
+    <i
+        class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
+    />
+
+    <InputText
+        v-model="search"
+        placeholder="Keyword search"
+        class="w-72 !pl-10"
+    />
+</div>
                             <Button
                                 label="Reset"
                                 class="p-button-outlined p-button-secondary"

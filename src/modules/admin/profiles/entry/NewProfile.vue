@@ -7,7 +7,7 @@
             </div>
         </div>
 
-        <div class="admin-crud-panel relative">
+        <div class="admin-panel relative">
             <form class="grid max-w-2xl gap-4 md:grid-cols-2" @submit.prevent="handleSubmit">
                 <div class="field md:col-span-2">
                     <label class="mb-2 block text-sm font-semibold">User</label>

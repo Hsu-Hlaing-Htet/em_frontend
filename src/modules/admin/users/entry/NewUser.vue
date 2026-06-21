@@ -7,7 +7,7 @@
             </div>
         </div>
 
-        <div class="admin-crud-panel relative">
+        <div class="admin-panel relative">
     <form
         class="grid grid-cols-1 gap-4 md:grid-cols-2"
         @submit.prevent="handleSubmit"

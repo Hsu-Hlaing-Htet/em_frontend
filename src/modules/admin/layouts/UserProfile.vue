@@ -2,7 +2,7 @@
     <Menu ref="userMenu" :model="profileMenuItems" :popup="true" />
     <button
         type="button"
-        class="flex cursor-pointer items-center gap-3 py-1.5 pl-1.5 pr-3 transition-all duration-300 hover:-translate-y-px hover:shadow-[var(--admin-shadow-soft)]"
+        class="flex cursor-pointer items-center gap-3 py-1.5 pl-1.5 pr-3 transition-all duration-300"
         @click="togglePanel"
     >
         <Avatar

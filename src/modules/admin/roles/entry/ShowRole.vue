@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <div v-if="!isLoading" class="admin-crud-panel grid max-w-xl gap-4">
+        <div v-if="!isLoading" class="admin-panel grid max-w-xl gap-4">
             <div class="field">
                 <label class="mb-2 block text-sm font-semibold text-[var(--admin-text-muted)]">Role Name</label>
                 <InputText :model-value="state.name" class="w-full" disabled />

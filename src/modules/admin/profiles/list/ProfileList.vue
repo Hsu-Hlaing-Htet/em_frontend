@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col gap-5">
-        <div class="admin-crud-panel relative">
+        <div class="admin-panel relative">
             <DataTable
                 ref="dt"
                 data-key="id"
@@ -26,10 +26,17 @@
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <h2 class="m-0">All Profiles</h2>
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="p-input-icon-left">
-                                <i class="pi pi-search" />
-                                <InputText v-model="search" placeholder="Keyword search" />
-                            </span>
+                            <div class="relative">
+    <i
+        class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
+    />
+
+    <InputText
+        v-model="search"
+        placeholder="Keyword search"
+        class="w-72 !pl-10"
+    />
+</div>
                             <Button label="Reset" class="p-button-outlined p-button-secondary" @click="resetSearch" />
                             <router-link :to="{ name: 'newProfile' }">
                                 <Button label="Create" class="admin-crud-primary-btn" />

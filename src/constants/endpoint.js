@@ -19,6 +19,7 @@ export const endpoint = {
     buildings: 'properties/buildings',
     rooms: 'properties/rooms',
     roomImages: 'properties/room-images',
+    roomImageUpload: 'properties/room-images/upload',
 
     /** Contracts */
     contracts: 'contracts',

@@ -141,6 +141,7 @@ html,
 body,
 #app {
     margin: 0;
+    width: 100%;
     min-height: 100%;
     font-family: var(--font-body);
     color: var(--text);

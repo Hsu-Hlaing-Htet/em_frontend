@@ -13,7 +13,7 @@
             />
         </div>
 
-        <div v-if="!isLoading" class="admin-crud-panel relative">
+        <div v-if="!isLoading" class="admin-panel relative">
             <form class="grid max-w-xl gap-4" @submit.prevent="handleSubmit">
                 <div class="field">
                     <label for="name" class="mb-2 block text-sm font-semibold text-[var(--admin-text)]">Role Name</label>

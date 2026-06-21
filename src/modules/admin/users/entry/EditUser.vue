@@ -8,7 +8,7 @@
             <Button type="button" icon="pi pi-trash" class="p-button-danger p-button-outlined" @click="showConfirmDialog(state.id)" />
         </div>
 
-        <div v-if="!isLoading" class="admin-crud-panel relative">
+        <div v-if="!isLoading" class="admin-panel relative">
             <form class="grid max-w-xl gap-4" @submit.prevent="handleSubmit">
                 <div class="field">
                     <label class="mb-2 block text-sm font-semibold">Role</label>

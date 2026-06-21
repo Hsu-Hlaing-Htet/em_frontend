@@ -1,245 +1,272 @@
 <template>
-    <ul v-if="items" class="m-0 list-none p-0">
-        <template v-for="(item, i) of items" :key="item.label || i">
-            <li
-                v-if="visible(item) && !item.separator"
-                :class="[
-                    {
-                        'mt-3 first:mt-0': root,
-                        'active-menuitem': activeIndex === i && !item.to && !item.disabled,
-                    },
-                ]"
-                role="none"
-            >
-                <template v-if="root">
-                    <div
-                        v-if="item.label"
-                        class="px-4 pb-1 pt-4 text-[0.68rem] uppercase tracking-[0.18em] text-white/45 transition-all duration-300"
+    <ul v-if="items" class="menu-root">
+        <li
+            v-for="(item, i) in items"
+            :key="item.label || i"
+        >
+            <!-- Group Menu -->
+            <template v-if="item.items">
+
+                <a
+                    href="#"
+                    class="menu-link"
+                    @click.prevent="toggleGroup(i)"
+                >
+                    <i :class="item.icon" class="menu-link-icon" />
+
+                    <span
+                        class="menu-link-label"
                         :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
-                        :aria-label="item.label"
                     >
                         {{ item.label }}
-                    </div>
-                    <Submenu
-                        :items="visible(item) && item.items"
-                        @menuitem-click="$emit('menuitem-click', $event)"
+                    </span>
+
+                    <i
+                        class="pi ml-auto"
+                        :class="
+                            activeIndex === i
+                                ? 'pi-chevron-down'
+                                : 'pi-chevron-right'
+                        "
                     />
-                </template>
+                </a>
 
-                <template v-else>
-                    <router-link
-                        v-if="item.to"
-                        v-ripple
-                        :to="item.to"
-                        :class="[item.class, 'menu-link p-ripple', { 'p-disabled': item.disabled }]"
-                        :style="item.style"
-                        :target="item.target"
-                        :aria-label="item.label"
-                        active-class="router-link-active"
-                        exact-active-class="router-link-exact-active"
-                        role="menuitem"
-                        @click="onMenuItemClick($event, item, i)"
+                <transition name="layout-submenu-wrapper">
+                    <ul
+                        v-show="activeIndex === i"
+                        class="submenu-container"
                     >
-                        <i :class="item.icon" class="menu-link-icon" />
-                        <span
-                            class="menu-link-label"
-                            :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
-                        >{{ item.label }}</span>
-                        <i
-                            v-if="item.items"
-                            class="pi menuitem-toggle-icon ml-auto"
-                            :class="activeIndex === i ? 'pi-chevron-up' : 'pi-chevron-down'"
-                        />
-                        <Badge v-if="item.badge" :value="item.badge" class="ml-auto" />
-                    </router-link>
+                        <li
+                            v-for="child in item.items"
+                            :key="child.label"
+                        >
+                            <router-link
+                                :to="child.to"
+                                class="menu-link submenu-link"
+                                active-class="router-link-active"
+                                exact-active-class="router-link-exact-active"
+                            >
+                                <i
+                                    :class="child.icon"
+                                    class="menu-link-icon"
+                                />
 
-                    <a
-                        v-else
-                        v-ripple
-                        :href="item.url || '#'"
-                        :style="item.style"
-                        :class="[item.class, 'menu-link p-ripple', { 'p-disabled': item.disabled }]"
-                        :target="item.target"
-                        :aria-label="item.label"
-                        role="menuitem"
-                        @click="onMenuItemClick($event, item, i)"
+                                <span
+                                    class="menu-link-label"
+                                    :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
+                                >
+                                    {{ child.label }}
+                                </span>
+                            </router-link>
+                        </li>
+                    </ul>
+                </transition>
+
+            </template>
+
+            <!-- Normal Link -->
+            <template v-else>
+
+                <router-link
+                    :to="item.to"
+                    class="menu-link"
+                    active-class="router-link-active"
+                    exact-active-class="router-link-exact-active"
+                >
+                    <i :class="item.icon" class="menu-link-icon" />
+
+                    <span
+                        class="menu-link-label"
+                        :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
                     >
-                        <i :class="item.icon" class="menu-link-icon" />
-                        <span
-                            class="menu-link-label"
-                            :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
-                        >{{ item.label }}</span>
-                        <i
-                            v-if="item.items"
-                            class="pi menuitem-toggle-icon ml-auto"
-                            :class="activeIndex === i ? 'pi-chevron-up' : 'pi-chevron-down'"
-                        />
-                        <Badge v-if="item.badge" :value="item.badge" class="ml-auto" />
-                    </a>
+                        {{ item.label }}
+                    </span>
+                </router-link>
 
-                    <transition name="layout-submenu-wrapper">
-                        <Submenu
-                            v-show="activeIndex === i"
-                            :items="visible(item) && item.items"
-                            @menuitem-click="$emit('menuitem-click', $event)"
-                        />
-                    </transition>
-                </template>
-            </li>
-
-            <li
-                v-if="visible(item) && item.separator"
-                :key="`separator-${i}`"
-                class="p-menu-separator"
-                :style="item.style"
-                role="separator"
-            />
-        </template>
+            </template>
+        </li>
     </ul>
 </template>
 
 <script>
-import { inject } from 'vue';
-import Badge from 'primevue/badge';
-
 export default {
     name: 'Submenu',
-    components: { Badge },
+
+    inject: ['sidebarCollapsed'],
+
     props: {
-        items: Array,
-        root: {
-            type: Boolean,
-            default: false,
+        items: {
+            type: Array,
+            default: () => [],
         },
     },
-    emits: ['menuitem-click'],
-    setup() {
-        const sidebarCollapsed = inject('sidebarCollapsed', false);
 
-        return { sidebarCollapsed };
-    },
     data() {
         return {
             activeIndex: null,
         };
     },
+
     methods: {
-        onMenuItemClick(event, item, index) {
-            if (item.disabled) {
-                event.preventDefault();
-                return;
-            }
-
-            if (!item.to && !item.url) {
-                event.preventDefault();
-            }
-
-            if (item.command) {
-                item.command({ originalEvent: event, item });
-            }
-
-            this.activeIndex = index === this.activeIndex ? null : index;
-
-            this.$emit('menuitem-click', {
-                originalEvent: event,
-                item,
-            });
-        },
-        visible(item) {
-            return true;
+        toggleGroup(index) {
+            this.activeIndex =
+                this.activeIndex === index
+                    ? null
+                    : index;
         },
     },
 };
 </script>
 
 <style scoped>
+.menu-root {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Tree Container */
+
+.submenu-container {
+    position: relative;
+
+    margin: 0 0 0 1rem;
+    padding-left: 0.75rem;
+
+    list-style: none;
+}
+
+.submenu-container::before {
+    content: '';
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 1px;
+
+    background: var(--admin-border);
+}
+
+/* Child Item */
+
+.submenu-link {
+    padding-left: 1.5rem;
+}
+
+.submenu-link::after {
+    content: '';
+
+    position: absolute;
+
+    left: -0.75rem;
+    top: 50%;
+
+    width: 0.75rem;
+    height: 1px;
+
+    background: var(--admin-border);
+
+    transform: translateY(-50%);
+}
+
+/* Existing Hover Style */
+
 .menu-link {
     position: relative;
+
     display: flex;
-    border: none;
     align-items: center;
-    border-radius: 0.1rem;
-    gap: 1px;
-    margin: 0.2rem 0;
+    gap: 0.85rem;
+
+    padding: 0.9rem 1rem;
+    margin: 0.35rem 0;
+
     overflow: hidden;
-    padding: 0.85rem;
+
+    color: var(--admin-text-muted);
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.88);
-    transition: all 0.3s ease;
+
+    transition: all 0.25s ease;
 }
 
 .menu-link::before {
     content: '';
+
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
+
     width: 3px;
-    background: var(--admin-secondary);
+
+    background: var(--admin-primary);
+
     opacity: 0;
-    transform: scaleY(0.4);
-    transition: all 0.3s ease;
+    transform: scaleY(0);
+
+    transition: all 0.25s ease;
 }
 
-.menu-link:hover {
-    transform: translateX(0.25rem);
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.menu-link:hover .menu-link-icon {
-    transform: scale(1.1);
-    color: #fff;
-}
-
+.menu-link:hover,
 .menu-link.router-link-active,
 .menu-link.router-link-exact-active {
-    color: #fff;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+    background: linear-gradient(
+        90deg,
+        rgba(139, 59, 86, 0.22),
+        rgba(122, 49, 73, 0.08)
+    );
+
+    color: var(--admin-primary);
 }
 
+.menu-link:hover::before,
 .menu-link.router-link-active::before,
 .menu-link.router-link-exact-active::before {
     opacity: 1;
     transform: scaleY(1);
 }
 
-.menu-link.router-link-active .menu-link-icon,
-.menu-link.router-link-exact-active .menu-link-icon {
-    color: #fff;
-}
-
 .menu-link-icon {
     width: 1.25rem;
     text-align: center;
-    font-size: 1.05rem;
-    color: var(--admin-secondary);
-    transition: all 0.3s ease;
+    font-size: 1rem;
+
+    color: inherit;
+
+    transition: all 0.25s ease;
+}
+
+.menu-link:hover .menu-link-icon,
+.menu-link.router-link-active .menu-link-icon,
+.menu-link.router-link-exact-active .menu-link-icon {
+    transform: scale(1.08);
 }
 
 .menu-link-label {
-    font-size: 0.94rem;
+    font-size: 0.95rem;
     font-weight: 500;
-    white-space: nowrap;
-    transition: all 0.3s ease;
 }
 
-.layout-submenu-wrapper-enter-active {
-    overflow: hidden;
-    transition: max-height 1s ease-in-out;
-}
+/* Accordion Animation */
 
+.layout-submenu-wrapper-enter-active,
 .layout-submenu-wrapper-leave-active {
     overflow: hidden;
-    transition: max-height 0.45s cubic-bezier(0, 1, 0, 1);
+    transition: all 0.25s ease;
 }
 
 .layout-submenu-wrapper-enter-from,
 .layout-submenu-wrapper-leave-to {
+    opacity: 0;
     max-height: 0;
 }
 
 .layout-submenu-wrapper-enter-to,
 .layout-submenu-wrapper-leave-from {
-    max-height: 1000px;
+    opacity: 1;
+    max-height: 500px;
 }
 </style>

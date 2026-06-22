@@ -1,1 +1,0 @@
-function r(e=[]){return e.length?e.map(n=>`${n.field}|${n.order===-1?"desc":"asc"}`).join(","):null}function o(e,n=300){let t;return(...u)=>{clearTimeout(t),t=setTimeout(()=>e(...u),n)}}export{r as m,o as u};

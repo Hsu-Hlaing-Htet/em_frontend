@@ -5,6 +5,7 @@ import residentRoutes from './residents/route';
 import staffRoutes from './staff/route';
 import buildingRoutes from './buildings/route';
 import roomRoutes from './rooms/route';
+import utilityTypeRoutes from './utility-types/route';
 
 export const adminRoutes = [
     {
@@ -23,6 +24,7 @@ export const adminRoutes = [
             ...staffRoutes,
             ...buildingRoutes,
             ...roomRoutes,
+            ...utilityTypeRoutes,
         ],
     },
 ];

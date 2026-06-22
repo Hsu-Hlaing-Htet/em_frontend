@@ -39,11 +39,10 @@
 </div>
                             <Button
                                 label="Reset"
-                                class="p-button-outlined p-button-secondary"
                                 @click="resetSearch"
                             />
                             <router-link :to="{ name: 'newRole' }">
-                                <Button label="Create" class="admin-crud-primary-btn" />
+                                <Button label="Create"  />
                             </router-link>
                         </div>
                     </div>
@@ -54,7 +53,7 @@
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 200px">
                     <template #body="{ data }">
-                        <router-link :to="{ name: 'showRole', params: { id: data.id } }" class="no-underline hover:underline">
+                        <router-link :to="{ name: 'showRole', params: { id: data.id } }">
                             {{ data.name }}
                         </router-link>
                     </template>
@@ -63,12 +62,21 @@
                 <Column field="created_at" header="Created" :sortable="true" style="min-width: 180px" />
                 <Column field="action" header="Action" style="min-width: 180px">
                     <template #body="{ data }">
-                        <router-link :to="{ name: 'showRole', params: { id: data.id } }" class="gap-2">
-                            <Button icon="pi pi-eye" class="p-button-outlined p-button-secondary" />
-                            <Button icon="pi pi-pencil" class="p-button-outlined p-button-secondary" />
-                            <Button icon="pi pi-trash" class="p-button-outlined p-button-danger" />
+                        <router-link :to="{ name: 'editRole', params: { id: data.id } }">
+                            <Button
+                                icon="pi pi-pencil"
+                                text
+                                severity="info"
+                            />
                         </router-link>
-                    </template>
+
+                        <Button
+                            icon="pi pi-trash"
+                            text
+                            severity="danger"
+                            @click="showConfirmDialog(data.id)"
+                        />
+                        </template>
                 </Column>
             </DataTable>
 

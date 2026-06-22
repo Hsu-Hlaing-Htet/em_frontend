@@ -11,6 +11,7 @@
             size="large"
             shape="circle"
         />
+
         <div class="hidden min-w-0 flex-col lg:flex">
             <span class="whitespace-nowrap text-sm">{{ user?.name || 'Admin User' }}</span>
             <span class="text-xs capitalize">{{ user?.role || 'admin' }}</span>
@@ -25,7 +26,7 @@ import { useAuthStore } from '@/modules/auth/store';
 import { useRouter } from 'vue-router';
 import Avatar from 'primevue/avatar';
 import Menu from 'primevue/menu';
-
+import ProfileImage from '@/assets/images/profile.png';
 export default defineComponent({
     name: 'UserProfile',
     components: {
@@ -39,16 +40,13 @@ export default defineComponent({
 
         const user = computed(() => authStore.user);
 
-        const avatarUrl = computed(() => user.value?.profile?.avatar_path || null);
+        const avatarUrl = computed(() => {
+    if (user.value?.profile?.avatar_path) {
+        return user.value.profile.avatar_path;
+    }
 
-        const avatarLabel = computed(() => {
-            if (avatarUrl.value || !user.value?.name) {
-                return null;
-            }
-
-            return user.value.name.charAt(0).toUpperCase();
-        });
-
+    return ProfileImage;
+});
         const profileMenuItems = ref([
             {
                 label: 'Profile',
@@ -74,7 +72,6 @@ export default defineComponent({
             user,
             userMenu,
             avatarUrl,
-            avatarLabel,
             profileMenuItems,
             togglePanel,
         };

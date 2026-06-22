@@ -18,18 +18,18 @@ const menuList = [
     },
 
     {
-        label: 'Accounts',
+        label: 'Users',
         icon: 'pi pi-users',
         items: [
             {
                 label: 'Residents',
                 icon: 'pi pi-users',
-                to: '/admin/users',
+                to: '/admin/residents',
             },
             {
-                label: 'Admins',
+                label: 'Staffs',
                 icon: 'pi pi-user-plus',
-                to: '/admin/staffs',
+                to: '/admin/staff',
             },
         ],
     },
@@ -62,17 +62,17 @@ const menuList = [
         icon: 'pi pi-ticket',
         to: '/admin/receipts',
     },
-            {
-                label: 'Invoices',
-                icon: 'pi pi-receipt',
-                to: '/admin/invoices',
-            },
+    {
+        label: 'Invoices',
+        icon: 'pi pi-receipt',
+        to: '/admin/invoices',
+    },
 
-            {
-                label: 'Maintenance Requests',
-                icon: 'pi pi-wrench',
-                to: '/admin/maintenance-requests',
-            },
+    {
+        label: 'Maintenance Requests',
+        icon: 'pi pi-wrench',
+        to: '/admin/maintenance-requests',
+    },
 
     {
         label: 'Settings',

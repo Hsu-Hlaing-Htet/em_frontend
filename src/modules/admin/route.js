@@ -1,8 +1,8 @@
 import Layout from './layouts/App.vue';
 import DashboardPage from './dashboard/Dashboard.vue';
 import roleRoutes from './roles/route';
-import userRoutes from './users/route';
-import profileRoutes from './profiles/route';
+import residentRoutes from './residents/route';
+import staffRoutes from './staff/route';
 import buildingRoutes from './buildings/route';
 import roomRoutes from './rooms/route';
 
@@ -19,8 +19,8 @@ export const adminRoutes = [
                 meta: { title: 'Dashboard' },
             },
             ...roleRoutes,
-            ...userRoutes,
-            ...profileRoutes,
+            ...residentRoutes,
+            ...staffRoutes,
             ...buildingRoutes,
             ...roomRoutes,
         ],

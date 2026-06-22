@@ -1,16 +1,11 @@
 <template>
-    <div class="flex flex-col gap-5">
         <div class="admin-crud-header">
-            <div>
-                <h1>Role Details</h1>
-                <p>View role information.</p>
-            </div>
             <div class="flex gap-2">
                 <router-link :to="{ name: 'roleList' }">
-                    <Button label="Back" class="p-button-outlined p-button-secondary" />
+                    <Button label="Back" />
                 </router-link>
                 <router-link v-if="state.id" :to="{ name: 'editRole', params: { id: state.id } }">
-                    <Button type="button" icon="pi pi-pencil" class="admin-crud-primary-btn p-button-outlined" />
+                    <Button type="button" icon="pi pi-pencil" text severity="info" />
                 </router-link>
             </div>
         </div>
@@ -31,7 +26,6 @@
         </div>
 
         <Loading v-if="isLoading" />
-    </div>
 </template>
 
 <script>

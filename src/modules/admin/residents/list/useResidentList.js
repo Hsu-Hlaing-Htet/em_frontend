@@ -2,23 +2,16 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
-import { useBuildingStore } from '@/modules/admin/buildings/store';
-import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '../constants';
-import { useRoomStore } from '../store';
+import { useResidentStore } from '../store';
 
-export const useRoomList = () => {
+export const useResidentList = () => {
     const dt = ref();
     const search = ref('');
-    const selectedBuilding = ref(null);
-    const selectedType = ref(null);
-    const selectedStatus = ref(null);
-    const buildingOptions = ref([]);
     const totalRecords = ref(0);
     const isLoading = ref(false);
-    const rooms = ref([]);
+    const residents = ref([]);
     const lazyParams = ref({});
-    const store = useRoomStore();
-    const buildingStore = useBuildingStore();
+    const store = useResidentStore();
     const errors = new Errors();
 
     onBeforeUnmount(() => {
@@ -37,7 +30,7 @@ export const useRoomList = () => {
 
     const showConfirmDialog = async (id) => {
         const confirmed = window.confirm(
-            'Are you sure you want to delete this room?',
+            'Are you sure you want to delete this resident?',
         );
 
         if (!confirmed) {
@@ -45,7 +38,6 @@ export const useRoomList = () => {
         }
 
         await store.delete({ id });
-
         await loadingData();
     };
 
@@ -70,49 +62,32 @@ export const useRoomList = () => {
             per_page: lazyParams.value.rows,
             order: multisortConvert(lazyParams.value.multiSortMeta),
             search: search.value,
-            building_id: selectedBuilding.value,
-            type: selectedType.value,
-            status: selectedStatus.value,
         });
 
         const response = store.getAllResponse;
 
         if (response) {
             const { data } = response;
-            rooms.value = data.data || [];
+            residents.value = data.data || [];
             totalRecords.value = response.data.total;
         }
 
         isLoading.value = false;
     };
 
-    onMounted(async () => {
+    onMounted(() => {
         resetPagination();
-
-        await buildingStore.fetchAll({ per_page: 100 });
-        const buildingResponse = buildingStore.getAllResponse;
-
-        if (buildingResponse?.data?.data) {
-            buildingOptions.value = buildingResponse.data.data.map((building) => ({
-                label: building.building_name,
-                value: building.id,
-            }));
-        }
-
         loadingData();
     });
 
     const resetSearch = () => {
         resetPagination();
         search.value = '';
-        selectedBuilding.value = null;
-        selectedType.value = null;
-        selectedStatus.value = null;
         loadingData();
     };
 
     watch(
-        [search, selectedBuilding, selectedType, selectedStatus],
+        [search],
         useDebounceFn(() => {
             resetPagination();
             loadingData();
@@ -120,19 +95,13 @@ export const useRoomList = () => {
     );
 
     return {
-        rooms,
+        residents,
         errors,
         isLoading,
         totalRecords,
         lazyParams,
         dt,
         search,
-        selectedBuilding,
-        selectedType,
-        selectedStatus,
-        buildingOptions,
-        typeOptions: ROOM_TYPE_OPTIONS,
-        statusOptions: ROOM_STATUS_OPTIONS,
         onSort,
         onPage,
         resetSearch,

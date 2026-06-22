@@ -12,7 +12,7 @@
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
-                :value="rooms"
+                :value="staff"
                 :multi-sort-meta="lazyParams.multiSortMeta"
                 :total-records="totalRecords"
                 :rows="10"
@@ -24,7 +24,7 @@
             >
                 <template #header>
                     <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Rooms</p>
+                        <p class="m-0 text-md">All Staff</p>
                         <div class="flex flex-wrap items-center gap-2">
                             <div class="relative">
                                 <i
@@ -33,76 +33,48 @@
 
                                 <InputText
                                     v-model="search"
-                                    placeholder="Search room number, building..."
+                                    placeholder="Search name, email, phone, nrc..."
                                     class="w-72 !pl-10"
                                 />
                             </div>
-
-                            <Dropdown
-                                v-model="selectedBuilding"
-                                :options="buildingOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="All Buildings"
-                                class="w-52"
-                            />
-
-                            <Dropdown
-                                v-model="selectedType"
-                                :options="typeOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="All Types"
-                                class="w-40"
-                            />
-
-                            <Dropdown
-                                v-model="selectedStatus"
-                                :options="statusOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="All Status"
-                                class="w-40"
-                            />
 
                             <Button
                                 label="Reset"
                                 @click="resetSearch"
                             />
 
-                            <router-link :to="{ name: 'newRoom' }">
+                            <router-link :to="{ name: 'newStaff' }">
                                 <Button label="Create" />
                             </router-link>
                         </div>
                     </div>
                 </template>
 
-                <template #empty>No rooms found.</template>
-                <template #loading>Loading rooms. Please wait.</template>
+                <template #empty>No staff found.</template>
+                <template #loading>Loading staff. Please wait.</template>
 
-                <Column field="building_name" header="Building" :sortable="true" style="min-width: 70px" />
-                <Column field="room_number" header="Room Number" :sortable="true" style="min-width: 70px" class="hover:underline">
+                <Column field="name" header="Name" :sortable="true" style="min-width: 160px">
                     <template #body="{ data }">
-                        <router-link :to="{ name: 'showRoom', params: { id: data.id } }">
-                            {{ data.room_number }}
+                        <router-link
+                            :to="{ name: 'showStaff', params: { id: data.id } }"
+                            class="font-medium text-[var(--admin-primary)] hover:underline"
+                        >
+                            {{ data.name }}
                         </router-link>
                     </template>
                 </Column>
-                <Column field="floor_number" header="Floor" :sortable="true" style="min-width: 70px" />
-                <Column field="area_sqft" header="Area (sqft)" :sortable="true" style="min-width: 70px" />
-                <Column field="type" header="Type" :sortable="true" style="min-width: 70px" />
-                <Column field="status" header="Status" :sortable="true" style="min-width: 70px" />
-                <Column field="sale_price" header="Sale Price" :sortable="true" style="min-width: 70px" />
-                <Column field="rent_price" header="Rent Price" :sortable="true" style="min-width: 70px" />
-                <Column field="rent_deposit_price" header="Rent Deposit" :sortable="true" style="min-width: 70px" />
-                <Column field="booking_deposit_price" header="Booking Deposit" :sortable="true" style="min-width: 100px" />
+                <Column field="email" header="Email" :sortable="true" style="min-width: 90px" />
+                <Column field="phone" header="Phone" :sortable="true" style="min-width: 160px" />
+                <Column field="nrc" header="NRC" :sortable="true" style="min-width: 100px" />
+                <Column field="gender" header="Gender" :sortable="true" style="min-width: 90px" />
+                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px" />
                 <Column
                     header="Actions"
                     :exportable="false"
                     style="width: 150px"
                 >
                     <template #body="{ data }">
-                        <router-link :to="{ name: 'editRoom', params: { id: data.id } }">
+                        <router-link :to="{ name: 'editStaff', params: { id: data.id } }">
                             <Button
                                 icon="pi pi-pencil"
                                 text
@@ -132,13 +104,13 @@ import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Loading from '@/components/Loading.vue';
-import { useRoomList } from './useRoomList';
+import { useStaffList } from './useStaffList';
 
 export default defineComponent({
-    name: 'RoomList',
+    name: 'StaffList',
     components: { DataTable, Column, InputText, Button, Loading },
     setup() {
-        return useRoomList();
+        return useStaffList();
     },
 });
 </script>

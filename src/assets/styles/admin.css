@@ -3,13 +3,6 @@
 /* =========================
    BRAND COLORS
 ========================= */
-@theme {
-    --color-rosewood: #552032;
-    --color-rosewood-accent: #7a3149;
-    --color-rosewood-secondary: #d6b8c1;
-    --color-rosewood-bg: #f8f5f6;
-    --color-rosewood-dark: #140d11;
-}
 
 /* =========================
    SHARED TOKENS
@@ -20,55 +13,45 @@
     --admin-transition: 0.3s ease;
 }
 
-
 html[data-admin-theme="light"],
 html:not([data-admin-theme]) {
-    --admin-bg: #f8f5f6;
 
-    --admin-surface: rgba(255, 255, 255, 0.85);
+    --admin-bg: #fdf8fa;
+
+    --admin-surface: rgba(255,255,255,.95);
     --admin-surface-solid: #ffffff;
 
-    --admin-primary: #552032;
-    --admin-secondary: #d6b8c1;
+    --admin-primary: #7a3149;
 
-    --admin-text: #552032;
-    --admin-text-muted: #7a5c68;
+    --admin-secondary: #d79aaa;
 
-    --admin-border: rgba(85, 32, 50, 0.1);
+    --admin-text: #3f1c29;
+
+    --admin-text-muted: #7d6670;
+
+    --admin-border: rgba(122,49,73,.12);
 
     --admin-shadow:
-        0 18px 48px rgba(85, 32, 50, 0.1);
+        0 18px 48px rgba(122,49,73,.08);
 
     --admin-shadow-soft:
-        0 8px 24px rgba(85, 32, 50, 0.06);
-
-    --admin-mask: rgba(20, 10, 14, 0.55);
+        0 8px 24px rgba(122,49,73,.05);
 }
 
 
-html[data-admin-theme="dark"] {
-    --admin-bg: #140d11;
-
-    --admin-surface: rgba(36, 22, 30, 0.88);
-    --admin-surface-solid: #24161e;
-
-    --admin-primary: #d6b8c1;
-    --admin-secondary: #552032;
-
-    --admin-text: #f2e6eb;
-    --admin-text-muted: #c4a8b3;
-
-    --admin-border: rgba(214,184,193,.08);
-
-    --admin-shadow:
-        0 18px 48px rgba(0, 0, 0, 0.35);
-
-    --admin-shadow-soft:
-        0 8px 24px rgba(0, 0, 0, 0.22);
-
-    --admin-mask: rgba(0, 0, 0, 0.62);
+html[data-admin-theme="dark"] { 
+    --admin-bg: #140d11; 
+    --admin-surface: rgba(36, 22, 30, 0.88); 
+    --admin-surface-solid: #24161e; 
+    --admin-primary: #d6b8c1; 
+    --admin-secondary: #552032; 
+    --admin-text: #f2e6eb; 
+    --admin-text-muted: #c4a8b3; 
+    --admin-border: rgba(214,184,193,.08); 
+    --admin-shadow: 0 18px 48px rgba(0, 0, 0, 0.35); 
+    --admin-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.22); 
+    --admin-mask: rgba(0, 0, 0, 0.62); 
 }
-
 [data-admin-layout] {
     --sidebar-width: 280px;
 
@@ -209,15 +192,50 @@ html[data-admin-theme="dark"] {
 
 .p-select-option-selected,
 .p-dropdown-item.p-highlight {
-    background: rgba(85, 32, 50, 0.18) !important;
-    color: var(--admin-primary) !important;
+    background: var(--admin-primary);
+    color: var(--admin-surface-solid) !important;
 }
 
 /* focused */
 
-.p-select-option:focus,
+/* .p-select-option:focus,
 .p-dropdown-item:focus {
-    background: rgba(85, 32, 50, 0.15) !important;
+    background: var(--admin-primary);
+} */
+/* Calendar Overlay */
+.p-datepicker,
+.p-datepicker-header,
+.p-datepicker-month,
+.p-datepicker-year,
+.p-datepicker table td > span.p-highlight 
+{
+    background: var(--admin-surface-solid);
+    color: var(--admin-text); 
+}
+
+/* Month + Year */
+.p-datepicker .p-datepicker-title,
+.p-datepicker .p-datepicker-prev,
+.p-datepicker .p-datepicker-next {
+    color: var(--admin-text) ;
+}
+
+/* Day */
+/* .p-datepicker table td > span {
+    color: var(--admin-primary) ;
+    border-radius: 50% ;
+} */
+
+/* Hover */
+.p-datepicker table td > span:not(.p-disabled):hover {
+    background: var(--admin-text);
+    color: var(--admin-surface-solid);
+}
+
+/* Selected */
+.p-datepicker table td > span.p-highlight {
+    background: var(--admin-text);
+    color: var(--admin-surface-solid);
 }
 
 /* DARK MODE DROPDOWN */

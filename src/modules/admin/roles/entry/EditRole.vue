@@ -1,17 +1,12 @@
 <template>
-    <div class="flex flex-col gap-5">
-        <div class="admin-crud-header">
-            <div>
-                <h1>Edit Role</h1>
-                <p>Update role details.</p>
-            </div>
+        <!-- <div class="admin-crud-header">
+       
             <Button
                 type="button"
                 icon="pi pi-trash"
-                class="p-button-danger p-button-outlined"
                 @click="showConfirmDialog(state.id)"
             />
-        </div>
+        </div> -->
 
         <div v-if="!isLoading" class="admin-panel relative">
             <form class="grid max-w-xl gap-4" @submit.prevent="handleSubmit">
@@ -24,9 +19,9 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <Button type="submit" label="Save Changes" class="admin-crud-primary-btn" />
+                    <Button type="submit" label="Save"/>
                     <router-link :to="{ name: 'roleList' }">
-                        <Button type="button" label="Cancel" class="p-button-outlined" />
+                        <Button type="button" label="Cancel" />
                     </router-link>
                 </div>
             </form>
@@ -38,7 +33,7 @@
                     <Button
                         type="button"
                         :icon="slotProps.message.icon"
-                        class="p-button-lg p-button-danger p-button-rounded p-button-outlined mt-4"
+                        class="mt-4"
                     />
                     <h4>{{ slotProps.message.message }}</h4>
                 </div>
@@ -46,7 +41,6 @@
         </ConfirmDialog>
 
         <Loading v-if="isLoading" />
-    </div>
 </template>
 
 <script>

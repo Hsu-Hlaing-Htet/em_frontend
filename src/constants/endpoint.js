@@ -14,6 +14,8 @@ export const endpoint = {
     /** Users */
     users: 'users',
     profiles: 'profiles',
+    residents: 'residents',
+    staff: 'staff',
 
     /** Properties */
     buildings: 'properties/buildings',

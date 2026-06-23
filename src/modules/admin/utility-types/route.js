@@ -47,21 +47,6 @@ const routes = [
                     ],
                 },
             },
-            {
-                path: ':id',
-                name: 'showUtilityType',
-                component: () => import('@/modules/admin/utility-types/entry/ShowUtilityType.vue'),
-                meta: {
-                    action: 'view',
-                    resource: 'utility_type',
-                    layout: 'default',
-                    title: 'Show Utility Type',
-                    breadcrumbs: [
-                        { title: 'Utility Type List', routeName: 'utilityTypeList' },
-                        { title: 'Show Utility Type', routeName: 'showUtilityType' },
-                    ],
-                },
-            },
         ],
     },
 ];

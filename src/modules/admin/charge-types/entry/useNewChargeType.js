@@ -3,10 +3,10 @@ import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { UTILITY_TYPE_STATUS_OPTIONS } from '@/constants/constant';
-import { useUtilityTypeStore } from '../store';
+import { useChargeTypeStore } from '../store';
 
-export default function useNewUtilityType() {
-    const store = useUtilityTypeStore();
+export default function useNewChargeType() {
+    const store = useChargeTypeStore();
     const router = useRouter();
     const isLoading = ref(false);
     const errors = new Errors();
@@ -31,7 +31,7 @@ export default function useNewUtilityType() {
             const response = store.getAddResponse;
 
             if (response) {
-                await router.push({ name: 'utilityTypeList' });
+                await router.push({ name: 'chargeTypeList' });
                 EventBus.emit('show-toast', {
                     severity: 'success',
                     summary: '',

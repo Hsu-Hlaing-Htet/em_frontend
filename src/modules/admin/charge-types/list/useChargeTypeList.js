@@ -3,16 +3,16 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
-import { useUtilityRateStore } from '../store';
+import { useChargeTypeStore } from '../store';
 
-export const useUtilityRateList = () => {
+export const useChargeTypeList = () => {
     const dt = ref();
     const search = ref('');
     const totalRecords = ref(0);
     const isLoading = ref(false);
-    const utilityRates = ref([]);
+    const chargeTypes = ref([]);
     const lazyParams = ref({});
-    const store = useUtilityRateStore();
+    const store = useChargeTypeStore();
     const errors = new Errors();
 
     onBeforeUnmount(() => {
@@ -31,7 +31,7 @@ export const useUtilityRateList = () => {
 
     const showConfirmDialog = async (id) => {
         const confirmed = window.confirm(
-            'Are you sure you want to delete this utility rate?',
+            'Are you sure you want to delete this charge type?',
         );
 
         if (!confirmed) {
@@ -55,9 +55,7 @@ export const useUtilityRateList = () => {
         try {
             await store.update({
                 id: item.id,
-                utility_type_id: item.utility_type_id,
-                unit_price: item.unit_price,
-                effective_date: item.effective_date,
+                name: item.name,
                 status: newStatus,
             });
             const response = store.getUpdateResponse;
@@ -101,7 +99,7 @@ export const useUtilityRateList = () => {
 
         if (response) {
             const { data } = response;
-            utilityRates.value = data.data || [];
+            chargeTypes.value = data.data || [];
             totalRecords.value = response.data.total;
         }
 
@@ -128,7 +126,7 @@ export const useUtilityRateList = () => {
     );
 
     return {
-        utilityRates,
+        chargeTypes,
         errors,
         isLoading,
         totalRecords,

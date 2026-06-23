@@ -12,7 +12,7 @@
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
-                :value="utilityTypes"
+                :value="chargeTypes"
                 :multi-sort-meta="lazyParams.multiSortMeta"
                 :total-records="totalRecords"
                 :rows="10"
@@ -24,7 +24,7 @@
             >
                 <template #header>
                     <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Utility Types</p>
+                        <p class="m-0 text-md">All Charge Types</p>
                         <div class="flex flex-wrap items-center gap-2">
                             <div class="relative">
                                 <i
@@ -43,15 +43,15 @@
                                 @click="resetSearch"
                             />
 
-                            <router-link :to="{ name: 'newUtilityType' }">
+                            <router-link :to="{ name: 'newChargeType' }">
                                 <Button label="Create" />
                             </router-link>
                         </div>
                     </div>
                 </template>
 
-                <template #empty>No utility types found.</template>
-                <template #loading>Loading utility types. Please wait.</template>
+                <template #empty>No charge types found.</template>
+                <template #loading>Loading charge types. Please wait.</template>
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 200px" />
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
@@ -69,7 +69,7 @@
                     style="width: 150px"
                 >
                     <template #body="{ data }">
-                        <router-link :to="{ name: 'editUtilityType', params: { id: data.id } }">
+                        <router-link :to="{ name: 'editChargeType', params: { id: data.id } }">
                             <Button
                                 icon="pi pi-pencil"
                                 text
@@ -100,13 +100,13 @@ import InputText from 'primevue/inputtext';
 import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Loading from '@/components/Loading.vue';
-import { useUtilityTypeList } from './useUtilityTypeList';
+import { useChargeTypeList } from './useChargeTypeList';
 
 export default defineComponent({
-    name: 'UtilityTypeList',
+    name: 'ChargeTypeList',
     components: { DataTable, Column, InputText, InputSwitch, Button, Loading },
     setup() {
-        return useUtilityTypeList();
+        return useChargeTypeList();
     },
 });
 </script>

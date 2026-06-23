@@ -47,21 +47,6 @@ const routes = [
                     ],
                 },
             },
-            {
-                path: ':id',
-                name: 'showUtilityRate',
-                component: () => import('@/modules/admin/utility-rates/entry/ShowUtilityRate.vue'),
-                meta: {
-                    action: 'view',
-                    resource: 'utility_rate',
-                    layout: 'default',
-                    title: 'Show Utility Rate',
-                    breadcrumbs: [
-                        { title: 'Utility Rate List', routeName: 'utilityRateList' },
-                        { title: 'Show Utility Rate', routeName: 'showUtilityRate' },
-                    ],
-                },
-            },
         ],
     },
 ];

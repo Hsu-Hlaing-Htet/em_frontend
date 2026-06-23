@@ -3,8 +3,8 @@ export const endpoint = {
     /** Auth */
     login: 'auth/login',
     logout: 'auth/logout',
-    me: 'auth/me', 
-    
+    me: 'auth/me',
+
     /** Dashboard */
     dashboard: 'dashboard',
 
@@ -18,31 +18,16 @@ export const endpoint = {
     staff: 'staff',
 
     /** Properties */
-    buildings: 'properties/buildings',
-    rooms: 'properties/rooms',
-    roomImages: 'properties/room-images',
-    roomImageUpload: 'properties/room-images/upload',
-
-    /** Contracts */
-    contracts: 'contracts',
-    paymentPlans: 'contracts/payment-plans',
+    buildings: 'buildings',
+    rooms: 'rooms',
+    roomImages: 'room-images',
+    roomImageUpload: 'room-images/upload',
 
     /** Utilities */
-    utilityTypes: 'utilities/types',
-    utilityRates: 'utilities/rates',
-    utilities: 'utilities',
-    utilityItems: 'utilities/items',
+    utilityTypes: 'utility-types',
+    utilityRates: 'utility-rates',
 
     /** Billing */
-    invoices: 'billing/invoices',
-    invoiceItems: 'billing/invoice-items',
-    payments: 'billing/payments',
-    paymentMethods: 'billing/payment-methods',
-    receipts: 'billing/receipts',
-    chargeTypes: 'billing/charge-types',
-    lateFees: 'billing/late-fees',
-
-    /** Maintenance */
-    maintenanceRequests: 'maintenance/requests',
-
+    chargeTypes: 'charge-types',
+    lateFees: 'late-fees',
 };

@@ -3,10 +3,10 @@ import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { UTILITY_TYPE_STATUS_OPTIONS } from '@/constants/constant';
-import { useUtilityTypeStore } from '../store';
+import { useChargeTypeStore } from '../store';
 
-export default function useEditUtilityType() {
-    const store = useUtilityTypeStore();
+export default function useEditChargeType() {
+    const store = useChargeTypeStore();
     const router = useRouter();
     const route = useRoute();
     const isLoading = ref(true);
@@ -21,12 +21,12 @@ export default function useEditUtilityType() {
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
-            fetchUtilityType();
+            fetchChargeType();
         }
     });
 
     onMounted(() => {
-        fetchUtilityType();
+        fetchChargeType();
     });
 
     onBeforeUnmount(() => {
@@ -34,7 +34,7 @@ export default function useEditUtilityType() {
         store.$dispose();
     });
 
-    const fetchUtilityType = async () => {
+    const fetchChargeType = async () => {
         isLoading.value = true;
 
         try {
@@ -62,7 +62,7 @@ export default function useEditUtilityType() {
             const response = store.getUpdateResponse;
 
             if (response) {
-                await router.push({ name: 'utilityTypeList' });
+                await router.push({ name: 'chargeTypeList' });
                 EventBus.emit('show-toast', {
                     severity: 'success',
                     summary: '',

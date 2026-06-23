@@ -2,6 +2,7 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
+import EventBus from '@/libs/AppEventBus';
 import { useUtilityTypeStore } from '../store';
 
 export const useUtilityTypeList = () => {
@@ -39,6 +40,36 @@ export const useUtilityTypeList = () => {
 
         await store.delete({ id });
         await loadingData();
+    };
+
+    const toggleStatus = async (item, active) => {
+        const previousStatus = item.status;
+        const newStatus = active ? 'active' : 'inactive';
+
+        if (previousStatus === newStatus) {
+            return;
+        }
+
+        item.status = newStatus;
+
+        try {
+            await store.update({
+                id: item.id,
+                name: item.name,
+                status: newStatus,
+            });
+            const response = store.getUpdateResponse;
+
+            if (response) {
+                EventBus.emit('show-toast', {
+                    severity: 'success',
+                    summary: '',
+                    detail: response.message,
+                });
+            }
+        } catch {
+            item.status = previousStatus;
+        }
     };
 
     const onPage = (event) => {
@@ -106,5 +137,6 @@ export const useUtilityTypeList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        toggleStatus,
     };
 };

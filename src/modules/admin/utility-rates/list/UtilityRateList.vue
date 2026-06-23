@@ -53,19 +53,17 @@
                 <template #empty>No utility rates found.</template>
                 <template #loading>Loading utility rates. Please wait.</template>
 
-                <Column field="type_name" header="Utility Type" :sortable="true" style="min-width: 180px">
-                    <template #body="{ data }">
-                        <router-link
-                            :to="{ name: 'showUtilityRate', params: { id: data.id } }"
-                            class="font-medium text-[var(--admin-primary)] hover:underline"
-                        >
-                            {{ data.type_name }}
-                        </router-link>
-                    </template>
-                </Column>
+                <Column field="type_name" header="Utility Type" :sortable="true" style="min-width: 180px" />
                 <Column field="unit_price" header="Unit Price" :sortable="true" style="min-width: 120px" />
                 <Column field="effective_date" header="Effective Date" :sortable="true" style="min-width: 140px" />
-                <Column field="status" header="Status" :sortable="true" style="min-width: 120px" />
+                <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        <InputSwitch
+                            :model-value="data.status === 'active'"
+                            @update:model-value="(value) => toggleStatus(data, value)"
+                        />
+                    </template>
+                </Column>
                 <Column field="created_at" header="Created At" :sortable="true" style="min-width: 180px" />
                 <Column
                     header="Actions"
@@ -101,13 +99,14 @@ import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
+import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Loading from '@/components/Loading.vue';
 import { useUtilityRateList } from './useUtilityRateList';
 
 export default defineComponent({
     name: 'UtilityRateList',
-    components: { DataTable, Column, InputText, Button, Loading },
+    components: { DataTable, Column, InputText, InputSwitch, Button, Loading },
     setup() {
         return useUtilityRateList();
     },

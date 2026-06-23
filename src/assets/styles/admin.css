@@ -17,23 +17,15 @@ html[data-admin-theme="light"],
 html:not([data-admin-theme]) {
 
     --admin-bg: #fdf8fa;
-
     --admin-surface: rgba(255,255,255,.95);
     --admin-surface-solid: #ffffff;
-
     --admin-primary: #7a3149;
-
     --admin-secondary: #d79aaa;
-
     --admin-text: #3f1c29;
-
     --admin-text-muted: #7d6670;
-
     --admin-border: rgba(122,49,73,.12);
-
     --admin-shadow:
         0 18px 48px rgba(122,49,73,.08);
-
     --admin-shadow-soft:
         0 8px 24px rgba(122,49,73,.05);
 }
@@ -237,6 +229,13 @@ html[data-admin-theme="dark"] {
     background: var(--admin-text);
     color: var(--admin-surface-solid);
 }
+
+/* Active */
+.p-inputswitch.p-highlight .p-inputswitch-slider {
+    background: #22c55e !important;
+    border-color: #22c55e !important;
+}
+
 
 /* DARK MODE DROPDOWN */
 

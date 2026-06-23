@@ -84,9 +84,14 @@ const menuList = [
                 to: '/admin/roles',
             },
             {
-                label: 'Payment Methods',
-                icon: 'pi pi-credit-card',
-                to: '/admin/payment-methods',
+                label: 'Utility Types',
+                icon: 'pi pi-list',
+                to: '/admin/utility-types',
+            },
+            {
+                label: 'Utility Rates',
+                icon: 'pi pi-dollar',
+                to: '/admin/utility-rates',
             },
             {
                 label: 'Charge Types',
@@ -97,16 +102,6 @@ const menuList = [
                 label: 'Late Fees',
                 icon: 'pi pi-clock',
                 to: '/admin/late-fees',
-            },
-            {
-                label: 'Utility Types',
-                icon: 'pi pi-list',
-                to: '/admin/utility-types',
-            },
-            {
-                label: 'Utility Rates',
-                icon: 'pi pi-dollar',
-                to: '/admin/utility-rates',
             },
         ],
     },

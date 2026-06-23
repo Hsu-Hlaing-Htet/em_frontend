@@ -148,7 +148,7 @@ import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
 import RadioButton from 'primevue/radiobutton';
 import Button from 'primevue/button';
-import { ROOM_IMAGE_DESCRIPTION_OPTIONS } from '../constants';
+import { ROOM_IMAGE_DESCRIPTION_OPTIONS } from '@/constants/constant';
 
 export default {
     name: 'RoomImageManager',

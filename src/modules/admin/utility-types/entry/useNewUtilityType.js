@@ -2,7 +2,7 @@ import { reactive, ref, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
-import { UTILITY_TYPE_STATUS_OPTIONS } from '../constants';
+import { UTILITY_TYPE_STATUS_OPTIONS } from '@/constants/constant';
 import { useUtilityTypeStore } from '../store';
 
 export default function useNewUtilityType() {

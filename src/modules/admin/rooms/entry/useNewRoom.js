@@ -4,7 +4,7 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { useRoomStore } from '../store';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
-import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '../constants';
+import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import useRoomImages from './useRoomImages';
 
 export default function useNewRoom() {

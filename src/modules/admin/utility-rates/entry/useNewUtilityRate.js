@@ -2,45 +2,35 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
-import { useRoleStore } from '@/modules/admin/roles/store';
-import { GENDER_OPTIONS } from '@/constants/constant';
-import { useStaffStore } from '../store';
 import { formatDate } from '@/utils/formatter';
+import { UTILITY_RATE_STATUS_OPTIONS } from '@/constants/constant';
+import { useUtilityRateStore } from '../store';
+import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
 
-export default function useNewStaff() {
-    const store = useStaffStore();
-    const roleStore = useRoleStore();
+export default function useNewUtilityRate() {
+    const store = useUtilityRateStore();
+    const utilityTypeStore = useUtilityTypeStore();
     const router = useRouter();
     const isLoading = ref(false);
     const errors = new Errors();
     const submitted = ref(false);
-    const roleOptions = ref([]);
+    const utilityTypeOptions = ref([]);
 
     const state = reactive({
-        role_id: null,
-        name: '',
-        email: '',
-        password: '',
-        phone: '',
-        nrc: '',
-        dob: null,
-        gender: null,
-        address: '',
-        avatar_path: '',
+        utility_type_id: null,
+        unit_price: 0,
+        effective_date: null,
+        status: 'active',
     });
 
     onMounted(async () => {
-        await roleStore.fetchAll({ per_page: 100 });
-        const response = roleStore.getAllResponse;
+        await utilityTypeStore.fetchAll({ per_page: 100 });
+        const response = utilityTypeStore.getAllResponse;
 
         if (response?.data?.data) {
-            roleOptions.value = response.data.data
-            .filter((role) => role.name.toLowerCase() !== 'customer')
-            .map((role) => ({
-                label: role.name
-                    .replaceAll('_', ' ')
-                    .replace(/\b\w/g, (char) => char.toUpperCase()),
-                value: role.id,
+            utilityTypeOptions.value = response.data.data.map((utilityType) => ({
+                label: utilityType.name,
+                value: utilityType.id,
             }));
         }
     });
@@ -48,6 +38,8 @@ export default function useNewStaff() {
     onBeforeUnmount(() => {
         store.$reset();
         store.$dispose();
+        utilityTypeStore.$reset();
+        utilityTypeStore.$dispose();
     });
 
     const handleSubmit = async () => {
@@ -55,15 +47,16 @@ export default function useNewStaff() {
         errors.clear();
 
         try {
-            await store.add({
+            const payload = {
                 ...state,
-                dob: formatDate(state.dob),
-            });
+                effective_date: formatDate(state.effective_date),
+            };
 
+            await store.add(payload);
             const response = store.getAddResponse;
 
             if (response) {
-                await router.push({ name: 'staffList' });
+                await router.push({ name: 'utilityRateList' });
                 EventBus.emit('show-toast', {
                     severity: 'success',
                     summary: '',
@@ -85,7 +78,7 @@ export default function useNewStaff() {
         submitted,
         errors,
         state,
-        roleOptions,
-        genderOptions: GENDER_OPTIONS,
+        statusOptions: UTILITY_RATE_STATUS_OPTIONS,
+        utilityTypeOptions,
     };
 }

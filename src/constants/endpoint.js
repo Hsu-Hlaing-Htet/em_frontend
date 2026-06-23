@@ -45,8 +45,4 @@ export const endpoint = {
     /** Maintenance */
     maintenanceRequests: 'maintenance/requests',
 
-    /** CMS */
-    categories: 'cms/categories',
-    contents: 'cms/contents',
-    media: 'cms/media',
 };

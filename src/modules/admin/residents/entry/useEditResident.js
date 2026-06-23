@@ -3,9 +3,9 @@ import { useRouter, useRoute } from 'vue-router';
 import { useConfirm } from 'primevue/useconfirm';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
-import { GENDER_OPTIONS } from '../constants';
+import { GENDER_OPTIONS } from '@/constants/constant';
 import { useResidentStore } from '../store';
-import { formatDate, parseDate } from './accountForm';
+import { formatDate, parseDate } from '@/utils/formatter';
 
 export default function useEditResident() {
     const store = useResidentStore();

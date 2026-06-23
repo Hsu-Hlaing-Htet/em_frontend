@@ -5,7 +5,7 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { useRoomStore } from '../store';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
-import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '../constants';
+import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import useRoomImages from './useRoomImages';
 
 export default function useEditRoom() {
@@ -210,7 +210,7 @@ export default function useEditRoom() {
         errors,
         state,
         buildingOptions,
-        typeOptions: ROOM_STATUS_OPTIONS,
+        typeOptions: ROOM_TYPE_OPTIONS,
         statusOptions: ROOM_STATUS_OPTIONS,
         stagedImages,
         persistedImages,

@@ -8,6 +8,7 @@ import roomRoutes from './rooms/route';
 import utilityTypeRoutes from './utility-types/route';
 import utilityRateRoutes from './utility-rates/route';
 import chargeTypeRoutes from './charge-types/route';
+import lateFeeRoutes from './late-fees/route';
 
 export const adminRoutes = [
     {
@@ -29,6 +30,7 @@ export const adminRoutes = [
             ...utilityTypeRoutes,
             ...utilityRateRoutes,
             ...chargeTypeRoutes,
+            ...lateFeeRoutes,
         ],
     },
 ];

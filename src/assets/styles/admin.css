@@ -185,15 +185,15 @@ html[data-admin-theme="dark"] {
 .p-select-option-selected,
 .p-dropdown-item.p-highlight {
     background: var(--admin-primary);
-    color: var(--admin-surface-solid) !important;
+
 }
 
 /* focused */
 
-/* .p-select-option:focus,
-.p-dropdown-item:focus {
+/* .p-select-option:focus, */
+/* .p-dropdown-item:focus {
     background: var(--admin-primary);
-} */
+}  */
 /* Calendar Overlay */
 .p-datepicker,
 .p-datepicker-header,

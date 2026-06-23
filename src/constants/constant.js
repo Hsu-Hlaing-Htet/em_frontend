@@ -38,3 +38,18 @@ export const UTILITY_RATE_STATUS_OPTIONS = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
 ];
+
+export const LATE_FEE_TYPE_OPTIONS = [
+    { label: 'Fixed', value: 'fixed' },
+    { label: 'Percentage', value: 'percentage' },
+];
+
+export const LATE_FEE_PER_OPTIONS = [
+    { label: 'Day', value: 'day' },
+    { label: 'Month', value: 'month' },
+];
+
+export const LATE_FEE_STATUS_OPTIONS = [
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' },
+];

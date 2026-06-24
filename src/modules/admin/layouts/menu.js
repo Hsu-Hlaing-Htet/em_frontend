@@ -63,12 +63,6 @@ const menuList = [
         to: '/admin/receipts',
     },
     {
-        label: 'Invoices',
-        icon: 'pi pi-receipt',
-        to: '/admin/invoices',
-    },
-
-    {
         label: 'Maintenance Requests',
         icon: 'pi pi-wrench',
         to: '/admin/maintenance-requests',
@@ -102,6 +96,11 @@ const menuList = [
                 label: 'Late Fees',
                 icon: 'pi pi-clock',
                 to: '/admin/late-fees',
+            },
+            {
+                label: 'Payment Methods',
+                icon: 'pi pi-credit-card',
+                to: '/admin/payment-methods',
             },
         ],
     },

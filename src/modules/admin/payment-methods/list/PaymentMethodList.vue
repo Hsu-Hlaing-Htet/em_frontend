@@ -1,6 +1,5 @@
 <template>
     <div class="flex flex-col gap-5">
-        <ConfirmDialog />
         <div class="admin-panel relative">
             <DataTable
                 ref="dt"
@@ -13,7 +12,7 @@
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
-                :value="staff"
+                :value="paymentMethods"
                 :multi-sort-meta="lazyParams.multiSortMeta"
                 :total-records="totalRecords"
                 :rows="10"
@@ -25,7 +24,7 @@
             >
                 <template #header>
                     <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Staff</p>
+                        <p class="m-0 text-md">All Payment Methods</p>
                         <div class="flex flex-wrap items-center gap-2">
                             <div class="relative">
                                 <i
@@ -34,7 +33,7 @@
 
                                 <InputText
                                     v-model="search"
-                                    placeholder="Search name, email, phone, nrc..."
+                                    placeholder="Keyword search"
                                     class="w-72 !pl-10"
                                 />
                             </div>
@@ -44,38 +43,32 @@
                                 @click="resetSearch"
                             />
 
-                            <router-link :to="{ name: 'newStaff' }">
+                            <router-link :to="{ name: 'newPaymentMethod' }">
                                 <Button label="Create" />
                             </router-link>
                         </div>
                     </div>
                 </template>
 
-                <template #empty>No staff found.</template>
-                <template #loading>Loading staff. Please wait.</template>
+                <template #empty>No payment methods found.</template>
+                <template #loading>Loading payment methods. Please wait.</template>
 
-                <Column field="name" header="Name" :sortable="true" style="min-width: 160px">
+                <Column field="name" header="Name" :sortable="true" style="min-width: 200px" />
+                <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
-                        <router-link
-                            :to="{ name: 'showStaff', params: { id: data.id } }"
-                            class="font-medium text-[var(--admin-primary)] hover:underline"
-                        >
-                            {{ data.name }}
-                        </router-link>
+                        <InputSwitch
+                            :model-value="data.status === 'active'"
+                            @update:model-value="(value) => toggleStatus(data, value)"
+                        />
                     </template>
                 </Column>
-                <Column field="email" header="Email" :sortable="true" style="min-width: 90px" />
-                <Column field="phone" header="Phone" :sortable="true" style="min-width: 160px" />
-                <Column field="nrc" header="NRC" :sortable="true" style="min-width: 100px" />
-                <Column field="gender" header="Gender" :sortable="true" style="min-width: 90px" />
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px" />
                 <Column
                     header="Actions"
                     :exportable="false"
                     style="width: 150px"
                 >
                     <template #body="{ data }">
-                        <router-link :to="{ name: 'editStaff', params: { id: data.id } }">
+                        <router-link :to="{ name: 'editPaymentMethod', params: { id: data.id } }">
                             <Button
                                 icon="pi pi-pencil"
                                 text
@@ -100,19 +93,19 @@
 
 <script>
 import { defineComponent } from 'vue';
-import ConfirmDialog from 'primevue/confirmdialog';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
+import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Loading from '@/components/Loading.vue';
-import { useStaffList } from './useStaffList';
+import { usePaymentMethodList } from './usePaymentMethodList';
 
 export default defineComponent({
-    name: 'StaffList',
-    components: { DataTable, Column, InputText, Button, Loading, ConfirmDialog },
+    name: 'PaymentMethodList',
+    components: { DataTable, Column, InputText, InputSwitch, Button, Loading },
     setup() {
-        return useStaffList();
+        return usePaymentMethodList();
     },
 });
 </script>

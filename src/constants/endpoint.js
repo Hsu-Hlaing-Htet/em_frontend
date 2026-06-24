@@ -30,4 +30,5 @@ export const endpoint = {
     /** Billing */
     chargeTypes: 'charge-types',
     lateFees: 'late-fees',
+    paymentMethods: 'payment-methods',
 };

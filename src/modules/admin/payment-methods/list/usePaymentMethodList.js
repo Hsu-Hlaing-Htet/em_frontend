@@ -2,18 +2,18 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
-import { useStaffStore } from '../store';
-import { useConfirm } from 'primevue/useconfirm';
-export const useStaffList = () => {
+import EventBus from '@/libs/AppEventBus';
+import { usePaymentMethodStore } from '../store';
+
+export const usePaymentMethodList = () => {
     const dt = ref();
     const search = ref('');
     const totalRecords = ref(0);
     const isLoading = ref(false);
-    const staff = ref([]);
+    const paymentMethods = ref([]);
     const lazyParams = ref({});
-    const store = useStaffStore();
+    const store = usePaymentMethodStore();
     const errors = new Errors();
-    const confirm = useConfirm();
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -29,18 +29,47 @@ export const useStaffList = () => {
         };
     };
 
-    const showConfirmDialog = (id) => {
-        confirm.require({
-            header: 'Delete Staff',
-            message: 'Are you sure you want to delete this staff member?',
-            icon: 'pi pi-exclamation-triangle',
-            rejectLabel: 'Cancel',
-            acceptLabel: 'Delete',
-            accept: async () => {
-                await store.delete({ id });
-                await loadingData();
-            },
-        });
+    const showConfirmDialog = async (id) => {
+        const confirmed = window.confirm(
+            'Are you sure you want to delete this payment method?',
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        await store.delete({ id });
+        await loadingData();
+    };
+
+    const toggleStatus = async (item, active) => {
+        const previousStatus = item.status;
+        const newStatus = active ? 'active' : 'inactive';
+
+        if (previousStatus === newStatus) {
+            return;
+        }
+
+        item.status = newStatus;
+
+        try {
+            await store.update({
+                id: item.id,
+                name: item.name,
+                status: newStatus,
+            });
+            const response = store.getUpdateResponse;
+
+            if (response) {
+                EventBus.emit('show-toast', {
+                    severity: 'success',
+                    summary: '',
+                    detail: response.message,
+                });
+            }
+        } catch {
+            item.status = previousStatus;
+        }
     };
 
     const onPage = (event) => {
@@ -70,7 +99,7 @@ export const useStaffList = () => {
 
         if (response) {
             const { data } = response;
-            staff.value = data.data || [];
+            paymentMethods.value = data.data || [];
             totalRecords.value = response.data.total;
         }
 
@@ -97,7 +126,7 @@ export const useStaffList = () => {
     );
 
     return {
-        staff,
+        paymentMethods,
         errors,
         isLoading,
         totalRecords,
@@ -108,5 +137,6 @@ export const useStaffList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        toggleStatus,
     };
 };

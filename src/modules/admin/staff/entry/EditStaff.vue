@@ -122,7 +122,6 @@
 
 <script>
 import { defineComponent } from 'vue';
-import ConfirmDialog from 'primevue/confirmdialog';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';

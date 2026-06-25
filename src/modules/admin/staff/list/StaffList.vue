@@ -1,6 +1,5 @@
 <template>
     <div class="flex flex-col gap-5">
-        <ConfirmDialog />
         <div class="admin-panel relative">
             <DataTable
                 ref="dt"
@@ -87,12 +86,11 @@
                             icon="pi pi-trash"
                             text
                             severity="danger"
-                            @click="showConfirmDialog(data.id)"
+                            @click="showConfirmDialog(data.id, data.name)"
                         />
                     </template>
                 </Column>
             </DataTable>
-
             <Loading v-if="isLoading" />
         </div>
     </div>
@@ -100,7 +98,6 @@
 
 <script>
 import { defineComponent } from 'vue';
-import ConfirmDialog from 'primevue/confirmdialog';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
@@ -110,7 +107,7 @@ import { useStaffList } from './useStaffList';
 
 export default defineComponent({
     name: 'StaffList',
-    components: { DataTable, Column, InputText, Button, Loading, ConfirmDialog },
+    components: { DataTable, Column, InputText, Button, Loading },
     setup() {
         return useStaffList();
     },

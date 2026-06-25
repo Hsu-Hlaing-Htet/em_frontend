@@ -3,6 +3,7 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useRoleStore } from '../store';
+import { useDeleteConfirm } from '@/utils/confirmDelete';
 
 export const useRoleList = () => {
     const dt = ref();
@@ -13,6 +14,7 @@ export const useRoleList = () => {
     const lazyParams = ref({});
     const store = useRoleStore();
     const errors = new Errors();
+    const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -26,6 +28,13 @@ export const useRoleList = () => {
             multiSortMeta: [],
             first: 0,
         };
+    };
+
+    const showConfirmDialog = (id) => {
+        confirmDelete('Are you sure you want to delete this role?', async () => {
+            await store.delete({ id });
+            await loadingData();
+        });
     };
 
     const onPage = (event) => {
@@ -92,5 +101,6 @@ export const useRoleList = () => {
         onSort,
         onPage,
         resetSearch,
+        showConfirmDialog,
     };
 };

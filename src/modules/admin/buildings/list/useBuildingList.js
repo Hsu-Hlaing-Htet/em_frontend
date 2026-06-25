@@ -3,6 +3,7 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useBuildingStore } from '../store';
+import { useDeleteConfirm } from '@/utils/confirmDelete';
 
 export const useBuildingList = () => {
     const dt = ref();
@@ -13,6 +14,7 @@ export const useBuildingList = () => {
     const lazyParams = ref({});
     const store = useBuildingStore();
     const errors = new Errors();
+    const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -28,18 +30,11 @@ export const useBuildingList = () => {
         };
     };
 
-    const showConfirmDialog = async (id) => {
-        const confirmed = window.confirm(
-            'Are you sure you want to delete this building?'
-        );
-    
-        if (!confirmed) {
-            return;
-        }
-    
-        await store.delete({ id });
-    
-        await loadingData();
+    const showConfirmDialog = (id,name) => {
+        confirmDelete(`Are you sure you want to delete this ${name} building?`, async () => {
+            await store.delete({ id });
+            await loadingData();
+        });
     };
 
     const onPage = (event) => {

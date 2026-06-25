@@ -3,6 +3,7 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useResidentStore } from '../store';
+import { useDeleteConfirm } from '@/utils/confirmDelete';
 
 export const useResidentList = () => {
     const dt = ref();
@@ -13,6 +14,7 @@ export const useResidentList = () => {
     const lazyParams = ref({});
     const store = useResidentStore();
     const errors = new Errors();
+    const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -28,17 +30,11 @@ export const useResidentList = () => {
         };
     };
 
-    const showConfirmDialog = async (id) => {
-        const confirmed = window.confirm(
-            'Are you sure you want to delete this resident?',
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        await store.delete({ id });
-        await loadingData();
+    const showConfirmDialog = (id,name) => {
+        confirmDelete('Are you sure you want to delete this ${name} resident?', async () => {
+            await store.delete({ id });
+            await loadingData();
+        });
     };
 
     const onPage = (event) => {

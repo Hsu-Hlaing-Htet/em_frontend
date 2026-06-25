@@ -3,7 +3,8 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useStaffStore } from '../store';
-import { useConfirm } from 'primevue/useconfirm';
+import { useDeleteConfirm } from '@/utils/confirmDelete';
+
 export const useStaffList = () => {
     const dt = ref();
     const search = ref('');
@@ -13,7 +14,8 @@ export const useStaffList = () => {
     const lazyParams = ref({});
     const store = useStaffStore();
     const errors = new Errors();
-    const confirm = useConfirm();
+    const { confirmDelete } = useDeleteConfirm();
+
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -28,21 +30,12 @@ export const useStaffList = () => {
             first: 0,
         };
     };
-
-    const showConfirmDialog = (id) => {
-        confirm.require({
-            header: 'Delete Staff',
-            message: 'Are you sure you want to delete this staff member?',
-            icon: 'pi pi-exclamation-triangle',
-            rejectLabel: 'Cancel',
-            acceptLabel: 'Delete',
-            accept: async () => {
-                await store.delete({ id });
-                await loadingData();
-            },
+    const showConfirmDialog = (id, name) => {
+        confirmDelete(`Are you sure you want to delete this ${name} staff?`, async () => {
+            await store.delete({ id });
+            await loadingData();
         });
     };
-
     const onPage = (event) => {
         lazyParams.value = event;
         lazyParams.value.page = event.page;

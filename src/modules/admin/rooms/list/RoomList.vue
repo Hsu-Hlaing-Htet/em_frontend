@@ -114,7 +114,7 @@
                             icon="pi pi-trash"
                             text
                             severity="danger"
-                            @click="showConfirmDialog(data.id)"
+                            @click="showConfirmDialog(data.id,data.room_number)"
                         />
                     </template>
                 </Column>

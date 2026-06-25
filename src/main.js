@@ -44,7 +44,6 @@ app.use(PrimeVue, { ripple: false });
 app.use(ToastService);
 app.use(ConfirmationService);
 app.component('ConfirmDialog', ConfirmDialog);
-
 app.component('Menubar', Menubar);
 app.component('DataTable', DataTable);
 app.component('Column', Column);

@@ -4,6 +4,7 @@ import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { usePaymentMethodStore } from '../store';
+import { useDeleteConfirm } from '@/utils/confirmDelete';
 
 export const usePaymentMethodList = () => {
     const dt = ref();
@@ -14,6 +15,7 @@ export const usePaymentMethodList = () => {
     const lazyParams = ref({});
     const store = usePaymentMethodStore();
     const errors = new Errors();
+    const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -29,17 +31,11 @@ export const usePaymentMethodList = () => {
         };
     };
 
-    const showConfirmDialog = async (id) => {
-        const confirmed = window.confirm(
-            'Are you sure you want to delete this payment method?',
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        await store.delete({ id });
-        await loadingData();
+    const showConfirmDialog = (id) => {
+        confirmDelete('Are you sure you want to delete this payment method?', async () => {
+            await store.delete({ id });
+            await loadingData();
+        });
     };
 
     const toggleStatus = async (item, active) => {

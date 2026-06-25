@@ -5,6 +5,7 @@ import { Errors } from '@/utils/validation';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import { useRoomStore } from '../store';
+import { useDeleteConfirm } from '@/utils/confirmDelete';
 
 export const useRoomList = () => {
     const dt = ref();
@@ -20,6 +21,7 @@ export const useRoomList = () => {
     const store = useRoomStore();
     const buildingStore = useBuildingStore();
     const errors = new Errors();
+    const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -35,18 +37,11 @@ export const useRoomList = () => {
         };
     };
 
-    const showConfirmDialog = async (id) => {
-        const confirmed = window.confirm(
-            'Are you sure you want to delete this room?',
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        await store.delete({ id });
-
-        await loadingData();
+    const showConfirmDialog = (id,room_number) => {
+        confirmDelete(`Are you sure you want to delete this ${room_number} room?`, async () => {
+            await store.delete({ id });
+            await loadingData();
+        });
     };
 
     const onPage = (event) => {

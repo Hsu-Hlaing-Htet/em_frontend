@@ -7,6 +7,7 @@ import { useRoomStore } from '../store';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import useRoomImages from './useRoomImages';
+import { showApiErrorToast } from '@/utils/apiError';
 
 export default function useEditRoom() {
     const store = useRoomStore();
@@ -143,19 +144,24 @@ export default function useEditRoom() {
 
     const deleteRoom = async (id) => {
         isLoading.value = true;
-        await store.delete({ id });
-        const response = store.getDeleteResponse;
 
-        if (response) {
-            await router.push({ name: 'roomList' });
-            EventBus.emit('show-toast', {
-                severity: 'success',
-                summary: '',
-                detail: response.message,
-            });
+        try {
+            await store.delete({ id });
+            const response = store.getDeleteResponse;
+
+            if (response) {
+                await router.push({ name: 'roomList' });
+                EventBus.emit('show-toast', {
+                    severity: 'success',
+                    summary: '',
+                    detail: response.message,
+                });
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to delete this room.');
+        } finally {
+            isLoading.value = false;
         }
-
-        isLoading.value = false;
     };
 
     const handleSubmit = async () => {

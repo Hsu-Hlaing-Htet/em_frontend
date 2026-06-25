@@ -31,12 +31,8 @@ const service = {
     },
 
     delete: async (params) => {
-        try {
-            const result = await api.delete(`${endpoint.chargeTypes}/${params.id}`);
-            return result.data;
-        } catch {
-            return null;
-        }
+        const result = await api.delete(`${endpoint.chargeTypes}/${params.id}`);
+        return result.data;
     },
 };
 

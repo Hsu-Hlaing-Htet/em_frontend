@@ -7,6 +7,9 @@ import { useRoleStore } from '@/modules/admin/roles/store';
 import { GENDER_OPTIONS} from '@/constants/constant';
 import { useStaffStore } from '../store';
 import { formatDate, parseDate } from '@/utils/formatter';
+import { showApiErrorToast } from '@/utils/apiError';
+
+const STAFF_ROLE_NAMES = ['super_admin', 'admin'];
 
 export default function useEditStaff() {
     const store = useStaffStore();
@@ -47,7 +50,7 @@ export default function useEditStaff() {
             roleOptions.value = response.data.data
                 .filter((role) => STAFF_ROLE_NAMES.includes(role.name))
                 .map((role) => ({
-                    label: role.name.replace('_', ' '),
+                    label: role.name.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
                     value: role.id,
                 }));
         }
@@ -101,19 +104,24 @@ export default function useEditStaff() {
 
     const deleteStaff = async (id) => {
         isLoading.value = true;
-        await store.delete({ id });
-        const response = store.getDeleteResponse;
 
-        if (response) {
-            await router.push({ name: 'staffList' });
-            EventBus.emit('show-toast', {
-                severity: 'success',
-                summary: '',
-                detail: response.message,
-            });
+        try {
+            await store.delete({ id });
+            const response = store.getDeleteResponse;
+
+            if (response) {
+                await router.push({ name: 'staffList' });
+                EventBus.emit('show-toast', {
+                    severity: 'success',
+                    summary: '',
+                    detail: response.message,
+                });
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to delete this staff member.');
+        } finally {
+            isLoading.value = false;
         }
-
-        isLoading.value = false;
     };
 
     const handleSubmit = async () => {

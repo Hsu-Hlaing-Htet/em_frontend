@@ -1,4 +1,5 @@
 import { useConfirm } from 'primevue/useconfirm';
+import { showApiErrorToast } from '@/utils/apiError';
 
 export function useDeleteConfirm() {
     const confirm = useConfirm();
@@ -12,7 +13,13 @@ export function useDeleteConfirm() {
             rejectLabel: 'Cancel',
             acceptClass: 'p-button-danger',
             rejectClass: 'p-button-danger p-button-text',
-            accept: onAccept,
+            accept: async () => {
+                try {
+                    await onAccept();
+                } catch (error) {
+                    showApiErrorToast(error, 'Unable to delete this record.');
+                }
+            },
         });
     };
 

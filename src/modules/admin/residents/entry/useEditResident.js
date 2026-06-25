@@ -6,6 +6,7 @@ import { Errors } from '@/utils/validation';
 import { GENDER_OPTIONS } from '@/constants/constant';
 import { useResidentStore } from '../store';
 import { formatDate, parseDate } from '@/utils/formatter';
+import { showApiErrorToast } from '@/utils/apiError';
 
 export default function useEditResident() {
     const store = useResidentStore();
@@ -84,19 +85,24 @@ export default function useEditResident() {
 
     const deleteResident = async (id) => {
         isLoading.value = true;
-        await store.delete({ id });
-        const response = store.getDeleteResponse;
 
-        if (response) {
-            await router.push({ name: 'residentList' });
-            EventBus.emit('show-toast', {
-                severity: 'success',
-                summary: '',
-                detail: response.message,
-            });
+        try {
+            await store.delete({ id });
+            const response = store.getDeleteResponse;
+
+            if (response) {
+                await router.push({ name: 'residentList' });
+                EventBus.emit('show-toast', {
+                    severity: 'success',
+                    summary: '',
+                    detail: response.message,
+                });
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to delete this resident.');
+        } finally {
+            isLoading.value = false;
         }
-
-        isLoading.value = false;
     };
 
     const handleSubmit = async () => {

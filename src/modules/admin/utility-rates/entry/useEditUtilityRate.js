@@ -6,7 +6,9 @@ import { Errors } from '@/utils/validation';
 import { UTILITY_RATE_STATUS_OPTIONS } from '@/constants/constant';
 import { useUtilityRateStore } from '../store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
+import { toActiveOptions } from '@/utils/activeOptions';
 import { formatDate, parseDate } from '@/utils/formatter';
+import { showApiErrorToast } from '@/utils/apiError';
 
 export default function useEditUtilityRate() {
     const store = useUtilityRateStore();
@@ -33,18 +35,21 @@ export default function useEditUtilityRate() {
         }
     });
 
-    onMounted(async () => {
-        await utilityTypeStore.fetchAll({ per_page: 100 });
+    const loadUtilityTypeOptions = () => {
         const response = utilityTypeStore.getAllResponse;
 
         if (response?.data?.data) {
-            utilityTypeOptions.value = response.data.data.map((utilityType) => ({
-                label: utilityType.name,
-                value: utilityType.id,
-            }));
+            utilityTypeOptions.value = toActiveOptions(
+                response.data.data,
+                state.utility_type_id,
+            );
         }
+    };
 
+    onMounted(async () => {
+        await utilityTypeStore.fetchAll({ per_page: 100, status: 'active' });
         await fetchUtilityRate();
+        loadUtilityTypeOptions();
     });
 
     onBeforeUnmount(() => {
@@ -89,19 +94,24 @@ export default function useEditUtilityRate() {
 
     const deleteUtilityRate = async (id) => {
         isLoading.value = true;
-        await store.delete({ id });
-        const response = store.getDeleteResponse;
 
-        if (response) {
-            await router.push({ name: 'utilityRateList' });
-            EventBus.emit('show-toast', {
-                severity: 'success',
-                summary: '',
-                detail: response.message,
-            });
+        try {
+            await store.delete({ id });
+            const response = store.getDeleteResponse;
+
+            if (response) {
+                await router.push({ name: 'utilityRateList' });
+                EventBus.emit('show-toast', {
+                    severity: 'success',
+                    summary: '',
+                    detail: response.message,
+                });
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to delete this utility rate.');
+        } finally {
+            isLoading.value = false;
         }
-
-        isLoading.value = false;
     };
 
     const handleSubmit = async () => {

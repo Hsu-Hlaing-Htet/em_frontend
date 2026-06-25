@@ -4,6 +4,7 @@ import { useConfirm } from 'primevue/useconfirm';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { useBuildingStore } from '../store';
+import { showApiErrorToast } from '@/utils/apiError';
 
 export default function useEditBuilding() {
     const store = useBuildingStore();
@@ -70,19 +71,24 @@ export default function useEditBuilding() {
 
     const deleteBuilding = async (id) => {
         isLoading.value = true;
-        await store.delete({ id });
-        const response = store.getDeleteResponse;
 
-        if (response) {
-            await router.push({ name: 'buildingList' });
-            EventBus.emit('show-toast', {
-                severity: 'success',
-                summary: '',
-                detail: response.message,
-            });
+        try {
+            await store.delete({ id });
+            const response = store.getDeleteResponse;
+
+            if (response) {
+                await router.push({ name: 'buildingList' });
+                EventBus.emit('show-toast', {
+                    severity: 'success',
+                    summary: '',
+                    detail: response.message,
+                });
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to delete this building.');
+        } finally {
+            isLoading.value = false;
         }
-
-        isLoading.value = false;
     };
 
     const handleSubmit = async () => {

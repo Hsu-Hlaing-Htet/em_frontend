@@ -6,6 +6,7 @@ import { formatDate } from '@/utils/formatter';
 import { UTILITY_RATE_STATUS_OPTIONS } from '@/constants/constant';
 import { useUtilityRateStore } from '../store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
+import { toActiveOptions } from '@/utils/activeOptions';
 
 export default function useNewUtilityRate() {
     const store = useUtilityRateStore();
@@ -24,14 +25,11 @@ export default function useNewUtilityRate() {
     });
 
     onMounted(async () => {
-        await utilityTypeStore.fetchAll({ per_page: 100 });
+        await utilityTypeStore.fetchAll({ per_page: 100, status: 'active' });
         const response = utilityTypeStore.getAllResponse;
 
         if (response?.data?.data) {
-            utilityTypeOptions.value = response.data.data.map((utilityType) => ({
-                label: utilityType.name,
-                value: utilityType.id,
-            }));
+            utilityTypeOptions.value = toActiveOptions(response.data.data);
         }
     });
 

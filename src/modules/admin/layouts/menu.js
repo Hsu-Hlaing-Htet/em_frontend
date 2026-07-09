@@ -93,6 +93,11 @@ const menuList = [
                 to: '/admin/charge-types',
             },
             {
+                label: 'Payment Plans',
+                icon: 'pi pi-calendar',
+                to: '/admin/payment-plans',
+            },
+            {
                 label: 'Late Fees',
                 icon: 'pi pi-clock',
                 to: '/admin/late-fees',

@@ -53,3 +53,58 @@ export const LATE_FEE_STATUS_OPTIONS = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
 ];
+
+export const CONTRACT_TYPE_OPTIONS = [
+    { label: 'Rent', value: 'rent' },
+    { label: 'Sale', value: 'sale' },
+];
+
+export const CONTRACT_STATUS_OPTIONS = [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Active', value: 'active' },
+    { label: 'Rejected', value: 'rejected' },
+];
+
+export const PAYMENT_TYPE_OPTIONS = [
+    { label: 'Full', value: 'full' },
+    { label: 'Installment', value: 'installment' },
+];
+
+export const PAYMENT_PLAN_TYPE_OPTIONS = [
+    { label: 'Full', value: 'full' },
+    { label: 'Installment', value: 'installment' },
+];
+
+export const PAYMENT_PLAN_STATUS_OPTIONS = [
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' },
+];
+
+export const INVOICE_STATUS_OPTIONS = [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Issued', value: 'issued' },
+    { label: 'Partial', value: 'partial' },
+    { label: 'Paid', value: 'paid' },
+    { label: 'Overdue', value: 'overdue' },
+];
+
+export const PAYMENT_STATUS_OPTIONS = [
+    { label: 'Pending', value: 'pending' },
+    { label: 'Approved', value: 'approved' },
+    { label: 'Rejected', value: 'rejected' },
+];
+
+export const MAINTENANCE_STATUS_OPTIONS = [
+    { label: 'Pending', value: 'pending' },
+    { label: 'In Progress', value: 'in_progress' },
+    { label: 'Completed', value: 'completed' },
+    { label: 'Rejected', value: 'rejected' },
+];
+
+export const UTILITY_STATUS_OPTIONS = [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Approved', value: 'approved' },
+    { label: 'Rejected', value: 'rejected' },
+];

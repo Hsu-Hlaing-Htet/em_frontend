@@ -31,4 +31,13 @@ export const endpoint = {
     chargeTypes: 'charge-types',
     lateFees: 'late-fees',
     paymentMethods: 'payment-methods',
+    paymentPlans: 'payment-plans',
+    contracts: 'contracts',
+    utilities: 'utilities',
+    utilityItems: 'utility-items',
+    invoices: 'invoices',
+    invoiceItems: 'invoice-items',
+    payments: 'payments',
+    receipts: 'receipts',
+    maintenanceRequests: 'maintenance-requests',
 };

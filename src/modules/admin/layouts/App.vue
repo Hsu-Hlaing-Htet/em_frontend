@@ -1,4 +1,6 @@
 <template>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <div
         data-admin-layout
         :data-admin-theme="themeMode"
@@ -7,21 +9,31 @@
         class="admin-background flex min-h-screen text-[var(--admin-text)] transition-colors duration-300"
         @click="onWrapperClick"
     >
-        <aside
+        <nav
+            id="admin-navigation"
+            aria-label="Admin navigation"
             class="admin-sidebar fixed inset-y-0 left-0 z-[1000] flex w-[var(--sidebar-width)] flex-col border-r border-white/10 shadow-2xl transition-all duration-300"
             @click.stop="onSidebarClick"
         >
             <MenuHeader
                 :menu-active="staticMenuInactive"
                 :mobile-menu-active="mobileMenuActive"
+                :aria-expanded="mobileMenuActive"
                 @menu-toggle="onMenuToggle"
             />
             <AppMenu :model="menu" @menuitem-click="onMenuItemClick" />
-        </aside>
+        </nav>
 
         <div class="ml-[var(--sidebar-width)] flex min-h-screen flex-1 flex-col transition-all duration-300 max-lg:ml-0">
-            <TopBar @menu-toggle="onMenuToggle" />
-            <main class="flex-1 p-6 pt-[calc(var(--admin-topbar-height)+1.5rem)] max-sm:p-4 max-sm:pt-[calc(var(--admin-topbar-height)+1rem)]">
+            <TopBar
+                :mobile-menu-active="mobileMenuActive"
+                @menu-toggle="onMenuToggle"
+            />
+            <main
+                id="main-content"
+                tabindex="-1"
+                class="flex-1 p-6 pt-[calc(var(--admin-topbar-height)+1.5rem)] max-sm:p-4 max-sm:pt-[calc(var(--admin-topbar-height)+1rem)]"
+            >
                 <AppBreadcrumb />
                 <router-view />
             </main>
@@ -140,6 +152,26 @@ export default {
 </script>
 
 <style scoped>
+.skip-link {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 1100;
+    transform: translateY(-200%);
+    border-radius: 9999px;
+    background: var(--admin-primary);
+    color: #fff8f3;
+    padding: 0.65rem 1rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+    outline: 3px solid rgba(214, 184, 193, 0.8);
+    outline-offset: 2px;
+}
+
 .layout-mask-enter-active,
 .layout-mask-leave-active {
     transition: opacity 0.25s ease;

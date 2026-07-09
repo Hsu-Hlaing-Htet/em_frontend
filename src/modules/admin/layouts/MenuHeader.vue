@@ -25,6 +25,7 @@
                 type="button"
                 class="flex h-5 w-5 cursor-pointer items-center justify-center text-white transition-all duration-300 hover:-translate-y-px"
                 aria-label="Toggle sidebar"
+                :aria-expanded="ariaExpanded"
                 @click="onMenuToggle"
             >
                 <i class="pi" :class="menuActive ? 'pi-angle-right' : 'pi-angle-left'" />
@@ -40,6 +41,10 @@ export default {
     props: {
         menuActive: Boolean,
         mobileMenuActive: Boolean,
+        ariaExpanded: {
+            type: Boolean,
+            default: false,
+        },
     },
     emits: ['menu-toggle'],
     setup() {

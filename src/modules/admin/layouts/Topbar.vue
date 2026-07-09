@@ -5,7 +5,9 @@
         <button
             type="button"
             class="min-[992px]:!hidden"
-            aria-label="Open navigation"
+            :aria-label="mobileMenuActive ? 'Close navigation' : 'Open navigation'"
+            :aria-expanded="mobileMenuActive"
+            aria-controls="admin-navigation"
             @click="onMenuToggle"
         >
             <i class="pi pi-bars" />
@@ -43,6 +45,12 @@ import UserProfile from './UserProfile.vue';
 
 export default {
     name: 'AppTopbar',
+    props: {
+        mobileMenuActive: {
+            type: Boolean,
+            default: false,
+        },
+    },
     components: {
         ThemeToggle,
         Notification,

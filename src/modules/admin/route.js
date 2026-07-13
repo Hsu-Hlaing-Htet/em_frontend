@@ -18,6 +18,7 @@ import invoiceRoutes from './invoices/route';
 import paymentRoutes from './payments/route';
 import receiptRoutes from './receipts/route';
 import maintenanceRequestRoutes from './maintenance-requests/route';
+import saleContractRoutes from './sale-contracts/route';
 
 export const adminRoutes = [
     {
@@ -54,6 +55,7 @@ export const adminRoutes = [
                 component: NotFound,
                 meta: { title: 'Page not found' },
             },
+            ...saleContractRoutes,
         ],
     },
 ];

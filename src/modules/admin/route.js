@@ -10,6 +10,7 @@ import utilityRateRoutes from './utility-rates/route';
 import chargeTypeRoutes from './charge-types/route';
 import lateFeeRoutes from './late-fees/route';
 import paymentMethodRoutes from './payment-methods/route';
+import saleContractRoutes from './sale-contracts/route';
 
 export const adminRoutes = [
     {
@@ -33,6 +34,7 @@ export const adminRoutes = [
             ...chargeTypeRoutes,
             ...lateFeeRoutes,
             ...paymentMethodRoutes,
+            ...saleContractRoutes,
         ],
     },
 ];

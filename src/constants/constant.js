@@ -53,3 +53,38 @@ export const LATE_FEE_STATUS_OPTIONS = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
 ];
+
+export const SALE_CONTRACT_DRAFT_STATUS_OPTIONS = [
+    { label: 'All Status', value: null },
+    { label: 'Draft', value: 'draft' },
+    { label: 'Pending Approval', value: 'pending_approval' },
+    { label: 'Rejected', value: 'rejected' },
+];
+
+export const ACTIVE_SALE_STATUS_OPTIONS = [
+    { label: 'All Status', value: null },
+    { label: 'Active', value: 'active' },
+    { label: 'Completed', value: 'completed' },
+    { label: 'Cancelled', value: 'cancelled' },
+];
+
+export const PAYMENT_PLAN_OPTIONS = [
+    { label: 'Standard', value: 'standard' },
+    { label: 'Flexible', value: 'flexible' },
+    { label: 'Custom', value: 'custom' },
+];
+
+export const PAYMENT_TYPE_OPTIONS = [
+    { label: 'Full Payment', value: 'full' },
+    { label: 'Installment', value: 'installment' },
+];
+
+export const DURATION_MONTHS_OPTIONS = [3, 6, 12, 18, 24, 36, 48].map((months) => ({
+    label: `${months} months`,
+    value: months,
+}));
+
+export const BILLING_DAY_OPTIONS = Array.from({ length: 28 }, (_, index) => ({
+    label: String(index + 1),
+    value: index + 1,
+}));

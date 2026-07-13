@@ -37,7 +37,23 @@ const menuList = [
     {
         label: 'Contracts',
         icon: 'pi pi-file',
-        to: '/admin/contracts',
+        items: [
+            {
+                label: 'Sale Drafts',
+                icon: 'pi pi-file-edit',
+                to: '/admin/sale-contracts/drafts',
+            },
+            {
+                label: 'Active Sales',
+                icon: 'pi pi-check-circle',
+                to: '/admin/sale-contracts/active',
+            },
+            {
+                label: 'Rent',
+                icon: 'pi pi-home',
+                to: '/admin/rent-contracts',
+            },
+        ],
     },
 
     {
@@ -66,6 +82,17 @@ const menuList = [
         label: 'Maintenance Requests',
         icon: 'pi pi-wrench',
         to: '/admin/maintenance-requests',
+    },
+    {
+        label: 'Approvals',
+        icon: 'pi pi-verified',
+        items: [
+            {
+                label: 'Sale Contracts',
+                icon: 'pi pi-file-check',
+                to: '/admin/approvals/sale-contracts',
+            },
+        ],
     },
 
     {

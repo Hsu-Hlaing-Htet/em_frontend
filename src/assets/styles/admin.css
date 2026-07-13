@@ -1,12 +1,6 @@
 @import "tailwindcss";
 
-/* =========================
-   BRAND COLORS
-========================= */
 
-/* =========================
-   SHARED TOKENS
-========================= */
 :root {
     font-size: 15px;
     --admin-topbar-height: 76px;
@@ -16,11 +10,11 @@
 html[data-admin-theme="light"],
 html:not([data-admin-theme]) {
 
-    --admin-bg: #fdf8fa;
+    --admin-bg: #F9F6F0;
     --admin-surface: rgba(255,255,255,.95);
     --admin-surface-solid: #ffffff;
     --admin-primary: #7a3149;
-    --admin-secondary: #d79aaa;
+    --admin-secondary: #2B2C3A;
     --admin-text: #3f1c29;
     --admin-text-muted: #7d6670;
     --admin-border: rgba(122,49,73,.12);
@@ -64,9 +58,13 @@ html[data-admin-theme="dark"] {
         transform: translateX(0);
     }
 }
-
 .admin-background {
     background: var(--admin-bg);
+    /* background-color: #12060a;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(339,45%,23%,1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(280,40%,15%,1) 0px, transparent 50%);
+    background-repeat: no-repeat; */
 }
 
 .admin-sidebar {
@@ -76,11 +74,9 @@ html[data-admin-theme="dark"] {
 
 
 .admin-panel {
-    padding: 1.875rem;
-
+    padding: 20px;
+    border-radius: 3px;
     background: var(--admin-surface);
-    border: 1px solid var(--admin-border);
-
     box-shadow: var(--admin-shadow-soft);
     backdrop-filter: blur(12px);
 }
@@ -89,18 +85,20 @@ html[data-admin-theme="dark"] {
 
 /* Outline */
 .btn {
-    background: transparent;
-    color: var(--admin-primary);
-
-    border-color: 2px solid var(--admin-primary);
+    background: linear-gradient(to bottom right, #552032 0%, #1A1216 100%);
+    /* background: linear-gradient(to bottom right, var(--admin-bg) 0%, var(--admin-secondary) 100%); */
+    color: #F9F6F0;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--admin-primary);
+    cursor: pointer;
+    transition: filter 0.3s ease;
 }
 
 .btn:hover {
-    background: var(--admin-primary);
-    color: var(--admin-bg);
+    filter: brightness(1.8);
 }
-
-
+.p-dialog ,
 .p-datatable-header,
 .p-datatable-thead > tr > th,
 .p-datatable-tbody > tr{
@@ -236,6 +234,29 @@ html[data-admin-theme="dark"] {
     border-color: #22c55e !important;
 }
 
+.p-dialog {
+    background: var(--admin-surface-solid);
+    border: 1px solid var(--admin-border);
+    box-shadow: var(--admin-shadow);
+}
+
+.p-dialog .p-dialog-header {
+    background: var(--admin-surface-solid);
+    color: var(--admin-text);
+}
+
+.p-dialog .p-dialog-content {
+    background: var(--admin-surface-solid);
+    color: var(--admin-text);
+}
+
+.p-dialog .p-dialog-footer {
+    background: var(--admin-surface-solid);
+}
+
+.p-dialog .p-dialog-header-icon {
+    color: var(--admin-text-muted);
+}
 
 /* DARK MODE DROPDOWN */
 
@@ -249,4 +270,10 @@ html[data-admin-theme="dark"] .p-dropdown-item:hover,
 html[data-admin-theme="dark"] .p-select-option:hover {
     background: rgba(214,184,193,.12) !important;
     color: #ffffff !important;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
 }

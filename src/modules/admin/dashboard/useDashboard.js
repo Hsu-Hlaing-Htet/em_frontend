@@ -1,170 +1,515 @@
-import { onMounted, ref } from 'vue';
-import { service } from './service';
+import {
+    computed,
+    onBeforeUnmount,
+    onMounted,
+    provide,
+    reactive,
+    ref,
+    watch,
+} from 'vue';
+import { DASHBOARD_SECTION_LIST, DASHBOARD_SECTIONS } from './config/sections';
+import { SEARCHABLE_CONTROL_KEYS, useDashboardControls } from './composables/useDashboardControls';
+import { dashboardService } from './service';
+import { SORT_OPTIONS, STATUS_FILTER_OPTIONS } from './mockData';
+import { usePropertyInteractions } from './usePropertyInteractions';
+import {
+    formatCurrency,
+    formatDate,
+    formatDetailRecord,
+    formatNumber,
+} from './utils/formatters';
 
-const PROPERTY_COLORS = {
-    available: '#7a3149',
-    reserved: '#552032',
-    occupied: '#9b4d66',
-    sold: '#d6b8c1',
-    maintenance: '#8b6b74',
-};
-
-const formatCurrency = (value) => new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-}).format(value ?? 0);
-
-const formatNumber = (value) => new Intl.NumberFormat('en-US').format(value ?? 0);
-
-function mapPropertyStats(roomStatus = {}) {
-    return Object.entries(roomStatus).map(([key, value]) => ({
-        label: key.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-        value,
-        color: PROPERTY_COLORS[key] || '#7a3149',
-    }));
-}
-
-function calculateOccupancyRate(roomStatus = {}) {
-    const occupied = roomStatus.occupied ?? 0;
-    const total = Object.values(roomStatus).reduce((sum, count) => sum + count, 0);
-
-    if (!total) {
-        return '0%';
-    }
-
-    return `${((occupied / total) * 100).toFixed(1)}%`;
-}
-
-function mapStats(totals = {}, revenue = {}, roomStatus = {}) {
-    return [
-        {
-            label: 'Total Rooms',
-            value: formatNumber(totals.rooms),
-            change: `${formatNumber(totals.contracts)} contracts`,
-            trend: 'up',
-            icon: 'pi pi-building',
-            accent: 'rose',
-        },
-        {
-            label: 'Total Revenue',
-            value: formatCurrency(revenue.total_paid),
-            change: `${formatCurrency(revenue.outstanding)} outstanding`,
-            trend: 'up',
-            icon: 'pi pi-dollar',
-            accent: 'gold',
-        },
-        {
-            label: 'Residents',
-            value: formatNumber(totals.residents),
-            change: `${formatNumber(totals.payments)} payments`,
-            trend: 'up',
-            icon: 'pi pi-users',
-            accent: 'blush',
-        },
-        {
-            label: 'Occupancy Rate',
-            value: calculateOccupancyRate(roomStatus),
-            change: `${formatNumber(totals.maintenance_requests)} maintenance`,
-            trend: 'up',
-            icon: 'pi pi-chart-line',
-            accent: 'wine',
-        },
-    ];
-}
+const MOCK_LOAD_DELAY_MS = 900;
 
 export function useDashboard() {
-    const loading = ref(false);
+    const loading = ref(true);
+    const error = ref(null);
+    const lastUpdated = ref(null);
+    const autoRefresh = ref(false);
+    const refreshTimer = ref(null);
+
+    const activeSection = ref('overview');
+    const revenueRange = ref(6);
+    const hoveredBar = ref(null);
+    const selectedStat = ref(null);
+    const propertyFilter = ref(null);
+    const invoiceFilter = ref(null);
+    const activityFilter = ref('all');
+    const quickActionQuery = ref('');
+    const globalSearch = ref('');
+    const selectedRoleId = ref(null);
+    const settingsSaved = ref(false);
+
     const stats = ref([]);
     const propertyStats = ref([]);
-    const invoiceStatus = ref({});
-    const revenue = ref({
-        total_paid: 0,
-        outstanding: 0,
-    });
-
-    const revenueOverview = ref([
-        { month: 'Jan', amount: 0 },
-        { month: 'Feb', amount: 0 },
-        { month: 'Mar', amount: 0 },
-        { month: 'Apr', amount: 0 },
-        { month: 'May', amount: 0 },
-        { month: 'Jun', amount: 0 },
-    ]);
-
-    const userOverview = ref({
-        owners: 0,
-        tenants: 0,
-        admins: 0,
-        customers: 0,
-    });
-
+    const invoiceStats = ref([]);
+    const revenueOverview = ref([]);
+    const revenueSummary = ref({});
     const recentActivity = ref([]);
-    const quickActions = ref([
-        { label: 'Manage Rooms', icon: 'pi pi-building', to: '/admin/rooms' },
-        { label: 'Manage Residents', icon: 'pi pi-users', to: '/admin/residents' },
-        { label: 'Manage Staff', icon: 'pi pi-id-card', to: '/admin/staff' },
-        { label: 'Utility Types', icon: 'pi pi-bolt', to: '/admin/utility-types' },
-        { label: 'Charge Types', icon: 'pi pi-receipt', to: '/admin/charge-types' },
-        { label: 'Payment Methods', icon: 'pi pi-wallet', to: '/admin/payment-methods' },
-    ]);
+    const quickActions = ref([]);
 
-    const applyDashboardData = (payload) => {
-        if (!payload) {
-            return;
-        }
+    const properties = ref([]);
+    const customers = ref([]);
+    const agents = ref([]);
+    const tenants = ref([]);
+    const inquiries = ref([]);
+    const contracts = ref([]);
+    const invoices = ref([]);
+    const payments = ref([]);
+    const bookings = ref([]);
+    const maintenance = ref([]);
+    const notifications = ref([]);
+    const reports = ref([]);
+    const reportStats = ref([]);
+    const roles = ref([]);
+    const permissionModules = ref([]);
+    const settings = ref({});
 
-        const totals = payload.totals ?? {};
-        const roomStatus = payload.room_status ?? {};
-        const nextRevenue = payload.revenue ?? {};
+    const modalOpen = ref(false);
+    const modalTitle = ref('Details');
+    const modalItem = ref(null);
 
-        stats.value = mapStats(totals, nextRevenue, roomStatus);
-        propertyStats.value = mapPropertyStats(roomStatus);
-        invoiceStatus.value = payload.invoice_status ?? {};
-        revenue.value = {
-            total_paid: nextRevenue.total_paid ?? 0,
-            outstanding: nextRevenue.outstanding ?? 0,
-        };
-
-        userOverview.value = {
-            owners: 0,
-            tenants: totals.residents ?? 0,
-            admins: 0,
-            customers: totals.residents ?? 0,
-        };
-
-        const paidAmount = nextRevenue.total_paid ?? 0;
-        revenueOverview.value = revenueOverview.value.map((item, index) => ({
-            ...item,
-            amount: index === revenueOverview.value.length - 1 ? paidAmount : Math.round(paidAmount * (0.55 + index * 0.08)),
-        }));
+    const dataRefs = {
+        properties,
+        customers,
+        agents,
+        tenants,
+        inquiries,
+        contracts,
+        invoices,
+        payments,
+        bookings,
+        maintenance,
+        notifications,
+        activity: recentActivity,
+        reports,
+        roles,
     };
 
-    const fetchDashboard = async () => {
-        loading.value = true;
+    const controls = useDashboardControls(dataRefs);
+    const propertyInteractions = usePropertyInteractions(properties);
+
+    const visibleRevenueOverview = computed(() => revenueOverview.value.slice(-revenueRange.value));
+
+    const maxRevenue = computed(() => {
+        const amounts = visibleRevenueOverview.value.map((item) => item.amount);
+        return Math.max(...amounts, 1);
+    });
+
+    const filteredPropertyStats = computed(() => {
+        const items = (propertyStats.value ?? []).filter(Boolean);
+
+        if (!propertyFilter.value) {
+            return items;
+        }
+
+        return items.filter((item) => item?.key === propertyFilter.value);
+    });
+
+    const maxProperty = computed(() => {
+        const values = filteredPropertyStats.value.map((item) => item?.value ?? 0);
+        return Math.max(...values, 1);
+    });
+
+    const filteredInvoiceStats = computed(() => {
+        const items = (invoiceStats.value ?? []).filter(Boolean);
+
+        if (!invoiceFilter.value) {
+            return items;
+        }
+
+        return items.filter((item) => item?.key === invoiceFilter.value);
+    });
+
+    const invoiceTotal = computed(() => invoiceStats.value.reduce((sum, item) => sum + (item?.value ?? 0), 0));
+
+    const filteredActivity = computed(() => {
+        const items = (recentActivity.value ?? []).filter(Boolean);
+
+        if (activityFilter.value === 'all') {
+            return items.slice(0, 4);
+        }
+
+        return items.filter((item) => item?.tag === activityFilter.value).slice(0, 4);
+    });
+
+    const filteredQuickActions = computed(() => {
+        const query = quickActionQuery.value.trim().toLowerCase();
+        const actions = (quickActions.value ?? []).filter(Boolean);
+
+        if (!query) {
+            return actions;
+        }
+
+        return actions.filter((action) => action?.label?.toLowerCase().includes(query));
+    });
+
+    const unreadNotificationCount = computed(() => (
+        notifications.value.filter((item) => item.status === 'unread').length
+    ));
+
+    const lastUpdatedLabel = computed(() => {
+        if (!lastUpdated.value) {
+            return 'Not synced yet';
+        }
+
+        return lastUpdated.value.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    });
+
+    const revenueSummaryCards = computed(() => [
+        { label: 'Collected this month', value: formatCurrency(revenueSummary.value.collected_this_month) },
+        { label: 'Total paid', value: formatCurrency(revenueSummary.value.total_paid) },
+        { label: 'Outstanding', value: formatCurrency(revenueSummary.value.outstanding) },
+        { label: 'Growth', value: `+${revenueSummary.value.growth_percent ?? 0}%` },
+    ]);
+
+    const activeSectionMeta = computed(() => DASHBOARD_SECTIONS[activeSection.value]);
+    const sections = DASHBOARD_SECTION_LIST;
+
+    const selectedRole = computed(() => (
+        roles.value.find((role) => role.id === selectedRoleId.value) ?? roles.value[0] ?? null
+    ));
+
+    function barHeight(amount) {
+        return `${(amount / maxRevenue.value) * 100}%`;
+    }
+
+    function propertyBarWidth(value) {
+        return `${(value / maxProperty.value) * 100}%`;
+    }
+
+    function invoiceBarWidth(value) {
+        return `${(value / Math.max(invoiceTotal.value, 1)) * 100}%`;
+    }
+
+    function setSection(section) {
+        activeSection.value = section;
+        settingsSaved.value = false;
+    }
+
+    function setRevenueRange(months) {
+        revenueRange.value = months;
+        hoveredBar.value = null;
+    }
+
+    function selectStat(stat) {
+        selectedStat.value = selectedStat.value?.key === stat.key ? null : stat;
+    }
+
+    function clearSelectedStat() {
+        selectedStat.value = null;
+    }
+
+    function togglePropertyFilter(key) {
+        propertyFilter.value = propertyFilter.value === key ? null : key;
+    }
+
+    function clearPropertyFilter() {
+        propertyFilter.value = null;
+    }
+
+    function toggleInvoiceFilter(key) {
+        invoiceFilter.value = invoiceFilter.value === key ? null : key;
+    }
+
+    function clearInvoiceFilter() {
+        invoiceFilter.value = null;
+    }
+
+    function setActivityFilter(filter) {
+        activityFilter.value = filter;
+    }
+
+    function hoverBar(item) {
+        hoveredBar.value = item;
+    }
+
+    function clearHoveredBar() {
+        hoveredBar.value = null;
+    }
+
+    function openDetail(title, item) {
+        modalTitle.value = title;
+        modalItem.value = formatDetailRecord(item);
+        modalOpen.value = true;
+    }
+
+    function viewProperty(property) {
+        propertyInteractions.trackRecentlyViewed(property);
+        openDetail(property.name, property);
+    }
+
+    function handleFavorite(property) {
+        propertyInteractions.toggleFavorite(property);
+    }
+
+    function handleCompare(property) {
+        propertyInteractions.toggleCompare(property);
+    }
+
+    function closeModal() {
+        modalOpen.value = false;
+        modalItem.value = null;
+    }
+
+    function selectRole(roleId) {
+        selectedRoleId.value = roleId;
+    }
+
+    async function saveSettings() {
+        settingsSaved.value = false;
 
         try {
-            const response = await service.get();
-            applyDashboardData(response?.data);
+            const result = await dashboardService.updateSettings(settings.value);
+            settings.value = result.settings ?? settings.value;
+            settingsSaved.value = true;
+        } catch (loadError) {
+            error.value = loadError?.message ?? 'Unable to save settings.';
+        }
+    }
+
+    async function generateReport(report) {
+        openDetail(report.name, {
+            ...report,
+            status: 'generating',
+            message: 'Report generation started. You will be notified when ready.',
+        });
+
+        try {
+            await dashboardService.generateReport(report.id);
+            reports.value = reports.value.map((item) => (
+                item.id === report.id ? { ...item, status: 'generating' } : item
+            ));
+        } catch (loadError) {
+            error.value = loadError?.message ?? 'Unable to generate report.';
+        }
+    }
+
+    function markNotificationRead(notification) {
+        notifications.value = notifications.value.map((item) => (
+            item.id === notification.id ? { ...item, status: 'read' } : item
+        ));
+    }
+
+    function applyPayload(payload) {
+        stats.value = payload.kpi_stats ?? [];
+        propertyStats.value = payload.property_stats ?? [];
+        invoiceStats.value = payload.invoice_stats ?? [];
+        revenueOverview.value = payload.revenue_chart ?? [];
+        revenueSummary.value = payload.revenue_summary ?? {};
+        recentActivity.value = payload.activity_timeline ?? [];
+        quickActions.value = payload.quick_actions ?? [];
+        properties.value = payload.properties ?? [];
+        customers.value = payload.customers ?? [];
+        agents.value = payload.agents ?? [];
+        tenants.value = payload.tenants ?? [];
+        inquiries.value = payload.inquiries ?? [];
+        contracts.value = payload.contracts ?? [];
+        invoices.value = payload.invoices ?? [];
+        payments.value = payload.payments ?? [];
+        bookings.value = payload.bookings ?? [];
+        maintenance.value = payload.maintenance_requests ?? [];
+        notifications.value = payload.notifications ?? [];
+        reports.value = payload.reports ?? [];
+        reportStats.value = payload.report_stats ?? [];
+        roles.value = payload.roles ?? [];
+        permissionModules.value = payload.permission_modules ?? [];
+        settings.value = payload.settings ?? {};
+        selectedRoleId.value = roles.value[0]?.id ?? null;
+    }
+
+    function stopAutoRefresh() {
+        if (refreshTimer.value) {
+            window.clearInterval(refreshTimer.value);
+            refreshTimer.value = null;
+        }
+    }
+
+    function startAutoRefresh() {
+        stopAutoRefresh();
+        refreshTimer.value = window.setInterval(() => {
+            loadDashboard(true);
+        }, (settings.value.refresh_interval_seconds ?? 60) * 1000);
+    }
+
+    function toggleAutoRefresh() {
+        autoRefresh.value = !autoRefresh.value;
+        settings.value.auto_refresh = autoRefresh.value;
+    }
+
+    async function loadDashboard(silent = false) {
+        if (!silent) {
+            loading.value = true;
+        }
+
+        error.value = null;
+
+        try {
+            if (!silent) {
+                await new Promise((resolve) => {
+                    window.setTimeout(resolve, MOCK_LOAD_DELAY_MS);
+                });
+            }
+
+            const payload = await dashboardService.fetchAll();
+            applyPayload(payload);
+            lastUpdated.value = new Date();
+        } catch (loadError) {
+            error.value = loadError?.message ?? 'Unable to load dashboard data.';
         } finally {
             loading.value = false;
         }
+    }
+
+    async function refresh() {
+        await loadDashboard(false);
+    }
+
+    watch(autoRefresh, (enabled) => {
+        if (enabled) {
+            startAutoRefresh();
+        } else {
+            stopAutoRefresh();
+        }
+
+        if (settings.value.auto_refresh !== enabled) {
+            settings.value.auto_refresh = enabled;
+        }
+    });
+
+    watch(
+        () => settings.value.auto_refresh,
+        (enabled) => {
+            if (autoRefresh.value !== enabled) {
+                autoRefresh.value = enabled;
+            }
+        },
+    );
+
+    watch(globalSearch, (query) => {
+        const value = query.trim();
+
+        SEARCHABLE_CONTROL_KEYS.forEach((key) => {
+            controls[key].state.search = value;
+        });
+    });
+
+    const dashboardContext = {
+        loading,
+        error,
+        autoRefresh,
+        activeSection,
+        activeSectionMeta,
+        sections,
+        revenueRange,
+        hoveredBar,
+        selectedStat,
+        propertyFilter,
+        invoiceFilter,
+        activityFilter,
+        quickActionQuery,
+        globalSearch,
+        settings,
+        settingsSaved,
+        stats,
+        propertyStats,
+        invoiceStats,
+        revenueOverview,
+        revenueSummary,
+        recentActivity,
+        quickActions,
+        properties,
+        customers,
+        agents,
+        tenants,
+        inquiries,
+        contracts,
+        invoices,
+        payments,
+        bookings,
+        maintenance,
+        notifications,
+        reports,
+        reportStats,
+        roles,
+        permissionModules,
+        selectedRole,
+        controls,
+        filteredQuickActions,
+        visibleRevenueOverview,
+        filteredPropertyStats,
+        filteredInvoiceStats,
+        filteredActivity,
+        revenueSummaryCards,
+        unreadNotificationCount,
+        statusFilterOptions: STATUS_FILTER_OPTIONS,
+        sortOptions: SORT_OPTIONS,
+        formatCurrency,
+        formatNumber,
+        formatDate,
+        barHeight,
+        propertyBarWidth,
+        invoiceBarWidth,
+        setSection,
+        setRevenueRange,
+        selectStat,
+        clearSelectedStat,
+        togglePropertyFilter,
+        clearPropertyFilter,
+        toggleInvoiceFilter,
+        clearInvoiceFilter,
+        setActivityFilter,
+        hoverBar,
+        clearHoveredBar,
+        openDetail,
+        viewProperty,
+        handleFavorite,
+        handleCompare,
+        selectRole,
+        saveSettings,
+        generateReport,
+        markNotificationRead,
+        toggleAutoRefresh,
+        refresh,
+        ...propertyInteractions,
     };
 
+    provide('dashboard', reactive(dashboardContext));
+
     onMounted(() => {
-        fetchDashboard();
+        loadDashboard();
+    });
+
+    onBeforeUnmount(() => {
+        stopAutoRefresh();
     });
 
     return {
         loading,
-        stats,
-        propertyStats,
-        invoiceStatus,
-        revenue,
-        revenueOverview,
-        userOverview,
-        recentActivity,
-        quickActions,
-        fetchDashboard,
+        error,
+        lastUpdatedLabel,
+        autoRefresh,
+        activeSection,
+        activeSectionMeta,
+        sections,
+        globalSearch,
+        modalOpen,
+        modalTitle,
+        modalItem,
+        unreadNotificationCount,
+        refresh,
+        toggleAutoRefresh,
+        setSection,
+        closeModal,
+        compareItems: propertyInteractions.compareItems,
+        compareModalOpen: propertyInteractions.compareModalOpen,
+        canAddToCompare: propertyInteractions.canAddToCompare,
+        formatCurrency,
+        removeFromCompare: propertyInteractions.removeFromCompare,
+        clearCompare: propertyInteractions.clearCompare,
+        openCompareModal: propertyInteractions.openCompareModal,
     };
 }

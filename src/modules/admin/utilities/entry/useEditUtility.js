@@ -30,6 +30,12 @@ export default function useEditUtility() {
     const workflowLoading = ref({ submit: false, approve: false, reject: false });
 
     const isCreate = computed(() => route.name === 'newUtility');
+    const isApprovalView = computed(() => route.meta.approvalContext === true);
+    const backRoute = computed(() => (
+        isApprovalView.value
+            ? { name: 'utilityApprovalList' }
+            : { name: 'utilityList' }
+    ));
 
     const state = reactive({
         id: null,
@@ -160,19 +166,38 @@ export default function useEditUtility() {
             if (response) {
                 Object.assign(state, response.data);
                 EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
+
+                if (isApprovalView.value) {
+                    if (action === 'approve') {
+                        await router.push({ name: 'utilityList' });
+                    } else if (action === 'reject') {
+                        await router.push({ name: 'utilityApprovalList' });
+                    }
+                }
             }
         } finally {
             workflowLoading.value[action] = false;
         }
     };
 
-    const canEdit = computed(() => !state.status || state.status === 'draft');
-    const canSubmit = () => state.status === 'draft';
+    const canEdit = computed(() => !isApprovalView.value && (!state.status || state.status === 'draft'));
+    const canSubmit = () => !isApprovalView.value && state.status === 'draft';
     const canApprove = () => state.status === 'pending';
-    const canReject = () => ['draft', 'pending'].includes(state.status);
+    const canReject = () => isApprovalView.value
+        ? state.status === 'pending'
+        : ['draft', 'pending'].includes(state.status);
+
+    const documentRoute = computed(() => (
+        !isCreate.value && state.id
+            ? { name: 'utilityDocument', params: { id: state.id } }
+            : null
+    ));
 
     return {
         isCreate,
+        isApprovalView,
+        backRoute,
+        documentRoute,
         isLoading,
         isSaving,
         errors,

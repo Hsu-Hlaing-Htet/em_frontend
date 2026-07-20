@@ -2,15 +2,33 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/modules/auth/store';
 import { publicRoutes } from '../modules/public/route.js';
 import { authRoutes } from '../modules/auth/route.js';
-import { adminRoutes } from '../modules/admin/route.js';
-import NotFound from '@/pages/NotFound.vue';
-// import { userRoutes } from '../modules/user/route.js';
+import { adminRoutes } from '../modules/admin/routes.js';
+import { customerRoutes } from '../modules/customer/routes.js';
+import NotFound from '@/pages/404.vue';
+import Forbidden from '@/pages/Forbidden.vue';
+
+const legacyUserRedirects = [
+    { path: '/user', redirect: '/customer/dashboard' },
+    { path: '/user/dashboard', redirect: '/customer/dashboard' },
+    { path: '/user/my-property', redirect: '/customer/contracts' },
+    { path: '/user/my-invoices', redirect: '/customer/invoices' },
+    { path: '/user/payment-history', redirect: '/customer/payments' },
+    { path: '/user/my-invoices/:id', redirect: (to) => `/customer/invoices/${to.params.id}` },
+    { path: '/user/receipts/:id', redirect: (to) => `/customer/receipts/${to.params.id}` },
+];
 
 const routes = [
     ...publicRoutes,
     ...adminRoutes,
-    // ...userRoutes,
+    ...customerRoutes,
+    ...legacyUserRedirects,
     ...authRoutes,
+    {
+        path: '/forbidden',
+        name: 'forbidden',
+        component: Forbidden,
+        meta: { title: 'Access forbidden' },
+    },
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
@@ -40,36 +58,66 @@ const router = createRouter({
     scrollBehavior,
 });
 
+const adminRoles = ['super_admin', 'admin'];
+
+function forbiddenQuery(from) {
+    if (from.startsWith('/admin')) {
+        return { from: 'admin' };
+    }
+
+    if (from.startsWith('/customer')) {
+        return { from: 'customer' };
+    }
+
+    return {};
+}
+
 router.beforeEach(async (to, from, next) => {
     const auth = useAuthStore();
     await auth.ensureLoaded();
 
     if (to.meta.requiresAuth && !auth.isAuthenticated) {
-        return next({ name: 'login' });
+        return next({
+            name: 'login',
+            query: { redirect: to.fullPath },
+        });
     }
 
-    if (to.path.startsWith('/admin') && auth.isAuthenticated) {
-        const adminRoles = ['super_admin', 'admin'];
-
-        if (!adminRoles.includes(auth.role)) {
-            return next({ name: 'login' });
+    if (to.path.startsWith('/admin')) {
+        if (auth.isAuthenticated && !adminRoles.includes(auth.role)) {
+            return next({
+                name: 'forbidden',
+                query: forbiddenQuery(to.fullPath),
+            });
         }
     }
 
-    if (to.meta.role && auth.role !== to.meta.role) {
-        if (auth.role === 'admin' || auth.role === 'super_admin') {
-            return next({ name: 'dashboard' });
+    if (to.path.startsWith('/customer')) {
+        if (auth.isAuthenticated && auth.role !== 'customer') {
+            return next({
+                name: 'forbidden',
+                query: forbiddenQuery(to.fullPath),
+            });
         }
+    }
 
-        return next({ name: 'login' });
+    if (to.meta.role && auth.isAuthenticated && auth.role !== to.meta.role) {
+        return next({
+            name: 'forbidden',
+            query: forbiddenQuery(to.fullPath),
+        });
     }
 
     if (to.meta.guestOnly && auth.isAuthenticated) {
-        return next(
-            auth.role === 'admin' || auth.role === 'super_admin'
-                ? { name: 'dashboard' }
-                : { name: 'login' },
-        );
+        if (adminRoles.includes(auth.role)) {
+            return next({ name: 'dashboard' });
+        }
+
+        if (auth.role === 'customer') {
+            return next({ name: 'customerDashboard' });
+        }
+
+        return next({ name: 'home' });
     }
 
     return next();

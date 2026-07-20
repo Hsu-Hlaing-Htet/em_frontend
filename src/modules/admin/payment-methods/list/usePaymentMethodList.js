@@ -4,11 +4,12 @@ import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { usePaymentMethodStore } from '../store';
-import { useDeleteConfirm } from '@/utils/confirmDelete';
+import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 
 export const usePaymentMethodList = () => {
     const dt = ref();
     const search = ref('');
+    const statusFilter = ref(null);
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const paymentMethods = ref([]);
@@ -89,6 +90,7 @@ export const usePaymentMethodList = () => {
             per_page: lazyParams.value.rows,
             order: multisortConvert(lazyParams.value.multiSortMeta),
             search: search.value,
+            status: statusFilter.value || undefined,
         });
 
         const response = store.getAllResponse;
@@ -110,11 +112,12 @@ export const usePaymentMethodList = () => {
     const resetSearch = () => {
         resetPagination();
         search.value = '';
+        statusFilter.value = null;
         loadingData();
     };
 
     watch(
-        [search],
+        [search, statusFilter],
         useDebounceFn(() => {
             resetPagination();
             loadingData();
@@ -129,6 +132,7 @@ export const usePaymentMethodList = () => {
         lazyParams,
         dt,
         search,
+        statusFilter,
         onSort,
         onPage,
         resetSearch,

@@ -48,7 +48,7 @@ import { defineComponent } from 'vue';
 import ConfirmDialog from 'primevue/confirmdialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
 import useEditRole from './useEditRole';
 
 export default defineComponent({

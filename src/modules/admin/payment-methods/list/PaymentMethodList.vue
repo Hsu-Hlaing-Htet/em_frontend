@@ -23,31 +23,29 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Payment Methods</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="relative">
-                                <i
-                                    class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
-                                />
+                    <AdminListFilters
+                        title="All Payment Methods"
+                        :search="search"
+                        search-placeholder="Search name, type..."
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <Dropdown
+                            v-model="statusFilter"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="All Statuses"
+                            show-clear
+                            class="w-52"
+                        />
 
-                                <InputText
-                                    v-model="search"
-                                    placeholder="Keyword search"
-                                    class="w-72 !pl-10"
-                                />
-                            </div>
-
-                            <Button
-                                label="Reset"
-                                @click="resetSearch"
-                            />
-
+                        <template #actions>
                             <router-link :to="{ name: 'newPaymentMethod' }">
                                 <Button label="Create" />
                             </router-link>
-                        </div>
-                    </div>
+                        </template>
+                    </AdminListFilters>
                 </template>
 
                 <template #empty>No payment methods found.</template>
@@ -56,10 +54,13 @@
                 <Column field="name" header="Name" :sortable="true" style="min-width: 200px" />
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
-                        <InputSwitch
-                            :model-value="data.status === 'active'"
-                            @update:model-value="(value) => toggleStatus(data, value)"
-                        />
+                        <div class="flex items-center gap-3">
+                            <StatusBadge :value="data.status" />
+                            <InputSwitch
+                                :model-value="data.status === 'active'"
+                                @update:model-value="(value) => toggleStatus(data, value)"
+                            />
+                        </div>
                     </template>
                 </Column>
                 <Column
@@ -95,17 +96,34 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
 import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import { PAYMENT_METHOD_STATUS_OPTIONS } from '@/constants/constant';
 import { usePaymentMethodList } from './usePaymentMethodList';
 
 export default defineComponent({
     name: 'PaymentMethodList',
-    components: { DataTable, Column, InputText, InputSwitch, Button, Loading },
+    components: {
+        DataTable,
+        Column,
+        Dropdown,
+        InputSwitch,
+        StatusBadge,
+        Button,
+        Loading,
+        AdminListFilters,
+    },
     setup() {
-        return usePaymentMethodList();
+        const list = usePaymentMethodList();
+
+        return {
+            ...list,
+            statusOptions: PAYMENT_METHOD_STATUS_OPTIONS,
+        };
     },
 });
 </script>

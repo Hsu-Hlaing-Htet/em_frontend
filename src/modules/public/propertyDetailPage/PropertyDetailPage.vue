@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { getPublicProperty } from '@/modules/public/service';
 
 const route = useRoute();
@@ -33,7 +34,7 @@ onMounted(load);
                     <h1 style="margin: 0.2rem 0">{{ property.property_name }}</h1>
                     <p class="muted">{{ property.township }} · {{ property.property_type }} · {{ property.purpose }}</p>
                     <hr class="divider">
-                    <p><strong>Status:</strong> {{ property.status }}</p>
+                    <p><strong>Status:</strong> <StatusBadge :value="property.status" /></p>
                     <p><strong>Bedrooms:</strong> {{ property.bedrooms ?? '-' }}</p>
                     <p><strong>Bathrooms:</strong> {{ property.bathrooms ?? '-' }}</p>
                     <p><strong>Area:</strong> {{ property.area_sqft ?? '-' }} sqft</p>

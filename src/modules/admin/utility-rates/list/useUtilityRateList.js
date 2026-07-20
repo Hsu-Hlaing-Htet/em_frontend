@@ -4,7 +4,7 @@ import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { useUtilityRateStore } from '../store';
-import { useDeleteConfirm } from '@/utils/confirmDelete';
+import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 
 export const useUtilityRateList = () => {
     const dt = ref();

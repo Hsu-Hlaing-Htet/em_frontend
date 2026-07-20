@@ -4,7 +4,7 @@ import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { usePaymentPlanStore } from '../store';
-import { useDeleteConfirm } from '@/utils/confirmDelete';
+import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 
 export const usePaymentPlanList = () => {
     const dt = ref();

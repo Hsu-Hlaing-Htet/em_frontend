@@ -1,5 +1,5 @@
 import api from '@/libs/axios';
-import { endpoint } from '@/constants/endpoint';
+import { endpoint } from '@/services/endpoint';
 
 const service = {
     getAll: async (params) => {
@@ -51,6 +51,14 @@ const service = {
         const result = await api.post(`${endpoint.payments}/${params.id}/proof`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
+        return result.data;
+    },
+
+    sendDocumentEmail: async (params) => {
+        const result = await api.post(`${endpoint.payments}/${params.id}/document/email`, {
+            email: params.email,
+        });
+
         return result.data;
     },
 };

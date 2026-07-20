@@ -23,20 +23,23 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Receipts</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="relative">
-                                <i class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]" />
-                                <InputText
-                                    v-model="search"
-                                    placeholder="Search receipt number..."
-                                    class="w-72 !pl-10"
-                                />
-                            </div>
-                            <Button label="Reset" @click="resetSearch" />
-                        </div>
-                    </div>
+                    <AdminListFilters
+                        title="All Receipts"
+                        :search="search"
+                        search-placeholder="Search receipt number..."
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <Dropdown
+                            v-model="statusFilter"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="All Statuses"
+                            show-clear
+                            class="w-52"
+                        />
+                    </AdminListFilters>
                 </template>
 
                 <template #empty>No receipts found.</template>
@@ -70,17 +73,30 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
-import StatusBadge from '@/components/StatusBadge.vue';
+import Dropdown from 'primevue/dropdown';
+import Loading from '@/components/global/Loading.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
+import { RECEIPT_STATUS_OPTIONS } from '@/constants/constant';
 import { useReceiptList } from './useReceiptList';
 
 export default defineComponent({
     name: 'ReceiptList',
-    components: { DataTable, Column, InputText, Button, Loading, StatusBadge },
+    components: {
+        DataTable,
+        Column,
+        Dropdown,
+        Loading,
+        AdminListFilters,
+        StatusBadge,
+    },
     setup() {
-        return useReceiptList();
+        const list = useReceiptList();
+
+        return {
+            ...list,
+            statusOptions: RECEIPT_STATUS_OPTIONS,
+        };
     },
 });
 </script>

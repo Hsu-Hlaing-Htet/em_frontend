@@ -91,7 +91,11 @@
                 <Column field="floor_number" header="Floor" :sortable="true" style="min-width: 70px" />
                 <Column field="area_sqft" header="Area (sqft)" :sortable="true" style="min-width: 70px" />
                 <Column field="type" header="Type" :sortable="true" style="min-width: 70px" />
-                <Column field="status" header="Status" :sortable="true" style="min-width: 70px" />
+                <Column field="status" header="Status" :sortable="true" style="min-width: 70px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.status" />
+                    </template>
+                </Column>
                 <Column field="sale_price" header="Sale Price" :sortable="true" style="min-width: 70px" />
                 <Column field="rent_price" header="Rent Price" :sortable="true" style="min-width: 70px" />
                 <Column field="rent_deposit_price" header="Rent Deposit" :sortable="true" style="min-width: 70px" />
@@ -131,12 +135,13 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useRoomList } from './useRoomList';
 
 export default defineComponent({
     name: 'RoomList',
-    components: { DataTable, Column, InputText, Button, Loading },
+    components: { DataTable, Column, InputText, Button, Loading, StatusBadge },
     setup() {
         return useRoomList();
     },

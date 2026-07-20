@@ -36,7 +36,7 @@ const services = [
 </script>
 
 <template>
-  <main class="bg-white text-gray-900">
+  <main class="rw-page">
 
     <!-- HERO -->
     <section
@@ -58,7 +58,7 @@ const services = [
       >
         <span
           class="uppercase tracking-[6px]
-                 text-[#d6b8c1]
+                 text-[var(--rw-brand-light)]
                  text-sm mb-5"
         >
           Luxury Real Estate
@@ -73,7 +73,7 @@ const services = [
         </h1>
 
         <p
-          class="mt-6 text-lg text-gray-200
+          class="mt-6 text-lg text-white/80
                  max-w-2xl leading-8"
         >
           Elegant real estate solutions tailored for luxury homes,
@@ -83,10 +83,10 @@ const services = [
         <div class="mt-10">
           <button
             class="px-8 py-4
-                   bg-[#552032]
+                   bg-[var(--rw-brand)]
                    text-white
                    rounded-xl
-                   hover:bg-[#6c2a42]
+                   hover:brightness-110
                    transition-all duration-300"
           >
             Explore Services
@@ -102,7 +102,7 @@ const services = [
         <div class="text-center mb-20">
           <span
             class="uppercase tracking-[5px]
-                   text-[#552032]
+                   text-[var(--rw-primary-deep)]
                    text-sm"
           >
             What We Offer
@@ -125,7 +125,7 @@ const services = [
             v-for="service in services"
             :key="service.title"
             class="group overflow-hidden
-                   rounded-3xl bg-white
+                   rounded-3xl bg-rw-surface
                    shadow-sm hover:shadow-2xl
                    transition-all duration-500"
           >
@@ -150,7 +150,7 @@ const services = [
               <div
                 class="absolute top-6 left-6
                        w-14 h-14 rounded-full
-                       bg-white/20 backdrop-blur-md
+                       bg-rw-surface/20 backdrop-blur-md
                        flex items-center justify-center
                        text-white text-xl"
               >
@@ -174,7 +174,7 @@ const services = [
             <div class="p-8">
 
               <p
-                class="text-gray-600
+                class="text-rw-muted
                        leading-8"
               >
                 {{ service.description }}
@@ -183,7 +183,7 @@ const services = [
               <button
                 class="group/btn mt-8
                        flex items-center gap-3
-                       text-[#552032]
+                       text-[var(--rw-primary-deep)]
                        font-semibold
                        uppercase tracking-[2px]"
               >
@@ -204,14 +204,14 @@ const services = [
 
     <!-- WHY CHOOSE US -->
     <section
-      class="py-24 bg-[#faf7f8]"
+      class="py-24 bg-rw-section-alt"
     >
       <div class="container mx-auto px-6">
 
         <div class="text-center mb-16">
           <span
             class="uppercase tracking-[5px]
-                   text-[#552032]
+                   text-[var(--rw-primary-deep)]
                    text-sm"
           >
             Excellence
@@ -231,7 +231,7 @@ const services = [
         >
 
           <div
-            class="bg-white rounded-2xl
+            class="bg-rw-surface rounded-2xl
                    p-10 text-center
                    hover:-translate-y-2
                    transition-all duration-300"
@@ -239,7 +239,7 @@ const services = [
             <div
               class="w-16 h-16 mx-auto mb-6
                      rounded-full
-                     bg-[#552032]
+                     bg-[var(--rw-brand)]
                      text-white
                      flex items-center justify-center"
             >
@@ -250,13 +250,13 @@ const services = [
               Trusted Expertise
             </h3>
 
-            <p class="text-gray-600 leading-7">
+            <p class="text-rw-muted leading-7">
               Years of luxury real estate experience with premium service.
             </p>
           </div>
 
           <div
-            class="bg-white rounded-2xl
+            class="bg-rw-surface rounded-2xl
                    p-10 text-center
                    hover:-translate-y-2
                    transition-all duration-300"
@@ -264,7 +264,7 @@ const services = [
             <div
               class="w-16 h-16 mx-auto mb-6
                      rounded-full
-                     bg-[#552032]
+                     bg-[var(--rw-brand)]
                      text-white
                      flex items-center justify-center"
             >
@@ -275,13 +275,13 @@ const services = [
               Premium Properties
             </h3>
 
-            <p class="text-gray-600 leading-7">
+            <p class="text-rw-muted leading-7">
               Exclusive homes and commercial spaces across prime locations.
             </p>
           </div>
 
           <div
-            class="bg-white rounded-2xl
+            class="bg-rw-surface rounded-2xl
                    p-10 text-center
                    hover:-translate-y-2
                    transition-all duration-300"
@@ -289,7 +289,7 @@ const services = [
             <div
               class="w-16 h-16 mx-auto mb-6
                      rounded-full
-                     bg-[#552032]
+                     bg-[var(--rw-brand)]
                      text-white
                      flex items-center justify-center"
             >
@@ -300,7 +300,7 @@ const services = [
               Dedicated Support
             </h3>
 
-            <p class="text-gray-600 leading-7">
+            <p class="text-rw-muted leading-7">
               Personalized assistance throughout your real estate journey.
             </p>
           </div>
@@ -319,7 +319,7 @@ const services = [
       />
 
       <div
-        class="absolute inset-0 bg-[#552032]/80"
+        class="absolute inset-0 bg-[var(--rw-brand)]/80"
       ></div>
 
       <div
@@ -335,7 +335,7 @@ const services = [
         </h2>
 
         <p
-          class="mt-6 text-lg text-gray-200
+          class="mt-6 text-lg text-white/80
                  max-w-2xl mx-auto"
         >
           Discover luxury living and premium investment opportunities
@@ -345,10 +345,10 @@ const services = [
         <button
           class="mt-10 px-10 py-4
                  rounded-xl
-                 bg-white
-                 text-[#552032]
+                 bg-rw-surface
+                 text-[var(--rw-primary-deep)]
                  font-semibold
-                 hover:bg-[#d6b8c1]
+                 hover:bg-[var(--rw-brand-light)]
                  transition-all duration-300"
         >
           Contact Us

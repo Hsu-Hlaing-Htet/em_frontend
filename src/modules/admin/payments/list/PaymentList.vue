@@ -88,8 +88,8 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
-import StatusBadge from '@/components/StatusBadge.vue';
+import Loading from '@/components/global/Loading.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { PAYMENT_STATUS_OPTIONS } from '@/constants/constant';
 import { usePaymentList } from './usePaymentList';
 

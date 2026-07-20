@@ -45,7 +45,7 @@ import { defineComponent } from 'vue';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
 import useEditChargeType from './useEditChargeType';
 
 export default defineComponent({

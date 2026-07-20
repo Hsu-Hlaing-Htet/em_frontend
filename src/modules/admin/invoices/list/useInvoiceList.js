@@ -4,10 +4,12 @@ import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useInvoiceStore } from '../store';
 
+const isApprovedStatus = (status) => status && status !== 'draft';
+
 export const useInvoiceList = () => {
     const dt = ref();
     const search = ref('');
-    const statusFilter = ref(null);
+    const statusFilter = ref('all_approved');
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const invoices = ref([]);
@@ -45,20 +47,33 @@ export const useInvoiceList = () => {
     const loadingData = async () => {
         isLoading.value = true;
 
-        await store.fetchAll({
+        const params = {
             page: lazyParams.value.page + 1,
             per_page: lazyParams.value.rows,
             order: multisortConvert(lazyParams.value.multiSortMeta),
             search: search.value,
-            status: statusFilter.value || undefined,
-        });
+        };
+
+        if (statusFilter.value && statusFilter.value !== 'all_approved') {
+            params.status = statusFilter.value;
+        }
+
+        await store.fetchAll(params);
 
         const response = store.getAllResponse;
 
         if (response) {
             const { data } = response;
-            invoices.value = data.data || [];
-            totalRecords.value = response.data.total;
+            let rows = data.data || [];
+
+            if (statusFilter.value === 'all_approved') {
+                rows = rows.filter((invoice) => isApprovedStatus(invoice.status));
+            }
+
+            invoices.value = rows;
+            totalRecords.value = statusFilter.value === 'all_approved'
+                ? rows.length
+                : response.data.total;
         }
 
         isLoading.value = false;
@@ -72,7 +87,7 @@ export const useInvoiceList = () => {
     const resetSearch = () => {
         resetPagination();
         search.value = '';
-        statusFilter.value = null;
+        statusFilter.value = 'all_approved';
         loadingData();
     };
 

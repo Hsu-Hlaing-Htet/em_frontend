@@ -7,6 +7,7 @@ import { useReceiptStore } from '../store';
 export const useReceiptList = () => {
     const dt = ref();
     const search = ref('');
+    const statusFilter = ref(null);
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const receipts = ref([]);
@@ -49,6 +50,7 @@ export const useReceiptList = () => {
             per_page: lazyParams.value.rows,
             order: multisortConvert(lazyParams.value.multiSortMeta),
             search: search.value,
+            status: statusFilter.value || undefined,
         });
 
         const response = store.getAllResponse;
@@ -70,11 +72,12 @@ export const useReceiptList = () => {
     const resetSearch = () => {
         resetPagination();
         search.value = '';
+        statusFilter.value = null;
         loadingData();
     };
 
     watch(
-        search,
+        [search, statusFilter],
         useDebounceFn(() => {
             resetPagination();
             loadingData();
@@ -89,6 +92,7 @@ export const useReceiptList = () => {
         lazyParams,
         dt,
         search,
+        statusFilter,
         onSort,
         onPage,
         resetSearch,

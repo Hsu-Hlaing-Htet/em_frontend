@@ -116,7 +116,7 @@ import Textarea from 'primevue/textarea';
 import Calendar from 'primevue/calendar';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
 import useNewStaff from './useNewStaff';
 
 export default defineComponent({

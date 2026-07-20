@@ -5,7 +5,7 @@ import { Errors } from '@/utils/validation';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import { useRoomStore } from '../store';
-import { useDeleteConfirm } from '@/utils/confirmDelete';
+import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 
 export const useRoomList = () => {
     const dt = ref();

@@ -76,6 +76,11 @@ export const PAYMENT_PLAN_TYPE_OPTIONS = [
     { label: 'Installment', value: 'installment' },
 ];
 
+export const PAYMENT_PLAN_TYPE_FILTER_OPTIONS = [
+    { label: 'Full Payment', value: 'full' },
+    { label: 'Installment', value: 'installment' },
+];
+
 export const PAYMENT_PLAN_STATUS_OPTIONS = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
@@ -89,10 +94,28 @@ export const INVOICE_STATUS_OPTIONS = [
     { label: 'Overdue', value: 'overdue' },
 ];
 
+export const INVOICE_LIST_STATUS_OPTIONS = [
+    { label: 'All Approved', value: 'all_approved' },
+    { label: 'Issued', value: 'issued' },
+    { label: 'Partial', value: 'partial' },
+    { label: 'Paid', value: 'paid' },
+    { label: 'Overdue', value: 'overdue' },
+];
+
 export const PAYMENT_STATUS_OPTIONS = [
     { label: 'Pending', value: 'pending' },
     { label: 'Approved', value: 'approved' },
     { label: 'Rejected', value: 'rejected' },
+];
+
+export const PAYMENT_METHOD_STATUS_OPTIONS = [
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' },
+];
+
+export const RECEIPT_STATUS_OPTIONS = [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Issued', value: 'issued' },
 ];
 
 export const MAINTENANCE_STATUS_OPTIONS = [
@@ -117,6 +140,7 @@ export const SALE_CONTRACT_DRAFT_STATUS_OPTIONS = [
 
 export const ACTIVE_SALE_STATUS_OPTIONS = [
     { label: 'All Status', value: null },
+    { label: 'Approved', value: 'approved' },
     { label: 'Active', value: 'active' },
     { label: 'Completed', value: 'completed' },
     { label: 'Cancelled', value: 'cancelled' },

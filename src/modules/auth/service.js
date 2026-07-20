@@ -1,5 +1,5 @@
 import api from '@/services/api';
-import { endpoint } from '@/constants/endpoint';
+import { endpoint } from '@/services/endpoint';
 
 export function loginUser(payload) {
     return api.post(endpoint.login, payload);
@@ -11,4 +11,12 @@ export function getCurrentUser() {
 
 export function logoutUser() {
     return api.post(endpoint.logout);
+}
+
+export function requestPasswordReset(payload) {
+    return api.post(endpoint.forgotPassword, payload);
+}
+
+export function resetPassword(payload) {
+    return api.post(endpoint.resetPassword, payload);
 }

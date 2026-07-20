@@ -80,7 +80,7 @@ import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
 import Calendar from 'primevue/calendar';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
 import useNewUtilityRate from './useNewUtilityRate';
 
 export default defineComponent({

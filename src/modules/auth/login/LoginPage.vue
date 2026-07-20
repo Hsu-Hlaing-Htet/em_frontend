@@ -1,5 +1,6 @@
 <script setup>
-import { useLogin } from './useLogin';
+import AuthPageShell from '@/components/global/AuthPageShell.vue';
+import { useLogin } from '@/composables/global/useLogin';
 
 const {
     form,
@@ -10,122 +11,81 @@ const {
 </script>
 
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <section
-            class="w-full max-w-md rounded-md border border-[#d6b8c1]/70 bg-white px-7 py-8 shadow-lg"
-        >
-            <div class="text-center">
-                <div
-                    class="mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_14px_35px_rgba(85,32,50,0.26)] ring-1 ring-[#d6b8c1]/70"
-                >
-                    <img
-                        src="@/assets/images/logo-dark.jpg"
-                        alt="Rosewood Royale"
-                        class="h-full w-full object-cover"
-                    >
-                </div>
+    <AuthPageShell
+        title="Welcome Back!"
+        subtitle="Please enter your login details."
+    >
+        <form class="space-y-4" @submit.prevent="submit">
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-[var(--rw-primary-deep)]">
+                    Email
+                </label>
 
-                <h2
-                    class="mt-5 text-2xl font-semibold tracking-tight text-[#552032]"
+                <input
+                    v-model="form.email"
+                    type="email"
+                    required
+                    class="rw-input-shell w-full rounded-xl px-4 py-3 outline-none"
+                    placeholder="admin@rosewoodroyale.com"
                 >
-                    Welcome Back!
-                </h2>
-
-                <p class="mt-2 text-sm text-gray-500">
-                    Please enter your login details.
-                </p>
             </div>
 
-            <form class="mt-7 space-y-4" @submit.prevent="submit">
-                <div>
-                    <label class="mb-2 block text-sm font-semibold text-[#552032]">
-                        Email
-                    </label>
-
-                    <input
-                        v-model="form.email"
-                        type="email"
-                        required
-                        class="w-full rounded-xl bg-[#d6b8c1]/20 px-4 py-3 outline-none"
-                        placeholder="admin@rosewoodroyale.com"
-                    >
-                </div>
-
-                <div>
-                    <label class="mb-2 block text-sm font-semibold text-[#552032]">
+            <div>
+                <div class="mb-2 flex items-center justify-between gap-3">
+                    <label class="text-sm font-semibold text-[var(--rw-primary-deep)]">
                         Password
                     </label>
 
-                    <div
-                        class="flex items-center rounded-xl bg-[#d6b8c1]/20 px-4 py-3"
+                    <router-link
+                        :to="{ name: 'forgot-password' }"
+                        class="text-xs font-semibold text-[var(--rw-primary-deep)] hover:underline"
                     >
-                        <input
-                            v-model="form.password"
-                            :type="showPassword ? 'text' : 'password'"
-                            required
-                            class="flex-1 bg-transparent outline-none"
-                            placeholder="Enter your password"
-                        >
-
-                        <button
-                            type="button"
-                            @click="showPassword = !showPassword"
-                        >
-                            <i
-                                :class="
-                                    showPassword
-                                        ? 'fas fa-eye'
-                                        : 'fas fa-eye-slash'
-                                "
-                            />
-                        </button>
-                    </div>
+                        Forgot password?
+                    </router-link>
                 </div>
 
-                <button
-                class="flex w-full items-center justify-center group relative overflow-hidden
-                        px-4 py-2 mb-10
-                        rounded-md
-                        border-2 border-[#552032]
-                        text-[#552032]
-                        bg-white
-                        transition-all duration-300
-                        hover:text-white
-                        hover:border-2 hover:border-white
-                        hover:shadow-lg hover:shadow-[#552032]/40
-                        active:scale-95 scale-100
-                            hover:scale-105
-                            hover:invert-0
-                            transition-all duration-500 ease-out"
-                >
-                <!-- Background Animation -->
-                <span
-                    class="absolute inset-0
-                        bg-[#552032]
-                        scale-x-0
-                        origin-left
-                        transition-transform duration-500
-                        ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]
-                        group-hover:scale-x-100"
-                ></span>
+                <div class="rw-input-shell flex items-center rounded-xl px-4 py-3">
+                    <input
+                        v-model="form.password"
+                        :type="showPassword ? 'text' : 'password'"
+                        required
+                        class="flex-1 bg-transparent outline-none"
+                        placeholder="Enter your password"
+                    >
 
-                <!-- Content -->
+                    <button
+                        type="button"
+                        class="text-rw-muted"
+                        @click="showPassword = !showPassword"
+                    >
+                        <i
+                            :class="
+                                showPassword
+                                    ? 'fas fa-eye'
+                                    : 'fas fa-eye-slash'
+                            "
+                        />
+                    </button>
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                class="group relative mb-2 flex w-full scale-100 items-center justify-center overflow-hidden rounded-md border-2 border-[var(--rw-primary-deep)] bg-rw-surface px-4 py-2 text-[var(--rw-primary-deep)] transition-all duration-300 hover:scale-105 hover:border-white hover:text-white hover:shadow-lg hover:shadow-[var(--rw-brand)]/40 active:scale-95"
+            >
                 <span
-                    class="relative z-10 flex items-center gap-3"
-                >
-                    <!-- Font Awesome Icon -->
-                    <i v-if="loading"
-                    class="fas fa-spinner fa-spin
-                            text-base
-                            transition-all duration-300
-                            group-hover:rotate-[20deg]
-                            group-hover:scale-110"
-                    ></i>
+                    class="absolute inset-0 origin-left scale-x-0 bg-[var(--rw-primary-deep)] transition-transform duration-500 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)] group-hover:scale-x-100"
+                />
+
+                <span class="relative z-10 flex items-center gap-3">
+                    <i
+                        v-if="loading"
+                        class="fas fa-spinner fa-spin text-base transition-all duration-300 group-hover:scale-110 group-hover:rotate-[20deg]"
+                    />
 
                     Login
                 </span>
-                            </button>
-            </form>
-        </section>
-    </div>
+            </button>
+        </form>
+    </AuthPageShell>
 </template>

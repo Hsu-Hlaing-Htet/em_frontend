@@ -1,0 +1,121 @@
+import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { buildFieldSections } from '@/helpers/contracts/contractDocument';
+import { showApiErrorToast } from '@/utils/apiError';
+import { useRentContractDraftStore } from '../store';
+import { mapRentDraftFromApi } from './mapRentDraft';
+import { useContractDocument } from '@/composables/admin/documents/useRentContractDocument';
+import { useRentContractDocumentActions } from '@/composables/admin/contracts/contractDocumentActions';
+
+export default function useShowRentDraft() {
+    const route = useRoute();
+    const store = useRentContractDraftStore();
+    const isLoading = ref(true);
+
+    const state = reactive({
+        id: null,
+        contract_no: '',
+        customer_name: '',
+        customer_nrc: '',
+        customer_phone: '',
+        customer_email: '',
+        building_name: '',
+        room_number: '',
+        room_price: 0,
+        deposit: 0,
+        payment_plan: '',
+        payment_type: '',
+        duration_months: null,
+        contract_total: 0,
+        start_date: '',
+        billing_day: null,
+        remarks: '',
+        status: '',
+        created_by: '',
+        created_at: '',
+        remaining_balance: 0,
+        interest_percentage: 0,
+        total_installment_amount: 0,
+        estimated_monthly_payment: 0,
+        timeline: [],
+    });
+
+    const { document } = useContractDocument(state);
+    const {
+        downloadPdf,
+        exportPdf,
+        printContract,
+        sendEmail,
+    } = useRentContractDocumentActions('draft', state, () => document.value);
+    const fieldSections = computed(() => buildFieldSections(document.value));
+    const editRoute = computed(() => (
+        state.id
+            ? { name: 'editRentContractDraft', params: { id: state.id } }
+            : null
+    ));
+    const backRoute = { name: 'rentContractDraftList' };
+    const contractPdfRoute = computed(() => (
+        state.id
+            ? { name: 'rentContractDraftPdf', params: { id: state.id } }
+            : null
+    ));
+    const pdfBackRoute = computed(() => (
+        state.id
+            ? { name: 'showRentContractDraft', params: { id: state.id } }
+            : backRoute
+    ));
+
+    const fetchDraft = async () => {
+        isLoading.value = true;
+
+        try {
+            await store.fetchOne({ id: route.params.id });
+            const response = store.getOneResponse;
+            const mapped = mapRentDraftFromApi(response?.data);
+
+            if (mapped) {
+                Object.assign(state, {
+                    ...mapped,
+                    timeline: [
+                        {
+                            label: 'Draft Created',
+                            date: mapped.created_at,
+                            actor: mapped.created_by,
+                        },
+                    ],
+                });
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load rent contract draft.');
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    watch(() => route.params.id, (newId) => {
+        if (newId) {
+            fetchDraft();
+        }
+    });
+
+    onMounted(fetchDraft);
+
+    onBeforeUnmount(() => {
+        store.$reset();
+        store.$dispose();
+    });
+
+    return {
+        isLoading,
+        document,
+        fieldSections,
+        editRoute,
+        contractPdfRoute,
+        pdfBackRoute,
+        backRoute,
+        downloadPdf,
+        exportPdf,
+        printContract,
+        sendEmail,
+    };
+}

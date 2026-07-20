@@ -45,7 +45,7 @@ const values = [
 </script>
 
 <template>
-  <main class="bg-white text-gray-900">
+  <main class="rw-page">
 
     <!-- HERO -->
     <section
@@ -67,7 +67,7 @@ const values = [
       >
         <span
           class="uppercase tracking-[6px]
-                 text-[#d6b8c1]
+                 text-[var(--rw-brand-light)]
                  text-sm mb-5"
         >
           About Rosewood Royale
@@ -82,7 +82,7 @@ const values = [
         </h1>
 
         <p
-          class="mt-6 text-lg text-gray-200
+          class="mt-6 text-lg text-white/80
                  max-w-2xl leading-8"
         >
           We create exceptional real estate experiences through
@@ -104,7 +104,7 @@ const values = [
 
           <span
             class="uppercase tracking-[5px]
-                   text-[#552032]
+                   text-[var(--rw-primary-deep)]
                    text-sm"
           >
             Our Story
@@ -115,13 +115,13 @@ const values = [
                    mt-5 leading-tight"
           >
             Luxury Living With
-            <span class="text-[#552032]">
+            <span class="text-[var(--rw-primary-deep)]">
               Timeless Elegance
             </span>
           </h2>
 
           <p
-            class="mt-8 text-gray-600
+            class="mt-8 text-rw-muted
                    leading-9 text-lg"
           >
             Rosewood Royale was founded with a vision to provide
@@ -131,7 +131,7 @@ const values = [
           </p>
 
           <p
-            class="mt-6 text-gray-600
+            class="mt-6 text-rw-muted
                    leading-9 text-lg"
           >
             Our curated portfolio and personalized services help clients
@@ -141,9 +141,9 @@ const values = [
           <button
             class="mt-10 px-8 py-4
                    rounded-xl
-                   bg-[#552032]
+                   bg-[var(--rw-brand)]
                    text-white
-                   hover:bg-[#6d2a43]
+                   hover:brightness-110
                    transition-all duration-300"
           >
             Explore Properties
@@ -160,19 +160,19 @@ const values = [
 
           <div
             class="absolute -bottom-10 -left-10
-                   bg-white
+                   bg-rw-surface
                    rounded-2xl
                    shadow-xl
                    p-8"
           >
             <h3
               class="text-4xl font-bold
-                     text-[#552032]"
+                     text-[var(--rw-primary-deep)]"
             >
               12+
             </h3>
 
-            <p class="text-gray-600 mt-2">
+            <p class="text-rw-muted mt-2">
               Years of Luxury Excellence
             </p>
           </div>
@@ -183,7 +183,7 @@ const values = [
 
     <!-- STATS -->
     <section
-      class="py-24 bg-[#faf7f8]"
+      class="py-24 bg-rw-section-alt"
     >
       <div class="container mx-auto px-6">
 
@@ -197,7 +197,7 @@ const values = [
           <div
             v-for="item in stats"
             :key="item.label"
-            class="bg-white
+            class="bg-rw-surface
                    rounded-3xl
                    p-10 text-center
                    hover:-translate-y-2
@@ -206,7 +206,7 @@ const values = [
             <div
               class="w-16 h-16 mx-auto mb-6
                      rounded-full
-                     bg-[#552032]
+                     bg-[var(--rw-brand)]
                      text-white
                      flex items-center justify-center"
             >
@@ -215,13 +215,13 @@ const values = [
 
             <h3
               class="text-5xl font-bold
-                     text-[#552032]"
+                     text-[var(--rw-primary-deep)]"
             >
               {{ item.number }}
             </h3>
 
             <p
-              class="mt-4 text-gray-600"
+              class="mt-4 text-rw-muted"
             >
               {{ item.label }}
             </p>
@@ -239,7 +239,7 @@ const values = [
 
           <span
             class="uppercase tracking-[5px]
-                   text-[#552032]
+                   text-[var(--rw-primary-deep)]
                    text-sm"
           >
             Our Values
@@ -261,18 +261,18 @@ const values = [
           <article
             v-for="value in values"
             :key="value.title"
-            class="group bg-white
+            class="group bg-rw-surface
                    rounded-3xl
                    p-10
-                   border border-gray-100
-                   hover:border-[#552032]/20
+                   border border-rw
+                   hover:border-[var(--rw-brand)]/20
                    hover:shadow-2xl
                    transition-all duration-500"
           >
             <div
               class="w-16 h-16
                      rounded-full
-                     bg-[#552032]
+                     bg-[var(--rw-brand)]
                      text-white
                      flex items-center justify-center
                      text-xl"
@@ -288,7 +288,7 @@ const values = [
             </h3>
 
             <p
-              class="mt-6 text-gray-600
+              class="mt-6 text-rw-muted
                      leading-8"
             >
               {{ value.description }}
@@ -297,7 +297,7 @@ const values = [
             <button
               class="group/btn mt-8
                      flex items-center gap-3
-                     text-[#552032]
+                     text-[var(--rw-primary-deep)]
                      font-semibold
                      uppercase tracking-[2px]"
             >
@@ -317,7 +317,7 @@ const values = [
 
     <!-- TEAM SECTION -->
     <section
-      class="py-28 bg-[#faf7f8]"
+      class="py-28 bg-rw-section-alt"
     >
       <div class="container mx-auto px-6">
 
@@ -339,7 +339,7 @@ const values = [
 
             <span
               class="uppercase tracking-[5px]
-                     text-[#552032]
+                     text-[var(--rw-primary-deep)]
                      text-sm"
             >
               Our Team
@@ -354,7 +354,7 @@ const values = [
             </h2>
 
             <p
-              class="mt-8 text-gray-600
+              class="mt-8 text-rw-muted
                      leading-9 text-lg"
             >
               Our experienced consultants combine local market knowledge,
@@ -363,7 +363,7 @@ const values = [
             </p>
 
             <p
-              class="mt-6 text-gray-600
+              class="mt-6 text-rw-muted
                      leading-9 text-lg"
             >
               Whether you are buying, renting, or investing,
@@ -373,9 +373,9 @@ const values = [
             <button
               class="mt-10 px-8 py-4
                      rounded-xl
-                     border border-[#552032]
-                     text-[#552032]
-                     hover:bg-[#552032]
+                     border border-[var(--rw-brand)]
+                     text-[var(--rw-primary-deep)]
+                     hover:bg-[var(--rw-brand)]
                      hover:text-white
                      transition-all duration-300"
             >
@@ -398,7 +398,7 @@ const values = [
       />
 
       <div
-        class="absolute inset-0 bg-[#552032]/85"
+        class="absolute inset-0 bg-[var(--rw-brand)]/85"
       ></div>
 
       <div
@@ -414,7 +414,7 @@ const values = [
         </h2>
 
         <p
-          class="mt-6 text-lg text-gray-200
+          class="mt-6 text-lg text-white/80
                  max-w-2xl mx-auto"
         >
           Discover luxury real estate opportunities with a trusted
@@ -424,10 +424,10 @@ const values = [
         <button
           class="mt-10 px-10 py-4
                  rounded-xl
-                 bg-white
-                 text-[#552032]
+                 bg-rw-surface
+                 text-[var(--rw-primary-deep)]
                  font-semibold
-                 hover:bg-[#d6b8c1]
+                 hover:bg-[var(--rw-brand-light)]
                  transition-all duration-300"
         >
           Contact Us

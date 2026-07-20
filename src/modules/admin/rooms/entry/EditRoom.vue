@@ -96,7 +96,7 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
 import RoomImageManager from './RoomImageManager.vue';
 import useEditRoom from './useEditRoom';
 

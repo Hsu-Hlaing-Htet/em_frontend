@@ -3,7 +3,7 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useStaffStore } from '../store';
-import { useDeleteConfirm } from '@/utils/confirmDelete';
+import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 
 export const useStaffList = () => {
     const dt = ref();

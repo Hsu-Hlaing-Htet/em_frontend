@@ -28,11 +28,11 @@ import ProgressSpinner from 'primevue/progressspinner';
 import 'primevue/resources/themes/aura-light-noir/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
-import './assets/styles/app.css';
-import './assets/styles/admin.css';
+import './assets/css/public.css';
+import './assets/css/admin.css';
 import App from '@/App.vue';
 import router from '@/routes';
-import { useThemeStore } from '@/modules/admin/themeStore';
+import { useThemeStore } from '@/stores/themeStore';
 
 const app = createApp(App);
 const pinia = createPinia();

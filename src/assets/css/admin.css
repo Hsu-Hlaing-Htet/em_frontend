@@ -1,0 +1,245 @@
+@import "tailwindcss";
+
+
+:root {
+    font-size: 15px;
+    --admin-topbar-height: 76px;
+    --admin-transition: 0.3s ease;
+}
+
+[data-admin-layout] {
+    --sidebar-width: 280px;
+
+    background: var(--admin-bg);
+    color: var(--admin-text);
+}
+
+[data-customer-layout] {
+    background: var(--admin-bg);
+    color: var(--admin-text);
+}
+
+[data-admin-layout][data-sidebar-collapsed="true"] {
+    --sidebar-width: 88px;
+}
+
+@media (max-width: 1023px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+
+    [data-mobile-sidebar-open="true"] .admin-sidebar {
+        transform: translateX(0);
+    }
+}
+.admin-background {
+    background: var(--admin-bg);
+    /* background-color: #12060a;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(339,45%,23%,1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(280,40%,15%,1) 0px, transparent 50%);
+    background-repeat: no-repeat; */
+}
+
+.admin-sidebar {
+    background: var(--admin-bg);
+    border-right: 1px solid var(--admin-border);
+}
+
+
+.admin-panel {
+    padding: 20px;
+    border-radius: 3px;
+    background: var(--admin-surface);
+    box-shadow: var(--admin-shadow-soft);
+    backdrop-filter: blur(12px);
+}
+
+
+
+/* Outline */
+.btn {
+    background: linear-gradient(to bottom right, #552032 0%, #1A1216 100%);
+    /* background: linear-gradient(to bottom right, var(--admin-bg) 0%, var(--admin-secondary) 100%); */
+    color: #F9F6F0;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--admin-primary);
+    cursor: pointer;
+    transition: filter 0.3s ease;
+}
+
+.btn:hover {
+    filter: brightness(1.8);
+}
+.p-dialog ,
+.p-datatable-header,
+.p-datatable-thead > tr > th,
+.p-datatable-tbody > tr{
+    background: var(--admin-surface-solid);
+    color: var(--admin-text);
+    border-color: var(--admin-border);
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+    background: rgba(85, 32, 50, 0.05) !important;
+}
+
+html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr:hover {
+    background: rgba(214, 184, 193, 0.08) !important;
+}
+.p-inputtext,
+.p-dropdown,
+.p-textarea,
+.p-password input,
+.p-calendar .p-inputtext {
+    background: var(--admin-surface-solid);
+    color: var(--admin-text-muted);
+    border-color: var(--admin-border);
+}
+
+
+.p-paginator {
+    background: transparent !important;
+    border: none !important;
+
+}
+
+.p-paginator-pages .p-paginator-page {
+    min-width: 2.5rem;
+    height: 2.5rem;
+
+    background: transparent;
+    color: var(--admin-text-muted);
+
+    border: 1px solid transparent;
+
+    transition: all .2s ease;
+}
+
+
+.p-inputtext:enabled:focus,
+.p-inputnumber-input:enabled:focus,
+.p-textarea:enabled:focus,
+.p-password-input:enabled:focus {
+    border-color: var(--admin-primary) !important;
+
+    box-shadow:
+        0 0 0 1px rgba(85, 32, 50, 0.35),
+        0 0 12px rgba(85, 32, 50, 0.18);
+
+    outline: none !important;
+}
+
+/* Dropdown Overlay */
+
+.p-select-overlay,
+.p-dropdown-panel {
+    background: var(--admin-surface-solid) !important;
+    border: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+}
+
+/* option */
+
+.p-select-option,
+.p-dropdown-item {
+    background: transparent !important;
+    color: var(--admin-text) !important;
+}
+
+/* hover */
+
+.p-select-option:hover,
+.p-dropdown-item:hover {
+    background: rgba(85, 32, 50, 0.12) !important;
+}
+
+/* selected */
+
+.p-select-option-selected,
+.p-dropdown-item.p-highlight {
+    background: var(--admin-primary);
+    color: var(--rw-bg);
+}
+
+/* focused */
+
+/* .p-select-option:focus, */
+/* .p-dropdown-item:focus {
+    background: var(--admin-primary);
+}  */
+/* Calendar Overlay */
+.p-datepicker,
+.p-datepicker-header,
+.p-datepicker-month,
+.p-datepicker-year,
+.p-datepicker table td > span.p-highlight 
+{
+    background: var(--admin-surface-solid);
+    color: var(--admin-text); 
+}
+
+/* Month + Year */
+.p-datepicker .p-datepicker-title,
+.p-datepicker .p-datepicker-prev,
+.p-datepicker .p-datepicker-next {
+    color: var(--admin-text) ;
+}
+
+/* Day */
+/* .p-datepicker table td > span {
+    color: var(--admin-primary) ;
+    border-radius: 50% ;
+} */
+
+/* Hover */
+.p-datepicker table td > span:not(.p-disabled):hover {
+    background: var(--admin-text);
+    color: var(--admin-surface-solid);
+}
+
+/* Selected */
+.p-datepicker table td > span.p-highlight {
+    background: var(--admin-text);
+    color: var(--admin-surface-solid);
+}
+
+/* Active */
+.p-inputswitch.p-highlight .p-inputswitch-slider {
+    background: #22c55e !important;
+    border-color: #22c55e !important;
+}
+
+.p-dialog {
+    background: var(--admin-surface-solid);
+    border: 1px solid var(--admin-border);
+    box-shadow: var(--admin-shadow);
+}
+
+.p-dialog .p-dialog-header {
+    background: var(--admin-surface-solid);
+    color: var(--admin-text);
+}
+
+.p-dialog .p-dialog-content {
+    background: var(--admin-surface-solid);
+    color: var(--admin-text);
+}
+
+.p-dialog .p-dialog-footer {
+    background: var(--admin-surface-solid);
+}
+
+.p-dialog .p-dialog-header-icon {
+    color: var(--admin-text-muted);
+}
+
+/* DARK MODE DROPDOWN — see theme.css */
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}

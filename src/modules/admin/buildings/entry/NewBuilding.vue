@@ -123,7 +123,7 @@ import { defineComponent } from 'vue';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
 import useEditBuilding from './useEditBuilding';
 
 export default defineComponent({

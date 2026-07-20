@@ -23,24 +23,29 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Utilities</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <Dropdown
-                                v-model="statusFilter"
-                                :options="statusOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="Status"
-                                show-clear
-                                class="w-40"
-                            />
-                            <Button label="Reset" @click="resetSearch" />
+                    <AdminListFilters
+                        title="All Utilities"
+                        :search="search"
+                        search-placeholder="Search room, billing month..."
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <Dropdown
+                            v-model="statusFilter"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="All Statuses"
+                            show-clear
+                            class="w-52"
+                        />
+
+                        <template #actions>
                             <router-link :to="{ name: 'newUtility' }">
                                 <Button label="Create" />
                             </router-link>
-                        </div>
-                    </div>
+                        </template>
+                    </AdminListFilters>
                 </template>
 
                 <template #empty>No utility records found.</template>
@@ -81,14 +86,23 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
-import StatusBadge from '@/components/StatusBadge.vue';
+import Loading from '@/components/global/Loading.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { UTILITY_STATUS_OPTIONS } from '@/constants/constant';
 import { useUtilityList } from './useUtilityList';
 
 export default defineComponent({
     name: 'UtilityList',
-    components: { DataTable, Column, Dropdown, Button, Loading, StatusBadge },
+    components: {
+        DataTable,
+        Column,
+        Dropdown,
+        Button,
+        Loading,
+        AdminListFilters,
+        StatusBadge,
+    },
     setup() {
         const list = useUtilityList();
 

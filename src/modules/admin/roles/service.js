@@ -1,5 +1,5 @@
 import api from '@/libs/axios';
-import { endpoint } from '@/constants/endpoint';
+import { endpoint } from '@/services/endpoint';
 
 const service = {
     getAll: async (params) => {

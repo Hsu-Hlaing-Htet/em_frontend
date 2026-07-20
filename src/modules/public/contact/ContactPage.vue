@@ -61,7 +61,7 @@ function submit() {
             class="
                 grid
                 overflow-hidden
-                bg-white
+                bg-rw-surface
                 shadow-[0_20px_50px_rgba(85,32,50,0.12)]
                 lg:grid-cols-2
             "
@@ -113,7 +113,7 @@ function submit() {
                         class="
                             w-full
                             border
-                            border-[#e7d6dc]
+                            border-[var(--rw-input-border)]
                             px-5
                             py-5
                             text-base
@@ -127,7 +127,7 @@ function submit() {
                         class="
                             w-full
                             border
-                            border-[#e7d6dc]
+                            border-[var(--rw-input-border)]
                             px-5
                             py-5
                             text-base
@@ -141,7 +141,7 @@ function submit() {
                         class="
                             w-full
                             border
-                            border-[#e7d6dc]
+                            border-[var(--rw-input-border)]
                             px-5
                             py-5
                             text-base
@@ -156,7 +156,7 @@ function submit() {
                         class="
                             w-full
                             border
-                            border-[#e7d6dc]
+                            border-[var(--rw-input-border)]
                             px-5
                             py-5
                             text-base
@@ -169,13 +169,13 @@ function submit() {
   class="items-center justify-end group relative overflow-hidden
          px-4 py-2 mb-10
          rounded-md
-         border-2 border-[#552032]
-         text-[#552032]
-         bg-white
+         border-2 border-[var(--rw-brand)]
+         text-[var(--rw-primary-deep)]
+         bg-rw-surface
          transition-all duration-300
          hover:text-white
          hover:border-2 hover:border-white
-         hover:shadow-lg hover:shadow-[#552032]/40
+         hover:shadow-lg hover:shadow-[var(--rw-brand)]/40
          active:scale-95 scale-100
              hover:scale-105
              hover:invert-0
@@ -184,7 +184,7 @@ function submit() {
   <!-- Background Animation -->
   <span
     class="absolute inset-0
-           bg-[#552032]
+           bg-[var(--rw-brand)]
            scale-x-0
            origin-left
            transition-transform duration-500
@@ -221,7 +221,7 @@ function submit() {
                     relative
                     overflow-hidden
                     bg-gradient-to-br
-                    from-[#552032]
+                    from-[var(--rw-brand)]
                     to-[#1b0b12]
                     text-white
                     animate-fade-right
@@ -238,7 +238,7 @@ function submit() {
                         h-72
                         w-72
                         rounded-full
-                        bg-white/5
+                        bg-rw-surface/5
                     "
                 ></div>
 
@@ -250,7 +250,7 @@ function submit() {
                         h-80
                         w-80
                         rounded-full
-                        bg-white/5
+                        bg-rw-surface/5
                     "
                 ></div>
 
@@ -288,7 +288,7 @@ function submit() {
                                 max-w-md
                                 text-base
                                 leading-8
-                                text-[#f3dfe6]
+                                text-[var(--rw-brand-light)]
                             "
                         >
                             Our luxury real estate consultants
@@ -324,7 +324,7 @@ function submit() {
                                     items-center
                                     justify-center
                                     rounded-full
-                                    bg-[#6a2a40]
+                                    bg-[var(--rw-brand-mid)]
                                     text-sm
                                 "
                             >
@@ -341,7 +341,7 @@ function submit() {
                                         text-sm
                                         uppercase
                                         tracking-[3px]
-                                        text-[#e8ccd5]
+                                        text-[var(--rw-brand-light)]
                                     "
                                 >
                                     Office
@@ -377,7 +377,7 @@ function submit() {
                                     items-center
                                     justify-center
                                     rounded-full
-                                    bg-[#6a2a40]
+                                    bg-[var(--rw-brand-mid)]
                                     text-sm
                                 "
                             >
@@ -394,7 +394,7 @@ function submit() {
                                         text-sm
                                         uppercase
                                         tracking-[3px]
-                                        text-[#e8ccd5]
+                                        text-[var(--rw-brand-light)]
                                     "
                                 >
                                     Phone
@@ -429,7 +429,7 @@ function submit() {
                                     items-center
                                     justify-center
                                     rounded-full
-                                    bg-[#6a2a40]
+                                    bg-[var(--rw-brand-mid)]
                                     text-sm
                                 "
                             >
@@ -446,7 +446,7 @@ function submit() {
                                         text-sm
                                         uppercase
                                         tracking-[3px]
-                                        text-[#e8ccd5]
+                                        text-[var(--rw-brand-light)]
                                     "
                                 >
                                     Email

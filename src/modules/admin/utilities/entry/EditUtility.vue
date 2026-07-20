@@ -12,7 +12,22 @@
                 @approve="runWorkflow('approve')"
                 @reject="runWorkflow('reject')"
             />
-            <StatusBadge v-if="state.status" :value="state.status" />
+            <div class="flex items-center gap-2">
+                <router-link
+                    v-if="documentRoute"
+                    :to="documentRoute"
+                >
+                    <Button
+                        icon="pi pi-file"
+                        label="View Document"
+                        severity="secondary"
+                    />
+                </router-link>
+                <StatusBadge v-if="state.status" :value="state.status" />
+                <router-link v-if="isApprovalView" :to="backRoute">
+                    <Button type="button" label="Back" severity="secondary" />
+                </router-link>
+            </div>
         </div>
 
         <div class="admin-panel relative">
@@ -128,7 +143,7 @@
 
                 <div v-if="canEdit" class="flex justify-end gap-2 md:col-span-2">
                     <Button type="submit" label="Save" />
-                    <router-link :to="{ name: 'utilityList' }">
+                    <router-link :to="backRoute">
                         <Button type="button" label="Cancel" />
                     </router-link>
                 </div>
@@ -147,8 +162,8 @@ import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
-import StatusBadge from '@/components/StatusBadge.vue';
+import Loading from '@/components/global/Loading.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import WorkflowActionBar from '@/components/admin/WorkflowActionBar.vue';
 import useEditUtility from './useEditUtility';
 

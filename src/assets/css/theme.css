@@ -1,0 +1,581 @@
+/*
+ * Rosewood Royale — global light/dark theme tokens.
+ * Applied via html[data-theme] from stores/themeStore.js
+ */
+
+html[data-theme='light'],
+html:not([data-theme]) {
+    color-scheme: light;
+
+    --rw-bg: #f9f6f0;
+    --rw-surface: rgba(255, 255, 255, 0.95);
+    --rw-surface-solid: #ffffff;
+    --rw-primary: #7a3149;
+    --rw-primary-deep: #552032;
+    --rw-secondary: #2b2c3a;
+    --rw-accent: #d6b8c1;
+    --rw-text: #3f1c29;
+    --rw-text-muted: #7d6670;
+    --rw-border: rgba(122, 49, 73, 0.12);
+    --rw-shadow: 0 18px 48px rgba(122, 49, 73, 0.08);
+    --rw-shadow-soft: 0 8px 24px rgba(122, 49, 73, 0.05);
+    --rw-mask: rgba(0, 0, 0, 0.4);
+    --rw-topbar: #552032;
+    --rw-topbar-text: #ffffff;
+    --rw-nav-text: #1d2d3b;
+    --rw-focus-ring: rgba(85, 32, 50, 0.18);
+
+    --surface-0: #ffffff;
+    --surface-50: #f9f6f0;
+    --surface-100: #f3ede4;
+    --surface-200: #e8ddd4;
+    --surface-300: #d6c4c0;
+    --surface-400: #a8898f;
+    --surface-500: #7d6670;
+    --surface-600: #5c4650;
+    --surface-700: #3f1c29;
+    --surface-800: #2b1520;
+    --surface-900: #140d11;
+    --surface-950: #0a0608;
+    --text-color: var(--rw-text);
+    --text-color-secondary: var(--rw-text-muted);
+    --primary-color: var(--rw-primary-deep);
+    --primary-color-text: #f9f6f0;
+    --surface-ground: var(--rw-bg);
+    --surface-section: var(--rw-surface-solid);
+    --surface-card: var(--rw-surface-solid);
+    --surface-overlay: var(--rw-surface-solid);
+    --surface-border: #efdfdd;
+    --surface-hover: rgba(122, 49, 73, 0.08);
+    --highlight-bg: rgba(122, 49, 73, 0.12);
+    --highlight-text-color: var(--rw-text);
+    --maskbg: var(--rw-mask);
+
+    /* Admin portal aliases */
+    --admin-bg: var(--rw-bg);
+    --admin-surface: var(--rw-surface);
+    --admin-surface-solid: var(--rw-surface-solid);
+    --admin-primary: var(--rw-primary);
+    --admin-secondary: var(--rw-secondary);
+    --admin-text: var(--rw-text);
+    --admin-text-muted: var(--rw-text-muted);
+    --admin-border: var(--rw-border);
+    --admin-shadow: var(--rw-shadow);
+    --admin-shadow-soft: var(--rw-shadow-soft);
+    --admin-mask: var(--rw-mask);
+
+    /* Public portal aliases */
+    --bg: var(--rw-bg);
+    --surface: var(--rw-surface-solid);
+    --text: var(--rw-text);
+    --muted: var(--rw-text-muted);
+    --border: #efdfdd;
+    --dark-pink: var(--rw-primary-deep);
+    --rw-brand: #552032;
+    --rw-brand-mid: #7a3149;
+    --rw-brand-light: #d6b8c1;
+    --rw-brand-pale: #faf7f8;
+    --rw-input-border: #e7d6dc;
+    --shadow-soft: var(--rw-shadow-soft);
+    --shadow-strong: 0 18px 44px rgba(11, 38, 63, 0.18);
+}
+
+html[data-theme='dark'] {
+    color-scheme: dark;
+
+    --surface-0: #24161e;
+    --surface-50: #1a1016;
+    --surface-100: #24161e;
+    --surface-200: #2f1f28;
+    --surface-300: #3d2a35;
+    --surface-400: #6b5560;
+    --surface-500: #9a8490;
+    --surface-600: #b8a0ab;
+    --surface-700: #d6b8c1;
+    --surface-800: #e8d4db;
+    --surface-900: #f2e6eb;
+    --surface-950: #faf5f7;
+    --text-color: var(--rw-text);
+    --text-color-secondary: var(--rw-text-muted);
+    --primary-color: var(--rw-primary);
+    --primary-color-text: #140d11;
+    --surface-ground: var(--rw-bg);
+    --surface-section: var(--rw-surface-solid);
+    --surface-card: var(--rw-surface-solid);
+    --surface-overlay: var(--rw-surface-solid);
+    --surface-border: var(--rw-border);
+    --surface-hover: rgba(214, 184, 193, 0.1);
+    --highlight-bg: rgba(214, 184, 193, 0.16);
+    --highlight-text-color: var(--rw-text);
+    --maskbg: var(--rw-mask);
+
+    --rw-bg: #140d11;
+    --rw-surface: rgba(36, 22, 30, 0.88);
+    --rw-surface-solid: #24161e;
+    --rw-primary: #d6b8c1;
+    --rw-primary-deep: #d6b8c1;
+    --rw-secondary: #552032;
+    --rw-accent: #7a3149;
+    --rw-text: #f2e6eb;
+    --rw-text-muted: #c4a8b3;
+    --rw-border: rgba(214, 184, 193, 0.08);
+    --rw-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+    --rw-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.22);
+    --rw-mask: rgba(0, 0, 0, 0.62);
+    --rw-topbar: #1a1016;
+    --rw-topbar-text: #f2e6eb;
+    --rw-nav-text: #f2e6eb;
+    --rw-focus-ring: rgba(214, 184, 193, 0.24);
+
+    --admin-bg: var(--rw-bg);
+    --admin-surface: var(--rw-surface);
+    --admin-surface-solid: var(--rw-surface-solid);
+    --admin-primary: var(--rw-primary);
+    --admin-secondary: var(--rw-secondary);
+    --admin-text: var(--rw-text);
+    --admin-text-muted: var(--rw-text-muted);
+    --admin-border: var(--rw-border);
+    --admin-shadow: var(--rw-shadow);
+    --admin-shadow-soft: var(--rw-shadow-soft);
+    --admin-mask: var(--rw-mask);
+
+    --bg: var(--rw-bg);
+    --surface: var(--rw-surface-solid);
+    --text: var(--rw-text);
+    --muted: var(--rw-text-muted);
+    --border: var(--rw-border);
+    --dark-pink: var(--rw-primary);
+    --rw-brand: #552032;
+    --rw-brand-mid: #7a3149;
+    --rw-brand-light: #d6b8c1;
+    --rw-brand-pale: #1a1016;
+    --rw-input-border: rgba(214, 184, 193, 0.22);
+    --shadow-soft: var(--rw-shadow-soft);
+    --shadow-strong: 0 18px 44px rgba(0, 0, 0, 0.35);
+}
+
+html,
+body,
+#app {
+    color: var(--rw-text);
+    background: var(--rw-bg);
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--rw-border);
+    background: var(--rw-surface);
+    color: var(--rw-text-muted);
+    cursor: pointer;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--rw-text);
+    background: var(--rw-surface-solid);
+}
+
+[data-public-layout] .shell {
+    min-height: 100vh;
+    background: var(--rw-bg);
+    color: var(--rw-text);
+}
+
+[data-public-layout] .topbar {
+    background: var(--rw-topbar);
+    color: var(--rw-topbar-text);
+}
+
+[data-public-layout] .navbar-sticky {
+    background: var(--rw-surface-solid);
+    border-bottom: 1px solid var(--rw-border);
+    box-shadow: var(--rw-shadow-soft);
+}
+
+[data-public-layout] .nav-link {
+    color: var(--rw-nav-text);
+}
+
+[data-public-layout] .nav-link:hover,
+[data-public-layout] .nav-link:focus-visible,
+[data-public-layout] .nav-link.is-active {
+    color: var(--rw-primary-deep);
+}
+
+[data-public-layout] .nav-link::after {
+    background: var(--rw-primary-deep);
+}
+
+[data-public-layout] .mobile-menu-trigger {
+    border-color: var(--rw-border);
+    background: var(--rw-surface-solid);
+    color: var(--rw-primary-deep);
+}
+
+[data-public-layout] .mobile-sidebar .p-sidebar {
+    background: var(--rw-surface-solid);
+    color: var(--rw-text);
+}
+
+[data-public-layout] .mobile-link {
+    border-color: var(--rw-border);
+    color: var(--rw-nav-text);
+}
+
+[data-public-layout] .mobile-link:hover,
+[data-public-layout] .mobile-link:focus-visible,
+[data-public-layout] .mobile-link.router-link-active {
+    background: rgba(122, 49, 73, 0.1);
+    border-color: var(--rw-border);
+    color: var(--rw-primary-deep);
+}
+
+[data-public-layout] .mobile-extra-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+html[data-theme='dark'] .p-dropdown-panel,
+html[data-theme='dark'] .p-select-overlay {
+    background: #24161e !important;
+    border: 1px solid rgba(214, 184, 193, 0.12) !important;
+}
+
+html[data-theme='dark'] .p-dropdown-item:hover,
+html[data-theme='dark'] .p-select-option:hover {
+    background: rgba(214, 184, 193, 0.12) !important;
+    color: #ffffff !important;
+}
+
+/* Shared semantic utilities */
+.bg-rw-bg {
+    background-color: var(--rw-bg) !important;
+}
+
+.bg-rw-surface {
+    background-color: var(--rw-surface-solid) !important;
+}
+
+.bg-rw-surface-soft {
+    background-color: var(--rw-surface) !important;
+}
+
+.bg-rw-section-alt {
+    background-color: var(--rw-brand-pale) !important;
+}
+
+.text-rw {
+    color: var(--rw-text) !important;
+}
+
+.text-rw-muted {
+    color: var(--rw-text-muted) !important;
+}
+
+.border-rw {
+    border-color: var(--rw-border) !important;
+}
+
+.rw-page {
+    background: var(--rw-bg);
+    color: var(--rw-text);
+}
+
+.rw-section {
+    background: var(--rw-bg);
+    color: var(--rw-text);
+}
+
+.rw-section-alt {
+    background: var(--rw-brand-pale);
+    color: var(--rw-text);
+}
+
+.rw-card {
+    background: var(--rw-surface-solid);
+    border: 1px solid var(--rw-border);
+    color: var(--rw-text);
+    box-shadow: var(--rw-shadow-soft);
+}
+
+.rw-auth-shell {
+    min-height: 100vh;
+    background: var(--rw-bg);
+    color: var(--rw-text);
+}
+
+.rw-auth-card {
+    background: var(--rw-surface-solid);
+    border: 1px solid var(--rw-border);
+    color: var(--rw-text);
+    box-shadow: var(--rw-shadow);
+}
+
+.rw-input-shell {
+    background: color-mix(in srgb, var(--rw-accent) 22%, var(--rw-surface-solid));
+    color: var(--rw-text);
+}
+
+.rw-input-shell input {
+    color: var(--rw-text);
+}
+
+.rw-input-shell input::placeholder {
+    color: var(--rw-text-muted);
+}
+
+/* PrimeVue — cards, panels, navigation (override Aura hardcoded colors) */
+.p-card,
+.p-panel,
+.p-panel .p-panel-header,
+.p-panel .p-panel-content,
+.p-tabview,
+.p-tabview-panels,
+.p-tabview-panel,
+.p-sidebar,
+.p-sidebar .p-sidebar-header,
+.p-sidebar .p-sidebar-content,
+.p-menu,
+.p-menubar,
+.p-toast,
+.p-toast-message,
+.p-fileupload,
+.p-fileupload-content,
+.p-fileupload-buttonbar,
+.p-breadcrumb,
+.p-tag,
+.p-chip,
+.p-listbox,
+.p-listbox-list,
+.p-overlaypanel,
+.p-autocomplete-panel,
+.p-multiselect-panel,
+.p-tieredmenu,
+.p-contextmenu,
+.p-accordion .p-accordion-header .p-accordion-header-link,
+.p-accordion .p-accordion-content,
+.p-fieldset,
+.p-fieldset-legend,
+.p-divider-content,
+.p-timeline-event-content,
+.p-timeline-event-opposite,
+.p-orderlist,
+.p-orderlist-list,
+.p-picklist,
+.p-picklist-list,
+.p-tree,
+.p-treetable .p-treetable-thead > tr > th,
+.p-treetable .p-treetable-tbody > tr,
+.p-treetable .p-treetable-tbody > tr > td,
+.p-treetable .p-treetable-header,
+.p-treetable .p-treetable-footer,
+.p-dialog,
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-content,
+.p-dialog .p-dialog-footer,
+.p-datatable,
+.p-datatable-wrapper,
+.p-datatable-header,
+.p-datatable-footer,
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tbody > tr,
+.p-datatable .p-datatable-tbody > tr > td,
+.p-datatable .p-datatable-emptymessage,
+.p-paginator,
+.p-inputtext,
+.p-inputnumber-input,
+.p-textarea,
+.p-password-input,
+.p-dropdown,
+.p-dropdown-label,
+.p-select,
+.p-select-label,
+.p-multiselect,
+.p-multiselect-label,
+.p-calendar .p-inputtext,
+.p-datepicker,
+.p-datepicker-header,
+.p-datepicker-calendar-container,
+.p-select-overlay,
+.p-dropdown-panel,
+.p-overlaypanel-content {
+    background: var(--rw-surface-solid) !important;
+    color: var(--rw-text) !important;
+    border-color: var(--rw-border) !important;
+}
+
+.p-card .p-card-title,
+.p-card .p-card-subtitle,
+.p-panel-title,
+.p-tabview-title,
+.p-breadcrumb-list li .p-menuitem-link,
+.p-breadcrumb-list li .p-menuitem-text,
+.p-breadcrumb-list li.p-breadcrumb-chevron,
+.p-sidebar .p-sidebar-header-content,
+.p-fieldset-legend-text {
+    color: var(--rw-text);
+}
+
+.p-card .p-card-content,
+.p-card .p-card-body,
+.p-tabview-panel,
+.p-menuitem-text,
+.p-menuitem-link,
+.p-listbox-item,
+.p-autocomplete-item,
+.p-multiselect-item {
+    color: var(--rw-text-muted);
+}
+
+.p-card .p-card-body {
+    background: var(--rw-surface-solid);
+}
+
+.p-tabview-nav {
+    background: var(--rw-surface-solid);
+    border-color: var(--rw-border);
+}
+
+.p-tabview-nav li .p-tabview-nav-link {
+    background: transparent;
+    color: var(--rw-text-muted);
+    border-color: var(--rw-border);
+}
+
+.p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    background: var(--rw-surface-solid);
+    color: var(--rw-text);
+    border-color: var(--rw-border);
+}
+
+.p-datatable .p-datatable-tbody > tr.p-highlight {
+    background: var(--highlight-bg) !important;
+    color: var(--highlight-text-color) !important;
+}
+
+html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr:hover {
+    background: rgba(214, 184, 193, 0.08) !important;
+}
+
+.p-paginator .p-paginator-page.p-highlight,
+.p-paginator .p-paginator-page:not(.p-disabled):hover {
+    background: var(--highlight-bg) !important;
+    color: var(--rw-text) !important;
+}
+
+.p-button.p-button-secondary,
+.p-button.p-button-outlined,
+.p-button.p-button-text {
+    color: var(--rw-text);
+}
+
+.p-button.p-button-outlined {
+    border-color: var(--rw-border);
+}
+
+.p-checkbox .p-checkbox-box,
+.p-radiobutton .p-radiobutton-box {
+    background: var(--rw-surface-solid);
+    border-color: var(--rw-border);
+}
+
+.p-progressspinner-circle {
+    stroke: var(--rw-primary) !important;
+}
+
+.p-toast-message-text,
+.p-toast-summary,
+.p-toast-detail {
+    color: var(--rw-text);
+}
+
+.p-confirm-dialog,
+.p-confirm-dialog .p-dialog-content {
+    background: var(--rw-surface-solid);
+    color: var(--rw-text);
+}
+
+.p-fileupload-choose {
+    background: var(--rw-surface-solid);
+    color: var(--rw-text);
+    border-color: var(--rw-border);
+}
+
+.p-sidebar-mask {
+    background: var(--rw-mask);
+}
+
+[data-public-layout] main {
+    background: var(--rw-bg);
+    color: var(--rw-text);
+}
+
+[data-public-layout] .card {
+    background: var(--rw-surface-solid);
+    border-color: var(--rw-border);
+    color: var(--rw-text);
+}
+
+[data-public-layout] .empty-results,
+[data-public-layout] .loading-overlay {
+    color: var(--rw-text-muted);
+}
+
+html[data-theme='dark'] [data-public-layout] .mobile-link:hover,
+html[data-theme='dark'] [data-public-layout] .mobile-link:focus-visible,
+html[data-theme='dark'] [data-public-layout] .mobile-link.router-link-active {
+    background: rgba(214, 184, 193, 0.1);
+}
+
+html[data-theme='dark'] .p-select-option-selected,
+html[data-theme='dark'] .p-dropdown-item.p-highlight {
+    color: var(--rw-bg) !important;
+}
+
+html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr {
+    background: var(--rw-surface-solid) !important;
+}
+
+html[data-theme='dark'] .p-datatable .p-datatable-thead > tr > th {
+    background: var(--rw-surface-solid) !important;
+    color: var(--rw-text-muted) !important;
+}
+
+html[data-theme='dark'] .p-inputtext::placeholder,
+html[data-theme='dark'] .p-textarea::placeholder {
+    color: var(--rw-text-muted) !important;
+}
+
+html[data-theme='dark'] .loading-overlay {
+    background: var(--rw-mask) !important;
+}
+
+html[data-theme='dark'] .text-900 {
+    color: var(--rw-text) !important;
+}
+
+html[data-theme='dark'] .text-800,
+html[data-theme='dark'] .text-700,
+html[data-theme='dark'] .text-600 {
+    color: var(--rw-text-muted) !important;
+}
+
+html[data-theme='dark'] .surface-0,
+html[data-theme='dark'] .surface-section,
+html[data-theme='dark'] .surface-ground {
+    background: var(--rw-bg) !important;
+    color: var(--rw-text) !important;
+}

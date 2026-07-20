@@ -23,32 +23,29 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Maintenance Requests</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="relative">
-                                <i class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]" />
-                                <InputText
-                                    v-model="search"
-                                    placeholder="Search title..."
-                                    class="w-72 !pl-10"
-                                />
-                            </div>
-                            <Dropdown
-                                v-model="statusFilter"
-                                :options="statusOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="Status"
-                                show-clear
-                                class="w-44"
-                            />
-                            <Button label="Reset" @click="resetSearch" />
+                    <AdminListFilters
+                        title="All Maintenance Requests"
+                        :search="search"
+                        search-placeholder="Search title, description..."
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <Dropdown
+                            v-model="statusFilter"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="All Statuses"
+                            show-clear
+                            class="w-52"
+                        />
+
+                        <template #actions>
                             <router-link :to="{ name: 'newMaintenanceRequest' }">
                                 <Button label="Create" />
                             </router-link>
-                        </div>
-                    </div>
+                        </template>
+                    </AdminListFilters>
                 </template>
 
                 <template #empty>No maintenance requests found.</template>
@@ -96,17 +93,25 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
-import StatusBadge from '@/components/StatusBadge.vue';
+import Loading from '@/components/global/Loading.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { MAINTENANCE_STATUS_OPTIONS } from '@/constants/constant';
 import { useMaintenanceRequestList } from './useMaintenanceRequestList';
 
 export default defineComponent({
     name: 'MaintenanceRequestList',
-    components: { DataTable, Column, InputText, Dropdown, Button, Loading, StatusBadge },
+    components: {
+        DataTable,
+        Column,
+        Dropdown,
+        Button,
+        Loading,
+        AdminListFilters,
+        StatusBadge,
+    },
     setup() {
         const list = useMaintenanceRequestList();
 

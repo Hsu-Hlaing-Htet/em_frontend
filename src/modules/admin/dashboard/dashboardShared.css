@@ -1,0 +1,244 @@
+.dashboard-panel {
+    border-radius: 1rem;
+    border: 1px solid color-mix(in srgb, var(--admin-border) 78%, transparent);
+    background: color-mix(in srgb, var(--admin-surface) 74%, transparent);
+    padding: 1.25rem;
+    box-shadow: var(--admin-shadow-soft);
+    backdrop-filter: blur(18px) saturate(145%);
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+
+.dashboard-stat-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid color-mix(in srgb, var(--admin-border) 78%, transparent);
+    background: color-mix(in srgb, var(--admin-surface) 74%, transparent);
+    padding: 1.25rem;
+    box-shadow: var(--admin-shadow-soft);
+    backdrop-filter: blur(18px) saturate(145%);
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: left;
+}
+
+.dashboard-stat-card:hover,
+.dashboard-stat-card-selected {
+    transform: translateY(-0.25rem);
+    box-shadow: var(--admin-shadow);
+    border-color: rgba(122, 49, 73, 0.35);
+}
+
+.dashboard-stat-icon {
+    display: grid;
+    height: 2.75rem;
+    width: 2.75rem;
+    place-items: center;
+    border-radius: 0.75rem;
+    background: linear-gradient(to bottom right, rgba(85, 32, 50, 0.15), rgba(214, 184, 193, 0.3));
+    color: var(--admin-primary);
+}
+
+.dashboard-chart {
+    display: flex;
+    height: 14rem;
+    align-items: flex-end;
+    gap: 0.75rem;
+    padding-top: 1rem;
+}
+
+.dashboard-chart-bar {
+    width: 100%;
+    border-radius: 0.75rem 0.75rem 0 0;
+    background: linear-gradient(to top, var(--admin-primary), var(--admin-accent));
+    transition: all 0.3s ease;
+    min-height: 0.5rem;
+}
+
+.dashboard-chart-bar-active {
+    filter: brightness(1.12);
+    transform: scaleY(1.03);
+    transform-origin: bottom;
+}
+
+.dashboard-tooltip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    border-radius: 9999px;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface-solid);
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+}
+
+.dashboard-activity-item {
+    display: flex;
+    gap: 0.875rem;
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    padding: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.dashboard-activity-item:hover,
+.dashboard-notification-unread {
+    border-color: var(--admin-border);
+    background: rgba(214, 184, 193, 0.1);
+}
+
+.dashboard-quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface-solid);
+    padding: 1rem;
+    color: var(--admin-text);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.dashboard-quick-action:hover {
+    transform: translateY(-0.25rem);
+    border-color: rgba(122, 49, 73, 0.25);
+    box-shadow: var(--admin-shadow-soft);
+}
+
+.dashboard-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface-solid);
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+    color: var(--admin-text);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.dashboard-control:hover {
+    border-color: rgba(122, 49, 73, 0.25);
+}
+
+.dashboard-control:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dashboard-control-primary {
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-accent));
+    color: var(--admin-bg);
+    border-color: transparent;
+}
+
+.dashboard-control-active {
+    border-color: rgba(122, 49, 73, 0.35);
+    background: rgba(214, 184, 193, 0.14);
+}
+
+.dashboard-segment {
+    display: inline-flex;
+    gap: 0.25rem;
+    border-radius: 9999px;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface-solid);
+    padding: 0.2rem;
+}
+
+.dashboard-segment-button {
+    border-radius: 9999px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    color: var(--admin-text-muted);
+}
+
+.dashboard-segment-button-active {
+    background: rgba(214, 184, 193, 0.18);
+    color: var(--admin-text);
+}
+
+.dashboard-progress-row {
+    display: grid;
+    grid-template-columns: minmax(90px, 120px) 1fr 42px;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 0.35rem;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.dashboard-progress-row:hover,
+.dashboard-progress-row-active {
+    border-color: var(--admin-border);
+    background: rgba(214, 184, 193, 0.08);
+}
+
+.dashboard-search {
+    min-width: 12rem;
+    border-radius: 9999px;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface-solid);
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+    color: var(--admin-text);
+    outline: none;
+}
+
+.dashboard-search:focus {
+    border-color: rgba(122, 49, 73, 0.35);
+}
+
+.dashboard-selected-detail {
+    border-color: rgba(122, 49, 73, 0.25);
+    background: linear-gradient(135deg, rgba(214, 184, 193, 0.08), var(--admin-surface));
+}
+
+.dashboard-table-wrap {
+    overflow-x: auto;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--admin-border);
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.dashboard-table th {
+    color: var(--admin-text-muted);
+    font-weight: 600;
+}
+
+.dashboard-icon-toggle {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border-radius: 9999px;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface-solid);
+    color: var(--admin-text-muted);
+}
+
+.dashboard-icon-toggle-active {
+    border-color: rgba(122, 49, 73, 0.35);
+    background: rgba(214, 184, 193, 0.14);
+    color: var(--admin-primary);
+}

@@ -58,10 +58,13 @@
                 <Column field="effective_date" header="Effective Date" :sortable="true" style="min-width: 140px" />
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
-                        <InputSwitch
-                            :model-value="data.status === 'active'"
-                            @update:model-value="(value) => toggleStatus(data, value)"
-                        />
+                        <div class="flex items-center gap-3">
+                            <StatusBadge :value="data.status" />
+                            <InputSwitch
+                                :model-value="data.status === 'active'"
+                                @update:model-value="(value) => toggleStatus(data, value)"
+                            />
+                        </div>
                     </template>
                 </Column>
                 <Column field="created_at" header="Created At" :sortable="true" style="min-width: 180px" />
@@ -101,12 +104,13 @@ import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
+import Loading from '@/components/global/Loading.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useUtilityRateList } from './useUtilityRateList';
 
 export default defineComponent({
     name: 'UtilityRateList',
-    components: { DataTable, Column, InputText, InputSwitch, Button, Loading },
+    components: { DataTable, Column, InputText, InputSwitch, StatusBadge, Button, Loading },
     setup() {
         return useUtilityRateList();
     },

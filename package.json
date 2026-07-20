@@ -7,20 +7,18 @@
         "dev": "vite"
     },
     "dependencies": {
-        "@babel/polyfill": "^7.12.1",
         "pinia": "^3.0.4",
-        "primeflex": "^4.0.0",
         "primeicons": "^7.0.0",
         "primevue": "^3.53.1",
         "vue": "^3.5.21",
-        "vue-router": "^4.5.1"
+        "vue-router": "^4.5.1",
+        "xlsx": "^0.18.5"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
         "@vitejs/plugin-vue": "^6.0.1",
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",
-        "daisyui": "^5.5.19",
         "tailwindcss": "^4.0.0",
         "vite": "^7.0.7"
     }

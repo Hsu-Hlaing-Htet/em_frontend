@@ -2,8 +2,22 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { loginUser, logoutUser, getCurrentUser } from './service';
 
+function readStoredUser() {
+    const raw = localStorage.getItem('user');
+
+    if (!raw) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(raw);
+    } catch {
+        return null;
+    }
+}
+
 export const useAuthStore = defineStore('auth', () => {
-    const user = ref(null);
+    const user = ref(readStoredUser());
     const token = ref(localStorage.getItem('token'));
 
     const isAuthenticated = computed(() => !!token.value);
@@ -22,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        let redirect_to = '/user';
+        let redirect_to = '/customer/dashboard';
 
         if (
             data.user.role === 'super_admin' ||
@@ -35,13 +49,6 @@ export const useAuthStore = defineStore('auth', () => {
             ...data,
             redirect_to,
         };
-
-        // #region agent log
-        fetch('http://127.0.0.1:7923/ingest/23465e0c-eb0a-42c6-a1cf-6932802664b7',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'516e3b'},body:JSON.stringify({sessionId:'516e3b',location:'store.js:login',message:'login result',data:{userRole:data.user?.role,redirect_to,hasToken:!!data.token},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
-        // #endregion
-        console.log('LOGIN RESPONSE', result);
-        console.log('REDIRECT TO', result.redirect_to);
-        console.log('USER ROLE', data.user?.role);
 
         return result;
     }
@@ -75,6 +82,18 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    async function refreshUser() {
+        if (!token.value) {
+            return null;
+        }
+
+        const { data } = await getCurrentUser();
+        user.value = data.data;
+        localStorage.setItem('user', JSON.stringify(data.data));
+
+        return user.value;
+    }
+
     return {
         user,
         token,
@@ -83,5 +102,6 @@ export const useAuthStore = defineStore('auth', () => {
         login,
         logout,
         ensureLoaded,
+        refreshUser,
     };
 });

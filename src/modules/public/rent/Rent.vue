@@ -1,7 +1,7 @@
 <script setup>
-import PropertyCard from '@/modules/public/components/PropertyCard.vue';
-import FloatingChat from '@/components/FloatingChat.vue';
-import { useRent } from './useRent';
+import PropertyCard from '@/components/public/PropertyCard.vue';
+import FloatingChat from '@/components/global/FloatingChat.vue';
+import { useRent } from '@/composables/public/useRent';
 
 const {
     properties,
@@ -20,7 +20,7 @@ const {
 
 <template>
     <template v-if="heroProperty">
-        <section class="relative min-h-[720px] overflow-hidden bg-[#552032] md:min-h-[calc(100vh-118px)]">
+        <section class="relative min-h-[720px] overflow-hidden bg-[var(--rw-brand)] md:min-h-[calc(100vh-118px)]">
             <Transition name="sale-hero-fade">
                 <img
                     :key="activeHeroImage"
@@ -29,29 +29,29 @@ const {
                     class="absolute inset-0 h-full w-full object-cover"
                 >
             </Transition>
-            <div class="absolute inset-0 bg-[#552032]/35" />
+            <div class="absolute inset-0 bg-[var(--rw-brand)]/35" />
 
             <div class="container relative z-10 flex min-h-[720px] items-center py-10 md:min-h-[calc(100vh-118px)]">
-                <article class="w-full max-w-xl bg-white shadow-[0_28px_80px_rgba(85,32,50,0.24)]">
+                <article class="w-full max-w-xl bg-rw-surface shadow-[0_28px_80px_rgba(85,32,50,0.24)]">
                     <div class="p-7 md:p-10">
                         <div class="mb-7 flex flex-wrap gap-3">
-                            <span class="bg-[#552032] px-4 py-2 text-xs uppercase tracking-[0.08em] text-white">
+                            <span class="bg-[var(--rw-brand)] px-4 py-2 text-xs uppercase tracking-[0.08em] text-white">
                                 New Offer
                             </span>
-                            <span class="border-2 border-[#d6b8c1] px-4 py-2 text-xs uppercase tracking-[0.08em] text-[#552032]">
+                            <span class="border-2 border-[var(--rw-brand-light)] px-4 py-2 text-xs uppercase tracking-[0.08em] text-[var(--rw-primary-deep)]">
                                 Rental
                             </span>
                         </div>
 
-                        <h1 class="m-0 text-xl font-semibold leading-tight text-gray-900 md:text-2xl">
+                        <h1 class="m-0 text-xl font-semibold leading-tight text-rw md:text-2xl">
                             {{ heroProperty.property_name }}
                         </h1>
 
-                        <p class="mt-3 mb-7 text-lg text-[#552032] md:text-xl">
+                        <p class="mt-3 mb-7 text-lg text-[var(--rw-primary-deep)] md:text-xl">
                             {{ heroPrice }}
                         </p>
 
-                        <p class="mb-7 text-base leading-8 text-gray-600 md:text-md">
+                        <p class="mb-7 text-base leading-8 text-rw-muted md:text-md">
                             {{ heroProperty.description || 'A refined rental residence is available in Yangon with polished interiors, strong location value, and comfortable living space.' }}
                         </p>
 
@@ -61,7 +61,7 @@ const {
                                 :key="image"
                                 type="button"
                                 class="h-16 w-20 overflow-hidden border-2 transition duration-300 md:h-20 md:w-24"
-                                :class="index === activeHeroImageIndex ? 'border-[#552032]' : 'border-[#d6b8c1]'"
+                                :class="index === activeHeroImageIndex ? 'border-[var(--rw-brand)]' : 'border-[var(--rw-brand-light)]'"
                                 @click="selectHeroImage(index)"
                             >
                                 <img
@@ -73,23 +73,23 @@ const {
                         </div>
                     </div>
 
-                    <div class="border-t border-gray-200 px-7 py-6 md:px-10">
-                        <p class="m-0 flex items-center gap-3 text-lg text-gray-900">
-                            <i class="fas fa-location-dot text-[#552032]" />
+                    <div class="border-t border-[var(--rw-border)] px-7 py-6 md:px-10">
+                        <p class="m-0 flex items-center gap-3 text-lg text-rw">
+                            <i class="fas fa-location-dot text-[var(--rw-primary-deep)]" />
                             {{ heroProperty.township }}, Yangon
                         </p>
 
-                        <div class="mt-5 flex flex-wrap gap-x-10 gap-y-4 text-md text-gray-800">
+                        <div class="mt-5 flex flex-wrap gap-x-10 gap-y-4 text-md text-rw">
                             <span class="inline-flex items-center gap-3">
-                                <i class="fas fa-bed text-[#552032]" />
+                                <i class="fas fa-bed text-[var(--rw-primary-deep)]" />
                                 {{ heroProperty.bedrooms ?? '-' }}
                             </span>
                             <span class="inline-flex items-center gap-3">
-                                <i class="fas fa-bath text-[#552032]" />
+                                <i class="fas fa-bath text-[var(--rw-primary-deep)]" />
                                 {{ heroProperty.bathrooms ?? '-' }}
                             </span>
                             <span class="inline-flex items-center gap-3">
-                                <i class="fas fa-ruler-combined text-[#552032]" />
+                                <i class="fas fa-ruler-combined text-[var(--rw-primary-deep)]" />
                                 {{ formatArea(heroProperty.area_sqft) }} ft²
                             </span>
                         </div>
@@ -97,9 +97,9 @@ const {
 
                     <router-link
                         :to="`/properties/${heroProperty.id}`"
-                        class="flex items-center border-1 border-[#552032] justify-center gap-3 px-6 py-5 text-lg font-bold text-white transition duration-300 hover:bg-white hover:text-[#552032]"
+                        class="flex items-center border-1 border-[var(--rw-brand)] justify-center gap-3 bg-[var(--rw-brand)] px-6 py-5 text-lg font-bold text-white transition duration-300 hover:bg-rw-surface hover:text-[var(--rw-primary-deep)]"
                     >
-                        <i class="fas fa-house text-[#552032]" />
+                        <i class="fas fa-house text-[var(--rw-primary-deep)]" />
                         View Full Info
                     </router-link>
                 </article>
@@ -108,7 +108,7 @@ const {
             <button
                 type="button"
                 aria-label="Previous rental"
-                class="absolute left-0 top-1/2 hidden h-14 w-14 -translate-y-1/2 place-items-center bg-white text-2xl text-[#552032] shadow-lg transition duration-300 hover:bg-[#552032] hover:text-white md:grid"
+                class="absolute left-0 top-1/2 hidden h-14 w-14 -translate-y-1/2 place-items-center bg-rw-surface text-2xl text-[var(--rw-primary-deep)] shadow-lg transition duration-300 hover:bg-[var(--rw-brand)] hover:text-white md:grid"
                 @click="previousHeroImage"
             >
                 <i class="fas fa-chevron-left" />
@@ -117,7 +117,7 @@ const {
             <button
                 type="button"
                 aria-label="Next rental"
-                class="absolute right-0 top-1/2 hidden h-14 w-14 -translate-y-1/2 place-items-center bg-white text-2xl text-[#552032] shadow-lg transition duration-300 hover:bg-[#552032] hover:text-white md:grid"
+                class="absolute right-0 top-1/2 hidden h-14 w-14 -translate-y-1/2 place-items-center bg-rw-surface text-2xl text-[var(--rw-primary-deep)] shadow-lg transition duration-300 hover:bg-[var(--rw-brand)] hover:text-white md:grid"
                 @click="nextHeroImage"
             >
                 <i class="fas fa-chevron-right" />
@@ -146,17 +146,17 @@ const {
             question="Have a question about this rental?"
         />
 
-        <section class="section bg-white reveal">
+        <section class="section rw-section reveal">
             <div class="container">
-                <div class="flex flex-col gap-3 border-b border-[#d6b8c1]/70 pb-5 md:flex-row md:items-end md:justify-between">
+                <div class="flex flex-col gap-3 border-b border-[var(--rw-brand-light)]/70 pb-5 md:flex-row md:items-end md:justify-between">
                     <div>
                         <p class="title text-xs">Available Rentals</p>
-                        <h2 class="mt-2 mb-0 text-xl font-semibold text-[#552032] md:text-3xl">
+                        <h2 class="mt-2 mb-0 text-xl font-semibold text-[var(--rw-primary-deep)] md:text-3xl">
                             Browse premium rental homes
                         </h2>
                     </div>
 
-                    <p class="m-0 text-sm uppercase text-gray-500">
+                    <p class="m-0 text-sm uppercase text-rw-muted">
                         {{ properties.length }} listings
                     </p>
                 </div>
@@ -170,10 +170,10 @@ const {
         </section>
     </template>
 
-    <section v-else class="section bg-white">
+    <section v-else class="section rw-section">
         <div class="container">
             <p class="title text-xs">Available Rentals</p>
-            <h1 class="mt-3 mb-0 text-xl font-semibold text-[#552032] md:text-2xl">
+            <h1 class="mt-3 mb-0 text-xl font-semibold text-[var(--rw-primary-deep)] md:text-2xl">
                 Rental Homes in Yangon
             </h1>
         </div>

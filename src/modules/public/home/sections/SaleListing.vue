@@ -1,15 +1,11 @@
 <script setup>
-
-import PropertyCard from '@/modules/public/components/PropertyCard.vue';
-
+import PropertyCard from '@/components/public/PropertyCard.vue';
+import PropertyCardSkeleton from '@/components/public/PropertyCardSkeleton.vue';
 import Carousel from 'primevue/carousel';
-
-import { useSaleListing } from './useSaleListing';
-import router from '../../../../routes';    
+import { useSaleListing } from '@/composables/public/useSaleListing';
 
 const {
     saleProperties,
-    routerLink, 
     loading,
     onCompare,
     responsiveOptions,
@@ -17,54 +13,52 @@ const {
 </script>
 
 <template>
+    <section class="reveal">
+        <div class="container">
+            <div class="section-heading-row">
+                <h2>Featured Sale Properties</h2>
 
-<section class="reveal is-visible">
+                <router-link
+                    to="/sale-properties"
+                    class="view-all-link"
+                >
+                    View All Listings
+                    <i class="pi pi-arrow-right" />
+                </router-link>
+            </div>
 
-    <div class="container">
-
-        <div class="section-heading-row">
-
-    <h2>
-        Featured Sale Properties
-    </h2>
-
-      <router-link
-                to="/sale-properties"
-                class="view-all-link"
+            <div
+                v-if="loading"
+                class="layout-columns"
             >
-
-                View All Listings
-
-                <i class="pi pi-arrow-right" />
-
-            </router-link>
-
-</div>
-
-        <Carousel
-            :value="saleProperties"
-            :numVisible="3"
-            :numScroll="1"
-            :responsiveOptions="responsiveOptions"
-            circular
-        >
-
-            <template #item="{ data }">
-
-                <div class="px-3 py-4">
-
-                    <PropertyCard
-                        :property="data"
-                        @compare="onCompare"
-                    />
-
+                <div
+                    v-for="row in 3"
+                    :key="`sale-skeleton-${row}`"
+                    class="col-4"
+                >
+                    <PropertyCardSkeleton />
                 </div>
+            </div>
 
-            </template>
-
-        </Carousel>
-
-    </div>
-
-</section>
+            <Carousel
+                v-else
+                :value="saleProperties"
+                :num-visible="3"
+                :num-scroll="1"
+                :responsive-options="responsiveOptions"
+                :autoplay-interval="4500"
+                circular
+                class="featured-carousel"
+            >
+                <template #item="{ data }">
+                    <div class="px-3 py-4">
+                        <PropertyCard
+                            :property="data"
+                            @compare="onCompare"
+                        />
+                    </div>
+                </template>
+            </Carousel>
+        </div>
+    </section>
 </template>

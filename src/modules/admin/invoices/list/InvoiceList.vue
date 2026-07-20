@@ -23,32 +23,25 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Invoices</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="relative">
-                                <i class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]" />
-                                <InputText
-                                    v-model="search"
-                                    placeholder="Search invoice number..."
-                                    class="w-72 !pl-10"
-                                />
-                            </div>
-                            <Dropdown
-                                v-model="statusFilter"
-                                :options="statusOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="Status"
-                                show-clear
-                                class="w-40"
-                            />
-                            <Button label="Reset" @click="resetSearch" />
-                        </div>
-                    </div>
+                    <AdminListFilters
+                        title="Issued Invoices"
+                        :search="search"
+                        search-placeholder="Search invoice number..."
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <Dropdown
+                            v-model="statusFilter"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="All Approved"
+                            class="w-52"
+                        />
+                    </AdminListFilters>
                 </template>
 
-                <template #empty>No invoices found.</template>
+                <template #empty>No issued invoices found.</template>
                 <template #loading>Loading invoices. Please wait.</template>
 
                 <Column field="invoice_number" header="Invoice #" :sortable="true" style="min-width: 150px">
@@ -70,6 +63,16 @@
                     </template>
                 </Column>
                 <Column field="issued_date" header="Issued" :sortable="true" style="min-width: 120px" />
+                <Column field="created_by_name" header="Created By" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ data.created_by_name || '—' }}
+                    </template>
+                </Column>
+                <Column field="approved_by_name" header="Approved By" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ data.approved_by_name || '—' }}
+                    </template>
+                </Column>
             </DataTable>
 
             <Loading v-if="isLoading" />
@@ -81,23 +84,29 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
-import Button from 'primevue/button';
-import Loading from '@/components/Loading.vue';
-import StatusBadge from '@/components/StatusBadge.vue';
-import { INVOICE_STATUS_OPTIONS } from '@/constants/constant';
+import Loading from '@/components/global/Loading.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
+import { INVOICE_LIST_STATUS_OPTIONS } from '@/constants/constant';
 import { useInvoiceList } from './useInvoiceList';
 
 export default defineComponent({
     name: 'InvoiceList',
-    components: { DataTable, Column, InputText, Dropdown, Button, Loading, StatusBadge },
+    components: {
+        DataTable,
+        Column,
+        Dropdown,
+        Loading,
+        AdminListFilters,
+        StatusBadge,
+    },
     setup() {
         const list = useInvoiceList();
 
         return {
             ...list,
-            statusOptions: INVOICE_STATUS_OPTIONS,
+            statusOptions: INVOICE_LIST_STATUS_OPTIONS,
         };
     },
 });

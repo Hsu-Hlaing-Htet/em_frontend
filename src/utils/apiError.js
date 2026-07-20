@@ -1,7 +1,7 @@
 import EventBus from '@/libs/AppEventBus';
 
 export function getApiErrorMessage(error, fallback = 'Something went wrong.') {
-    const data = error?.data;
+    const data = error?.data ?? error?.response?.data;
 
     if (!data) {
         return fallback;

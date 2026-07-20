@@ -1,5 +1,5 @@
 import api from '@/libs/axios';
-import { endpoint } from '@/constants/endpoint';
+import { endpoint } from '@/services/endpoint';
 
 const service = {
     getAll: async (params) => {
@@ -47,6 +47,14 @@ const service = {
 
     reject: async (params) => {
         const result = await api.post(`${endpoint.utilities}/${params.id}/reject`);
+        return result.data;
+    },
+
+    sendDocumentEmail: async (params) => {
+        const result = await api.post(`${endpoint.utilities}/${params.id}/document/email`, {
+            email: params.email,
+        });
+
         return result.data;
     },
 };

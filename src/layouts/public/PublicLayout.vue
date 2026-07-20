@@ -1,12 +1,20 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import PublicHeader from './publiclayouts/PublicHeader.vue';
-import PublicFooter from './publiclayouts/PublicFooter.vue';
+import PublicHeader from './PublicHeader.vue';
+import PublicFooter from './PublicFooter.vue';
+import { useThemeStore } from '@/stores/themeStore';
+import { useAuthStore } from '@/modules/auth/store';
+
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+const themeStore = useThemeStore();
+const authStore = useAuthStore();
+const { mode: themeMode } = storeToRefs(themeStore);
+const isAuthenticated = computed(() => Boolean(authStore.isAuthenticated));
 const currentYear = new Date().getFullYear();
 const mobileMenuOpen = ref(false);
 const newsletterEmail = ref('');
@@ -33,7 +41,7 @@ function observeRevealElements() {
             revealObserver = null;
         }
 
-        const elements = Array.from(document.querySelectorAll('.reveal, .fade-on-scroll'));
+        const elements = Array.from(document.querySelectorAll('.reveal, .fade-on-scroll, .reveal-stagger'));
 
         if (!elements.length) {
             return;
@@ -79,7 +87,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-    <div class="shell">
+    <div class="shell" data-public-layout :data-theme="themeMode">
         <PublicHeader
             :current-route="route"
             :is-authenticated="isAuthenticated"

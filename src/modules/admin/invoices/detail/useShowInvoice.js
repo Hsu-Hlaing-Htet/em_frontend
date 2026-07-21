@@ -38,7 +38,7 @@ export default function useShowInvoice() {
         building_name: '',
         room_number: '',
         created_by_name: '',
-        approved_by_name: '',
+        approved_by: null,
         approved_at: '',
         created_at: '',
     });
@@ -109,6 +109,21 @@ export default function useShowInvoice() {
     };
 
     const canApprove = () => isApprovalView.value && state.status === 'draft';
+    const isApproved = computed(() => Boolean(state.approved_by?.id && state.approved_at));
+    const formattedApprovedAt = computed(() => {
+        if (!state.approved_at) {
+            return '';
+        }
+
+        const normalized = state.approved_at.includes('T')
+            ? state.approved_at
+            : state.approved_at.replace(' ', 'T');
+
+        return new Date(normalized).toLocaleString('en-GB', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+        });
+    });
     const documentRoute = computed(() => (
         state.id ? { name: 'invoiceDocument', params: { id: state.id } } : null
     ));
@@ -123,5 +138,7 @@ export default function useShowInvoice() {
         payments,
         handleApprove,
         canApprove,
+        isApproved,
+        formattedApprovedAt,
     };
 }

@@ -43,6 +43,16 @@
                 <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Total</p>
                 <p class="text-sm font-medium">{{ state.total_amount }}</p>
             </div>
+            <template v-if="isApproved">
+                <div class="p-3">
+                    <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Approved By</p>
+                    <p class="text-sm">{{ state.approved_by.name }}</p>
+                </div>
+                <div class="p-3">
+                    <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Approved At</p>
+                    <p class="text-sm">{{ formattedApprovedAt }}</p>
+                </div>
+            </template>
         </div>
 
         <h3 class="mb-3 text-md font-medium">Line Items</h3>

@@ -108,6 +108,22 @@ export const PAYMENT_STATUS_OPTIONS = [
     { label: 'Rejected', value: 'rejected' },
 ];
 
+export const PAYMENT_LIST_BILLING_STATUS_OPTIONS = [
+    { label: 'All statuses', value: null },
+    { label: 'Paid', value: 'paid' },
+    { label: 'Partial', value: 'partial' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Overdue', value: 'overdue' },
+];
+
+export const PAYMENT_TYPE_FILTER_OPTIONS = [
+    { label: 'All types', value: null },
+    { label: 'Rent', value: 'rent' },
+    { label: 'Utility', value: 'utility' },
+    { label: 'Maintenance', value: 'maintenance' },
+    { label: 'Other', value: 'other' },
+];
+
 export const PAYMENT_METHOD_STATUS_OPTIONS = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },

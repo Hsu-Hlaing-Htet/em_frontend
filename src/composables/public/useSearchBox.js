@@ -3,6 +3,7 @@ import {
     ref,
     onMounted,
 } from 'vue';
+import { formatCurrency } from '@/utils/formatter';
 
 export function useSearchBox() {
 
@@ -42,9 +43,9 @@ export function useSearchBox() {
 
     const priceRangeOptions = [
         { label: 'Any', value: null },
-        { label: 'Under $1,000', value: '1000' },
-        { label: '$1,000 - $3,000', value: '3000' },
-        { label: '$3,000+', value: '5000' },
+        { label: `Under ${formatCurrency(1000)}`, value: '1000' },
+        { label: `${formatCurrency(1000)} - ${formatCurrency(3000)}`, value: '3000' },
+        { label: `${formatCurrency(3000)}+`, value: '5000' },
     ];
 
     const bedroomOptions = [

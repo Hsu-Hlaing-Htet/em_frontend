@@ -26,9 +26,7 @@ const config = computed(() => resolveStatusDefinition(statusValue.value));
 const toneClass = computed(() => `status-badge--${config.value.tone}`);
 
 const toneStyle = computed(() => ({
-    backgroundColor: `var(--status-${config.value.tone}-bg)`,
     color: `var(--status-${config.value.tone}-text)`,
-    borderColor: `var(--status-${config.value.tone}-border)`,
 }));
 </script>
 

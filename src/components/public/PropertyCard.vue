@@ -71,7 +71,7 @@
 
                 <span class="inline-flex items-center gap-2">
                     <i class="fas fa-ruler-combined w-4 text-[#d6b8c1]" />
-                    {{ property.area_sqft ?? '-' }} sqft
+                    {{ areaDisplay }}
                 </span>
             </div>
 
@@ -90,6 +90,8 @@
 
 <script setup>
 import { computed } from 'vue';
+import { formatCurrency } from '@/utils/formatter';
+import { formatRoomDimensions } from '@/utils/roomDimensions';
 
 const props = defineProps({
     property: {
@@ -117,16 +119,21 @@ const displayPrice = computed(() => {
         return 'Contact for price';
     }
 
-    const formatted =
-        new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-        }).format(Number(value));
+    const formatted = formatCurrency(Number(value));
 
     return props.property.purpose === 'rent'
         ? `${formatted} / month`
         : formatted;
+});
+
+const areaDisplay = computed(() => {
+    const dimensions = formatRoomDimensions(props.property.width_ft, props.property.length_ft);
+
+    if (dimensions) {
+        return `${dimensions} · ${props.property.area_sqft ?? '-'} sqft`;
+    }
+
+    return `${props.property.area_sqft ?? '-'} sqft`;
 });
 
 function compare() {

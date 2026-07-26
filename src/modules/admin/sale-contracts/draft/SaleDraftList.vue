@@ -73,6 +73,9 @@
 </div>
 
 <div class="ml-auto flex items-center gap-2">
+                            <router-link :to="{ name: 'newSaleContractDraft' }">
+                                <Button label="Create" />
+                            </router-link>
                             <ListExportActions
                                 @download="downloadList"
                                 @export-csv="exportCsv"

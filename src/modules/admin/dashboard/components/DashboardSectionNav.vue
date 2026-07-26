@@ -97,8 +97,8 @@ const emit = defineEmits(['select']);
 
 .dashboard-section-button:hover,
 .dashboard-section-button-active {
-    border-color: rgba(122, 49, 73, 0.25);
-    background: rgba(214, 184, 193, 0.12);
+    border-color: color-mix(in srgb, var(--admin-primary) 25%, transparent);
+    background: var(--highlight-bg);
     color: var(--admin-text);
 }
 

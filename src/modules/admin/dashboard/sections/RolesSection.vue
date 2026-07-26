@@ -97,6 +97,6 @@ const dashboard = inject('dashboard');
 
 <style scoped>
 .dashboard-row-selected {
-    background: rgba(214, 184, 193, 0.08);
+    background: var(--rw-hover-bg);
 }
 </style>

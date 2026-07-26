@@ -32,8 +32,8 @@
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div class="p-3">
-                <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Payment ID</p>
-                <p class="text-sm">{{ state.payment_id }}</p>
+                <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Payment</p>
+                <p class="text-sm">{{ state.payment_number || '—' }}</p>
             </div>
             <div class="p-3">
                 <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Issued At</p>

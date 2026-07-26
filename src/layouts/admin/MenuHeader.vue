@@ -1,9 +1,9 @@
 <template>
-    <div class="border-b border-white/10 px-3 pb-4 pt-5">
+    <div class="border-b border-[var(--admin-border)] px-3 pb-4 pt-5">
         <div class="flex items-center justify-between gap-2">
             <router-link
                 :to="{ name: 'dashboard' }"
-                class="flex min-w-0 items-center gap-3.5 text-white no-underline"
+                class="flex min-w-0 items-center gap-3.5 text-[var(--admin-text)] no-underline"
             >
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full">
                     <img
@@ -23,7 +23,7 @@
             <button
                 v-if="!mobileMenuActive"
                 type="button"
-                class="flex h-5 w-5 cursor-pointer items-center justify-center text-white transition-all duration-300 hover:-translate-y-px"
+                class="flex h-5 w-5 cursor-pointer items-center justify-center text-[var(--admin-text-muted)] transition-all duration-300 hover:-translate-y-px hover:text-[var(--admin-text)]"
                 aria-label="Toggle sidebar"
                 :aria-expanded="ariaExpanded"
                 @click="onMenuToggle"

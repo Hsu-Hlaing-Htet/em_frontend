@@ -93,6 +93,26 @@
 
 <div class="p-2">
     <p class="mb-2 text-sm uppercase tracking-wider text-[var(--admin-text-muted)]">
+        Width (ft)
+    </p>
+
+    <p class="text-sm text-[var(--admin-text)]">
+        {{ state.width_ft || '-' }}
+    </p>
+</div>
+
+<div class="p-2">
+    <p class="mb-2 text-sm uppercase tracking-wider text-[var(--admin-text-muted)]">
+        Length (ft)
+    </p>
+
+    <p class="text-sm text-[var(--admin-text)]">
+        {{ state.length_ft || '-' }}
+    </p>
+</div>
+
+<div class="p-2">
+    <p class="mb-2 text-sm uppercase tracking-wider text-[var(--admin-text-muted)]">
         Area (sqft)
     </p>
 
@@ -123,41 +143,41 @@
 
 <div class="p-2">
     <p class="mb-2 text-sm uppercase tracking-wider text-[var(--admin-text-muted)]">
-        Sale Price
+        Sale Price (MMK)
     </p>
 
     <p class="text-sm text-[var(--admin-text)]">
-        {{ state.sale_price || '-' }}
+        {{ formatCurrency(state.sale_price) }}
     </p>
 </div>
 
 <div class="p-2">
     <p class="mb-2 text-sm uppercase tracking-wider text-[var(--admin-text-muted)]">
-        Rent Price
+        Rent Price (MMK)
     </p>
 
     <p class="text-sm text-[var(--admin-text)]">
-        {{ state.rent_price || '-' }}
+        {{ formatCurrency(state.rent_price) }}
     </p>
 </div>
 
 <div class="p-2">
     <p class="mb-2 text-sm uppercase tracking-wider text-[var(--admin-text-muted)]">
-        Rent Deposit Price
+        Rent Deposit (MMK)
     </p>
 
     <p class="text-sm text-[var(--admin-text)]">
-        {{ state.rent_deposit_price || '-' }}
+        {{ formatCurrency(state.rent_deposit_price) }}
     </p>
 </div>
 
 <div class="p-2">
     <p class="mb-2 text-sm uppercase tracking-wider text-[var(--admin-text-muted)]">
-        Booking Deposit Price
+        Booking Deposit (MMK)
     </p>
 
     <p class="text-sm text-[var(--admin-text)]">
-        {{ state.booking_deposit_price || '-' }}
+        {{ formatCurrency(state.booking_deposit_price) }}
     </p>
 </div>
 
@@ -179,7 +199,6 @@
 
 <script>
 import { defineComponent } from 'vue';
-import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
@@ -188,7 +207,7 @@ import useShowRoom from './useShowRoom';
 
 export default defineComponent({
     name: 'ShowRoom',
-    components: { InputText, Textarea, Button, Loading, StatusBadge },
+    components: { Button, Loading, StatusBadge },
     setup() {
         return useShowRoom();
     },

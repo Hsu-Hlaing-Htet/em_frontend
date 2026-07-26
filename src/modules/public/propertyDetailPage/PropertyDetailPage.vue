@@ -37,6 +37,8 @@ onMounted(load);
                     <p><strong>Status:</strong> <StatusBadge :value="property.status" /></p>
                     <p><strong>Bedrooms:</strong> {{ property.bedrooms ?? '-' }}</p>
                     <p><strong>Bathrooms:</strong> {{ property.bathrooms ?? '-' }}</p>
+                    <p v-if="property.width_ft && property.length_ft"><strong>Width:</strong> {{ property.width_ft }} ft</p>
+                    <p v-if="property.width_ft && property.length_ft"><strong>Length:</strong> {{ property.length_ft }} ft</p>
                     <p><strong>Area:</strong> {{ property.area_sqft ?? '-' }} sqft</p>
                     <p><strong>Sale Price:</strong> {{ property.sale_price ?? '-' }}</p>
                     <p><strong>Monthly Rent:</strong> {{ property.monthly_rent ?? '-' }}</p>

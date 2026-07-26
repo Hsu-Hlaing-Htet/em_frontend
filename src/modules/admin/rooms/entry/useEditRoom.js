@@ -7,6 +7,8 @@ import { useRoomStore } from '../store';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import useRoomImages from './useRoomImages';
+import useRoomDimensions from '@/composables/admin/rooms/useRoomDimensions';
+import { buildRoomPayload } from '../roomForm';
 import { showApiErrorToast } from '@/utils/apiError';
 
 export default function useEditRoom() {
@@ -39,6 +41,8 @@ export default function useEditRoom() {
         building_id: null,
         room_number: '',
         floor_number: 1,
+        width_ft: null,
+        length_ft: null,
         area_sqft: 0,
         description: '',
         type: 'rent',
@@ -48,6 +52,8 @@ export default function useEditRoom() {
         rent_deposit_price: 0,
         booking_deposit_price: 0,
     });
+
+    useRoomDimensions(state);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -88,6 +94,8 @@ export default function useEditRoom() {
                     building_id: response.data.building_id,
                     room_number: response.data.room_number || '',
                     floor_number: Number(response.data.floor_number),
+                    width_ft: response.data.width_ft != null ? Number(response.data.width_ft) : null,
+                    length_ft: response.data.length_ft != null ? Number(response.data.length_ft) : null,
                     area_sqft: Number(response.data.area_sqft),
                     description: response.data.description || '',
                     type: response.data.type,
@@ -100,6 +108,8 @@ export default function useEditRoom() {
 
                 loadPersistedFromRoom(response.data.room_images || []);
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load room.');
         } finally {
             isLoading.value = false;
         }
@@ -169,7 +179,7 @@ export default function useEditRoom() {
         errors.clear();
 
         try {
-            await store.update({ ...state });
+            await store.update(buildRoomPayload(state, { includeId: true }));
             const response = store.getUpdateResponse;
 
             if (!response) {
@@ -201,6 +211,8 @@ export default function useEditRoom() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to update room.');
             }
         } finally {
             isLoading.value = false;

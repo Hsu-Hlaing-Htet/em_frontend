@@ -1,0 +1,470 @@
+/*
+ * Rosewood premium button design system — Admin & Customer portals
+ * Inspired by outline → fill + glow + shine interaction; uses theme tokens only.
+ */
+
+@keyframes rw-btn-shine {
+    0% {
+        opacity: 0;
+        left: 0%;
+        width: 0;
+    }
+
+    50% {
+        opacity: 0.4;
+        width: 45%;
+    }
+
+    100% {
+        opacity: 0;
+        left: 100%;
+        width: 0;
+    }
+}
+
+/* Scope: admin/customer portals + their dialogs */
+[data-admin-layout] .p-button,
+[data-customer-layout] .p-button,
+.p-dialog .p-button,
+.p-confirm-dialog .p-button,
+[data-admin-layout] .btn,
+[data-customer-layout] .btn {
+    --rw-btn-accent: var(--rw-primary-deep);
+    --rw-btn-accent-hover: var(--rw-primary-deep);
+    --rw-btn-glow-active: var(--rw-btn-glow);
+
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
+}
+
+/* Shine sweep */
+[data-admin-layout] .p-button:not(.p-button-text):not(.p-button-link)::after,
+[data-customer-layout] .p-button:not(.p-button-text):not(.p-button-link)::after,
+.p-dialog .p-button:not(.p-button-text):not(.p-button-link)::after,
+.p-confirm-dialog .p-button:not(.p-button-text):not(.p-button-link)::after,
+[data-admin-layout] .btn::after,
+[data-customer-layout] .btn::after {
+    content: '';
+    position: absolute;
+    top: 7%;
+    left: 0;
+    z-index: 1;
+    height: 86%;
+    width: 0;
+    opacity: 0;
+    background: rgba(255, 255, 255, 0.85);
+    transform: skewX(-20deg);
+    box-shadow: 0 0 50px 30px rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+}
+
+[data-admin-layout] .p-button:not(.p-button-text):not(.p-button-link):hover::after,
+[data-customer-layout] .p-button:not(.p-button-text):not(.p-button-link):hover::after,
+.p-dialog .p-button:not(.p-button-text):not(.p-button-link):hover::after,
+.p-confirm-dialog .p-button:not(.p-button-text):not(.p-button-link):hover::after,
+[data-admin-layout] .btn:hover::after,
+[data-customer-layout] .btn:hover::after {
+    animation: rw-btn-shine 0.65s ease-in-out;
+}
+
+[data-admin-layout] .p-button .p-button-label,
+[data-admin-layout] .p-button .p-button-icon,
+[data-customer-layout] .p-button .p-button-label,
+[data-customer-layout] .p-button .p-button-icon,
+.p-dialog .p-button .p-button-label,
+.p-dialog .p-button .p-button-icon,
+.p-confirm-dialog .p-button .p-button-label,
+.p-confirm-dialog .p-button .p-button-icon {
+    position: relative;
+    z-index: 2;
+}
+
+/* ── Primary (default) ── */
+[data-admin-layout] .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose),
+[data-customer-layout] .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose),
+.p-dialog .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose),
+.p-confirm-dialog .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose),
+[data-admin-layout] .btn,
+[data-customer-layout] .btn {
+    background: transparent !important;
+    border: 1px solid var(--rw-btn-accent) !important;
+    border-style: solid !important;
+    color: var(--rw-text) !important;
+    box-shadow: none;
+}
+
+html[data-theme='dark'] [data-admin-layout] .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose),
+html[data-theme='dark'] [data-customer-layout] .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose),
+html[data-theme='dark'] .p-dialog .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose),
+html[data-theme='dark'] .p-confirm-dialog .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose),
+html[data-theme='dark'] [data-admin-layout] .btn,
+html[data-theme='dark'] [data-customer-layout] .btn {
+    color: var(--rw-text) !important;
+}
+
+[data-admin-layout] .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose):hover,
+[data-customer-layout] .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose):hover,
+.p-dialog .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose):hover,
+.p-confirm-dialog .p-button:not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):not(.p-datepicker-trigger):not(.p-fileupload-choose):hover,
+[data-admin-layout] .btn:hover,
+[data-customer-layout] .btn:hover {
+    background: var(--rw-btn-accent-hover) !important;
+    border-color: var(--rw-btn-accent-hover) !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow-active);
+}
+
+/* ── Secondary / outlined / btn-outline / Reset ── */
+[data-admin-layout] .p-button.p-button-secondary,
+[data-admin-layout] .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info),
+[data-admin-layout] .p-button.btn-outline,
+[data-customer-layout] .p-button.p-button-secondary,
+[data-customer-layout] .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info),
+[data-customer-layout] .p-button.btn-outline,
+.p-dialog .p-button.p-button-secondary,
+.p-dialog .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info),
+.p-dialog .p-button.btn-outline,
+.p-confirm-dialog .p-button.p-button-secondary,
+.p-confirm-dialog .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info),
+.p-confirm-dialog .p-button.btn-outline {
+    --rw-btn-accent: var(--rw-primary-deep);
+    --rw-btn-accent-hover: var(--rw-primary-deep);
+    --rw-btn-glow-active: var(--rw-btn-glow);
+
+    background: transparent !important;
+    border: 1px solid var(--rw-primary-deep) !important;
+    border-style: solid !important;
+    color: var(--rw-text) !important;
+    box-shadow: none;
+}
+
+[data-admin-layout] .p-button.p-button-secondary:hover,
+[data-admin-layout] .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):hover,
+[data-admin-layout] .p-button.btn-outline:hover,
+[data-customer-layout] .p-button.p-button-secondary:hover,
+[data-customer-layout] .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):hover,
+[data-customer-layout] .p-button.btn-outline:hover,
+.p-dialog .p-button.p-button-secondary:hover,
+.p-dialog .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):hover,
+.p-dialog .p-button.btn-outline:hover,
+.p-confirm-dialog .p-button.p-button-secondary:hover,
+.p-confirm-dialog .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info):hover,
+.p-confirm-dialog .p-button.btn-outline:hover {
+    background: var(--rw-btn-accent-hover) !important;
+    border-color: var(--rw-btn-accent-hover) !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow-active);
+}
+
+/* ── Success ── */
+[data-admin-layout] .p-button.p-button-success:not(.p-button-text),
+[data-customer-layout] .p-button.p-button-success:not(.p-button-text),
+.p-dialog .p-button.p-button-success:not(.p-button-text),
+.p-confirm-dialog .p-button.p-button-success:not(.p-button-text) {
+    --rw-btn-accent: var(--rw-success);
+    --rw-btn-accent-hover: var(--rw-success);
+    --rw-btn-glow-active: var(--rw-btn-glow-success);
+
+    background: transparent !important;
+    border: 1px solid var(--rw-success) !important;
+    color: var(--rw-success) !important;
+    box-shadow: none;
+}
+
+[data-admin-layout] .p-button.p-button-success:not(.p-button-text):hover,
+[data-customer-layout] .p-button.p-button-success:not(.p-button-text):hover,
+.p-dialog .p-button.p-button-success:not(.p-button-text):hover,
+.p-confirm-dialog .p-button.p-button-success:not(.p-button-text):hover {
+    background: var(--rw-success) !important;
+    border-color: var(--rw-success) !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow-success);
+}
+
+/* ── Danger ── */
+[data-admin-layout] .p-button.p-button-danger:not(.p-button-text),
+[data-customer-layout] .p-button.p-button-danger:not(.p-button-text),
+.p-dialog .p-button.p-button-danger:not(.p-button-text),
+.p-confirm-dialog .p-button.p-button-danger:not(.p-button-text) {
+    --rw-btn-accent: var(--rw-danger);
+    --rw-btn-accent-hover: var(--rw-danger);
+    --rw-btn-glow-active: var(--rw-btn-glow-danger);
+
+    background: transparent !important;
+    border: 1px solid var(--rw-danger) !important;
+    color: var(--rw-danger) !important;
+    box-shadow: none;
+}
+
+[data-admin-layout] .p-button.p-button-danger:not(.p-button-text):hover,
+[data-customer-layout] .p-button.p-button-danger:not(.p-button-text):hover,
+.p-dialog .p-button.p-button-danger:not(.p-button-text):hover,
+.p-confirm-dialog .p-button.p-button-danger:not(.p-button-text):hover {
+    background: var(--rw-danger) !important;
+    border-color: var(--rw-danger) !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow-danger);
+}
+
+/* Outlined danger keeps danger accent on hover */
+[data-admin-layout] .p-button.p-button-outlined.p-button-danger:not(.p-button-text):hover,
+[data-customer-layout] .p-button.p-button-outlined.p-button-danger:not(.p-button-text):hover,
+.p-dialog .p-button.p-button-outlined.p-button-danger:not(.p-button-text):hover,
+.p-confirm-dialog .p-button.p-button-outlined.p-button-danger:not(.p-button-text):hover {
+    background: var(--rw-danger) !important;
+    border-color: var(--rw-danger) !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow-danger);
+}
+
+/* ── Warning ── */
+[data-admin-layout] .p-button.p-button-warning:not(.p-button-text),
+[data-customer-layout] .p-button.p-button-warning:not(.p-button-text),
+.p-dialog .p-button.p-button-warning:not(.p-button-text),
+.p-confirm-dialog .p-button.p-button-warning:not(.p-button-text) {
+    --rw-btn-accent: #eab308;
+    --rw-btn-accent-hover: #eab308;
+    --rw-btn-glow-active: var(--rw-btn-glow-warning);
+
+    background: transparent !important;
+    border: 1px solid #eab308 !important;
+    color: #a16207 !important;
+    box-shadow: none;
+}
+
+html[data-theme='dark'] [data-admin-layout] .p-button.p-button-warning:not(.p-button-text),
+html[data-theme='dark'] [data-customer-layout] .p-button.p-button-warning:not(.p-button-text),
+html[data-theme='dark'] .p-dialog .p-button.p-button-warning:not(.p-button-text),
+html[data-theme='dark'] .p-confirm-dialog .p-button.p-button-warning:not(.p-button-text) {
+    color: #fcd34d !important;
+}
+
+[data-admin-layout] .p-button.p-button-warning:not(.p-button-text):hover,
+[data-customer-layout] .p-button.p-button-warning:not(.p-button-text):hover,
+.p-dialog .p-button.p-button-warning:not(.p-button-text):hover,
+.p-confirm-dialog .p-button.p-button-warning:not(.p-button-text):hover {
+    background: #eab308 !important;
+    border-color: #eab308 !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow-warning);
+}
+
+/* ── Info (filled only, not text/icon actions) ── */
+[data-admin-layout] .p-button.p-button-info:not(.p-button-text),
+[data-customer-layout] .p-button.p-button-info:not(.p-button-text),
+.p-dialog .p-button.p-button-info:not(.p-button-text),
+.p-confirm-dialog .p-button.p-button-info:not(.p-button-text) {
+    --rw-btn-accent: var(--rw-primary-deep);
+    --rw-btn-accent-hover: var(--rw-primary-deep);
+    --rw-btn-glow-active: var(--rw-btn-glow);
+
+    background: transparent !important;
+    border: 1px solid var(--rw-primary-deep) !important;
+    color: var(--rw-primary-deep) !important;
+    box-shadow: none;
+}
+
+[data-admin-layout] .p-button.p-button-info:not(.p-button-text):hover,
+[data-customer-layout] .p-button.p-button-info:not(.p-button-text):hover,
+.p-dialog .p-button.p-button-info:not(.p-button-text):hover,
+.p-confirm-dialog .p-button.p-button-info:not(.p-button-text):hover {
+    background: var(--rw-primary-deep) !important;
+    border-color: var(--rw-primary-deep) !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow);
+}
+
+/* ── Text / link / icon-only: preserve PrimeVue severity colors, no premium shell ── */
+[data-admin-layout] .p-button.p-button-text,
+[data-customer-layout] .p-button.p-button-text,
+.p-dialog .p-button.p-button-text,
+.p-confirm-dialog .p-button.p-button-text {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    overflow: visible;
+}
+
+[data-admin-layout] .p-button.p-button-text::after,
+[data-customer-layout] .p-button.p-button-text::after,
+.p-dialog .p-button.p-button-text::after,
+.p-confirm-dialog .p-button.p-button-text::after {
+    content: none;
+}
+
+[data-admin-layout] .p-button.p-button-text:hover,
+[data-customer-layout] .p-button.p-button-text:hover,
+.p-dialog .p-button.p-button-text:hover,
+.p-confirm-dialog .p-button.p-button-text:hover {
+    box-shadow: none !important;
+}
+
+/* ── Active / disabled / loading ── */
+[data-admin-layout] .p-button:not(.p-button-text):active,
+[data-customer-layout] .p-button:not(.p-button-text):active,
+.p-dialog .p-button:not(.p-button-text):active,
+.p-confirm-dialog .p-button:not(.p-button-text):active,
+[data-admin-layout] .btn:active,
+[data-customer-layout] .btn:active {
+    box-shadow: none !important;
+    transform: translateY(1px);
+}
+
+[data-admin-layout] .p-button:disabled,
+[data-customer-layout] .p-button:disabled,
+.p-dialog .p-button:disabled,
+.p-confirm-dialog .p-button:disabled,
+[data-admin-layout] .btn:disabled,
+[data-customer-layout] .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none !important;
+}
+
+[data-admin-layout] .p-button:disabled::after,
+[data-customer-layout] .p-button:disabled::after,
+.p-dialog .p-button:disabled::after,
+.p-confirm-dialog .p-button:disabled::after,
+[data-admin-layout] .btn:disabled::after,
+[data-customer-layout] .btn:disabled::after {
+    animation: none;
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-admin-layout] .p-button:not(.p-button-text):hover::after,
+    [data-customer-layout] .p-button:not(.p-button-text):hover::after,
+    .p-dialog .p-button:not(.p-button-text):hover::after,
+    .p-confirm-dialog .p-button:not(.p-button-text):hover::after,
+    [data-admin-layout] .btn:hover::after,
+    [data-customer-layout] .btn:hover::after {
+        animation: none;
+    }
+
+    [data-admin-layout] .p-button,
+    [data-customer-layout] .p-button,
+    .p-dialog .p-button,
+    .p-confirm-dialog .p-button,
+    [data-admin-layout] .btn,
+    [data-customer-layout] .btn {
+        transition: none;
+    }
+}
+
+/* ── Calendar datepicker trigger (Choose Date icon button) ── */
+/* [data-admin-layout] .p-calendar .p-datepicker-trigger,
+[data-customer-layout] .p-calendar .p-datepicker-trigger,
+.p-dialog .p-calendar .p-datepicker-trigger,
+.p-confirm-dialog .p-calendar .p-datepicker-trigger {
+    --rw-btn-accent: var(--rw-primary-deep);
+    --rw-btn-accent-hover: var(--rw-primary-deep);
+    --rw-btn-glow-active: var(--rw-btn-glow);
+
+    flex-shrink: 0;
+    background: transparent !important;
+    border: 1px solid var(--rw-primary-deep) !important;
+    border-left-width: 0 !important;
+    border-style: solid !important;
+    color: var(--rw-primary-deep) !important;
+    box-shadow: none;
+} */
+
+[data-admin-layout] .p-calendar .p-datepicker-trigger .p-button-icon,
+[data-customer-layout] .p-calendar .p-datepicker-trigger .p-button-icon,
+.p-dialog .p-calendar .p-datepicker-trigger .p-button-icon,
+.p-confirm-dialog .p-calendar .p-datepicker-trigger .p-button-icon {
+    color: var(--rw-primary-deep) !important;
+}
+
+[data-admin-layout] .p-calendar .p-datepicker-trigger:hover,
+[data-customer-layout] .p-calendar .p-datepicker-trigger:hover,
+.p-dialog .p-calendar .p-datepicker-trigger:hover,
+.p-confirm-dialog .p-calendar .p-datepicker-trigger:hover {
+    background: var(--rw-primary-deep) !important;
+    border-color: var(--rw-primary-deep) !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow-active);
+}
+
+[data-admin-layout] .p-calendar .p-datepicker-trigger:hover .p-button-icon,
+[data-customer-layout] .p-calendar .p-datepicker-trigger:hover .p-button-icon,
+.p-dialog .p-calendar .p-datepicker-trigger:hover .p-button-icon,
+.p-confirm-dialog .p-calendar .p-datepicker-trigger:hover .p-button-icon {
+    color: var(--rw-on-primary) !important;
+}
+
+[data-admin-layout] .p-calendar .p-datepicker-trigger:active,
+[data-customer-layout] .p-calendar .p-datepicker-trigger:active,
+.p-dialog .p-calendar .p-datepicker-trigger:active,
+.p-confirm-dialog .p-calendar .p-datepicker-trigger:active {
+    box-shadow: none !important;
+    transform: translateY(1px);
+}
+
+[data-admin-layout] .p-calendar .p-datepicker-trigger:disabled,
+[data-customer-layout] .p-calendar .p-datepicker-trigger:disabled,
+.p-dialog .p-calendar .p-datepicker-trigger:disabled,
+.p-confirm-dialog .p-calendar .p-datepicker-trigger:disabled {
+    opacity: 0.55;
+    box-shadow: none !important;
+}
+
+/* ── FileUpload choose button (Choose Image / Choose file) ── */
+[data-admin-layout] .p-fileupload-choose,
+[data-customer-layout] .p-fileupload-choose,
+.p-dialog .p-fileupload-choose,
+.p-confirm-dialog .p-fileupload-choose {
+    --rw-btn-accent: var(--rw-primary-deep);
+    --rw-btn-accent-hover: var(--rw-primary-deep);
+    --rw-btn-glow-active: var(--rw-btn-glow);
+
+    background: transparent !important;
+    border: 1px solid var(--rw-primary-deep) !important;
+    border-style: solid !important;
+    color: var(--rw-text) !important;
+    box-shadow: none;
+}
+
+[data-admin-layout] .p-fileupload-choose:hover,
+[data-customer-layout] .p-fileupload-choose:hover,
+.p-dialog .p-fileupload-choose:hover,
+.p-confirm-dialog .p-fileupload-choose:hover {
+    background: var(--rw-primary-deep) !important;
+    border-color: var(--rw-primary-deep) !important;
+    color: var(--rw-on-primary) !important;
+    box-shadow: var(--rw-btn-glow-active);
+}
+
+[data-admin-layout] .p-fileupload-choose:hover .p-button-icon,
+[data-customer-layout] .p-fileupload-choose:hover .p-button-icon,
+.p-dialog .p-fileupload-choose:hover .p-button-icon,
+.p-confirm-dialog .p-fileupload-choose:hover .p-button-icon,
+[data-admin-layout] .p-fileupload-choose:hover .p-button-label,
+[data-customer-layout] .p-fileupload-choose:hover .p-button-label,
+.p-dialog .p-fileupload-choose:hover .p-button-label,
+.p-confirm-dialog .p-fileupload-choose:hover .p-button-label {
+    color: var(--rw-on-primary) !important;
+}
+
+[data-admin-layout] .p-fileupload-choose:active,
+[data-customer-layout] .p-fileupload-choose:active,
+.p-dialog .p-fileupload-choose:active,
+.p-confirm-dialog .p-fileupload-choose:active {
+    box-shadow: none !important;
+    transform: translateY(1px);
+}
+
+[data-admin-layout] .p-fileupload-choose:disabled,
+[data-customer-layout] .p-fileupload-choose:disabled,
+.p-dialog .p-fileupload-choose:disabled,
+.p-confirm-dialog .p-fileupload-choose:disabled {
+    opacity: 0.55;
+    box-shadow: none !important;
+}

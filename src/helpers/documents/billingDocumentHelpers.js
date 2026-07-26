@@ -6,8 +6,12 @@ export function formatUtilityReference({ billing_month, room_number, id }) {
     return `UTL-${month}-${room_number || id}`;
 }
 
-export function formatPaymentReference(id) {
-    return `PAY-${String(id).padStart(5, '0')}`;
+export function formatPaymentReference(paymentNumberOrId) {
+    if (typeof paymentNumberOrId === 'string' && paymentNumberOrId.startsWith('PAY-')) {
+        return paymentNumberOrId;
+    }
+
+    return `PAY-${String(paymentNumberOrId).padStart(6, '0')}`;
 }
 
 export function formatBillingMonthLabel(billingMonth) {

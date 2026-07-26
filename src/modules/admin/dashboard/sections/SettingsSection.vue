@@ -66,9 +66,6 @@ const dashboard = inject('dashboard');
                     v-model="dashboard.settings.currency"
                     class="dashboard-setting-input"
                 >
-                    <option value="USD">
-                        USD
-                    </option>
                     <option value="MMK">
                         MMK
                     </option>

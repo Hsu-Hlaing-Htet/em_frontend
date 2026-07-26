@@ -244,7 +244,7 @@ function formatStatusLabel(value) {
 }
 
 .dashboard-select:focus {
-    border-color: rgba(122, 49, 73, 0.35);
+    border-color: color-mix(in srgb, var(--admin-primary) 35%, transparent);
 }
 
 .dashboard-pagination {

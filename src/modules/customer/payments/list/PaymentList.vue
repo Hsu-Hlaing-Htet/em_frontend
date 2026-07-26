@@ -1,52 +1,65 @@
 <template>
-    <div class="admin-panel">
-        <DataTable
-            :value="payments"
-            data-key="id"
-            :loading="isLoading"
-            :lazy="true"
-            :paginator="true"
-            :rows="rows"
-            :first="first"
-            :total-records="totalRecords"
-            @page="onPage"
-        >
-            <template #empty>No payments found.</template>
-            <Column field="payment_date" header="Date" />
-            <Column field="invoice_number" header="Invoice" />
-            <Column field="amount" header="Amount" />
-            <Column field="payment_method_name" header="Method" />
-            <Column field="status" header="Status">
-                <template #body="{ data }">
-                    <StatusBadge :value="data.status" />
-                </template>
-            </Column>
-            <Column header="Actions">
-                <template #body="{ data }">
-                    <div class="flex flex-wrap gap-1">
-                        <Button label="Invoice" text @click="openInvoice(data.invoice_id)" />
-                        <Button
-                            v-if="data.receipt_id"
-                            label="Receipt"
-                            text
-                            @click="openReceipt(data.receipt_id)"
-                        />
-                    </div>
-                </template>
-            </Column>
-        </DataTable>
+    <div>
+        <h1 class="customer-page-heading">Payments</h1>
+        <p class="customer-page-lead">Track your payment history and status</p>
+
+        <CustomerSearchBar
+            v-model:search="search"
+            v-model:status="status"
+            placeholder="Search by invoice, method, or note"
+            :filters="statusFilters"
+        />
+
+        <Loading v-if="isLoading" />
+
+        <div v-else-if="payments.length" class="customer-list-stack">
+            <CustomerTransactionCard
+                v-for="payment in payments"
+                :key="payment.id"
+                :transaction-id="payment.payment_number"
+                :title="payment.invoice_number || 'Invoice payment'"
+                :amount="payment.amount"
+                :subtitle="`${payment.payment_date || '—'} · ${payment.payment_method_name || 'Method pending'}`"
+                :status="payment.status"
+                @select="openPayment(payment)"
+            />
+
+            <Button
+                v-if="hasMore()"
+                label="Load more"
+                class="customer-load-more customer-btn-primary"
+                :loading="isLoadingMore"
+                @click="loadMore"
+            />
+        </div>
+
+        <CustomerEmptyState
+            v-else
+            icon="pi pi-wallet"
+            title="No payments found"
+            message="Try changing your search or filter."
+        />
     </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 import Button from 'primevue/button';
-import StatusBadge from '@/components/global/StatusBadge.vue';
+import Loading from '@/components/global/Loading.vue';
+import CustomerSearchBar from '@/components/customer/CustomerSearchBar.vue';
+import CustomerTransactionCard from '@/components/customer/CustomerTransactionCard.vue';
+import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
 import useCustomerPaymentList from '@/composables/customer/useCustomerPaymentList';
 
 export default defineComponent({
     name: 'CustomerPaymentList',
-    components: { Button, StatusBadge },
+    components: {
+        Button,
+        Loading,
+        CustomerSearchBar,
+        CustomerTransactionCard,
+        CustomerEmptyState,
+    },
     setup() {
         return useCustomerPaymentList();
     },

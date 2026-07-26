@@ -8,12 +8,12 @@ import {
 export function usePaymentDocument(state) {
     const document = computed(() => ({
         header: {
-            referenceNo: formatPaymentReference(state.id),
+            referenceNo: state.payment_number || formatPaymentReference(state.id),
             issuedDate: state.approved_at || state.created_at || '-',
         },
         details: [
             { label: 'Customer', value: state.customer_name },
-            { label: 'Invoice Number', value: state.invoice_number || state.invoice_id },
+            { label: 'Invoice Number', value: state.invoice_number || '—' },
             { label: 'Payment Date', value: state.payment_date },
             { label: 'Payment Method', value: state.payment_method_name },
             { label: 'Status', value: getStatusLabel(state.status) },

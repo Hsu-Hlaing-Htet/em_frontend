@@ -65,7 +65,7 @@ export function usePaymentDocumentActions(state, getDocument, service) {
     return createBillingDocumentActions({
         state,
         getDocument,
-        getFilename: (current) => `${formatPaymentReference(current.id) || 'payment'}.html`,
+        getFilename: (current) => `${current.payment_number || formatPaymentReference(current.id) || 'payment'}.html`,
         printDocument: printPaymentDocument,
         exportDocument: exportPaymentDocument,
         downloadDocument: downloadPaymentDocument,

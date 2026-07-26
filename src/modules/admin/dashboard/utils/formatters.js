@@ -1,13 +1,9 @@
-export function formatCurrency(value) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-    }).format(value ?? 0);
-}
+import { formatCurrency } from '@/utils/formatter';
+
+export { formatCurrency };
 
 export function formatNumber(value) {
-    return new Intl.NumberFormat('en-US').format(value ?? 0);
+    return new Intl.NumberFormat('en-MM').format(value ?? 0);
 }
 
 export function formatDate(value) {

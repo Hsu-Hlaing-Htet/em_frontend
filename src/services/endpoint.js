@@ -19,6 +19,7 @@ export const endpoint = {
 
     /** Dashboard */
     dashboard: 'dashboard',
+    adminDashboardCharts: 'admin/dashboard/charts',
 
     /** Authorization */
     roles: 'roles',

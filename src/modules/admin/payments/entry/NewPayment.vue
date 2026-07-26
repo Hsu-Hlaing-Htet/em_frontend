@@ -31,7 +31,7 @@
             </div>
             <div class="field">
                 <label for="amount" class="mb-2 block text-md">Amount</label>
-                <InputNumber id="amount" v-model="state.amount" class="w-full" mode="currency" currency="USD" :min="0.01" />
+                <InputNumber id="amount" v-model="state.amount" class="w-full" mode="currency" currency="MMK" :min="1" />
             </div>
             <div class="field">
                 <label for="payment_date" class="mb-2 block text-md">Payment Date</label>

@@ -2,6 +2,7 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
+import { formatCurrency } from '@/utils/formatter';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import { useRoomStore } from '../store';
@@ -132,5 +133,6 @@ export const useRoomList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        formatCurrency,
     };
 };

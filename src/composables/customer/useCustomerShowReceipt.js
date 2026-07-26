@@ -2,6 +2,7 @@ import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
+import { mapCustomerReceipt } from '@/helpers/customer/receipt';
 import { useCustomerReceiptStore } from '@/modules/customer/receipts/store';
 
 export default function useCustomerShowReceipt() {
@@ -38,7 +39,7 @@ export default function useCustomerShowReceipt() {
             const data = store.getOneResponse?.data;
 
             if (data) {
-                Object.assign(state, data);
+                Object.assign(state, mapCustomerReceipt(data));
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load receipt.');

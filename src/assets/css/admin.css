@@ -1,5 +1,13 @@
+@import './theme.css';
+@import './buttons.css';
+
 @import "tailwindcss";
 
+@theme {
+    --color-rosewood: var(--rw-primary-deep);
+    --color-rosewood-accent: var(--rw-primary);
+    --color-rosewood-secondary: var(--rw-secondary);
+}
 
 :root {
     font-size: 15px;
@@ -42,7 +50,7 @@
 }
 
 .admin-sidebar {
-    background: var(--admin-bg);
+    background: var(--admin-sidebar-bg);
     border-right: 1px solid var(--admin-border);
 }
 
@@ -50,28 +58,18 @@
 .admin-panel {
     padding: 20px;
     border-radius: 3px;
-    background: var(--admin-surface);
+    background: var(--admin-surface-solid);
+    border: 1px solid var(--admin-border);
     box-shadow: var(--admin-shadow-soft);
-    backdrop-filter: blur(12px);
 }
 
 
 
-/* Outline */
+/* Legacy .btn alias — styled via buttons.css */
 .btn {
-    background: linear-gradient(to bottom right, #552032 0%, #1A1216 100%);
-    /* background: linear-gradient(to bottom right, var(--admin-bg) 0%, var(--admin-secondary) 100%); */
-    color: #F9F6F0;
-    padding: 7px 14px;
-    border-radius: 6px;
-    border: 1px solid var(--admin-primary);
     cursor: pointer;
-    transition: filter 0.3s ease;
 }
 
-.btn:hover {
-    filter: brightness(1.8);
-}
 .p-dialog ,
 .p-datatable-header,
 .p-datatable-thead > tr > th,
@@ -83,11 +81,7 @@
 }
 
 .p-datatable .p-datatable-tbody > tr:hover {
-    background: rgba(85, 32, 50, 0.05) !important;
-}
-
-html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr:hover {
-    background: rgba(214, 184, 193, 0.08) !important;
+    background: var(--rw-hover-bg) !important;
 }
 .p-inputtext,
 .p-dropdown,
@@ -126,8 +120,8 @@ html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr:hover {
     border-color: var(--admin-primary) !important;
 
     box-shadow:
-        0 0 0 1px rgba(85, 32, 50, 0.35),
-        0 0 12px rgba(85, 32, 50, 0.18);
+        0 0 0 1px var(--rw-focus-ring),
+        0 0 12px var(--rw-focus-ring);
 
     outline: none !important;
 }
@@ -153,15 +147,15 @@ html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr:hover {
 
 .p-select-option:hover,
 .p-dropdown-item:hover {
-    background: rgba(85, 32, 50, 0.12) !important;
+    background: var(--rw-hover-bg) !important;
 }
 
 /* selected */
 
 .p-select-option-selected,
 .p-dropdown-item.p-highlight {
-    background: var(--admin-primary);
-    color: var(--rw-bg);
+    background: var(--admin-primary) !important;
+    color: var(--rw-on-primary) !important;
 }
 
 /* focused */
@@ -208,8 +202,8 @@ html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr:hover {
 
 /* Active */
 .p-inputswitch.p-highlight .p-inputswitch-slider {
-    background: #22c55e !important;
-    border-color: #22c55e !important;
+    background: var(--rw-success) !important;
+    border-color: var(--rw-success) !important;
 }
 
 .p-dialog {

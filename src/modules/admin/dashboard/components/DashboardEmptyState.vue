@@ -46,7 +46,7 @@ defineProps({
     height: 3.5rem;
     place-items: center;
     border-radius: 9999px;
-    background: rgba(214, 184, 193, 0.14);
+    background: var(--highlight-bg);
     color: var(--admin-primary);
     font-size: 1.25rem;
 }

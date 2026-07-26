@@ -1,3 +1,6 @@
+const CURRENCY_LOCALE = 'en-MM';
+const CURRENCY_CODE = 'MMK';
+
 const formatDate = (value) => {
     if (!value) {
         return null;
@@ -33,12 +36,14 @@ export function formatCurrency(value) {
         return '-';
     }
 
-    return new Intl.NumberFormat('en-MM', {
+    return new Intl.NumberFormat(CURRENCY_LOCALE, {
         style: 'currency',
-        currency: 'MMK',
+        currency: CURRENCY_CODE,
         maximumFractionDigits: 0,
     }).format(value);
 }
+
+export { CURRENCY_CODE, CURRENCY_LOCALE };
 
 export function getPaymentTypeLabel(type) {
     const labels = {

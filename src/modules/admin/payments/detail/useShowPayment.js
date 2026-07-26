@@ -1,6 +1,8 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
+import { formatPropertyUnit } from '@/helpers/payments/paymentListHelpers';
+import { formatCurrency } from '@/utils/formatter';
 import { resolveMediaUrl } from '@/utils/media';
 import { usePaymentStore } from '../store';
 
@@ -21,6 +23,7 @@ export default function useShowPayment() {
 
     const state = reactive({
         id: null,
+        payment_number: '',
         invoice_id: null,
         payment_method_id: null,
         payment_method_name: '',
@@ -40,6 +43,9 @@ export default function useShowPayment() {
         customer_name: '',
         customer_phone: '',
         customer_nrc: '',
+        property_unit: '',
+        display_status: '',
+        reference_number: '',
         created_at: '',
         receipt_id: null,
         receipt_number: '',
@@ -149,16 +155,41 @@ export default function useShowPayment() {
         state.receipt_id ? { name: 'showReceipt', params: { id: state.receipt_id } } : null
     ));
 
+    const propertyUnit = computed(() => formatPropertyUnit(state));
+    const paymentStatus = computed(() => state.display_status || state.status);
+    const formattedCreatedAt = computed(() => {
+        if (!state.created_at) {
+            return '—';
+        }
+
+        const normalized = state.created_at.includes('T')
+            ? state.created_at
+            : state.created_at.replace(' ', 'T');
+
+        return new Date(normalized).toLocaleString('en-GB', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+        });
+    });
+    const invoiceRoute = computed(() => (
+        state.invoice_id ? { name: 'showInvoice', params: { id: state.invoice_id } } : null
+    ));
+
     return {
         isApprovalView,
         backRoute,
         documentRoute,
         receiptRoute,
+        invoiceRoute,
         isLoading,
         isUploading,
         state,
         proofPreview,
         workflowLoading,
+        propertyUnit,
+        paymentStatus,
+        formattedCreatedAt,
+        formatCurrency,
         onProofSelect,
         runWorkflow,
         canApprove,

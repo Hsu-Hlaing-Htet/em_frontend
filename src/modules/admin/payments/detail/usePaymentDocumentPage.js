@@ -18,6 +18,7 @@ export default function usePaymentDocumentPage() {
 
     const state = reactive({
         id: null,
+        payment_number: '',
         invoice_id: null,
         invoice_number: '',
         payment_method_name: '',

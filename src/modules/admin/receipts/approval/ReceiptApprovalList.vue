@@ -60,7 +60,7 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="payment_id" header="Payment" :sortable="true" style="min-width: 100px" />
+                <Column field="payment_number" header="Payment #" :sortable="true" style="min-width: 140px" />
                 <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 160px" />
                 <Column header="Actions" :exportable="false" style="min-width: 80px">
                     <template #body="{ data }">

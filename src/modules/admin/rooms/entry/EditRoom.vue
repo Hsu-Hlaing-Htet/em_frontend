@@ -25,44 +25,113 @@
                 <div class="field">
                     <label class="mb-2 block text-md">Room Number</label>
                     <InputText v-model="state.room_number" class="w-full" />
+                    <small v-if="errors.has('room_number')" class="p-error">
+                        <div v-for="error in errors.get('room_number')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
+
                 <div class="field">
                     <label class="mb-2 block text-md">Floor Number</label>
                     <InputNumber v-model="state.floor_number" class="w-full" :min="0" />
+                    <small v-if="errors.has('floor_number')" class="p-error">
+                        <div v-for="error in errors.get('floor_number')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
+
+                <div class="field">
+                    <label class="mb-2 block text-md">Width (ft)</label>
+                    <InputNumber v-model="state.width_ft" class="w-full" :min="0" :min-fraction-digits="2" />
+                    <small v-if="errors.has('width_ft')" class="p-error">
+                        <div v-for="error in errors.get('width_ft')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
+
+                <div class="field">
+                    <label class="mb-2 block text-md">Length (ft)</label>
+                    <InputNumber v-model="state.length_ft" class="w-full" :min="0" :min-fraction-digits="2" />
+                    <small v-if="errors.has('length_ft')" class="p-error">
+                        <div v-for="error in errors.get('length_ft')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
+
                 <div class="field">
                     <label class="mb-2 block text-md">Area (sqft)</label>
                     <InputNumber v-model="state.area_sqft" class="w-full" :min="0" :min-fraction-digits="2" />
+                    <small v-if="errors.has('area_sqft')" class="p-error">
+                        <div v-for="error in errors.get('area_sqft')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
+
                 <div class="field">
                     <label class="mb-2 block text-md">Type</label>
                     <Dropdown v-model="state.type" :options="typeOptions" option-label="label" option-value="value" class="w-full" />
+                    <small v-if="errors.has('type')" class="p-error">
+                        <div v-for="error in errors.get('type')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
+
                 <div class="field">
                     <label class="mb-2 block text-md">Status</label>
                     <Dropdown v-model="state.status" :options="statusOptions" option-label="label" option-value="value" class="w-full" />
+                    <small v-if="errors.has('status')" class="p-error">
+                        <div v-for="error in errors.get('status')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <div class="field md:col-span-2">
                     <label class="mb-2 block text-md">Description</label>
                     <Textarea v-model="state.description" class="w-full" rows="3" />
+                    <small v-if="errors.has('description')" class="p-error">
+                        <div v-for="error in errors.get('description')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <div class="field">
-                    <label class="mb-2 block text-md">Sale Price</label>
-                    <InputNumber v-model="state.sale_price" class="w-full" :min="0" mode="currency" currency="USD" />
+                    <label class="mb-2 block text-md">Sale Price (MMK)</label>
+                    <InputNumber
+                        v-model="state.sale_price"
+                        class="w-full"
+                        v-bind="currencyInputProps"
+                    />
+                    <small v-if="errors.has('sale_price')" class="p-error">
+                        <div v-for="error in errors.get('sale_price')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
+
                 <div class="field">
-                    <label class="mb-2 block text-md">Rent Price</label>
-                    <InputNumber v-model="state.rent_price" class="w-full" :min="0" mode="currency" currency="USD" />
+                    <label class="mb-2 block text-md">Rent Price (MMK)</label>
+                    <InputNumber
+                        v-model="state.rent_price"
+                        class="w-full"
+                        v-bind="currencyInputProps"
+                    />
+                    <small v-if="errors.has('rent_price')" class="p-error">
+                        <div v-for="error in errors.get('rent_price')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
+
                 <div class="field">
-                    <label class="mb-2 block text-md">Rent Deposit</label>
-                    <InputNumber v-model="state.rent_deposit_price" class="w-full" :min="0" mode="currency" currency="USD" />
+                    <label class="mb-2 block text-md">Rent Deposit (MMK)</label>
+                    <InputNumber
+                        v-model="state.rent_deposit_price"
+                        class="w-full"
+                        v-bind="currencyInputProps"
+                    />
+                    <small v-if="errors.has('rent_deposit_price')" class="p-error">
+                        <div v-for="error in errors.get('rent_deposit_price')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
+
                 <div class="field">
-                    <label class="mb-2 block text-md">Booking Deposit</label>
-                    <InputNumber v-model="state.booking_deposit_price" class="w-full" :min="0" mode="currency" currency="USD" />
+                    <label class="mb-2 block text-md">Booking Deposit (MMK)</label>
+                    <InputNumber
+                        v-model="state.booking_deposit_price"
+                        class="w-full"
+                        v-bind="currencyInputProps"
+                    />
+                    <small v-if="errors.has('booking_deposit_price')" class="p-error">
+                        <div v-for="error in errors.get('booking_deposit_price')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <RoomImageManager
@@ -76,7 +145,7 @@
                     @delete-persisted="confirmDeleteImage"
                 />
 
-                <div class="flex gap-2">
+                <div class="flex gap-2 md:col-span-2">
                     <Button type="submit" label="Save" />
                     <router-link :to="{ name: 'roomList' }">
                         <Button type="button" label="Cancel" />
@@ -99,12 +168,16 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import RoomImageManager from './RoomImageManager.vue';
 import useEditRoom from './useEditRoom';
+import { ROOM_CURRENCY_INPUT_PROPS } from '../roomForm';
 
 export default defineComponent({
     name: 'EditRoom',
     components: { InputText, InputNumber, Textarea, Dropdown, Button, Loading, RoomImageManager },
     setup() {
-        return useEditRoom();
+        return {
+            ...useEditRoom(),
+            currencyInputProps: ROOM_CURRENCY_INPUT_PROPS,
+        };
     },
 });
 </script>

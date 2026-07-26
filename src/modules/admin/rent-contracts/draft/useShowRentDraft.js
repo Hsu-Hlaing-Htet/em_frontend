@@ -48,6 +48,7 @@ export default function useShowRentDraft() {
         sendEmail,
     } = useRentContractDocumentActions('draft', state, () => document.value);
     const fieldSections = computed(() => buildFieldSections(document.value));
+    const contractStatus = computed(() => state.status || '');
     const editRoute = computed(() => (
         state.id
             ? { name: 'editRentContractDraft', params: { id: state.id } }
@@ -107,6 +108,8 @@ export default function useShowRentDraft() {
 
     return {
         isLoading,
+        state,
+        contractStatus,
         document,
         fieldSections,
         editRoute,

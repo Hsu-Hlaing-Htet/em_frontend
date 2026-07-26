@@ -6,6 +6,7 @@ import {
     watch,
 } from 'vue';
 import { getPublicProperties } from '@/modules/public/service';
+import { formatCurrency } from '@/utils/formatter';
 
 export const sampleSaleProperties = [
     {
@@ -297,11 +298,7 @@ function formatPrice(value) {
         return 'Contact for price';
     }
 
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-    }).format(Number(value));
+    return formatCurrency(Number(value));
 }
 
 function formatArea(value) {

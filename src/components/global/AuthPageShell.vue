@@ -1,5 +1,6 @@
 <script setup>
 import ThemeToggle from '@/components/global/ThemeToggle.vue';
+import DevelopedByCredit from '@/components/global/DevelopedByCredit.vue';
 
 defineProps({
     title: {
@@ -54,5 +55,9 @@ defineProps({
                 <slot name="footer" />
             </div>
         </section>
+
+        <footer class="pointer-events-none absolute inset-x-0 bottom-4 text-center">
+            <DevelopedByCredit text-class="text-rw-muted" />
+        </footer>
     </div>
 </template>

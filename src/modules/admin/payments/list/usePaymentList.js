@@ -1,5 +1,4 @@
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
-import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
@@ -8,7 +7,8 @@ import { usePaymentStore } from '../store';
 export const usePaymentList = () => {
     const dt = ref();
     const search = ref('');
-    const statusFilter = ref(null);
+    const billingStatusFilter = ref(null);
+    const paymentTypeFilter = ref(null);
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const payments = ref([]);
@@ -26,7 +26,6 @@ export const usePaymentList = () => {
         lazyParams.value = {
             page: 0,
             rows: dt.value?.rows || 10,
-            multiSortMeta: [],
             first: 0,
         };
     };
@@ -44,22 +43,15 @@ export const usePaymentList = () => {
         loadingData();
     };
 
-    const onSort = (event) => {
-        lazyParams.value = event;
-        lazyParams.value.page = 0;
-        lazyParams.value.first = 0;
-        loadingData();
-    };
-
     const loadingData = async () => {
         isLoading.value = true;
 
         await store.fetchAll({
             page: lazyParams.value.page + 1,
             per_page: lazyParams.value.rows,
-            order: multisortConvert(lazyParams.value.multiSortMeta),
             search: search.value,
-            status: statusFilter.value || undefined,
+            billing_status: billingStatusFilter.value || undefined,
+            payment_type: paymentTypeFilter.value || undefined,
         });
 
         const response = store.getAllResponse;
@@ -81,12 +73,13 @@ export const usePaymentList = () => {
     const resetSearch = () => {
         resetPagination();
         search.value = '';
-        statusFilter.value = null;
+        billingStatusFilter.value = null;
+        paymentTypeFilter.value = null;
         loadingData();
     };
 
     watch(
-        [search, statusFilter],
+        [search, billingStatusFilter, paymentTypeFilter],
         useDebounceFn(() => {
             resetPagination();
             loadingData();
@@ -101,8 +94,8 @@ export const usePaymentList = () => {
         lazyParams,
         dt,
         search,
-        statusFilter,
-        onSort,
+        billingStatusFilter,
+        paymentTypeFilter,
         onPage,
         resetSearch,
         showConfirmDialog,

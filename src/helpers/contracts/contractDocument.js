@@ -19,6 +19,10 @@ export function estimateMonthlyPayment({ paymentType, contractTotal, deposit, du
 }
 
 export function buildFieldSections(document) {
+    if (!document) {
+        return [];
+    }
+
     const sections = [
         {
             title: 'Customer Information',

@@ -2,42 +2,50 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCustomerReceiptStore } from '@/modules/customer/receipts/store';
 import { showApiErrorToast } from '@/utils/apiError';
-
-function cloneRows(rows) {
-    return Array.isArray(rows) ? rows.map((row) => ({ ...row })) : [];
-}
+import { mapCustomerReceipt } from '@/helpers/customer/receipt';
 
 export default function useCustomerReceiptList() {
     const store = useCustomerReceiptStore();
     const router = useRouter();
     const isLoading = ref(true);
+    const isLoadingMore = ref(false);
     const receipts = ref([]);
     const totalRecords = ref(0);
     const page = ref(1);
-    const first = ref(0);
     const rows = ref(10);
 
-    const loadReceipts = async () => {
-        isLoading.value = true;
+    const hasMore = () => receipts.value.length < totalRecords.value;
+
+    const loadReceipts = async ({ append = false } = {}) => {
+        if (append) {
+            isLoadingMore.value = true;
+        } else {
+            isLoading.value = true;
+        }
 
         try {
             await store.fetchAll({ page: page.value, per_page: rows.value });
             const response = store.getAllResponse;
-            receipts.value = cloneRows(response?.data?.data);
+            const nextRows = (response?.data?.data || []).map(mapCustomerReceipt);
+            receipts.value = append ? [...receipts.value, ...nextRows] : nextRows;
             totalRecords.value = response?.data?.total || 0;
         } catch (error) {
             showApiErrorToast(error, 'Unable to load receipts.');
         } finally {
             isLoading.value = false;
+            isLoadingMore.value = false;
         }
     };
 
-    onMounted(loadReceipts);
+    onMounted(() => loadReceipts());
 
-    const onPage = (event) => {
-        first.value = event.first;
-        page.value = event.page + 1;
-        loadReceipts();
+    const loadMore = () => {
+        if (!hasMore() || isLoadingMore.value) {
+            return;
+        }
+
+        page.value += 1;
+        loadReceipts({ append: true });
     };
 
     const openReceipt = (id) => {
@@ -46,11 +54,10 @@ export default function useCustomerReceiptList() {
 
     return {
         isLoading,
+        isLoadingMore,
         receipts,
-        totalRecords,
-        first,
-        rows,
-        onPage,
+        hasMore,
+        loadMore,
         openReceipt,
     };
 }

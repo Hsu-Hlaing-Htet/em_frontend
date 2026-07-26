@@ -55,7 +55,7 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="payment_id" header="Payment" :sortable="true" style="min-width: 100px" />
+                <Column field="payment_number" header="Payment #" :sortable="true" style="min-width: 140px" />
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         <StatusBadge :value="data.status" />

@@ -186,6 +186,9 @@ export default {
 
     overflow: hidden;
 
+    border: 1px solid transparent;
+    border-radius: 8px;
+
     color: var(--admin-text-muted);
     text-decoration: none;
 
@@ -213,13 +216,9 @@ export default {
 .menu-link:hover,
 .menu-link.router-link-active,
 .menu-link.router-link-exact-active {
-    background: linear-gradient(
-        90deg,
-        rgba(139, 59, 86, 0.22),
-        rgba(122, 49, 73, 0.08)
-    );
-
-    color: var(--admin-primary);
+    background: var(--admin-nav-active-bg);
+    border-color: var(--admin-nav-active-border);
+    color: var(--admin-nav-active-text);
 }
 
 .menu-link:hover::before,
@@ -227,6 +226,11 @@ export default {
 .menu-link.router-link-exact-active::before {
     opacity: 1;
     transform: scaleY(1);
+}
+
+html[data-theme='dark'] .menu-link.router-link-active,
+html[data-theme='dark'] .menu-link.router-link-exact-active {
+    box-shadow: 0 0 16px rgba(193, 39, 79, 0.18);
 }
 
 .menu-link-icon {

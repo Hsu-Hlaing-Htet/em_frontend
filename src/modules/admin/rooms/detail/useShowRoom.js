@@ -1,6 +1,8 @@
 import { reactive, ref, onMounted, onBeforeUnmount, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRoomStore } from '../store';
+import { formatCurrency } from '@/utils/formatter';
+import { showApiErrorToast } from '@/utils/apiError';
 
 export default function useShowRoom() {
     const store = useRoomStore();
@@ -14,6 +16,8 @@ export default function useShowRoom() {
         building_name: '',
         room_number: '',
         floor_number: '',
+        width_ft: '',
+        length_ft: '',
         area_sqft: '',
         description: '',
         type: '',
@@ -76,6 +80,8 @@ export default function useShowRoom() {
 
                 selectedImageId.value = primaryImage?.id ?? null;
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load room.');
         } finally {
             isLoading.value = false;
         }
@@ -87,5 +93,6 @@ export default function useShowRoom() {
         roomImages,
         coverImage,
         selectCoverImage,
+        formatCurrency,
     };
 }

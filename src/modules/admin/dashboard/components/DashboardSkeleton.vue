@@ -45,9 +45,9 @@ defineProps({
     border-radius: 0.75rem;
     background: linear-gradient(
         90deg,
-        rgba(214, 184, 193, 0.12) 25%,
-        rgba(214, 184, 193, 0.24) 50%,
-        rgba(214, 184, 193, 0.12) 75%
+        var(--rw-hover-bg) 25%,
+        var(--highlight-bg) 50%,
+        var(--rw-hover-bg) 75%
     );
     background-size: 200% 100%;
     animation: dashboard-skeleton-shimmer 1.4s ease infinite;

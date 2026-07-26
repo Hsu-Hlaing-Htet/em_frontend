@@ -36,7 +36,7 @@ export function mapRentDraftFromApi(data) {
         start_date: data.start_date,
         billing_day: data.payment_type === 'full' ? null : data.billing_day,
         remarks: data.remark || '',
-        status: data.status,
+        status: data.status ?? '',
         created_by: data.created_by_name || data.creator?.name || '',
         created_at: data.created_at,
         remaining_balance: toNumber(data.remaining_balance),

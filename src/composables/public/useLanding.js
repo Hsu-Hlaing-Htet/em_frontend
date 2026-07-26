@@ -15,6 +15,7 @@ import {
     getPropertyStats,
     getPublicProperties,
 } from '@/modules/public/service';
+import { formatCurrency } from '@/utils/formatter';
 
 export function useLanding() {
     const router = useRouter();
@@ -63,10 +64,10 @@ export function useLanding() {
 
     const priceRangeOptions = [
         { label: 'Any', value: null },
-        { label: 'Under $1,000', value: { min: null, max: 1000 } },
-        { label: '$1,000 - $2,000', value: { min: 1000, max: 2000 } },
-        { label: '$2,000 - $5,000', value: { min: 2000, max: 5000 } },
-        { label: '$5,000+', value: { min: 5000, max: null } },
+        { label: `Under ${formatCurrency(1000)}`, value: { min: null, max: 1000 } },
+        { label: `${formatCurrency(1000)} - ${formatCurrency(2000)}`, value: { min: 1000, max: 2000 } },
+        { label: `${formatCurrency(2000)} - ${formatCurrency(5000)}`, value: { min: 2000, max: 5000 } },
+        { label: `${formatCurrency(5000)}+`, value: { min: 5000, max: null } },
     ];
 
     const bedroomOptions = [
@@ -130,19 +131,19 @@ export function useLanding() {
     const latestCommercialSpace = computed(() => [
         {
             title: 'Downtown Office Suite',
-            price: '$4,500 / month',
+            price: `${formatCurrency(4500)} / month`,
             location: 'Central Business District',
             image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72',
         },
         {
             title: 'Retail Corner Unit',
-            price: '$3,200 / month',
+            price: `${formatCurrency(3200)} / month`,
             location: 'Sanchaung',
             image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174',
         },
         {
             title: 'Executive Business Floor',
-            price: '$8,900 / month',
+            price: `${formatCurrency(8900)} / month`,
             location: 'Yankin',
             image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2',
         },
@@ -153,8 +154,8 @@ export function useLanding() {
             return featured.houses.slice(0, 3).map((property) => ({
                 title: property.property_name,
                 price: property.sale_price
-                    ? `$${Number(property.sale_price).toLocaleString()}`
-                    : '$--',
+                    ? formatCurrency(Number(property.sale_price))
+                    : 'Contact for price',
                 location: property.township,
                 image: property.featured_image,
             }));
@@ -166,7 +167,7 @@ export function useLanding() {
     const latestPenthouses = computed(() => [
         {
             title: 'Skyline Penthouse One',
-            price: '$6,800 / month',
+            price: `${formatCurrency(6800)} / month`,
             location: 'Yankin',
             image: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511',
         },

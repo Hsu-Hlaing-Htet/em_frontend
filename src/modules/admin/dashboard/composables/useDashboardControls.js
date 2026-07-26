@@ -37,8 +37,21 @@ const LIST_CONTROL_CONFIG = {
         pageSize: 5,
     },
     payments: {
-        searchKeys: ['reference', 'client', 'invoice', 'method'],
-        defaultSort: 'paid_at',
+        searchKeys: [
+            'payment_number',
+            'reference',
+            'reference_number',
+            'customer_name',
+            'client',
+            'invoice_number',
+            'invoice',
+            'property_unit',
+            'payment_method_name',
+            'method',
+            'note',
+        ],
+        statusKey: 'display_status',
+        defaultSort: 'payment_date',
         pageSize: 5,
     },
     bookings: {

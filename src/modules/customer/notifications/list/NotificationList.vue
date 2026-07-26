@@ -1,43 +1,52 @@
 <template>
-    <div class="admin-panel">
-        <DataTable
-            :value="notifications"
-            data-key="id"
-            :loading="isLoading"
-            responsive-layout="scroll"
-        >
-            <template #empty>No notifications found.</template>
-            <Column field="type" header="Type">
-                <template #body="{ data }">
-                    <span class="capitalize">{{ data.type }}</span>
-                </template>
-            </Column>
-            <Column field="title" header="Title" />
-            <Column field="message" header="Message" />
-            <Column field="status" header="Status">
-                <template #body="{ data }">
-                    <StatusBadge :value="data.status" />
-                </template>
-            </Column>
-            <Column field="created_at" header="Updated" />
-            <Column header="Actions">
-                <template #body="{ data }">
-                    <Button label="Open" text @click="openNotification(data)" />
-                </template>
-            </Column>
-        </DataTable>
+    <div>
+        <h1 class="customer-page-heading">Notifications</h1>
+        <p class="customer-page-lead">Payment updates, invoice alerts, and announcements</p>
+
+        <Loading v-if="isLoading" />
+
+        <div v-else-if="notifications.length" class="customer-list-stack">
+            <button
+                v-for="item in notifications"
+                :key="`${item.type}-${item.resource_id}-${item.created_at}`"
+                type="button"
+                class="customer-notification-card text-left"
+                :class="{ 'is-unread': item.status !== 'read' }"
+                @click="openNotification(item)"
+            >
+                <div class="mb-2 flex items-start justify-between gap-3">
+                    <div>
+                        <p class="m-0 mb-1 text-xs font-semibold uppercase tracking-wide text-[var(--admin-primary)]">
+                            {{ item.type }}
+                        </p>
+                        <h3 class="m-0 text-base font-bold">{{ item.title }}</h3>
+                    </div>
+                    <StatusBadge :value="item.status" />
+                </div>
+                <p class="m-0 mb-2 text-sm text-[var(--admin-text-muted)]">{{ item.message }}</p>
+                <p class="m-0 text-xs text-[var(--admin-text-muted)]">{{ item.created_at }}</p>
+            </button>
+        </div>
+
+        <CustomerEmptyState
+            v-else
+            icon="pi pi-bell"
+            title="You're all caught up"
+            message="New payment and invoice alerts will show up here."
+        />
     </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
-import Button from 'primevue/button';
+import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
+import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
 import useCustomerNotificationList from '@/composables/customer/useCustomerNotificationList';
 
 export default defineComponent({
     name: 'CustomerNotificationList',
-    components: { Button, StatusBadge },
+    components: { Loading, StatusBadge, CustomerEmptyState },
     setup() {
         return useCustomerNotificationList();
     },

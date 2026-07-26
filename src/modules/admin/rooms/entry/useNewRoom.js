@@ -6,6 +6,9 @@ import { useRoomStore } from '../store';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import useRoomImages from './useRoomImages';
+import useRoomDimensions from '@/composables/admin/rooms/useRoomDimensions';
+import { buildRoomPayload } from '../roomForm';
+import { showApiErrorToast } from '@/utils/apiError';
 
 export default function useNewRoom() {
     const store = useRoomStore();
@@ -31,6 +34,8 @@ export default function useNewRoom() {
         building_id: null,
         room_number: '',
         floor_number: 1,
+        width_ft: null,
+        length_ft: null,
         area_sqft: 0,
         description: '',
         type: 'rent',
@@ -40,6 +45,8 @@ export default function useNewRoom() {
         rent_deposit_price: 0,
         booking_deposit_price: 0,
     });
+
+    useRoomDimensions(state);
 
     onMounted(async () => {
         await buildingStore.fetchAll({ per_page: 100 });
@@ -64,7 +71,7 @@ export default function useNewRoom() {
         errors.clear();
 
         try {
-            await store.add({ ...state });
+            await store.add(buildRoomPayload(state));
             const response = store.getAddResponse;
 
             if (!response?.data?.id) {
@@ -96,6 +103,8 @@ export default function useNewRoom() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to create room.');
             }
         } finally {
             isLoading.value = false;

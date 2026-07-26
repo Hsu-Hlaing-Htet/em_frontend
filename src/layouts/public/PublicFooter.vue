@@ -1,4 +1,6 @@
 <script setup>
+import DevelopedByCredit from '@/components/global/DevelopedByCredit.vue';
+
 defineProps({
   currentYear: {
     type: Number,
@@ -463,6 +465,7 @@ const socials = [
       >
         © {{ currentYear }} Rosewood Royale.
         All rights reserved.
+        <DevelopedByCredit text-class="mt-2 text-gray-400" />
       </div>
   </footer>
 </template>

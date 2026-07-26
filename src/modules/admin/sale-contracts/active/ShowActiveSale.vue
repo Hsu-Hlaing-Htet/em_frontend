@@ -41,6 +41,7 @@
         <div class="pdf-canvas">
             <div class="pdf-frame">
                 <ContractPdfSheet
+                    v-if="document"
                     variant="sale"
                     :document="document"
                     :field-sections="fieldSections"

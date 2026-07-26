@@ -1,23 +1,61 @@
 <template>
-    <div v-if="!isLoading" class="admin-panel mx-auto max-w-5xl">
-        <div class="mb-4 flex justify-end gap-2">
-            <Button label="Download PDF" icon="pi pi-download" :loading="isDownloading" @click="downloadPdf" />
-            <router-link :to="{ name: 'customerContractList' }">
-                <Button label="Back" severity="secondary" />
+    <div v-if="!isLoading">
+        <div class="mb-4 flex flex-wrap gap-2">
+            <Button
+                label="Download Contract"
+                icon="pi pi-download"
+                class="flex-1"
+                :loading="isDownloading"
+                @click="downloadPdf"
+            />
+            <router-link :to="{ name: 'customerContractList' }" class="flex-1">
+                <Button label="Back" severity="secondary" class="customer-btn-block" />
             </router-link>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div><strong>Contract #</strong><p>{{ state.contract_number }}</p></div>
-            <div><strong>Type</strong><p class="capitalize">{{ state.type }}</p></div>
-            <div><strong>Status</strong><p><StatusBadge :value="state.status" /></p></div>
-            <div><strong>Building</strong><p>{{ state.building_name || '—' }}</p></div>
-            <div><strong>Room</strong><p>{{ state.room_number || '—' }}</p></div>
-            <div><strong>Total</strong><p>{{ state.contract_total || '—' }}</p></div>
-            <div><strong>Deposit</strong><p>{{ state.deposit_amount || '—' }}</p></div>
-            <div><strong>Start Date</strong><p>{{ state.start_date || '—' }}</p></div>
-            <div><strong>End Date</strong><p>{{ state.end_date || '—' }}</p></div>
-            <div><strong>Payment Type</strong><p>{{ state.payment_type || '—' }}</p></div>
+        <div class="admin-panel p-4">
+            <div class="mb-4 flex items-center justify-between gap-3">
+                <div>
+                    <p class="m-0 text-sm text-[var(--admin-text-muted)]">Contract</p>
+                    <h1 class="customer-page-heading m-0">{{ state.contract_number }}</h1>
+                </div>
+                <StatusBadge :value="state.status" />
+            </div>
+
+            <div class="customer-detail-grid">
+                <div class="customer-detail-item">
+                    <p class="customer-detail-label">Type</p>
+                    <p class="customer-detail-value capitalize">{{ state.type || '—' }}</p>
+                </div>
+                <div class="customer-detail-item">
+                    <p class="customer-detail-label">Building</p>
+                    <p class="customer-detail-value">{{ state.building_name || '—' }}</p>
+                </div>
+                <div class="customer-detail-item">
+                    <p class="customer-detail-label">Room</p>
+                    <p class="customer-detail-value">{{ state.room_number || '—' }}</p>
+                </div>
+                <div class="customer-detail-item">
+                    <p class="customer-detail-label">Total</p>
+                    <p class="customer-detail-value">{{ formatCurrency(state.contract_total) }}</p>
+                </div>
+                <div class="customer-detail-item">
+                    <p class="customer-detail-label">Deposit</p>
+                    <p class="customer-detail-value">{{ formatCurrency(state.deposit_amount) }}</p>
+                </div>
+                <div class="customer-detail-item">
+                    <p class="customer-detail-label">Start Date</p>
+                    <p class="customer-detail-value">{{ state.start_date || '—' }}</p>
+                </div>
+                <div class="customer-detail-item">
+                    <p class="customer-detail-label">End Date</p>
+                    <p class="customer-detail-value">{{ state.end_date || '—' }}</p>
+                </div>
+                <div class="customer-detail-item">
+                    <p class="customer-detail-label">Payment Type</p>
+                    <p class="customer-detail-value">{{ state.payment_type || '—' }}</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -29,13 +67,17 @@ import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import Loading from '@/components/global/Loading.vue';
+import { formatCurrency } from '@/utils/formatter';
 import useCustomerShowContract from '@/composables/customer/useCustomerShowContract';
 
 export default defineComponent({
     name: 'CustomerShowContract',
     components: { Button, StatusBadge, Loading },
     setup() {
-        return useCustomerShowContract();
+        return {
+            ...useCustomerShowContract(),
+            formatCurrency,
+        };
     },
 });
 </script>

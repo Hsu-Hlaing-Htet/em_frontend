@@ -1,8 +1,19 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
+import { useInvoiceDocument } from '@/composables/admin/documents/useInvoiceDocument';
+import { useInvoiceDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
+import {
+    formatBillingPeriod,
+    formatInvoiceNotes,
+    formatInvoiceTypeLabel,
+    formatPropertyUnit,
+    resolveInvoicePaymentStatus,
+} from '@/helpers/invoices/invoiceDetailHelpers';
+import { formatCurrency } from '@/utils/formatter';
 import { useInvoiceStore } from '../store';
 import { usePaymentStore } from '@/modules/admin/payments/store';
+import { service } from '../service';
 
 export default function useShowInvoice() {
     const store = useInvoiceStore();
@@ -25,10 +36,17 @@ export default function useShowInvoice() {
         contract_id: null,
         utility_id: null,
         type: '',
+        invoice_type: '',
         issued_date: '',
         due_date: '',
+        billing_period: '',
         late_fee: '',
         total_amount: '',
+        paid_amount: 0,
+        remaining_balance: 0,
+        payment_status: '',
+        payment_method_name: '',
+        notes: '',
         status: '',
         items: [],
         customer_name: '',
@@ -37,11 +55,15 @@ export default function useShowInvoice() {
         customer_nrc: '',
         building_name: '',
         room_number: '',
+        property_unit: '',
         created_by_name: '',
         approved_by: null,
         approved_at: '',
         created_at: '',
     });
+
+    const { document } = useInvoiceDocument(state);
+    const { downloadPdf, sendEmail } = useInvoiceDocumentActions(state, () => document.value, service);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -109,6 +131,10 @@ export default function useShowInvoice() {
     };
 
     const canApprove = () => isApprovalView.value && state.status === 'draft';
+    const canEdit = computed(() => state.status === 'draft' && !isApprovalView.value);
+    const editRoute = computed(() => (
+        state.id ? { name: 'showInvoiceApproval', params: { id: state.id } } : null
+    ));
     const isApproved = computed(() => Boolean(state.approved_by?.id && state.approved_at));
     const formattedApprovedAt = computed(() => {
         if (!state.approved_at) {
@@ -124,21 +150,61 @@ export default function useShowInvoice() {
             timeStyle: 'short',
         });
     });
+    const formattedCreatedAt = computed(() => {
+        if (!state.created_at) {
+            return '—';
+        }
+
+        const normalized = state.created_at.includes('T')
+            ? state.created_at
+            : state.created_at.replace(' ', 'T');
+
+        return new Date(normalized).toLocaleString('en-GB', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+        });
+    });
     const documentRoute = computed(() => (
         state.id ? { name: 'invoiceDocument', params: { id: state.id } } : null
     ));
+    const invoiceTypeLabel = computed(() => formatInvoiceTypeLabel(state.invoice_type || state.type));
+    const propertyUnit = computed(() => formatPropertyUnit(state));
+    const paymentStatus = computed(() => resolveInvoicePaymentStatus(state));
+    const billingPeriod = computed(() => formatBillingPeriod(state));
+    const invoiceNotes = computed(() => formatInvoiceNotes(state));
+    const totalDue = computed(() => formatCurrency(
+        Number(state.total_amount || 0) + Number(state.late_fee || 0),
+    ));
+    const paidAmount = computed(() => formatCurrency(state.paid_amount));
+    const remainingBalance = computed(() => formatCurrency(state.remaining_balance));
+    const invoiceAmount = computed(() => formatCurrency(state.total_amount));
 
     return {
         isApprovalView,
         backRoute,
         documentRoute,
+        editRoute,
         isLoading,
         isApproving,
         state,
         payments,
         handleApprove,
         canApprove,
+        canEdit,
         isApproved,
         formattedApprovedAt,
+        formattedCreatedAt,
+        downloadPdf,
+        sendEmail,
+        invoiceTypeLabel,
+        propertyUnit,
+        paymentStatus,
+        billingPeriod,
+        invoiceNotes,
+        totalDue,
+        paidAmount,
+        remainingBalance,
+        invoiceAmount,
+        formatCurrency,
     };
 }

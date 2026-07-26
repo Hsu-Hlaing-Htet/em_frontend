@@ -73,6 +73,11 @@
     transform: translateY(10px);
 }
 
+.dashboard-section-root {
+    display: block;
+    width: 100%;
+}
+
 .page-fade-enter-active,
 .page-fade-leave-active {
     transition: opacity 0.28s ease, transform 0.28s ease;

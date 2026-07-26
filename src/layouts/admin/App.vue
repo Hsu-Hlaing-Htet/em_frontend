@@ -12,7 +12,7 @@
         <nav
             id="admin-navigation"
             aria-label="Admin navigation"
-            class="admin-sidebar fixed inset-y-0 left-0 z-[1000] flex w-[var(--sidebar-width)] flex-col border-r border-white/10 shadow-2xl transition-all duration-300"
+            class="admin-sidebar fixed inset-y-0 left-0 z-[1000] flex w-[var(--sidebar-width)] flex-col border-r border-[var(--admin-border)] shadow-2xl transition-all duration-300"
             @click.stop="onSidebarClick"
         >
             <MenuHeader
@@ -40,10 +40,12 @@
                         name="page-fade"
                         mode="out-in"
                     >
-                        <component
-                            :is="Component"
+                        <div
                             :key="route.path"
-                        />
+                            class="page-transition-root"
+                        >
+                            <component :is="Component" />
+                        </div>
                     </Transition>
                 </router-view>
             </main>
@@ -170,7 +172,7 @@ export default {
     transform: translateY(-200%);
     border-radius: 9999px;
     background: var(--admin-primary);
-    color: #fff8f3;
+    color: var(--rw-on-primary);
     padding: 0.65rem 1rem;
     text-decoration: none;
     font-weight: 600;
@@ -178,7 +180,7 @@ export default {
 
 .skip-link:focus {
     transform: translateY(0);
-    outline: 3px solid rgba(214, 184, 193, 0.8);
+    outline: 3px solid var(--rw-focus-ring);
     outline-offset: 2px;
 }
 
@@ -209,6 +211,11 @@ export default {
 :global(.page-fade-leave-to) {
     opacity: 0;
     transform: translateY(-6px);
+}
+
+:global(.page-transition-root) {
+    display: block;
+    width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {

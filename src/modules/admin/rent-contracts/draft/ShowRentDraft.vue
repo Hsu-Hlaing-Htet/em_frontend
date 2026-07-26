@@ -13,9 +13,9 @@
         </h1>
 
             <StatusBadge
-                v-if="state.status"
+                v-if="contractStatus"
                 class="mt-3"
-                :value="state.status"
+                :value="contractStatus"
             />
 
     </div>

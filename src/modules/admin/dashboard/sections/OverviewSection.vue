@@ -2,7 +2,6 @@
 import { computed, inject, unref } from 'vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import DashboardEmptyState from '../components/DashboardEmptyState.vue';
-import PropertySpotlightPanel from '../components/PropertySpotlightPanel.vue';
 
 const dashboard = inject('dashboard', null);
 
@@ -16,8 +15,6 @@ function toSafeList(source) {
     return value.filter((item) => item != null && typeof item === 'object');
 }
 
-const safeRecentlyViewedProperties = computed(() => toSafeList(dashboard?.recentlyViewedProperties));
-const safeFavoriteProperties = computed(() => toSafeList(dashboard?.favoriteProperties));
 const safeStats = computed(() => toSafeList(dashboard?.stats));
 const safePropertyStats = computed(() => toSafeList(dashboard?.filteredPropertyStats));
 const safeInvoiceStats = computed(() => toSafeList(dashboard?.filteredInvoiceStats));
@@ -30,34 +27,6 @@ const safeQuickActions = computed(() => toSafeList(dashboard?.filteredQuickActio
         v-if="dashboard"
         class="flex flex-col gap-5"
     >
-        <section class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-            <PropertySpotlightPanel
-                title="Recently Viewed"
-                :properties="safeRecentlyViewedProperties"
-                :loading="dashboard.loading"
-                :format-currency="dashboard.formatCurrency"
-                :is-favorite="dashboard.isFavorite"
-                :is-in-compare="dashboard.isInCompare"
-                :can-add-to-compare="dashboard.canAddToCompare"
-                @view="dashboard.viewProperty"
-                @favorite="dashboard.handleFavorite"
-                @compare="dashboard.handleCompare"
-            />
-
-            <PropertySpotlightPanel
-                title="Favorite Properties"
-                :properties="safeFavoriteProperties"
-                :loading="dashboard.loading"
-                :format-currency="dashboard.formatCurrency"
-                :is-favorite="dashboard.isFavorite"
-                :is-in-compare="dashboard.isInCompare"
-                :can-add-to-compare="dashboard.canAddToCompare"
-                @view="dashboard.viewProperty"
-                @favorite="dashboard.handleFavorite"
-                @compare="dashboard.handleCompare"
-            />
-        </section>
-
         <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <article
                 v-for="(stat, statIndex) in safeStats"

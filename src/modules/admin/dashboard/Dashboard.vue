@@ -65,10 +65,12 @@ const activeSectionComponent = computed(() => DASHBOARD_SECTION_COMPONENTS[activ
                 name="dashboard-tab"
                 mode="out-in"
             >
-                <component
-                    :is="activeSectionComponent"
+                <div
                     :key="activeSection"
-                />
+                    class="dashboard-section-root"
+                >
+                    <component :is="activeSectionComponent" />
+                </div>
             </Transition>
         </div>
 

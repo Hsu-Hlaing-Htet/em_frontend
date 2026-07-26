@@ -48,6 +48,7 @@ export default function useShowSaleDraft() {
         sendEmail,
     } = useSaleContractDocumentActions('draft', state, () => document.value);
     const fieldSections = computed(() => buildFieldSections(document.value));
+    const contractStatus = computed(() => state.status || '');
     const editRoute = computed(() => (
         state.id
             ? { name: 'editSaleContractDraft', params: { id: state.id } }
@@ -107,6 +108,8 @@ export default function useShowSaleDraft() {
 
     return {
         isLoading,
+        state,
+        contractStatus,
         document,
         fieldSections,
         editRoute,

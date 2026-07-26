@@ -96,10 +96,26 @@
                         <StatusBadge :value="data.status" />
                     </template>
                 </Column>
-                <Column field="sale_price" header="Sale Price" :sortable="true" style="min-width: 70px" />
-                <Column field="rent_price" header="Rent Price" :sortable="true" style="min-width: 70px" />
-                <Column field="rent_deposit_price" header="Rent Deposit" :sortable="true" style="min-width: 70px" />
-                <Column field="booking_deposit_price" header="Booking Deposit" :sortable="true" style="min-width: 100px" />
+                <Column field="sale_price" header="Sale Price (MMK)" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.sale_price) }}
+                    </template>
+                </Column>
+                <Column field="rent_price" header="Rent Price (MMK)" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.rent_price) }}
+                    </template>
+                </Column>
+                <Column field="rent_deposit_price" header="Rent Deposit (MMK)" :sortable="true" style="min-width: 140px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.rent_deposit_price) }}
+                    </template>
+                </Column>
+                <Column field="booking_deposit_price" header="Booking Deposit (MMK)" :sortable="true" style="min-width: 160px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.booking_deposit_price) }}
+                    </template>
+                </Column>
                 <Column
                     header="Actions"
                     :exportable="false"
@@ -134,6 +150,7 @@ import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
@@ -141,7 +158,7 @@ import { useRoomList } from './useRoomList';
 
 export default defineComponent({
     name: 'RoomList',
-    components: { DataTable, Column, InputText, Button, Loading, StatusBadge },
+    components: { DataTable, Column, InputText, Dropdown, Button, Loading, StatusBadge },
     setup() {
         return useRoomList();
     },

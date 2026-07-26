@@ -11,33 +11,44 @@ export default function useCustomerContractList() {
     const store = useCustomerContractStore();
     const router = useRouter();
     const isLoading = ref(true);
+    const isLoadingMore = ref(false);
     const contracts = ref([]);
     const totalRecords = ref(0);
     const page = ref(1);
-    const first = ref(0);
     const rows = ref(10);
 
-    const loadContracts = async () => {
-        isLoading.value = true;
+    const hasMore = () => contracts.value.length < totalRecords.value;
+
+    const loadContracts = async ({ append = false } = {}) => {
+        if (append) {
+            isLoadingMore.value = true;
+        } else {
+            isLoading.value = true;
+        }
 
         try {
             await store.fetchAll({ page: page.value, per_page: rows.value });
             const response = store.getAllResponse;
-            contracts.value = cloneRows(response?.data?.data);
+            const nextRows = cloneRows(response?.data?.data);
+            contracts.value = append ? [...contracts.value, ...nextRows] : nextRows;
             totalRecords.value = response?.data?.total || 0;
         } catch (error) {
             showApiErrorToast(error, 'Unable to load contracts.');
         } finally {
             isLoading.value = false;
+            isLoadingMore.value = false;
         }
     };
 
-    onMounted(loadContracts);
+    onMounted(() => loadContracts());
 
-    const onPage = (event) => {
-        first.value = event.first;
-        page.value = event.page + 1;
-        loadContracts();
+    const loadMore = () => {
+        if (!hasMore() || isLoadingMore.value) {
+            return;
+        }
+
+        page.value += 1;
+        loadContracts({ append: true });
     };
 
     const openContract = (id) => {
@@ -46,11 +57,10 @@ export default function useCustomerContractList() {
 
     return {
         isLoading,
+        isLoadingMore,
         contracts,
-        totalRecords,
-        first,
-        rows,
-        onPage,
+        hasMore,
+        loadMore,
         openContract,
     };
 }

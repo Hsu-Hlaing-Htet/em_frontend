@@ -57,6 +57,7 @@ export default function useShowActiveSale() {
     } = useSaleContractDocumentActions('approved', state, () => document.value);
 
     const fieldSections = computed(() => buildFieldSections(document.value));
+    const contractStatus = computed(() => state.status || '');
     const canCancel = computed(() => false);
     const backRoute = { name: 'activeSaleList' };
 
@@ -103,6 +104,8 @@ export default function useShowActiveSale() {
 
     return {
         isLoading,
+        state,
+        contractStatus,
         document,
         fieldSections,
         canCancel,

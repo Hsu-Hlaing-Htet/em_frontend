@@ -45,7 +45,7 @@ function emitReceipt(item) {
         <table class="payment-list-table" :class="`payment-list-table--${variant}`">
             <thead>
                 <tr>
-                    <th>Payment ID</th>
+                    <th>Invoice No</th>
                     <th>Customer Name</th>
                     <th>Property/Unit</th>
                     <th>Invoice No</th>
@@ -73,14 +73,14 @@ function emitReceipt(item) {
                             class="payment-list-table__link"
                             @click="emitView(item)"
                         >
-                            {{ item.payment_number || item.payment_id || item.reference }}
+                            {{ item.invoice_number || item.payment_id || item.reference || '—' }}
                         </button>
                         <router-link
                             v-else
                             :to="{ name: 'showPayment', params: { id: item.id } }"
                             class="payment-list-table__link"
                         >
-                            {{ item.payment_number || item.payment_id }}
+                            {{ item.invoice_number || item.payment_id || '—' }}
                         </router-link>
                     </td>
                     <td>{{ item.customer_name || item.client || '—' }}</td>
@@ -93,7 +93,7 @@ function emitReceipt(item) {
                     <td>{{ formatDate(item.payment_date || item.paid_at) }}</td>
                     <td>{{ item.payment_method_name || item.method || '—' }}</td>
                     <td><StatusBadge :value="item.display_status" /></td>
-                    <td>{{ item.reference_number || item.payment_number || item.reference || '—' }}</td>
+                    <td>{{ item.reference_number || item.invoice_number || item.reference || '—' }}</td>
                     <td class="payment-list-table__notes">{{ item.note || item.notes || '—' }}</td>
                     <td class="payment-list-table__actions">
                         <div class="payment-list-table__action-group">

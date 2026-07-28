@@ -28,8 +28,8 @@
                     <p class="customer-detail-value">{{ state.invoice_number || '—' }}</p>
                 </div>
                 <div class="customer-detail-item">
-                    <p class="customer-detail-label">Payment</p>
-                    <p class="customer-detail-value">{{ state.payment_number || '—' }}</p>
+                    <p class="customer-detail-label">Payment Method</p>
+                    <p class="customer-detail-value">{{ state.payment_method_name || '—' }}</p>
                 </div>
                 <div class="customer-detail-item">
                     <p class="customer-detail-label">Amount</p>
@@ -38,10 +38,6 @@
                 <div class="customer-detail-item">
                     <p class="customer-detail-label">Payment Date</p>
                     <p class="customer-detail-value">{{ state.payment_date || '—' }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">Method</p>
-                    <p class="customer-detail-value">{{ state.payment_method_name || '—' }}</p>
                 </div>
                 <div class="customer-detail-item">
                     <p class="customer-detail-label">Building</p>

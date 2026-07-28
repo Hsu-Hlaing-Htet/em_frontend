@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col gap-5">
-        <div v-if="!isCreate" class="flex flex-wrap items-center justify-between gap-3 px-1">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-1">
             <WorkflowActionBar
                 :can-submit="canSubmit()"
                 :can-approve="canApprove()"
@@ -31,7 +31,10 @@
         </div>
 
         <div class="admin-panel relative">
-            <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="handleSubmit">
+            <form
+                class="grid grid-cols-1 gap-4 md:grid-cols-2"
+                @submit.prevent="handleSubmit"
+            >
                 <div class="field">
                     <label for="room_id" class="mb-2 block text-md">Room</label>
                     <Dropdown
@@ -144,7 +147,7 @@
                 <div v-if="canEdit" class="flex justify-end gap-2 md:col-span-2">
                     <Button type="submit" label="Save" />
                     <router-link :to="backRoute">
-                        <Button type="button" label="Cancel" />
+                        <Button type="button" label="Cancel" severity="secondary" />
                     </router-link>
                 </div>
             </form>

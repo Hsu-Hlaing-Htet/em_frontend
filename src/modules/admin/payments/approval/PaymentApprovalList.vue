@@ -50,17 +50,16 @@
                 <template #empty>No pending payments found.</template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
-                <Column field="payment_number" header="Payment #" :sortable="true" style="min-width: 140px">
+                <Column field="invoice_number" header="Invoice #" :sortable="true" style="min-width: 140px">
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showPaymentApproval', params: { id: data.id } }"
                             class="font-medium text-[var(--admin-primary)] hover:underline"
                         >
-                            {{ data.payment_number }}
+                            {{ data.invoice_number || '—' }}
                         </router-link>
                     </template>
                 </Column>
-                <Column field="invoice_number" header="Invoice #" :sortable="true" style="min-width: 140px" />
                 <Column field="payment_method_name" header="Method" :sortable="true" style="min-width: 130px" />
                 <Column field="amount" header="Amount" :sortable="true" style="min-width: 110px" />
                 <Column field="payment_date" header="Payment Date" :sortable="true" style="min-width: 130px" />

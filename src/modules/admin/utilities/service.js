@@ -16,6 +16,21 @@ const service = {
         return result.data;
     },
 
+    addBatch: async (params) => {
+        const result = await api.post(`${endpoint.utilities}/batch`, params);
+        return result.data;
+    },
+
+    getFormData: async (params) => {
+        const result = await api.get(`${endpoint.utilities}/form-data`, { params });
+        return result.data;
+    },
+
+    getActiveRate: async (params) => {
+        const result = await api.get(`${endpoint.utilities}/active-rate`, { params });
+        return result.data;
+    },
+
     getOne: async (params) => {
         try {
             const result = await api.get(`${endpoint.utilities}/${params.id}`);

@@ -38,7 +38,6 @@ const LIST_CONTROL_CONFIG = {
     },
     payments: {
         searchKeys: [
-            'payment_number',
             'reference',
             'reference_number',
             'customer_name',

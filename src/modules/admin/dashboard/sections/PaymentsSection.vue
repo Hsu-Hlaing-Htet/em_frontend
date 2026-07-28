@@ -9,7 +9,7 @@ const dashboard = inject('dashboard');
 const router = useRouter();
 
 function handleView(item) {
-    dashboard.openDetail(item.payment_number || item.reference, mapDashboardPaymentRow(item));
+    dashboard.openDetail(item.invoice_number || item.reference, mapDashboardPaymentRow(item));
 }
 
 function handleReceipt(item) {

@@ -2,7 +2,8 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
-import { formatDate } from '@/utils/formatter';
+import { formatDate, formatCurrency } from '@/utils/formatter';
+import { formatBillingDocumentDate, compactBillingValues } from '@/helpers/billing/billingDetailHelpers';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useCustomerInvoiceStore } from '@/modules/customer/invoices/store';
 import { useCustomerPaymentStore } from '@/modules/customer/payments/store';
@@ -44,6 +45,22 @@ export default function useCustomerShowInvoice() {
 
     const remainingAmount = computed(() => {
         return Math.max(Number(state.total_amount || 0) - Number(state.paid_amount || 0), 0);
+    });
+
+    const customerLines = computed(() => compactBillingValues([
+        state.building_name,
+        state.room_number,
+        state.due_date,
+    ]));
+
+    const detailDate = computed(() => formatBillingDocumentDate(state.issued_date));
+
+    const invoiceSummaryNote = computed(() => {
+        if (!canPay.value) {
+            return '';
+        }
+
+        return `Remaining balance ${formatCurrency(remainingAmount.value)}.`;
     });
 
     const canPay = computed(() => {
@@ -204,6 +221,9 @@ export default function useCustomerShowInvoice() {
         paymentMethods,
         remainingAmount,
         canPay,
+        customerLines,
+        detailDate,
+        invoiceSummaryNote,
         submitPayment,
         downloadPdf,
         onProofSelected,

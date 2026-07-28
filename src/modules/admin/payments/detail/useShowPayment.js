@@ -2,8 +2,12 @@ import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { formatPropertyUnit } from '@/helpers/payments/paymentListHelpers';
+import {
+    buildPaymentCustomerInfo,
+    buildPaymentSummaryNote,
+} from '@/helpers/documents/renderPaymentDocument';
+import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
-import { resolveMediaUrl } from '@/utils/media';
 import { usePaymentStore } from '../store';
 
 export default function useShowPayment() {
@@ -23,7 +27,6 @@ export default function useShowPayment() {
 
     const state = reactive({
         id: null,
-        payment_number: '',
         invoice_id: null,
         payment_method_id: null,
         payment_method_name: '',
@@ -157,30 +160,23 @@ export default function useShowPayment() {
 
     const propertyUnit = computed(() => formatPropertyUnit(state));
     const paymentStatus = computed(() => state.display_status || state.status);
-    const formattedCreatedAt = computed(() => {
-        if (!state.created_at) {
-            return '—';
-        }
-
-        const normalized = state.created_at.includes('T')
-            ? state.created_at
-            : state.created_at.replace(' ', 'T');
-
-        return new Date(normalized).toLocaleString('en-GB', {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-        });
-    });
-    const invoiceRoute = computed(() => (
-        state.invoice_id ? { name: 'showInvoice', params: { id: state.invoice_id } } : null
-    ));
+    const formattedCreatedAt = computed(() => formatBillingDocumentDate(state.created_at));
+    const customerLines = computed(() => buildPaymentCustomerInfo(state).lines);
+    const paymentSummaryNote = computed(() => buildPaymentSummaryNote(state));
+    const paymentTableRows = computed(() => [{
+        invoice_number: state.invoice_number,
+        payment_date: state.payment_date,
+        payment_method_name: state.payment_method_name,
+        amount: formatCurrency(state.amount),
+        reference_number: state.reference_number || state.invoice_number,
+        status: paymentStatus.value,
+    }]);
 
     return {
         isApprovalView,
         backRoute,
         documentRoute,
         receiptRoute,
-        invoiceRoute,
         isLoading,
         isUploading,
         state,
@@ -189,6 +185,12 @@ export default function useShowPayment() {
         propertyUnit,
         paymentStatus,
         formattedCreatedAt,
+        customerLines,
+        paymentSummaryNote,
+        paymentTableRows,
+        invoiceRoute: computed(() => (
+            state.invoice_id ? { name: 'showInvoice', params: { id: state.invoice_id } } : null
+        )),
         formatCurrency,
         onProofSelect,
         runWorkflow,

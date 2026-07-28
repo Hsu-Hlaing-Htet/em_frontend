@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isLoading" class="pdf-view">
+    <div v-if="!isLoading" class="min-h-screen">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
                 <Button

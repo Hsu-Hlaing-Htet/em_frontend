@@ -10,6 +10,11 @@ import {
     formatPropertyUnit,
     resolveInvoicePaymentStatus,
 } from '@/helpers/invoices/invoiceDetailHelpers';
+import {
+    buildInvoiceCustomerInfo,
+    buildInvoiceSummaryNote,
+} from '@/helpers/documents/renderInvoiceDocument';
+import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
 import { useInvoiceStore } from '../store';
 import { usePaymentStore } from '@/modules/admin/payments/store';
@@ -52,7 +57,7 @@ export default function useShowInvoice() {
         customer_name: '',
         customer_email: '',
         customer_phone: '',
-        customer_nrc: '',
+        customer_address: '',
         building_name: '',
         room_number: '',
         property_unit: '',
@@ -150,20 +155,7 @@ export default function useShowInvoice() {
             timeStyle: 'short',
         });
     });
-    const formattedCreatedAt = computed(() => {
-        if (!state.created_at) {
-            return '—';
-        }
-
-        const normalized = state.created_at.includes('T')
-            ? state.created_at
-            : state.created_at.replace(' ', 'T');
-
-        return new Date(normalized).toLocaleString('en-GB', {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-        });
-    });
+    const formattedCreatedAt = computed(() => formatBillingDocumentDate(state.created_at));
     const documentRoute = computed(() => (
         state.id ? { name: 'invoiceDocument', params: { id: state.id } } : null
     ));
@@ -178,6 +170,8 @@ export default function useShowInvoice() {
     const paidAmount = computed(() => formatCurrency(state.paid_amount));
     const remainingBalance = computed(() => formatCurrency(state.remaining_balance));
     const invoiceAmount = computed(() => formatCurrency(state.total_amount));
+    const customerLines = computed(() => buildInvoiceCustomerInfo(state).lines);
+    const invoiceSummaryNote = computed(() => buildInvoiceSummaryNote(state));
 
     return {
         isApprovalView,
@@ -205,6 +199,8 @@ export default function useShowInvoice() {
         paidAmount,
         remainingBalance,
         invoiceAmount,
+        customerLines,
+        invoiceSummaryNote,
         formatCurrency,
     };
 }

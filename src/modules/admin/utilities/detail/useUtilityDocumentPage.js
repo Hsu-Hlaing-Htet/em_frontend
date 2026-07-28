@@ -28,6 +28,7 @@ export default function useUtilityDocumentPage() {
         customer_name: '',
         customer_email: '',
         customer_phone: '',
+        customer_address: '',
         customer_nrc: '',
         created_by_name: '',
         approved_by_name: '',
@@ -46,7 +47,7 @@ export default function useUtilityDocumentPage() {
     const backRoute = computed(() => (
         route.meta.approvalContext
             ? { name: 'showUtilityApproval', params: { id: state.id } }
-            : { name: 'editUtility', params: { id: state.id } }
+            : { name: 'showUtility', params: { id: state.id } }
     ));
 
     const loadUtility = async () => {

@@ -5,16 +5,7 @@ import { Errors } from '@/utils/validation';
 import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
-
-const emptyItem = () => ({
-    id: null,
-    utility_type_id: null,
-    previous_reading: 0,
-    current_reading: 0,
-    usage: 0,
-    unit_price: 0,
-    amount: 0,
-});
+import { emptyUtilityItem } from '../utils/utilityFormHelpers';
 
 export default function useEditUtility() {
     const store = useUtilityStore();
@@ -29,7 +20,6 @@ export default function useEditUtility() {
     const utilityTypeOptions = ref([]);
     const workflowLoading = ref({ submit: false, approve: false, reject: false });
 
-    const isCreate = computed(() => route.name === 'newUtility');
     const isApprovalView = computed(() => route.meta.approvalContext === true);
     const backRoute = computed(() => (
         isApprovalView.value
@@ -45,7 +35,7 @@ export default function useEditUtility() {
         status: 'draft',
     });
 
-    const items = ref([emptyItem()]);
+    const items = ref([emptyUtilityItem()]);
 
     onMounted(async () => {
         isLoading.value = true;
@@ -71,9 +61,7 @@ export default function useEditUtility() {
             }));
         }
 
-        if (!isCreate.value) {
-            await fetchUtility();
-        }
+        await fetchUtility();
 
         isLoading.value = false;
     });
@@ -91,7 +79,7 @@ export default function useEditUtility() {
             Object.assign(state, response.data);
             items.value = (response.data.items || []).length
                 ? response.data.items.map((item) => ({ ...item }))
-                : [emptyItem()];
+                : [emptyUtilityItem()];
         }
     };
 
@@ -102,7 +90,7 @@ export default function useEditUtility() {
     };
 
     const addItem = () => {
-        items.value.push(emptyItem());
+        items.value.push(emptyUtilityItem());
     };
 
     const removeItem = (index) => {
@@ -111,7 +99,9 @@ export default function useEditUtility() {
         }
     };
 
-    const totalAmount = computed(() => items.value.reduce((sum, item) => sum + Number(item.amount || 0), 0));
+    const totalAmount = computed(() => (
+        items.value.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+    ));
 
     const handleSubmit = async () => {
         isSaving.value = true;
@@ -129,23 +119,13 @@ export default function useEditUtility() {
         };
 
         try {
-            if (isCreate.value) {
-                await store.add(payload);
-                const response = store.getAddResponse;
+            await store.update({ ...payload, id: state.id });
+            const response = store.getUpdateResponse;
 
-                if (response?.data?.id) {
-                    await router.push({ name: 'editUtility', params: { id: response.data.id } });
-                    EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
-                }
-            } else {
-                await store.update({ ...payload, id: state.id });
-                const response = store.getUpdateResponse;
-
-                if (response) {
-                    Object.assign(state, response.data);
-                    items.value = (response.data.items || []).map((item) => ({ ...item }));
-                    EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
-                }
+            if (response) {
+                Object.assign(state, response.data);
+                items.value = (response.data.items || []).map((item) => ({ ...item }));
+                EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
             }
         } catch (error) {
             if (error.status === 422) {
@@ -169,7 +149,7 @@ export default function useEditUtility() {
 
                 if (isApprovalView.value) {
                     if (action === 'approve') {
-                        await router.push({ name: 'utilityList' });
+                        await router.push({ name: 'invoiceApprovalList' });
                     } else if (action === 'reject') {
                         await router.push({ name: 'utilityApprovalList' });
                     }
@@ -188,13 +168,12 @@ export default function useEditUtility() {
         : ['draft', 'pending'].includes(state.status);
 
     const documentRoute = computed(() => (
-        !isCreate.value && state.id
+        state.id
             ? { name: 'utilityDocument', params: { id: state.id } }
             : null
     ));
 
     return {
-        isCreate,
         isApprovalView,
         backRoute,
         documentRoute,

@@ -53,13 +53,13 @@
                 <template #empty>No payments found.</template>
                 <template #loading>Loading payments. Please wait.</template>
 
-                <Column header="Payment ID" style="min-width: 130px" frozen>
+                <Column header="Invoice No" style="min-width: 130px" frozen>
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showPayment', params: { id: data.id } }"
                             class="font-medium text-[var(--admin-primary)] hover:underline"
                         >
-                            {{ data.payment_number }}
+                            {{ data.invoice_number || '—' }}
                         </router-link>
                     </template>
                 </Column>
@@ -95,7 +95,7 @@
                 </Column>
                 <Column field="reference_number" header="Reference No" style="min-width: 130px">
                     <template #body="{ data }">
-                        {{ data.reference_number || data.payment_number }}
+                        {{ data.reference_number || data.invoice_number || '—' }}
                     </template>
                 </Column>
                 <Column field="note" header="Notes" style="min-width: 160px">

@@ -13,7 +13,7 @@ import {
     exportUtilityDocument,
     printUtilityDocument,
 } from '@/helpers/documents/documentOutput';
-import { formatPaymentReference, formatUtilityReference } from '@/helpers/documents/billingDocumentHelpers';
+import { formatUtilityReference } from '@/helpers/documents/billingDocumentHelpers';
 
 export function useInvoiceDocumentActions(state, getDocument, service) {
     return createBillingDocumentActions({
@@ -65,7 +65,7 @@ export function usePaymentDocumentActions(state, getDocument, service) {
     return createBillingDocumentActions({
         state,
         getDocument,
-        getFilename: (current) => `${current.payment_number || formatPaymentReference(current.id) || 'payment'}.html`,
+        getFilename: (current) => `${current.invoice_number || 'payment'}.html`,
         printDocument: printPaymentDocument,
         exportDocument: exportPaymentDocument,
         downloadDocument: downloadPaymentDocument,

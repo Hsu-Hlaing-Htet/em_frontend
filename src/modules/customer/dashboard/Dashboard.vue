@@ -42,7 +42,7 @@
                 <CustomerTransactionCard
                     v-for="payment in recentPayments"
                     :key="payment.id"
-                    :transaction-id="payment.payment_number"
+                    :transaction-id="payment.invoice_number"
                     :title="payment.invoice_number || 'Payment'"
                     :amount="payment.amount"
                     :subtitle="`${payment.payment_date || '—'} · ${payment.payment_method_name || 'Method pending'}`"

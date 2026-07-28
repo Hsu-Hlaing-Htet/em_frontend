@@ -20,7 +20,7 @@ const routes = [
             {
                 path: 'create',
                 name: 'newUtility',
-                component: () => import('@/modules/admin/utilities/entry/EditUtility.vue'),
+                component: () => import('@/modules/admin/utilities/entry/NewUtility.vue'),
                 meta: {
                     action: 'create',
                     resource: 'utility',
@@ -50,7 +50,7 @@ const routes = [
             {
                 path: 'approval/:id',
                 name: 'showUtilityApproval',
-                component: () => import('@/modules/admin/utilities/entry/EditUtility.vue'),
+                component: () => import('@/modules/admin/utilities/detail/ShowUtility.vue'),
                 meta: {
                     action: 'view',
                     resource: 'utility_approval',
@@ -75,7 +75,7 @@ const routes = [
                     title: 'Utility Bill Document',
                     breadcrumbs: [
                         { title: 'Utility List', routeName: 'utilityList' },
-                        { title: 'Edit Utility', routeName: 'editUtility' },
+                        { title: 'Show Utility', routeName: 'showUtility' },
                         { title: 'Document', routeName: 'utilityDocument' },
                     ],
                 },
@@ -91,7 +91,23 @@ const routes = [
                     title: 'Edit Utility',
                     breadcrumbs: [
                         { title: 'Utility List', routeName: 'utilityList' },
+                        { title: 'Show Utility', routeName: 'showUtility' },
                         { title: 'Edit', routeName: 'editUtility' },
+                    ],
+                },
+            },
+            {
+                path: ':id',
+                name: 'showUtility',
+                component: () => import('@/modules/admin/utilities/detail/ShowUtility.vue'),
+                meta: {
+                    action: 'view',
+                    resource: 'utility',
+                    layout: 'default',
+                    title: 'Utility Detail',
+                    breadcrumbs: [
+                        { title: 'Utility List', routeName: 'utilityList' },
+                        { title: 'Detail', routeName: 'showUtility' },
                     ],
                 },
             },

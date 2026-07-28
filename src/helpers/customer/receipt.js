@@ -4,7 +4,7 @@ export function mapCustomerReceipt(row = {}) {
     return {
         ...row,
         payment_amount: payment.amount ?? row.payment_amount ?? null,
-        payment_number: payment.payment_number ?? row.payment_number ?? null,
+        invoice_number: payment.invoice_number ?? row.invoice_number ?? null,
         payment_date: payment.payment_date ?? row.payment_date ?? null,
         payment_method_name: payment.payment_method_name ?? row.payment_method_name ?? null,
         building_name: payment.building_name ?? row.building_name ?? null,

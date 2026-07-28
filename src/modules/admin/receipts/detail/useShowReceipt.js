@@ -19,7 +19,6 @@ export default function useShowReceipt() {
     const state = reactive({
         id: null,
         payment_id: null,
-        payment_number: '',
         receipt_number: '',
         receipt_pdf_path: '',
         status: '',

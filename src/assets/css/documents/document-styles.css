@@ -383,6 +383,172 @@
     font-size: 9pt;
 }
 
+.utility-doc-body,
+.billing-doc-body {
+    margin-top: 0.5rem;
+}
+
+.utility-doc-customer,
+.billing-doc-customer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.utility-doc-customer__name,
+.billing-doc-customer__name {
+    margin-top: 1.25rem;
+    font-size: 10pt;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--pdf-ink);
+    word-break: break-word;
+}
+
+.utility-doc-customer__muted,
+.billing-doc-customer__muted {
+    margin-top: 0.375rem;
+    font-size: 9.375pt;
+    line-height: 1.6;
+    color: var(--pdf-ink);
+    opacity: 0.75;
+    word-break: break-word;
+}
+
+.utility-doc-customer__line,
+.billing-doc-customer__line {
+    margin-top: 1.25rem;
+    font-size: 9.375pt;
+    line-height: 1.5;
+    color: var(--pdf-ink);
+    word-break: break-word;
+}
+
+.utility-doc-customer__line--wrap,
+.billing-doc-customer__line--wrap {
+    margin-top: 0.375rem;
+    word-break: break-all;
+}
+
+.utility-doc-customer__line--first,
+.billing-doc-customer__line--first {
+    margin-top: 1.25rem;
+}
+
+.utility-doc-customer__line--spaced,
+.billing-doc-customer__line--spaced {
+    margin-top: 1.25rem;
+}
+
+.utility-doc-customer__date,
+.billing-doc-customer__date {
+    font-size: 8.75pt;
+    line-height: 1.5;
+    color: var(--pdf-ink);
+    opacity: 0.7;
+}
+
+.utility-doc-divider,
+.billing-doc-divider {
+    margin: 0 0 1.25rem;
+    border-top: 1px solid var(--pdf-line);
+}
+
+.utility-doc-summary,
+.billing-doc-summary {
+    margin: 2.5rem 0 0;
+    font-size: 8.75pt;
+    line-height: 1.6;
+    color: var(--pdf-muted);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.utility-doc-table-wrap,
+.billing-doc-table-wrap {
+    overflow-x: auto;
+}
+
+.utility-doc-table,
+.billing-doc-table {
+    width: 100%;
+    min-width: 44rem;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.utility-doc-table__head,
+.utility-doc-table__cell,
+.billing-doc-table__head,
+.billing-doc-table__cell {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--pdf-line);
+    text-align: left;
+    font-size: 8.75pt;
+    vertical-align: top;
+}
+
+.utility-doc-table__head,
+.billing-doc-table__head {
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--pdf-muted);
+}
+
+.utility-doc-table__cell,
+.billing-doc-table__cell {
+    color: var(--pdf-ink);
+}
+
+.utility-doc-table__numeric,
+.billing-doc-table__numeric {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.utility-doc-table__empty,
+.billing-doc-table__empty {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--pdf-line);
+    text-align: center;
+    color: var(--pdf-muted);
+    font-size: 8.75pt;
+}
+
+.utility-doc-table tfoot td,
+.billing-doc-table tfoot td {
+    border-bottom: none;
+    padding-top: 1rem;
+}
+
+.utility-doc-table__total-label,
+.billing-doc-table__total-label {
+    text-align: right;
+    font-weight: 600;
+    color: var(--pdf-ink);
+}
+
+.utility-doc-table__total-value,
+.billing-doc-table__total-value {
+    font-weight: 600;
+    color: #7a3149;
+}
+
+@media (min-width: 768px) {
+    .utility-doc-customer,
+    .billing-doc-customer {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .utility-doc-customer__date,
+    .billing-doc-customer__date {
+        text-align: right;
+        padding-top: 1.25rem;
+    }
+}
+
 @media print {
     @page {
         size: A4 portrait;
@@ -436,6 +602,16 @@
     }
 
     #pdf-print .doc-table tr {
+        break-inside: avoid;
+    }
+
+    #pdf-print .utility-doc-table thead,
+    #pdf-print .billing-doc-table thead {
+        display: table-header-group;
+    }
+
+    #pdf-print .utility-doc-table tr,
+    #pdf-print .billing-doc-table tr {
         break-inside: avoid;
     }
 

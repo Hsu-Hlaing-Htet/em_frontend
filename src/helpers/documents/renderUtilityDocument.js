@@ -1,8 +1,35 @@
 import {
-    renderAmountSummaryBlock,
-    renderFieldsBlock,
-    renderTableBlock,
-} from './documentSections';
+    formatBillingDocumentDate,
+    renderBillingDocumentBody,
+    renderBillingSummaryNote,
+    renderBillingTableSection,
+} from './renderBillingDetailLayout';
+import { hasBillingValue } from '@/helpers/billing/billingDetailHelpers';
+
+const READING_COLUMNS = [
+    { label: 'Utility Type', key: 'utility_type', align: 'left' },
+    { label: 'Previous Unit', key: 'previous_reading', align: 'right' },
+    { label: 'Current Unit', key: 'current_reading', align: 'right' },
+    { label: 'Usage', key: 'usage', align: 'right' },
+    { label: 'Unit Price', key: 'unit_price', align: 'right' },
+    { label: 'Amount', key: 'amount', align: 'right' },
+];
+
+function buildCustomerInfo(customerInfo = {}) {
+    const lines = [
+        customerInfo.address,
+        customerInfo.phone,
+        customerInfo.email,
+        customerInfo.building,
+        customerInfo.room,
+    ].filter((value) => hasBillingValue(value));
+
+    return {
+        name: customerInfo.name,
+        lines,
+        issuedDate: customerInfo.issuedDate,
+    };
+}
 
 export function renderUtilityDocumentLead() {
     return '';
@@ -13,23 +40,17 @@ export function renderUtilityDocumentBody(document) {
         return '';
     }
 
-    return [
-        renderFieldsBlock('Details', document.details),
-        renderTableBlock('Meter Readings', {
-            columns: [
-                { label: 'Utility Type', key: 'utility_type' },
-                { label: 'Previous', key: 'previous_reading' },
-                { label: 'Current', key: 'current_reading' },
-                { label: 'Usage', key: 'usage' },
-                { label: 'Unit Price', key: 'unit_price' },
-                { label: 'Amount', key: 'amount' },
-            ],
+    return renderBillingDocumentBody({
+        customerInfo: buildCustomerInfo(document.customerInfo),
+        tables: [{
+            columns: READING_COLUMNS,
             rows: document.readings || [],
-            emptyMessage: 'No meter readings recorded.',
-        }),
-        renderAmountSummaryBlock({
-            totalLabel: document.totalDue?.label || 'Total Amount',
-            totalAmount: document.totalDue?.amount,
-        }),
-    ].join('');
+            emptyMessage: 'No utility readings recorded.',
+            totalLabel: 'Total',
+            totalValue: document.totalDue?.amount,
+        }],
+        summaryNote: document.summaryNote,
+    });
 }
+
+export { formatBillingDocumentDate, renderBillingSummaryNote, renderBillingTableSection };

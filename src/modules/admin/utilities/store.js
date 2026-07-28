@@ -7,6 +7,9 @@ export const useUtilityStore = defineStore('useUtilityStore', {
         detailResponse: null,
         updateResponse: null,
         addResponse: null,
+        batchAddResponse: null,
+        formDataResponse: null,
+        activeRateResponse: null,
         deleteResponse: null,
         actionResponse: null,
     }),
@@ -20,6 +23,15 @@ export const useUtilityStore = defineStore('useUtilityStore', {
         },
         getAddResponse(state) {
             return state.addResponse;
+        },
+        getBatchAddResponse(state) {
+            return state.batchAddResponse;
+        },
+        getFormDataResponse(state) {
+            return state.formDataResponse;
+        },
+        getActiveRateResponse(state) {
+            return state.activeRateResponse;
         },
         getUpdateResponse(state) {
             return state.updateResponse;
@@ -52,6 +64,22 @@ export const useUtilityStore = defineStore('useUtilityStore', {
         async add(params) {
             const response = await service.add(params);
             this.addResponse = response;
+        },
+        async addBatch(params) {
+            const response = await service.addBatch(params);
+            this.batchAddResponse = response;
+        },
+        async fetchFormData(params) {
+            const response = await service.getFormData(params);
+            this.formDataResponse = response;
+
+            return response;
+        },
+        async fetchActiveRate(params) {
+            const response = await service.getActiveRate(params);
+            this.activeRateResponse = response;
+
+            return response;
         },
         async delete(params) {
             const response = await service.delete(params);

@@ -1,6 +1,6 @@
 <template>
     <div v-if="!isLoading">
-        <div class="mb-4 flex flex-wrap gap-2">
+        <div class="mb-10 flex flex-wrap gap-2">
             <Button
                 label="Download Invoice"
                 icon="pi pi-download"
@@ -13,82 +13,61 @@
             </router-link>
         </div>
 
-        <div class="admin-panel mb-4 p-4">
-            <div class="mb-4 flex items-start justify-between gap-3">
-                <div>
-                    <p class="m-0 text-sm text-[var(--admin-text-muted)]">Invoice</p>
-                    <h1 class="customer-page-heading m-0">{{ state.invoice_number }}</h1>
-                    <p class="m-0 mt-1 text-sm text-[var(--admin-text-muted)]">
-                        {{ state.building_name }} · Room {{ state.room_number || '—' }}
-                    </p>
+        <div class="mx-auto flex max-w-4xl flex-col px-4 pb-8">
+            <section class="admin-panel p-5">
+                <div class="mb-4 flex items-start justify-between gap-3">
+                    <StatusBadge :value="state.status" />
                 </div>
-                <StatusBadge :value="state.status" />
-            </div>
 
-            <div class="customer-detail-grid">
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">Total</p>
-                    <p class="customer-detail-value">{{ formatCurrency(state.total_amount) }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">Paid</p>
-                    <p class="customer-detail-value">{{ formatCurrency(state.paid_amount) }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">Remaining</p>
-                    <p class="customer-detail-value">{{ formatCurrency(remainingAmount) }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">Due Date</p>
-                    <p class="customer-detail-value">{{ state.due_date || '—' }}</p>
-                </div>
-            </div>
+                <BillingDetailCustomerSection
+                    :name="state.invoice_number"
+                    :lines="customerLines"
+                    :date="detailDate"
+                />
+
+                <BillingDetailTable
+                    :columns="invoiceLineItemColumns"
+                    :rows="lineItemRows"
+                    empty-message="This invoice has no itemized charges."
+                    :total-value="formatCurrency(state.total_amount)"
+                    min-width="32rem"
+                />
+
+                <BillingDetailTable
+                    class="mt-8"
+                    :columns="customerPaymentColumns"
+                    :rows="paymentRows"
+                    empty-message="Submitted payments for this invoice will appear here."
+                    min-width="36rem"
+                >
+                    <template #cell-id="{ row }">
+                        <button
+                            v-if="row.receipt_id"
+                            type="button"
+                            :class="billingDetailTableClasses.link"
+                            @click="openReceipt(row.receipt_id)"
+                        >
+                            #{{ row.id }}
+                        </button>
+                        <span v-else>#{{ row.id }}</span>
+                    </template>
+                    <template #cell-status="{ value }">
+                        <StatusBadge :value="value" />
+                    </template>
+                </BillingDetailTable>
+
+                <p
+                    v-if="invoiceSummaryNote"
+                    :class="billingDetailTableClasses.summary"
+                >
+                    {{ invoiceSummaryNote }}
+                </p>
+            </section>
         </div>
 
-        <section class="customer-section">
-            <h2 class="customer-section-title">Line Items</h2>
-            <div class="admin-panel p-4">
-                <div v-for="item in invoiceItems" :key="item.id" class="customer-line-item">
-                    <div>
-                        <p class="m-0 font-semibold">{{ item.description }}</p>
-                        <p class="m-0 text-sm text-[var(--admin-text-muted)]">{{ item.charge_type_name || 'Charge' }}</p>
-                    </div>
-                    <strong>{{ formatCurrency(item.amount) }}</strong>
-                </div>
-                <CustomerEmptyState
-                    v-if="!invoiceItems.length"
-                    icon="pi pi-list"
-                    title="No line items"
-                    message="This invoice has no itemized charges."
-                />
-            </div>
-        </section>
-
-        <section class="customer-section">
-            <h2 class="customer-section-title">Payment History</h2>
-            <div v-if="invoicePayments.length" class="customer-list-stack">
-                <CustomerTransactionCard
-                    v-for="payment in invoicePayments"
-                    :key="payment.id"
-                    :transaction-id="payment.payment_number"
-                    :title="payment.payment_method_name || 'Payment'"
-                    :amount="payment.amount"
-                    :subtitle="payment.payment_date || '—'"
-                    :status="payment.status"
-                    @select="openReceipt(payment.receipt_id)"
-                />
-            </div>
-            <CustomerEmptyState
-                v-else
-                icon="pi pi-history"
-                title="No payments yet"
-                message="Submitted payments for this invoice will appear here."
-            />
-        </section>
-
-        <section v-if="canPay" class="customer-section">
+        <section v-if="canPay" class="customer-section mx-auto mt-8 max-w-4xl px-4">
             <h2 class="customer-section-title">Pay Invoice</h2>
-            <form class="admin-panel p-4" @submit.prevent="submitPayment">
+            <form class="admin-panel p-5" @submit.prevent="submitPayment">
                 <div class="flex flex-col gap-4">
                     <div>
                         <label class="mb-2 block text-sm font-semibold">Payment Method</label>
@@ -147,19 +126,30 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
+import Calendar from 'primevue/calendar';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import Loading from '@/components/global/Loading.vue';
-import CustomerTransactionCard from '@/components/customer/CustomerTransactionCard.vue';
-import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
+import BillingDetailCustomerSection from '@/components/billing/BillingDetailCustomerSection.vue';
+import BillingDetailTable from '@/components/billing/BillingDetailTable.vue';
+import { billingDetailTableClasses } from '@/helpers/billing/billingDetailHelpers';
+import { invoiceLineItemColumns } from '@/helpers/billing/billingDetailColumns';
 import { formatCurrency } from '@/utils/formatter';
 import useCustomerShowInvoice from '@/composables/customer/useCustomerShowInvoice';
+
+const customerPaymentColumns = [
+    { label: 'Payment ID', key: 'id', align: 'left' },
+    { label: 'Payment Date', key: 'payment_date', align: 'left' },
+    { label: 'Amount', key: 'amount', align: 'right' },
+    { label: 'Method', key: 'payment_method_name', align: 'left' },
+    { label: 'Status', key: 'status', align: 'left' },
+];
 
 export default defineComponent({
     name: 'CustomerShowInvoice',
@@ -169,14 +159,31 @@ export default defineComponent({
         InputNumber,
         Textarea,
         FileUpload,
+        Calendar,
         StatusBadge,
         Loading,
-        CustomerTransactionCard,
-        CustomerEmptyState,
+        BillingDetailCustomerSection,
+        BillingDetailTable,
     },
     setup() {
         const router = useRouter();
         const invoice = useCustomerShowInvoice();
+
+        const lineItemRows = computed(() => invoice.invoiceItems.map((item) => ({
+            id: item.id,
+            description: item.description,
+            charge_type_name: item.charge_type_name,
+            amount: formatCurrency(item.amount),
+        })));
+
+        const paymentRows = computed(() => invoice.invoicePayments.map((payment) => ({
+            id: payment.id,
+            receipt_id: payment.receipt_id,
+            payment_date: payment.payment_date,
+            amount: formatCurrency(payment.amount),
+            payment_method_name: payment.payment_method_name,
+            status: payment.status,
+        })));
 
         const openReceipt = (receiptId) => {
             if (receiptId) {
@@ -186,6 +193,11 @@ export default defineComponent({
 
         return {
             ...invoice,
+            invoiceLineItemColumns,
+            customerPaymentColumns,
+            lineItemRows,
+            paymentRows,
+            billingDetailTableClasses,
             formatCurrency,
             openReceipt,
         };

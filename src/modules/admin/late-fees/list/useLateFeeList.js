@@ -1,10 +1,12 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { useLateFeeStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { LATE_FEE_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useLateFeeList = () => {
     const dt = ref();
@@ -125,6 +127,34 @@ export const useLateFeeList = () => {
         }, 500),
     );
 
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Late Fees',
+        filenameBase: 'late-fees',
+        columns: LATE_FEE_EXPORT_COLUMNS,
+        emptyMessage: 'No late fees available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({ name: item.name, type: item.type, value: item.value, per: item.per, grace_days: item.grace_days, status: item.status }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         lateFees,
         errors,
@@ -137,6 +167,12 @@ export const useLateFeeList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
-        toggleStatus,
+                isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+toggleStatus,
     };
 };

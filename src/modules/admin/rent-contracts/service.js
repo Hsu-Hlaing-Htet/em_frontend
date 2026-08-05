@@ -1,5 +1,6 @@
 import api from '@/libs/axios';
 import { endpoint } from '@/services/endpoint';
+import { downloadPdfResponse, PDF_DOWNLOAD_HEADERS } from '@/utils/downloadPdfResponse';
 
 const service = {
     getAll: async (params) => {
@@ -75,9 +76,9 @@ const rentService = {
             : `${endpoint.rentContractDrafts}/${id}/document`;
         const requestConfig = {
             responseType: 'blob',
-            headers: {
-                Accept: 'text/html, application/xhtml+xml, */*',
-            },
+            headers: action === 'download'
+                ? PDF_DOWNLOAD_HEADERS
+                : { Accept: 'text/html, application/xhtml+xml, */*' },
         };
 
         if (action === 'download') {
@@ -89,6 +90,11 @@ const rentService = {
         }
 
         throw new Error(`Unsupported document action: ${action}`);
+    },
+
+    downloadDocument: async (scope, id, fallbackFilename = 'rent-contract.pdf') => {
+        const response = await rentService.fetchDocument(scope, id, 'download');
+        return downloadPdfResponse(response, fallbackFilename);
     },
 
     sendDocumentEmail: async (scope, id, payload = {}) => {

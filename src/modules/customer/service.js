@@ -1,6 +1,6 @@
 import api from '@/libs/axios';
 import { endpoint } from '@/services/endpoint';
-import { downloadBlob } from '@/utils/downloadFile';
+import { downloadPdfResponse, PDF_DOWNLOAD_HEADERS } from '@/utils/downloadPdfResponse';
 
 const service = {
     getDashboard: async () => {
@@ -28,12 +28,12 @@ const service = {
         return result.data;
     },
 
-    downloadContractDocument: async (id) => {
-        const result = await api.get(`${endpoint.customerContracts}/${id}/document/download`, {
+    downloadContractDocument: async (id, fallbackFilename = 'contract.pdf') => {
+        const response = await api.get(`${endpoint.customerContracts}/${id}/document/download`, {
             responseType: 'blob',
-            headers: { Accept: 'text/html, application/xhtml+xml, */*' },
+            headers: PDF_DOWNLOAD_HEADERS,
         });
-        return result.data;
+        return downloadPdfResponse(response, fallbackFilename);
     },
 
     getInvoices: async (params) => {
@@ -46,17 +46,12 @@ const service = {
         return result.data;
     },
 
-    downloadInvoiceDocument: async (id, filename) => {
-        const blob = await service.downloadInvoiceBlob(id);
-        downloadBlob(filename, blob);
-    },
-
-    downloadInvoiceBlob: async (id) => {
-        const result = await api.get(`${endpoint.customerInvoices}/${id}/document/download`, {
+    downloadInvoiceDocument: async (id, fallbackFilename = 'invoice.pdf') => {
+        const response = await api.get(`${endpoint.customerInvoices}/${id}/document/download`, {
             responseType: 'blob',
-            headers: { Accept: 'text/html, application/xhtml+xml, */*' },
+            headers: PDF_DOWNLOAD_HEADERS,
         });
-        return result.data;
+        return downloadPdfResponse(response, fallbackFilename);
     },
 
     getPayments: async (params) => {
@@ -68,7 +63,6 @@ const service = {
         const formData = new FormData();
         formData.append('invoice_id', params.invoice_id);
         formData.append('payment_method_id', params.payment_method_id);
-        formData.append('amount', params.amount);
         formData.append('payment_date', params.payment_date);
 
         if (params.note) {
@@ -105,12 +99,12 @@ const service = {
         return result.data;
     },
 
-    downloadReceiptDocument: async (id, filename) => {
-        const result = await api.get(`${endpoint.customerReceipts}/${id}/document/download`, {
+    downloadReceiptDocument: async (id, fallbackFilename = 'receipt.pdf') => {
+        const response = await api.get(`${endpoint.customerReceipts}/${id}/document/download`, {
             responseType: 'blob',
-            headers: { Accept: 'text/html, application/xhtml+xml, */*' },
+            headers: PDF_DOWNLOAD_HEADERS,
         });
-        downloadBlob(filename, result.data);
+        return downloadPdfResponse(response, fallbackFilename);
     },
 
     getNotifications: async () => {

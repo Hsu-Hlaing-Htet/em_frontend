@@ -46,6 +46,15 @@
                             <router-link :to="{ name: 'newUtilityType' }">
                                 <Button label="Create" />
                             </router-link>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+
                         </div>
                     </div>
                 </template>
@@ -103,12 +112,13 @@ import InputText from 'primevue/inputtext';
 import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useUtilityTypeList } from './useUtilityTypeList';
 
 export default defineComponent({
     name: 'UtilityTypeList',
-    components: { DataTable, Column, InputText, InputSwitch, StatusBadge, Button, Loading },
+    components: { DataTable, Column, InputText, InputSwitch, StatusBadge, Button, Loading, ListExportActions },
     setup() {
         return useUtilityTypeList();
     },

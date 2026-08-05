@@ -95,8 +95,8 @@ export const INVOICE_STATUS_OPTIONS = [
 ];
 
 export const INVOICE_LIST_STATUS_OPTIONS = [
-    { label: 'All Approved', value: 'all_approved' },
-    { label: 'Issued', value: 'issued' },
+    { label: 'All', value: null },
+    { label: 'Unpaid', value: 'unpaid' },
     { label: 'Partial', value: 'partial' },
     { label: 'Paid', value: 'paid' },
     { label: 'Overdue', value: 'overdue' },

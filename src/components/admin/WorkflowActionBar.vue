@@ -10,6 +10,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    approveDisabled: {
+        type: Boolean,
+        default: false,
+    },
     canReject: {
         type: Boolean,
         default: false,
@@ -102,7 +106,7 @@ const onReject = () => {
             icon="pi pi-check"
             severity="success"
             :loading="approving"
-            :disabled="isBusy()"
+            :disabled="isBusy() || approveDisabled"
             :aria-label="approveLabel"
             @click="onApprove"
         />

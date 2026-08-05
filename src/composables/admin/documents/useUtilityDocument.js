@@ -7,33 +7,34 @@ import {
 } from '@/helpers/documents/billingDocumentHelpers';
 import { hasBillingValue } from '@/helpers/billing/billingDetailHelpers';
 import {
+    buildDocumentAuthorization,
+    buildUtilityDocumentNote,
+} from '@/helpers/documents/billingDocumentContent';
+import {
     formatUtilityDocumentDate,
-    formatUtilitySummaryNote,
 } from '@/modules/admin/utilities/utils/utilityDetailHelpers';
 
 export function useUtilityDocument(state) {
     const formattedBillingMonth = computed(() => formatBillingMonthLabel(state.billing_month));
-    const formattedCreatedAt = computed(() => formatUtilityDocumentDate(state.created_at));
 
     const document = computed(() => ({
         header: {
             referenceNo: formatUtilityReference(state),
-            issuedDate: state.approved_at || state.created_at || '-',
+            issuedDate: state.approved_at || state.created_at || '',
         },
         customerInfo: {
             name: state.customer_name,
-            address: state.customer_address,
-            phone: state.customer_phone,
-            email: state.customer_email,
-            building: state.building_name,
-            room: state.room_number,
+            lines: buildUtilityCustomerLines(state),
             issuedDate: formatUtilityDocumentDate(state.approved_at || state.created_at),
         },
-        summaryNote: formatUtilitySummaryNote({
+        summaryNote: buildUtilityDocumentNote({
             billingMonthLabel: formattedBillingMonth.value,
-            createdAtLabel: formattedCreatedAt.value,
-            createdByName: state.created_by_name,
-            approvedByName: state.approved_by_name,
+        }),
+        authorization: buildDocumentAuthorization({
+            preparedBy: state.created_by_name,
+            preparedAt: state.created_at,
+            approvedBy: state.approved_by_name,
+            approvedAt: state.approved_at,
         }),
         readings: (state.items || []).map((item) => ({
             utility_type: item.utility_type_name || '',

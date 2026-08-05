@@ -31,7 +31,7 @@ export const adminRoutes = [
                 path: 'dashboard',
                 name: 'dashboard',
                 component: DashboardPage,
-                meta: { title: 'Dashboard' },
+                meta: { title: 'Dashboard', navKey: 'dashboard' },
             },
             ...roleRoutes,
             ...residentRoutes,

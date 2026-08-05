@@ -3,35 +3,44 @@ import { formatCurrency } from '@/utils/formatter';
 export const KPI_STATS = [
     {
         key: 'revenue',
-        label: 'Total Revenue',
+        label: 'Revenue',
         value: formatCurrency(2450000),
         change: '+12.4% vs last month',
-        detail: `Approved payments across sale and rent portfolios total ${formatCurrency(2450000)} this quarter.`,
-        icon: 'pi pi-wallet',
+        trend: 'up',
+        detail: `Approved payments across sale and rent portfolios total ${formatCurrency(2450000)}.`,
+        sparkline: [310000, 355000, 390000, 410000, 435000, 420000],
+        sparkline_period: '6m',
     },
     {
-        key: 'properties',
-        label: 'Properties',
-        value: '48',
-        change: '6 new listings',
-        detail: '48 luxury units are actively managed across Rosewood Royale towers.',
-        icon: 'pi pi-building',
+        key: 'occupancy',
+        label: 'Occupancy',
+        value: '78%',
+        change: '+2.1 pts vs last month',
+        trend: 'up',
+        detail: 'Current occupancy across managed rooms is 78%.',
+        sparkline: [71, 72.5, 74, 75.5, 76, 78],
+        sparkline_period: '6m',
     },
     {
-        key: 'clients',
-        label: 'Clients',
-        value: '126',
-        change: '+8 this week',
-        detail: '126 resident and owner profiles are registered in the customer portal.',
-        icon: 'pi pi-users',
+        key: 'outstanding',
+        label: 'Outstanding Balance',
+        value: formatCurrency(385000),
+        change: '-8.2% vs last month',
+        trend: 'up',
+        detail: `Open invoice balances currently total ${formatCurrency(385000)}.`,
+        sparkline: [520000, 490000, 460000, 430000, 410000, 385000],
+        sparkline_period: '6m',
     },
     {
-        key: 'inquiries',
-        label: 'Inquiries',
-        value: '23',
-        change: '5 awaiting reply',
-        detail: '23 inbound inquiries were logged this month; 5 still need a follow-up.',
-        icon: 'pi pi-inbox',
+        key: 'pending_approvals',
+        label: 'Pending Approvals',
+        value: '12',
+        change: '12 awaiting action',
+        trend: 'down',
+        detail: '12 items are waiting in Approvals queues.',
+        sparkline: [4, 6, 5, 9, 7, 11, 12],
+        sparkline_period: '7d',
+        to: '/admin/approvals/sale-contracts',
     },
 ];
 
@@ -56,6 +65,48 @@ export const REVENUE_CHART = [
     { month: 'Nov', amount: 520000 },
     { month: 'Dec', amount: 545000 },
 ];
+
+export const REVENUE_COLLECTIONS = {
+    collection_rate: 84,
+    points: [
+        { month: 'Mar', billed: 540000, collected: 320000 },
+        { month: 'Apr', billed: 610000, collected: 410000 },
+        { month: 'May', billed: 580000, collected: 390000 },
+        { month: 'Jun', billed: 650000, collected: 470000 },
+        { month: 'Jul', billed: 720000, collected: 520000 },
+        { month: 'Aug', billed: 680000, collected: 495000 },
+    ],
+};
+
+export const RECEIVABLE_AGING = [
+    { key: 'current', label: 'Current', amount: 120000, amount_label: 'MMK 120,000', percent: 45, highlight: false },
+    { key: '1_30', label: '1–30 days', amount: 85000, amount_label: 'MMK 85,000', percent: 32, highlight: false },
+    { key: '31_60', label: '31–60 days', amount: 42000, amount_label: 'MMK 42,000', percent: 16, highlight: false },
+    { key: '60_plus', label: '60+ days', amount: 18000, amount_label: 'MMK 18,000', percent: 7, highlight: true },
+];
+
+export const OCCUPANCY_BY_BUILDING = [
+    { key: 'building_1', label: 'Rosewood Tower', occupied: 110, total: 120, percent: 92, ratio_label: '110/120' },
+    { key: 'building_2', label: 'Royale Residences', occupied: 86, total: 100, percent: 86, ratio_label: '86/100' },
+    { key: 'building_3', label: 'Garden Wing', occupied: 45, total: 60, percent: 75, ratio_label: '45/60' },
+];
+
+export const UPCOMING_CONTRACTS = [
+    { id: 1, number: 'RC-2026-089', property: 'Rosewood Tower · Penthouse Suite', end_date: '18 Aug 2026', days_left: 13, to: '/admin/rent-contracts/1' },
+    { id: 2, number: 'RC-2026-076', property: 'Royale Residences · Unit 12B', end_date: '25 Aug 2026', days_left: 20, to: '/admin/rent-contracts/2' },
+    { id: 3, number: 'RC-2026-064', property: 'Garden Wing · Villa 3D', end_date: '02 Sep 2026', days_left: 28, to: '/admin/rent-contracts/3' },
+    { id: 4, number: 'RC-2026-051', property: 'Rosewood Tower · Unit 7C', end_date: '15 Sep 2026', days_left: 41, to: '/admin/rent-contracts/4' },
+];
+
+export const PENDING_APPROVAL_BREAKDOWN = {
+    total: 127,
+    items: [
+        { key: 'payments', label: 'Payments', icon: 'pi pi-wallet', count: 44, to: '/admin/payments/approval' },
+        { key: 'invoices', label: 'Invoices', icon: 'pi pi-receipt', count: 38, to: '/admin/invoices/approval' },
+        { key: 'utilities', label: 'Utilities', icon: 'pi pi-bolt', count: 27, to: '/admin/utilities/approval' },
+        { key: 'others', label: 'Others', icon: 'pi pi-ellipsis-h', count: 18, to: '/admin/approvals/sale-contracts' },
+    ],
+};
 
 export const PROPERTY_STATS = [
     { key: 'available', label: 'Available', value: 14, color: '#7a3149' },

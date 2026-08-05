@@ -1,4 +1,5 @@
 import { escapeHtml, renderDataTable, renderFieldRows } from './htmlUtils';
+import { hasBillingValue } from '@/helpers/billing/billingDetailHelpers';
 
 export function renderDocumentBlock(title, innerHtml) {
     return `
@@ -11,13 +12,19 @@ export function renderDocumentBlock(title, innerHtml) {
 }
 
 export function renderFieldsBlock(title, fields = []) {
-    if (!fields.length) {
+    const visibleFields = fields.filter((field) => hasBillingValue(field?.value));
+
+    if (!visibleFields.length) {
         return '';
     }
 
-    return renderDocumentBlock(title, `
-        <dl class="pdf-rows pdf-rows--compact">${renderFieldRows(fields)}</dl>
-    `);
+    const block = `
+        <dl class="pdf-rows pdf-rows--compact">${renderFieldRows(visibleFields)}</dl>
+    `;
+
+    return title
+        ? renderDocumentBlock(title, block)
+        : `<section class="pdf-block">${block}</section>`;
 }
 
 export function renderTableBlock(title, tableConfig) {
@@ -25,21 +32,30 @@ export function renderTableBlock(title, tableConfig) {
 }
 
 export function renderAmountSummaryBlock({ totalLabel, totalAmount, details = [] }) {
-    const detailRows = details.map((item) => `
+    const visibleDetails = details.filter((item) => hasBillingValue(item?.value));
+    const total = hasBillingValue(totalAmount) ? totalAmount : '';
+
+    if (!visibleDetails.length && !total) {
+        return '';
+    }
+
+    const detailRows = visibleDetails.map((item) => `
         <div class="pdf-amount-summary__row">
             <span class="pdf-amount-summary__label">${escapeHtml(item.label)}</span>
-            <span class="pdf-amount-summary__value">${escapeHtml(item.value ?? '—')}</span>
+            <span class="pdf-amount-summary__value">${escapeHtml(item.value)}</span>
         </div>
     `).join('');
 
     return `
         <section class="pdf-block pdf-block--amount">
             <div class="pdf-amount-summary">
-                ${details.length ? `<div class="pdf-amount-summary__details">${detailRows}</div>` : ''}
-                <div class="pdf-amount-summary__total">
-                    <span class="pdf-amount-summary__total-label">${escapeHtml(totalLabel)}</span>
-                    <span class="pdf-amount-summary__total-value">${escapeHtml(totalAmount ?? '—')}</span>
-                </div>
+                ${visibleDetails.length ? `<div class="pdf-amount-summary__details">${detailRows}</div>` : ''}
+                ${total ? `
+                    <div class="pdf-amount-summary__total">
+                        <span class="pdf-amount-summary__total-label">${escapeHtml(totalLabel)}</span>
+                        <span class="pdf-amount-summary__total-value">${escapeHtml(total)}</span>
+                    </div>
+                ` : ''}
             </div>
         </section>
     `;

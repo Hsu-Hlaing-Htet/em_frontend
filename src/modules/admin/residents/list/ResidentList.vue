@@ -46,6 +46,15 @@
                             <router-link :to="{ name: 'newResident' }">
                                 <Button label="Create" />
                             </router-link>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+
                         </div>
                     </div>
                 </template>
@@ -104,11 +113,12 @@ import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import { useResidentList } from './useResidentList';
 
 export default defineComponent({
     name: 'ResidentList',
-    components: { DataTable, Column, InputText, Button, Loading },
+    components: { DataTable, Column, InputText, Button, Loading, ListExportActions },
     setup() {
         return useResidentList();
     },

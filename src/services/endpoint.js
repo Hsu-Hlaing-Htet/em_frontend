@@ -57,4 +57,5 @@ export const endpoint = {
     payments: 'payments',
     receipts: 'receipts',
     maintenanceRequests: 'maintenance-requests',
+    listExportPdf: 'list-exports/pdf',
 };

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isLoading" class="pdf-view">
+    <div v-if="!isLoading" class="min-h-screen">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
                 <Button
@@ -21,6 +21,7 @@
                     @click="exportPdf"
                 />
                 <Button
+                    v-if="canSendEmail"
                     icon="pi pi-envelope"
                     label="Send Email"
                     @click="sendEmail"
@@ -33,14 +34,7 @@
 
         <div class="pdf-canvas">
             <div class="pdf-frame">
-                <BillingDocumentSheet
-                    :document="document"
-                    :document-title="sheetProps.documentTitle"
-                    :reference-label="sheetProps.referenceLabel"
-                    :get-meta="sheetProps.getMeta"
-                    :render-lead="sheetProps.renderLead"
-                    :render-body="sheetProps.renderBody"
-                />
+                <ReceiptDocumentSheet :document="document" />
             </div>
         </div>
     </div>
@@ -52,12 +46,12 @@
 import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
-import BillingDocumentSheet from '@/components/admin/documents/BillingDocumentSheet.vue';
+import ReceiptDocumentSheet from '@/components/admin/documents/ReceiptDocumentSheet.vue';
 import useReceiptDocumentPage from './useReceiptDocumentPage';
 
 export default defineComponent({
     name: 'ReceiptDocument',
-    components: { Button, Loading, BillingDocumentSheet },
+    components: { Button, Loading, ReceiptDocumentSheet },
     setup() {
         return useReceiptDocumentPage();
     },

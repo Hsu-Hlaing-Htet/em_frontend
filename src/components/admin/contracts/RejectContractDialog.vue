@@ -2,13 +2,13 @@
     <Dialog
         v-model:visible="visible"
         modal
-        header="Reject Contract"
+        :header="header"
         class="w-full max-w-lg"
         :closable="!submitting"
         @update:visible="onVisibleChange"
     >
         <p class="mb-4">
-            Please provide a remark explaining why this contract is being rejected.
+            {{ description }}
         </p>
 
         <div class="field">
@@ -53,6 +53,14 @@ export default defineComponent({
         modelValue: {
             type: Boolean,
             default: false,
+        },
+        header: {
+            type: String,
+            default: 'Reject Contract',
+        },
+        description: {
+            type: String,
+            default: 'Please provide a remark explaining why this contract is being rejected.',
         },
     },
     emits: ['update:modelValue', 'confirm'],

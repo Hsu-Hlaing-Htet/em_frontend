@@ -44,6 +44,14 @@
                             <router-link :to="{ name: 'newMaintenanceRequest' }">
                                 <Button label="Create" />
                             </router-link>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
                         </template>
                     </AdminListFilters>
                 </template>
@@ -96,6 +104,7 @@ import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { MAINTENANCE_STATUS_OPTIONS } from '@/constants/constant';
@@ -110,8 +119,7 @@ export default defineComponent({
         Button,
         Loading,
         AdminListFilters,
-        StatusBadge,
-    },
+        StatusBadge, ListExportActions },
     setup() {
         const list = useMaintenanceRequestList();
 

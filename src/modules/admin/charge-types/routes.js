@@ -8,6 +8,8 @@ const routes = [
                 name: 'chargeTypeList',
                 component: () => import('@/modules/admin/charge-types/list/ChargeTypeList.vue'),
                 meta: {
+                    navKey: 'charge-types',
+                    parentNavKey: 'settings',
                     action: 'view',
                     resource: 'charge_type',
                     layout: 'default',
@@ -22,6 +24,8 @@ const routes = [
                 name: 'newChargeType',
                 component: () => import('@/modules/admin/charge-types/entry/NewChargeType.vue'),
                 meta: {
+                    navKey: 'charge-types',
+                    parentNavKey: 'settings',
                     action: 'create',
                     resource: 'charge_type',
                     layout: 'default',
@@ -37,6 +41,8 @@ const routes = [
                 name: 'editChargeType',
                 component: () => import('@/modules/admin/charge-types/entry/EditChargeType.vue'),
                 meta: {
+                    navKey: 'charge-types',
+                    parentNavKey: 'settings',
                     action: 'update',
                     resource: 'charge_type',
                     layout: 'default',

@@ -3,52 +3,28 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
-
-const isWithinDateRange = (value, dateFrom, dateTo) => {
-    if (!value) {
-        return !dateFrom && !dateTo;
-    }
-
-    const date = new Date(value);
-
-    if (dateFrom) {
-        const from = new Date(dateFrom);
-        from.setHours(0, 0, 0, 0);
-
-        if (date < from) {
-            return false;
-        }
-    }
-
-    if (dateTo) {
-        const to = new Date(dateTo);
-        to.setHours(23, 59, 59, 999);
-
-        if (date > to) {
-            return false;
-        }
-    }
-
-    return true;
-};
+import { omitEmptyParams } from '@/helpers/lists/listQuery';
 
 export const useEntityApprovalList = ({
     store,
     pendingStatus,
+    pendingStatusKey = 'status',
     approveMethod = 'approve',
     rejectMethod = null,
-    dateField = 'created_at',
     getItemLabel = (item) => String(item.id ?? ''),
     loadErrorMessage = 'Unable to load pending approvals.',
     approveErrorMessage = 'Unable to approve record.',
     rejectErrorMessage = 'Unable to reject record.',
     buildApproveSuccessMessage = (item, response) => response?.message || `${getItemLabel(item)} approved successfully.`,
     buildRejectSuccessMessage = (item, response) => response?.message || `${getItemLabel(item)} has been rejected.`,
+    buildFilterParams = () => ({}),
+    mapItems = (rows) => rows,
+    getWatchSources = () => [],
+    resetFilters = () => {},
+    autoLoad = true,
 }) => {
     const dt = ref();
     const search = ref('');
-    const dateFrom = ref(null);
-    const dateTo = ref(null);
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const items = ref([]);
@@ -68,24 +44,23 @@ export const useEntityApprovalList = ({
         };
     };
 
-    const applyDateFilter = (rows) => rows.filter((row) => isWithinDateRange(row[dateField], dateFrom.value, dateTo.value));
-
     const loadingData = async () => {
         isLoading.value = true;
 
         try {
-            await store.fetchAll({
+            await store.fetchAll(omitEmptyParams({
                 page: (lazyParams.value.page || 0) + 1,
                 per_page: lazyParams.value.rows || 10,
-                order: multisortConvert(lazyParams.value.multiSortMeta),
-                search: search.value,
-                status: pendingStatus,
-            });
+                order: multisortConvert(lazyParams.value.multiSortMeta) || undefined,
+                search: search.value?.trim() || undefined,
+                ...buildFilterParams(),
+                [pendingStatusKey]: pendingStatus,
+            }));
 
             const response = store.getAllResponse;
 
             if (response?.data) {
-                items.value = applyDateFilter(response.data.data || []);
+                items.value = mapItems(response.data.data || []);
                 totalRecords.value = response.data.total;
             } else {
                 items.value = [];
@@ -116,8 +91,7 @@ export const useEntityApprovalList = ({
     const resetSearch = () => {
         resetPagination();
         search.value = '';
-        dateFrom.value = null;
-        dateTo.value = null;
+        resetFilters();
         loadingData();
     };
 
@@ -171,7 +145,10 @@ export const useEntityApprovalList = ({
 
     onMounted(() => {
         resetPagination();
-        loadingData();
+
+        if (autoLoad) {
+            loadingData();
+        }
     });
 
     onBeforeUnmount(() => {
@@ -180,18 +157,16 @@ export const useEntityApprovalList = ({
     });
 
     watch(
-        [search, dateFrom, dateTo],
+        [search, ...getWatchSources()],
         useDebounceFn(() => {
             resetPagination();
             loadingData();
-        }, 300),
+        }, 500),
     );
 
     return {
         dt,
         search,
-        dateFrom,
-        dateTo,
         items,
         totalRecords,
         lazyParams,
@@ -202,5 +177,7 @@ export const useEntityApprovalList = ({
         approveItem,
         rejectItem,
         reload: loadingData,
+        loadingData,
+        resetPagination,
     };
 };

@@ -1,7 +1,7 @@
 export function downloadBlob(filename, blob) {
     const fileBlob = blob instanceof Blob
         ? blob
-        : new Blob([blob], { type: 'text/html;charset=utf-8' });
+        : new Blob([blob], { type: 'application/octet-stream' });
     const url = URL.createObjectURL(fileBlob);
     const link = document.createElement('a');
 

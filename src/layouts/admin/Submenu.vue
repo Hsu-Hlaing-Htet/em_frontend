@@ -1,98 +1,162 @@
 <template>
-    <ul v-if="items" class="menu-root">
+    <ul v-if="items" class="menu-root" :class="{ 'menu-root--collapsed': isCollapsed }">
         <li
             v-for="(item, i) in items"
-            :key="item.label || i"
+            :key="item.key || item.label || i"
+            class="menu-item"
+            :class="{ 'menu-item--group': item.items }"
+            @mouseenter="onItemEnter(i, item)"
+            @mouseleave="onItemLeave"
         >
             <!-- Group Menu -->
             <template v-if="item.items">
-
                 <a
+                    :ref="(el) => setTriggerRef(i, el)"
                     href="#"
                     class="menu-link"
-                    @click.prevent="toggleGroup(i)"
+                    :class="{
+                        'menu-link--collapsed': isCollapsed,
+                        'menu-link-active': isCollapsed && isGroupRouteActive(item),
+                    }"
+                    :aria-label="item.label"
+                    :aria-expanded="isCollapsed ? isFlyoutOpen(i) : isGroupOpen(item, i)"
+                    :aria-haspopup="isCollapsed ? 'menu' : undefined"
+                    :aria-controls="isCollapsed ? flyoutId(i) : undefined"
+                    :title="isCollapsed ? item.label : undefined"
+                    @click.prevent="onGroupClick(i, item)"
+                    @keydown="onGroupKeydown($event, i, item)"
                 >
-                    <i :class="item.icon" class="menu-link-icon" />
+                    <i :class="item.icon" class="menu-link-icon" aria-hidden="true" />
 
                     <span
+                        v-if="!isCollapsed"
                         class="menu-link-label"
-                        :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
                     >
                         {{ item.label }}
                     </span>
 
                     <i
+                        v-if="!isCollapsed"
                         class="pi ml-auto"
-                        :class="
-                            activeIndex === i
-                                ? 'pi-chevron-down'
-                                : 'pi-chevron-right'
-                        "
+                        :class="isGroupOpen(item, i) ? 'pi-chevron-down' : 'pi-chevron-right'"
+                        aria-hidden="true"
                     />
                 </a>
 
-                <transition name="layout-submenu-wrapper">
+                <!-- Expanded inline children -->
+                <transition v-if="!isCollapsed" name="layout-submenu-wrapper">
                     <ul
-                        v-show="activeIndex === i"
+                        v-show="isGroupOpen(item, i)"
                         class="submenu-container"
                     >
                         <li
                             v-for="child in item.items"
-                            :key="child.label"
+                            :key="child.key || child.label"
                         >
                             <router-link
+                                v-slot="{ href, navigate }"
                                 :to="child.to"
-                                class="menu-link submenu-link"
-                                active-class="router-link-active"
-                                exact-active-class="router-link-exact-active"
+                                custom
                             >
-                                <i
-                                    :class="child.icon"
-                                    class="menu-link-icon"
-                                />
-
-                                <span
-                                    class="menu-link-label"
-                                    :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
+                                <a
+                                    :href="href"
+                                    class="menu-link submenu-link"
+                                    :class="{ 'menu-link-active': isLeafActive(child) }"
+                                    :aria-current="isLeafActive(child) ? 'page' : undefined"
+                                    :aria-label="`${item.label}: ${child.label}`"
+                                    @click="onMenuNavigate($event, navigate)"
                                 >
-                                    {{ child.label }}
-                                </span>
+                                    <i
+                                        :class="child.icon"
+                                        class="menu-link-icon"
+                                        aria-hidden="true"
+                                    />
+                                    <span class="menu-link-label">{{ child.label }}</span>
+                                </a>
                             </router-link>
                         </li>
                     </ul>
                 </transition>
-
             </template>
 
             <!-- Normal Link -->
             <template v-else>
-
                 <router-link
+                    v-slot="{ href, navigate }"
                     :to="item.to"
-                    class="menu-link"
-                    active-class="router-link-active"
-                    exact-active-class="router-link-exact-active"
+                    custom
                 >
-                    <i :class="item.icon" class="menu-link-icon" />
-
-                    <span
-                        class="menu-link-label"
-                        :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
+                    <a
+                        :href="href"
+                        class="menu-link"
+                        :class="{
+                            'menu-link--collapsed': isCollapsed,
+                            'menu-link-active': isLeafActive(item),
+                        }"
+                        :aria-current="isLeafActive(item) ? 'page' : undefined"
+                        :aria-label="item.label"
+                        :title="isCollapsed ? item.label : undefined"
+                        @click="onMenuNavigate($event, navigate)"
                     >
-                        {{ item.label }}
-                    </span>
+                        <i :class="item.icon" class="menu-link-icon" aria-hidden="true" />
+                        <span
+                            v-if="!isCollapsed"
+                            class="menu-link-label"
+                        >
+                            {{ item.label }}
+                        </span>
+                    </a>
                 </router-link>
-
             </template>
         </li>
     </ul>
+
+    <Teleport to="body">
+        <div
+            v-if="isCollapsed && flyoutItem && flyoutStyle"
+            :id="flyoutId(flyoutIndex)"
+            class="menu-flyout"
+            role="menu"
+            :aria-label="flyoutItem.label"
+            :style="flyoutStyle"
+            @mouseenter="keepFlyoutOpen"
+            @mouseleave="onItemLeave"
+        >
+            <p class="menu-flyout-title">{{ flyoutItem.label }}</p>
+            <router-link
+                v-for="child in flyoutItem.items"
+                :key="child.key || child.label"
+                v-slot="{ href, navigate }"
+                :to="child.to"
+                custom
+            >
+                <a
+                    :href="href"
+                    class="menu-flyout-link"
+                    :class="{ 'menu-flyout-link-active': isLeafActive(child) }"
+                    role="menuitem"
+                    :aria-current="isLeafActive(child) ? 'page' : undefined"
+                    @click="onFlyoutNavigate($event, navigate)"
+                >
+                    <i
+                        v-if="child.icon"
+                        :class="child.icon"
+                        class="menu-flyout-icon"
+                        aria-hidden="true"
+                    />
+                    <span>{{ child.label }}</span>
+                </a>
+            </router-link>
+        </div>
+    </Teleport>
 </template>
 
 <script>
+import { computed, inject, nextTick, onBeforeUnmount, ref, unref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+
 export default {
     name: 'Submenu',
-
-    inject: ['sidebarCollapsed'],
 
     props: {
         items: {
@@ -101,19 +165,217 @@ export default {
         },
     },
 
-    data() {
-        return {
-            activeIndex: null,
-        };
-    },
+    setup(props) {
+        const route = useRoute();
+        const sidebarCollapsedInjected = inject('sidebarCollapsed', false);
+        const isCollapsed = computed(() => Boolean(unref(sidebarCollapsedInjected)));
 
-    methods: {
-        toggleGroup(index) {
-            this.activeIndex =
-                this.activeIndex === index
-                    ? null
-                    : index;
-        },
+        const manualOpenIndex = ref(null);
+        const manualCloseIndex = ref(null);
+        const flyoutIndex = ref(null);
+        const flyoutStyle = ref(null);
+        const triggerRefs = ref({});
+        let leaveTimer = null;
+
+        const currentNavKey = computed(() => route.meta?.navKey || null);
+        const currentParentNavKey = computed(() => route.meta?.parentNavKey || null);
+
+        const flyoutItem = computed(() => {
+            if (flyoutIndex.value == null) {
+                return null;
+            }
+
+            return props.items[flyoutIndex.value] || null;
+        });
+
+        const isLeafActive = (item) => Boolean(item?.key) && currentNavKey.value === item.key;
+
+        const isGroupRouteActive = (item) => Boolean(item?.key) && currentParentNavKey.value === item.key;
+
+        const isGroupOpen = (item, index) => {
+            if (isCollapsed.value) {
+                return false;
+            }
+
+            if (manualCloseIndex.value === index) {
+                return false;
+            }
+
+            if (manualOpenIndex.value === index) {
+                return true;
+            }
+
+            return isGroupRouteActive(item);
+        };
+
+        const isFlyoutOpen = (index) => flyoutIndex.value === index;
+
+        const flyoutId = (index) => `admin-menu-flyout-${index}`;
+
+        const setTriggerRef = (index, el) => {
+            if (el) {
+                triggerRefs.value[index] = el;
+            }
+        };
+
+        const clearLeaveTimer = () => {
+            if (leaveTimer) {
+                clearTimeout(leaveTimer);
+                leaveTimer = null;
+            }
+        };
+
+        const closeFlyout = () => {
+            clearLeaveTimer();
+            flyoutIndex.value = null;
+            flyoutStyle.value = null;
+        };
+
+        const updateFlyoutPosition = (index) => {
+            const trigger = triggerRefs.value[index];
+
+            if (!trigger) {
+                flyoutStyle.value = null;
+                return;
+            }
+
+            const rect = trigger.getBoundingClientRect();
+            const top = Math.min(rect.top, window.innerHeight - 16);
+            const left = rect.right + 8;
+
+            flyoutStyle.value = {
+                top: `${Math.max(8, top)}px`,
+                left: `${left}px`,
+            };
+        };
+
+        const openFlyout = async (index) => {
+            clearLeaveTimer();
+            flyoutIndex.value = index;
+            await nextTick();
+            updateFlyoutPosition(index);
+        };
+
+        const keepFlyoutOpen = () => {
+            clearLeaveTimer();
+        };
+
+        const onItemEnter = (index, item) => {
+            if (!isCollapsed.value || !item.items) {
+                return;
+            }
+
+            openFlyout(index);
+        };
+
+        const onItemLeave = () => {
+            if (!isCollapsed.value) {
+                return;
+            }
+
+            clearLeaveTimer();
+            leaveTimer = setTimeout(() => {
+                closeFlyout();
+            }, 120);
+        };
+
+        const toggleGroup = (index) => {
+            const item = props.items[index];
+            const currentlyOpen = isGroupOpen(item, index);
+
+            if (currentlyOpen) {
+                manualOpenIndex.value = null;
+                manualCloseIndex.value = index;
+                return;
+            }
+
+            manualCloseIndex.value = null;
+            manualOpenIndex.value = index;
+        };
+
+        const onGroupClick = (index, item) => {
+            if (isCollapsed.value) {
+                if (isFlyoutOpen(index)) {
+                    closeFlyout();
+                } else {
+                    openFlyout(index);
+                }
+                return;
+            }
+
+            toggleGroup(index);
+        };
+
+        const onGroupKeydown = (event, index, item) => {
+            if (event.code === 'Escape' && isCollapsed.value) {
+                closeFlyout();
+                event.preventDefault();
+                return;
+            }
+
+            if (event.code === 'ArrowRight' && isCollapsed.value && item.items) {
+                openFlyout(index);
+                event.preventDefault();
+            }
+
+            if (event.code === 'ArrowLeft' && isCollapsed.value) {
+                closeFlyout();
+                event.preventDefault();
+            }
+        };
+
+        const onMenuNavigate = (event, navigate) => {
+            navigate(event);
+        };
+
+        const onFlyoutNavigate = (event, navigate) => {
+            closeFlyout();
+            navigate(event);
+        };
+
+        const resetManualState = () => {
+            manualOpenIndex.value = null;
+            manualCloseIndex.value = null;
+            closeFlyout();
+        };
+
+        watch(() => route.fullPath, resetManualState);
+        watch(isCollapsed, resetManualState);
+
+        const onWindowChange = () => {
+            if (flyoutIndex.value != null) {
+                updateFlyoutPosition(flyoutIndex.value);
+            }
+        };
+
+        window.addEventListener('resize', onWindowChange);
+        window.addEventListener('scroll', onWindowChange, true);
+
+        onBeforeUnmount(() => {
+            clearLeaveTimer();
+            window.removeEventListener('resize', onWindowChange);
+            window.removeEventListener('scroll', onWindowChange, true);
+        });
+
+        return {
+            isCollapsed,
+            isLeafActive,
+            isGroupRouteActive,
+            isGroupOpen,
+            isFlyoutOpen,
+            flyoutId,
+            flyoutIndex,
+            flyoutItem,
+            flyoutStyle,
+            setTriggerRef,
+            onItemEnter,
+            onItemLeave,
+            keepFlyoutOpen,
+            onGroupClick,
+            onGroupKeydown,
+            onMenuNavigate,
+            onFlyoutNavigate,
+        };
     },
 };
 </script>
@@ -125,7 +387,22 @@ export default {
     list-style: none;
 }
 
-/* Tree Container */
+.menu-root--collapsed .menu-item {
+    position: relative;
+}
+
+.menu-root--collapsed .menu-link--collapsed {
+    justify-content: center;
+    gap: 0;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+}
+
+.menu-root--collapsed .menu-link-icon {
+    margin: 0;
+}
+
+/* Tree Container — expanded only */
 
 .submenu-container {
     position: relative;
@@ -150,8 +427,6 @@ export default {
     background: var(--admin-border);
 }
 
-/* Child Item */
-
 .submenu-link {
     padding-left: 1.5rem;
 }
@@ -171,8 +446,6 @@ export default {
 
     transform: translateY(-50%);
 }
-
-/* Existing Hover Style */
 
 .menu-link {
     position: relative;
@@ -214,22 +487,27 @@ export default {
 }
 
 .menu-link:hover,
-.menu-link.router-link-active,
-.menu-link.router-link-exact-active {
+.menu-link.menu-link-active,
+.menu-link:focus-visible {
     background: var(--admin-nav-active-bg);
     border-color: var(--admin-nav-active-border);
     color: var(--admin-nav-active-text);
+    outline: none;
 }
 
 .menu-link:hover::before,
-.menu-link.router-link-active::before,
-.menu-link.router-link-exact-active::before {
+.menu-link.menu-link-active::before,
+.menu-link:focus-visible::before {
     opacity: 1;
     transform: scaleY(1);
 }
 
-html[data-theme='dark'] .menu-link.router-link-active,
-html[data-theme='dark'] .menu-link.router-link-exact-active {
+.menu-link:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-primary) 35%, transparent);
+}
+
+html[data-theme='dark'] .menu-link.menu-link-active,
+html[data-theme='dark'] .menu-link:focus-visible {
     box-shadow: 0 0 16px rgba(193, 39, 79, 0.18);
 }
 
@@ -244,8 +522,8 @@ html[data-theme='dark'] .menu-link.router-link-exact-active {
 }
 
 .menu-link:hover .menu-link-icon,
-.menu-link.router-link-active .menu-link-icon,
-.menu-link.router-link-exact-active .menu-link-icon {
+.menu-link.menu-link-active .menu-link-icon,
+.menu-link:focus-visible .menu-link-icon {
     transform: scale(1.08);
 }
 
@@ -253,8 +531,6 @@ html[data-theme='dark'] .menu-link.router-link-exact-active {
     font-size: 0.95rem;
     font-weight: 500;
 }
-
-/* Accordion Animation */
 
 .layout-submenu-wrapper-enter-active,
 .layout-submenu-wrapper-leave-active {
@@ -272,5 +548,59 @@ html[data-theme='dark'] .menu-link.router-link-exact-active {
 .layout-submenu-wrapper-leave-from {
     opacity: 1;
     max-height: 500px;
+}
+</style>
+
+<style>
+.menu-flyout {
+    position: fixed;
+    z-index: 1200;
+    min-width: 12.5rem;
+    max-width: 16rem;
+    padding: 0.5rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 0.75rem;
+    background: var(--admin-sidebar-bg);
+    box-shadow: var(--admin-shadow-soft);
+}
+
+.menu-flyout-title {
+    margin: 0 0 0.35rem;
+    padding: 0.4rem 0.65rem 0.55rem;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.menu-flyout-link {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.menu-flyout-link:hover,
+.menu-flyout-link:focus-visible,
+.menu-flyout-link-active {
+    background: var(--admin-nav-active-bg);
+    border-color: var(--admin-nav-active-border);
+    color: var(--admin-nav-active-text);
+    outline: none;
+}
+
+.menu-flyout-link:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-primary) 35%, transparent);
+}
+
+.menu-flyout-icon {
+    width: 1rem;
+    text-align: center;
 }
 </style>

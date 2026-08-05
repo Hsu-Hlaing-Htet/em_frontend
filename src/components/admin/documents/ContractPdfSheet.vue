@@ -4,14 +4,16 @@
 
 <script>
 import { computed, defineComponent } from 'vue';
-import { renderDocumentArticle } from '@/helpers/documents/documentLayout';
 import {
-    getContractDocumentMeta,
+    renderContractDocumentArticle,
+    renderContractSaleFooter,
+    renderContractRentFooter,
+} from '@/helpers/documents/renderContractDocumentLayout';
+import {
     renderContractDocumentBody,
     renderContractDocumentLead,
 } from '@/helpers/documents/renderContractDocument';
 import {
-    getRentContractDocumentMeta,
     renderRentContractDocumentBody,
     renderRentContractDocumentLead,
 } from '@/helpers/documents/renderRentContractDocument';
@@ -21,15 +23,15 @@ import '@/assets/css/documents/document-styles.css';
 const VARIANTS = {
     sale: {
         documentTitle: 'Property Sale Agreement',
-        getMeta: getContractDocumentMeta,
         renderLead: renderContractDocumentLead,
         renderBody: renderContractDocumentBody,
+        renderFooter: renderContractSaleFooter,
     },
     rent: {
         documentTitle: 'Property Rent Agreement',
-        getMeta: getRentContractDocumentMeta,
         renderLead: renderRentContractDocumentLead,
         renderBody: renderRentContractDocumentBody,
+        renderFooter: renderContractRentFooter,
     },
 };
 
@@ -57,13 +59,16 @@ export default defineComponent({
     setup(props) {
         const articleHtml = computed(() => {
             const config = VARIANTS[props.variant] || VARIANTS.sale;
+            const contractNo = props.document?.header?.contractNo || '';
 
-            return renderDocumentArticle({
+            return renderContractDocumentArticle({
                 documentTitle: config.documentTitle,
-                meta: config.getMeta(props.document),
+                contractNo,
+                issueDate: props.document?.header?.issuedDate,
                 leadHtml: config.renderLead(),
                 bodyHtml: config.renderBody(props.document),
                 logoSrc: DOCUMENT_LOGO_URL,
+                footerHtml: config.renderFooter({ contractNo }),
             });
         });
 

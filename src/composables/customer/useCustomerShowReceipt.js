@@ -52,7 +52,7 @@ export default function useCustomerShowReceipt() {
         isDownloading.value = true;
 
         try {
-            await store.downloadDocument(state.id, `${state.receipt_number || 'receipt'}.html`);
+            await store.downloadDocument(state.id, `${state.receipt_number || 'receipt'}.pdf`);
             EventBus.emit('show-toast', {
                 severity: 'success',
                 summary: '',

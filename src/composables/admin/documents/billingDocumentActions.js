@@ -1,15 +1,11 @@
 import { createBillingDocumentActions } from './createBillingDocumentActions';
 import {
-    downloadInvoiceDocument,
     exportInvoiceDocument,
     printInvoiceDocument,
-    downloadReceiptDocument,
     exportReceiptDocument,
     printReceiptDocument,
-    downloadPaymentDocument,
     exportPaymentDocument,
     printPaymentDocument,
-    downloadUtilityDocument,
     exportUtilityDocument,
     printUtilityDocument,
 } from '@/helpers/documents/documentOutput';
@@ -22,7 +18,10 @@ export function useInvoiceDocumentActions(state, getDocument, service) {
         getFilename: (current) => `${current.invoice_number || 'invoice'}.html`,
         printDocument: printInvoiceDocument,
         exportDocument: exportInvoiceDocument,
-        downloadDocument: downloadInvoiceDocument,
+        downloadDocument: (current) => service.downloadDocument({
+            id: current.id,
+            fallbackFilename: `${current.invoice_number || 'invoice'}.pdf`,
+        }),
         sendDocumentEmail: (current) => service.sendDocumentEmail({
             id: current.id,
             email: current.customer_email || undefined,
@@ -45,7 +44,10 @@ export function useReceiptDocumentActions(state, getDocument, service) {
         getFilename: (current) => `${current.receipt_number || 'receipt'}.html`,
         printDocument: printReceiptDocument,
         exportDocument: exportReceiptDocument,
-        downloadDocument: downloadReceiptDocument,
+        downloadDocument: (current) => service.downloadDocument({
+            id: current.id,
+            fallbackFilename: `${current.receipt_number || 'receipt'}.pdf`,
+        }),
         sendDocumentEmail: (current) => service.sendDocumentEmail({
             id: current.id,
             email: current.customer_email || undefined,
@@ -68,7 +70,10 @@ export function usePaymentDocumentActions(state, getDocument, service) {
         getFilename: (current) => `${current.invoice_number || 'payment'}.html`,
         printDocument: printPaymentDocument,
         exportDocument: exportPaymentDocument,
-        downloadDocument: downloadPaymentDocument,
+        // Payment has no document download endpoint; keep export/print only.
+        downloadDocument: async () => {
+            throw new Error('Payment documents cannot be downloaded.');
+        },
         sendDocumentEmail: (current) => service.sendDocumentEmail({
             id: current.id,
             email: current.customer_email || undefined,
@@ -91,7 +96,10 @@ export function useUtilityDocumentActions(state, getDocument, service) {
         getFilename: (current) => `${formatUtilityReference(current) || 'utility-bill'}.html`,
         printDocument: printUtilityDocument,
         exportDocument: exportUtilityDocument,
-        downloadDocument: downloadUtilityDocument,
+        downloadDocument: (current) => service.downloadDocument({
+            id: current.id,
+            fallbackFilename: `${formatUtilityReference(current) || 'utility-bill'}.pdf`,
+        }),
         sendDocumentEmail: (current) => service.sendDocumentEmail({
             id: current.id,
             email: current.customer_email || undefined,

@@ -8,6 +8,7 @@ const routes = [
                 name: 'maintenanceRequestList',
                 component: () => import('@/modules/admin/maintenance-requests/list/MaintenanceRequestList.vue'),
                 meta: {
+                    navKey: 'maintenance-requests',
                     action: 'view',
                     resource: 'maintenance_request',
                     layout: 'default',
@@ -22,6 +23,7 @@ const routes = [
                 name: 'newMaintenanceRequest',
                 component: () => import('@/modules/admin/maintenance-requests/entry/NewMaintenanceRequest.vue'),
                 meta: {
+                    navKey: 'maintenance-requests',
                     action: 'create',
                     resource: 'maintenance_request',
                     layout: 'default',
@@ -37,6 +39,7 @@ const routes = [
                 name: 'editMaintenanceRequest',
                 component: () => import('@/modules/admin/maintenance-requests/entry/EditMaintenanceRequest.vue'),
                 meta: {
+                    navKey: 'maintenance-requests',
                     action: 'update',
                     resource: 'maintenance_request',
                     layout: 'default',
@@ -52,6 +55,7 @@ const routes = [
                 name: 'showMaintenanceRequest',
                 component: () => import('@/modules/admin/maintenance-requests/detail/ShowMaintenanceRequest.vue'),
                 meta: {
+                    navKey: 'maintenance-requests',
                     action: 'view',
                     resource: 'maintenance_request',
                     layout: 'default',

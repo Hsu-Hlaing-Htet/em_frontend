@@ -8,6 +8,8 @@ const rentContractRoutes = [
                 name: 'rentContractDraftList',
                 component: () => import('@/modules/admin/rent-contracts/draft/RentDraftList.vue'),
                 meta: {
+                    navKey: 'rent-drafts',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'rent_contract',
                     layout: 'default',
@@ -22,6 +24,8 @@ const rentContractRoutes = [
                 name: 'newRentContractDraft',
                 component: () => import('@/modules/admin/rent-contracts/draft/NewRentDraft.vue'),
                 meta: {
+                    navKey: 'rent-drafts',
+                    parentNavKey: 'contracts',
                     action: 'create',
                     resource: 'rent_contract',
                     layout: 'default',
@@ -37,6 +41,8 @@ const rentContractRoutes = [
                 name: 'editRentContractDraft',
                 component: () => import('@/modules/admin/rent-contracts/draft/EditRentDraft.vue'),
                 meta: {
+                    navKey: 'rent-drafts',
+                    parentNavKey: 'contracts',
                     action: 'update',
                     resource: 'rent_contract',
                     layout: 'default',
@@ -52,6 +58,8 @@ const rentContractRoutes = [
                 name: 'rentContractDraftPdf',
                 component: () => import('@/modules/admin/rent-contracts/draft/ContractPdf.vue'),
                 meta: {
+                    navKey: 'rent-drafts',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'rent_contract',
                     layout: 'default',
@@ -68,6 +76,8 @@ const rentContractRoutes = [
                 name: 'showRentContractDraft',
                 component: () => import('@/modules/admin/rent-contracts/draft/ShowRentDraft.vue'),
                 meta: {
+                    navKey: 'rent-drafts',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'rent_contract',
                     layout: 'default',
@@ -83,6 +93,8 @@ const rentContractRoutes = [
                 name: 'activeRentList',
                 component: () => import('@/modules/admin/rent-contracts/active/ActiveRentList.vue'),
                 meta: {
+                    navKey: 'active-rents',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'rent_contract',
                     layout: 'default',
@@ -97,6 +109,8 @@ const rentContractRoutes = [
                 name: 'showActiveRent',
                 component: () => import('@/modules/admin/rent-contracts/active/ShowActiveRent.vue'),
                 meta: {
+                    navKey: 'active-rents',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'rent_contract',
                     layout: 'default',
@@ -118,6 +132,8 @@ const rentContractRoutes = [
                 name: 'rentContractApprovalList',
                 component: () => import('@/modules/admin/rent-contracts/approval/RentContractApprovalList.vue'),
                 meta: {
+                    navKey: 'approval-rent-contracts',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'rent_contract_approval',
                     layout: 'default',
@@ -132,6 +148,8 @@ const rentContractRoutes = [
                 name: 'showRentContractApproval',
                 component: () => import('@/modules/admin/rent-contracts/approval/ShowRentContractApproval.vue'),
                 meta: {
+                    navKey: 'approval-rent-contracts',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'rent_contract_approval',
                     layout: 'default',

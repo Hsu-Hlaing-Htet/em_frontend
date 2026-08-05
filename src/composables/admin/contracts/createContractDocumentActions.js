@@ -13,17 +13,18 @@ export function createContractDocumentActions({
     printDocument,
     sendDocumentEmail,
 }) {
-    const fallbackFilename = () => `${getContractNo() || fallbackName}.html`;
+    const fallbackHtmlFilename = () => `${getContractNo() || fallbackName}.html`;
+    const fallbackPdfFilename = () => `${getContractNo() || fallbackName}.pdf`;
 
     const downloadPdf = async () => {
-        const document = getDocument();
+        const id = getContractId();
 
-        if (!document) {
+        if (!id) {
             return;
         }
 
         try {
-            downloadDocument(document, fallbackFilename());
+            await downloadDocument(scope, id, fallbackPdfFilename());
 
             EventBus.emit('show-toast', {
                 severity: 'success',
@@ -43,7 +44,7 @@ export function createContractDocumentActions({
         }
 
         try {
-            exportDocument(document, fallbackFilename());
+            exportDocument(document, fallbackHtmlFilename());
 
             EventBus.emit('show-toast', {
                 severity: 'success',

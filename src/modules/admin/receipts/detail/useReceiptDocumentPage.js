@@ -1,11 +1,6 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { showApiErrorToast } from '@/utils/apiError';
-import {
-    getBillingDocumentMeta,
-    renderReceiptDocumentBody,
-    renderReceiptDocumentLead,
-} from '@/helpers/documents/renderBillingDocument';
 import { useReceiptStore } from '../store';
 import { useReceiptDocument } from '@/composables/admin/documents/useReceiptDocument';
 import { useReceiptDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
@@ -21,19 +16,26 @@ export default function useReceiptDocumentPage() {
         receipt_number: '',
         payment_id: null,
         status: '',
+        approval_status: '',
         issued_at: '',
         customer_name: '',
         customer_email: '',
         customer_phone: '',
         customer_nrc: '',
         invoice_number: '',
+        invoice_amount: 0,
+        paid_amount: 0,
+        balance: 0,
         payment_amount: '',
         payment_method_name: '',
+        payment_method_type: '',
         payment_date: '',
         building_name: '',
         room_number: '',
+        items: [],
         created_by_name: '',
         approved_by_name: '',
+        approved_at: '',
         created_at: '',
     });
 
@@ -60,6 +62,7 @@ export default function useReceiptDocumentPage() {
 
             if (response?.data) {
                 Object.assign(state, response.data);
+                state.items = response.data.items || [];
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load receipt document.');
@@ -90,13 +93,8 @@ export default function useReceiptDocumentPage() {
         printPdf,
         printContract: printPdf,
         sendEmail,
-        sheetProps: {
-            document,
-            documentTitle: 'Payment Receipt',
-            referenceLabel: 'Receipt No.',
-            getMeta: getBillingDocumentMeta,
-            renderLead: renderReceiptDocumentLead,
-            renderBody: renderReceiptDocumentBody,
-        },
+        canSendEmail: computed(() => (
+            state.approval_status === 'approved' && state.status === 'issued'
+        )),
     };
 }

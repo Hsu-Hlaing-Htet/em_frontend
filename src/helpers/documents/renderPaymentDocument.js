@@ -1,4 +1,4 @@
-import { formatCurrency, getStatusLabel } from '@/helpers/documents/billingDocumentHelpers';
+import { formatCurrency } from '@/helpers/documents/billingDocumentHelpers';
 import {
     formatBillingDocumentDate,
     renderBillingDocumentBody,
@@ -9,10 +9,17 @@ const PAYMENT_COLUMNS = [
     { label: 'Invoice No', key: 'invoice_number', align: 'left' },
     { label: 'Payment Date', key: 'payment_date', align: 'left' },
     { label: 'Payment Method', key: 'payment_method_name', align: 'left' },
-    { label: 'Paid Amount', key: 'amount', align: 'right' },
     { label: 'Reference No', key: 'reference_number', align: 'left' },
-    { label: 'Status', key: 'status', align: 'left' },
+    { label: 'Paid Amount', key: 'amount', align: 'right' },
 ];
+
+function buildPaymentColumns(rows = []) {
+    const hasReference = rows.some((row) => hasBillingValue(row.reference_number));
+
+    return hasReference
+        ? PAYMENT_COLUMNS
+        : PAYMENT_COLUMNS.filter((column) => column.key !== 'reference_number');
+}
 
 export function renderPaymentDocumentLead() {
     return '';
@@ -23,16 +30,19 @@ export function renderPaymentDocumentBody(document) {
         return '';
     }
 
+    const rows = document.paymentRows || [];
+
     return renderBillingDocumentBody({
         customerInfo: document.customerInfo || {},
         tables: [{
-            columns: PAYMENT_COLUMNS,
-            rows: document.paymentRows || [],
+            columns: buildPaymentColumns(rows),
+            rows,
             emptyMessage: 'No payment details recorded.',
-            totalLabel: document.amountPaid?.label || 'Total',
+            totalLabel: document.amountPaid?.label || 'Amount Paid',
             totalValue: document.amountPaid?.amount,
             minWidth: '40rem',
         }],
+        authorization: document.authorization,
         summaryNote: document.summaryNote,
     });
 }
@@ -59,4 +69,4 @@ export function buildPaymentSummaryNote(state) {
     return parts.join(' ');
 }
 
-export { formatBillingDocumentDate, formatCurrency, getStatusLabel };
+export { formatBillingDocumentDate, formatCurrency };

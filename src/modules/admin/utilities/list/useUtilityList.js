@@ -1,8 +1,10 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { UTILITY_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 import { useUtilityStore } from '../store';
 
 export const useUtilityList = () => {
@@ -93,6 +95,43 @@ export const useUtilityList = () => {
         }, 500),
     );
 
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Utilities',
+        filenameBase: 'utilities',
+        columns: UTILITY_EXPORT_COLUMNS,
+        emptyMessage: 'No utilities available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+            status: statusFilter.value || undefined,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({
+            customer_name: item.customer_name || '',
+            room_number: item.room_number || item.room?.room_number || '',
+            total_amount: item.total_amount,
+            status: item.status,
+            created_by_name: item.created_by_name || item.created_by || '',
+            created_at: item.created_at,
+        }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+            { label: 'Status', value: statusFilter.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         utilities,
         errors,
@@ -106,5 +145,11 @@ export const useUtilityList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
     };
 };

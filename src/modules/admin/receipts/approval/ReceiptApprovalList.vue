@@ -26,28 +26,57 @@
                     <AdminListFilters
                         title="Receipt Approvals"
                         :search="search"
-                        search-placeholder="Search receipt number..."
+                        search-placeholder="Search receipt #, payment ref, invoice #, or customer..."
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
+                        <Dropdown
+                            v-model="buildingId"
+                            :options="buildingOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Building"
+                            show-clear
+                            class="w-44"
+                        />
+                        <Dropdown
+                            v-model="roomId"
+                            :options="roomOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Room"
+                            :disabled="!buildingId"
+                            show-clear
+                            class="w-36"
+                        />
                         <Calendar
-                            v-model="dateFrom"
-                            placeholder="From date"
+                            v-model="issuedFrom"
+                            placeholder="Issued from"
                             date-format="yy-mm-dd"
                             show-icon
                             class="w-40"
                         />
                         <Calendar
-                            v-model="dateTo"
-                            placeholder="To date"
+                            v-model="issuedTo"
+                            placeholder="Issued to"
                             date-format="yy-mm-dd"
                             show-icon
                             class="w-40"
                         />
+                                            <template #actions>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+                        </template>
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No draft receipts found.</template>
+                <template #empty>No pending receipts found.</template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
                 <Column field="receipt_number" header="Receipt #" :sortable="true" style="min-width: 160px">
@@ -60,14 +89,41 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="invoice_number" header="Invoice #" :sortable="true" style="min-width: 140px" />
-                <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 160px" />
-                <Column header="Actions" :exportable="false" style="min-width: 80px">
+                <Column field="customer_name" header="Customer Name" style="min-width: 150px" />
+                <Column field="property_unit" header="Property/Unit" style="min-width: 170px" />
+                <Column header="Invoice Amount" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.invoice_amount) }}
+                    </template>
+                </Column>
+                <Column header="Paid Amount" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.paid_amount ?? data.amount) }}
+                    </template>
+                </Column>
+                <Column header="Balance" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.balance) }}
+                    </template>
+                </Column>
+                <Column header="Payment Type" style="min-width: 110px">
+                    <template #body="{ data }">
+                        {{ formatPaymentTypeLabel(data.payment_type) }}
+                    </template>
+                </Column>
+
+                <Column field="payment_date" header="Payment Date" style="min-width: 120px" />
+                <Column field="payment_method_name" header="Payment Method" style="min-width: 130px" />
+                <Column header="Status" style="min-width: 110px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.display_status || data.status" />
+                    </template>
+                </Column>
+                <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions
-                            :can-reject="false"
-                            approve-label="Issue"
                             @approve="approveFromList(data)"
+                            @reject="rejectFromList(data)"
                         />
                     </template>
                 </Column>
@@ -80,12 +136,18 @@
 
 <script>
 import { defineComponent } from 'vue';
+import { useConfirm } from 'primevue/useconfirm';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
+import { formatCurrency } from '@/utils/formatter';
+import { formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
 import { useReceiptApprovalList } from './useReceiptApprovalList';
 
 export default defineComponent({
@@ -93,21 +155,37 @@ export default defineComponent({
     components: {
         DataTable,
         Column,
+        Dropdown,
         Calendar,
         Loading,
         AdminListFilters,
-        ApprovalListActions,
-    },
+        StatusBadge,
+        ApprovalListActions, ListExportActions },
     setup() {
+        const confirm = useConfirm();
         const list = useReceiptApprovalList();
 
         const approveFromList = (item) => {
             list.approveItem(item);
         };
 
+        const rejectFromList = (item) => {
+            confirm.require({
+                message: 'Are you sure you want to reject this receipt?',
+                header: 'Please confirm',
+                icon: 'pi pi-exclamation-triangle',
+                acceptLabel: 'Yes, reject',
+                rejectLabel: 'Cancel',
+                accept: () => list.rejectItem(item),
+            });
+        };
+
         return {
             ...list,
+            formatCurrency,
+            formatPaymentTypeLabel,
             approveFromList,
+            rejectFromList,
         };
     },
 });

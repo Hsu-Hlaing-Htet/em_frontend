@@ -22,61 +22,77 @@
                 @page="onPage($event)"
                 @sort="onSort($event)"
             >
-                <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Rooms</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="relative">
-                                <i
-                                    class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
-                                />
+            <template #header>
+    <div class="flex flex-col gap-3">
+        <!-- First row -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="m-0 text-md">All Rooms</p>
 
-                                <InputText
-                                    v-model="search"
-                                    placeholder="Search room number, building..."
-                                    class="w-72 !pl-10"
-                                />
-                            </div>
+            <div class="flex flex-wrap items-center justify-end gap-2">
+                <div class="relative">
+                    <i
+                        class="pi pi-search absolute left-3 top-1/2 z-10
+                               -translate-y-1/2 text-[var(--admin-text-muted)]"
+                    />
 
-                            <Dropdown
-                                v-model="selectedBuilding"
-                                :options="buildingOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="All Buildings"
-                                class="w-52"
-                            />
+                    <InputText
+                        v-model="search"
+                        placeholder="Search room number, building..."
+                        class="w-72 !pl-10"
+                    />
+                </div>
 
-                            <Dropdown
-                                v-model="selectedType"
-                                :options="typeOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="All Types"
-                                class="w-40"
-                            />
+                <Dropdown
+                    v-model="selectedBuilding"
+                    :options="buildingOptions"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="All Buildings"
+                    class="w-52"
+                />
 
-                            <Dropdown
-                                v-model="selectedStatus"
-                                :options="statusOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="All Status"
-                                class="w-40"
-                            />
+                <Dropdown
+                    v-model="selectedType"
+                    :options="typeOptions"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="All Types"
+                    class="w-40"
+                />
 
-                            <Button
-                                label="Reset"
-                                @click="resetSearch"
-                            />
+                <Dropdown
+                    v-model="selectedStatus"
+                    :options="statusOptions"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="All Status"
+                    class="w-40"
+                />
 
-                            <router-link :to="{ name: 'newRoom' }">
-                                <Button label="Create" />
-                            </router-link>
-                        </div>
-                    </div>
-                </template>
+                <Button
+                    label="Reset"
+                    @click="resetSearch"
+                />
 
+                <router-link :to="{ name: 'newRoom' }">
+                    <Button label="Create" />
+                </router-link>
+            </div>
+        </div>
+
+        <!-- Under Reset / Create -->
+        <div class="flex justify-end">
+            <ListExportActions
+                :loading="isExporting"
+                :disabled="!canExport"
+                @download="downloadList"
+                @export-csv="exportCsv"
+                @export-excel="exportExcel"
+                @print="printList"
+            />
+        </div>
+    </div>
+</template>
                 <template #empty>No rooms found.</template>
                 <template #loading>Loading rooms. Please wait.</template>
 
@@ -153,12 +169,13 @@ import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useRoomList } from './useRoomList';
 
 export default defineComponent({
     name: 'RoomList',
-    components: { DataTable, Column, InputText, Dropdown, Button, Loading, StatusBadge },
+    components: { DataTable, Column, InputText, Dropdown, Button, Loading, StatusBadge, ListExportActions },
     setup() {
         return useRoomList();
     },

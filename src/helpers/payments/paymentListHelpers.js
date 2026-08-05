@@ -13,6 +13,18 @@ export function formatPaymentTypeLabel(type) {
     return PAYMENT_TYPE_LABELS[type] ?? type;
 }
 
+export function formatPaymentMethodTypeLabel(type) {
+    if (!type) {
+        return '—';
+    }
+
+    return String(type)
+        .split(/[_-]/)
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
+}
+
 export function formatPropertyUnit(item) {
     if (item?.property_unit) {
         return item.property_unit;

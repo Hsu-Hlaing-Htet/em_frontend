@@ -61,6 +61,7 @@
     background: var(--admin-surface-solid);
     border: 1px solid var(--admin-border);
     box-shadow: var(--admin-shadow-soft);
+    overflow: visible;
 }
 
 

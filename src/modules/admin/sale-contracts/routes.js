@@ -8,6 +8,8 @@ const saleContractRoutes = [
                 name: 'saleContractDraftList',
                 component: () => import('@/modules/admin/sale-contracts/draft/SaleDraftList.vue'),
                 meta: {
+                    navKey: 'sale-drafts',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'sale_contract',
                     layout: 'default',
@@ -22,6 +24,8 @@ const saleContractRoutes = [
                 name: 'newSaleContractDraft',
                 component: () => import('@/modules/admin/sale-contracts/draft/NewSaleDraft.vue'),
                 meta: {
+                    navKey: 'sale-drafts',
+                    parentNavKey: 'contracts',
                     action: 'create',
                     resource: 'sale_contract',
                     layout: 'default',
@@ -37,6 +41,8 @@ const saleContractRoutes = [
                 name: 'editSaleContractDraft',
                 component: () => import('@/modules/admin/sale-contracts/draft/EditSaleDraft.vue'),
                 meta: {
+                    navKey: 'sale-drafts',
+                    parentNavKey: 'contracts',
                     action: 'update',
                     resource: 'sale_contract',
                     layout: 'default',
@@ -52,6 +58,8 @@ const saleContractRoutes = [
                 name: 'saleContractDraftPdf',
                 component: () => import('@/modules/admin/sale-contracts/draft/ContractPdf.vue'),
                 meta: {
+                    navKey: 'sale-drafts',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'sale_contract',
                     layout: 'default',
@@ -68,6 +76,8 @@ const saleContractRoutes = [
                 name: 'showSaleContractDraft',
                 component: () => import('@/modules/admin/sale-contracts/draft/ShowSaleDraft.vue'),
                 meta: {
+                    navKey: 'sale-drafts',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'sale_contract',
                     layout: 'default',
@@ -83,6 +93,8 @@ const saleContractRoutes = [
                 name: 'activeSaleList',
                 component: () => import('@/modules/admin/sale-contracts/active/ActiveSaleList.vue'),
                 meta: {
+                    navKey: 'active-sales',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'sale_contract',
                     layout: 'default',
@@ -97,6 +109,8 @@ const saleContractRoutes = [
                 name: 'showActiveSale',
                 component: () => import('@/modules/admin/sale-contracts/active/ShowActiveSale.vue'),
                 meta: {
+                    navKey: 'active-sales',
+                    parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'sale_contract',
                     layout: 'default',
@@ -118,6 +132,8 @@ const saleContractRoutes = [
                 name: 'saleContractApprovalList',
                 component: () => import('@/modules/admin/sale-contracts/approval/SaleContractApprovalList.vue'),
                 meta: {
+                    navKey: 'approval-sale-contracts',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'sale_contract_approval',
                     layout: 'default',
@@ -132,6 +148,8 @@ const saleContractRoutes = [
                 name: 'showSaleContractApproval',
                 component: () => import('@/modules/admin/sale-contracts/approval/ShowSaleContractApproval.vue'),
                 meta: {
+                    navKey: 'approval-sale-contracts',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'sale_contract_approval',
                     layout: 'default',

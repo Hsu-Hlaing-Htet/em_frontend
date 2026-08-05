@@ -77,6 +77,8 @@
                                 <Button label="Create" />
                             </router-link>
                             <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
                                 @download="downloadList"
                                 @export-csv="exportCsv"
                                 @export-excel="exportExcel"

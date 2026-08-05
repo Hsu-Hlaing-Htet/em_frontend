@@ -1,9 +1,11 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useRoleStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { ROLE_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useRoleList = () => {
     const dt = ref();
@@ -90,6 +92,34 @@ export const useRoleList = () => {
         }, 500),
     );
 
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Roles',
+        filenameBase: 'roles',
+        columns: ROLE_EXPORT_COLUMNS,
+        emptyMessage: 'No roles available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({ name: item.name, created_at: item.created_at }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         roles,
         errors,
@@ -102,5 +132,11 @@ export const useRoleList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
     };
 };

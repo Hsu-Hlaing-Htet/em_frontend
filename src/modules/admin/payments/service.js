@@ -36,12 +36,16 @@ const service = {
     },
 
     approve: async (params) => {
-        const result = await api.post(`${endpoint.payments}/${params.id}/approve`);
+        const result = await api.post(`${endpoint.payments}/${params.id}/approve`, {
+            amount: params.amount,
+        });
         return result.data;
     },
 
     reject: async (params) => {
-        const result = await api.post(`${endpoint.payments}/${params.id}/reject`);
+        const result = await api.post(`${endpoint.payments}/${params.id}/reject`, {
+            rejection_reason: params.rejection_reason,
+        });
         return result.data;
     },
 
@@ -51,14 +55,6 @@ const service = {
         const result = await api.post(`${endpoint.payments}/${params.id}/proof`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
-        return result.data;
-    },
-
-    sendDocumentEmail: async (params) => {
-        const result = await api.post(`${endpoint.payments}/${params.id}/document/email`, {
-            email: params.email,
-        });
-
         return result.data;
     },
 };

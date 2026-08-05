@@ -1,5 +1,6 @@
 import api from '@/libs/axios';
 import { endpoint } from '@/services/endpoint';
+import { downloadPdfResponse, PDF_DOWNLOAD_HEADERS } from '@/utils/downloadPdfResponse';
 
 const service = {
     getAll: async (params) => {
@@ -33,6 +34,15 @@ const service = {
     issue: async (params) => {
         const result = await api.post(`${endpoint.invoices}/${params.id}/issue`);
         return result.data;
+    },
+
+    downloadDocument: async (params) => {
+        const response = await api.get(`${endpoint.invoices}/${params.id}/document/download`, {
+            responseType: 'blob',
+            headers: PDF_DOWNLOAD_HEADERS,
+        });
+
+        return downloadPdfResponse(response, params.fallbackFilename || 'invoice.pdf');
     },
 
     sendDocumentEmail: async (params) => {

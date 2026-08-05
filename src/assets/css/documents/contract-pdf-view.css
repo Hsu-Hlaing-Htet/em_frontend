@@ -45,9 +45,12 @@
     padding: 3.5rem clamp(2rem, 5vw, 5rem);
 }
 
-.pdf-frame .pdf-sheet {
-    width: 794px;
-    max-width: 794px;
+.pdf-frame .pdf-sheet,
+.pdf-frame .contract-doc-sheet,
+.pdf-frame .invoice-doc,
+.pdf-frame .receipt-doc {
+    width: 210mm;
+    max-width: 210mm;
     flex-shrink: 0;
     margin: 0;
     background: #ffffff;
@@ -55,6 +58,11 @@
     box-shadow:
         0 1px 2px rgba(0, 0, 0, 0.04),
         0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.pdf-frame .invoice-doc,
+.pdf-frame .receipt-doc {
+    background: #fbf8f4;
 }
 
 @media (max-width: 768px) {
@@ -70,14 +78,31 @@
         min-height: min(100%, calc(100vh - var(--admin-topbar-height) - 10rem));
     }
 
-    .pdf-frame .pdf-sheet {
+    .pdf-frame .pdf-sheet,
+    .pdf-frame .contract-doc-sheet,
+    .pdf-frame .invoice-doc,
+    .pdf-frame .receipt-doc {
         width: 100%;
-        max-width: 794px;
+        max-width: 210mm;
     }
 }
 
 @media print {
+    .no-print,
+    .pdf-bar,
+    .pdf-actions,
+    .pdf-view > :not(.pdf-canvas),
+    .p-breadcrumb,
+    .admin-breadcrumb,
+    .admin-sidebar,
+    .admin-topbar,
+    header.pdf-bar {
+        display: none !important;
+    }
+
     .pdf-view {
+        width: auto !important;
+        margin: 0 !important;
         min-height: auto;
         background: #ffffff !important;
     }
@@ -85,26 +110,46 @@
     .pdf-canvas {
         background: #ffffff !important;
         padding: 0 !important;
+        overflow: visible !important;
     }
 
     .pdf-frame {
         padding: 0 !important;
         min-height: auto !important;
+        display: block !important;
     }
 
-    .pdf-frame .pdf-sheet {
+    .pdf-frame .pdf-sheet,
+    .pdf-frame .contract-doc-sheet,
+    .pdf-frame .invoice-doc,
+    .pdf-frame .receipt-doc {
         box-shadow: none !important;
         border: none !important;
-        max-width: none;
-        width: 100%;
+        width: 210mm !important;
+        max-width: 210mm !important;
+        min-height: auto !important;
+        margin: 0 auto !important;
     }
 
     [data-admin-layout],
-    .admin-panel {
+    .admin-panel,
+    .admin-layout,
+    .admin-sidebar,
+    .admin-topbar {
         background: #ffffff !important;
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
+    }
+
+    .admin-sidebar,
+    .admin-topbar,
+    .p-breadcrumb {
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        left: -9999px !important;
     }
 }

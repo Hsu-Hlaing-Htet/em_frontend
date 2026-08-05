@@ -1,4 +1,4 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
@@ -7,6 +7,8 @@ import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import { useRoomStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { ROOM_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useRoomList = () => {
     const dt = ref();
@@ -115,6 +117,51 @@ export const useRoomList = () => {
         }, 500),
     );
 
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Rooms',
+        filenameBase: 'rooms',
+        columns: ROOM_EXPORT_COLUMNS,
+        emptyMessage: 'No rooms available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+            building_id: selectedBuilding.value,
+            type: selectedType.value,
+            status: selectedStatus.value,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({
+            building_name: item.building_name || item.building?.building_name || '',
+            room_number: item.room_number,
+            floor_number: item.floor_number,
+            area_sqft: item.area_sqft,
+            type: item.type,
+            status: item.status,
+            sale_price: item.sale_price,
+            rent_price: item.rent_price,
+            rent_deposit_price: item.rent_deposit_price,
+            booking_deposit_price: item.booking_deposit_price,
+        }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+            { label: 'Building', value: buildingOptions.value.find((o) => o.value === selectedBuilding.value)?.label || '' },
+            { label: 'Type', value: selectedType.value || '' },
+            { label: 'Status', value: selectedStatus.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         rooms,
         errors,
@@ -134,5 +181,11 @@ export const useRoomList = () => {
         resetSearch,
         showConfirmDialog,
         formatCurrency,
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
     };
 };

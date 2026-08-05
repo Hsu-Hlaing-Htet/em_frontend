@@ -24,6 +24,7 @@ export default function usePaymentDocumentPage() {
         amount: '',
         note: '',
         payment_date: '',
+        reference_number: '',
         status: '',
         customer_name: '',
         customer_email: '',
@@ -39,10 +40,8 @@ export default function usePaymentDocumentPage() {
 
     const { document } = usePaymentDocument(state);
     const {
-        downloadPdf,
         exportPdf,
         printPdf,
-        sendEmail,
     } = usePaymentDocumentActions(state, () => document.value, service);
 
     const backRoute = computed(() => (
@@ -85,10 +84,8 @@ export default function usePaymentDocumentPage() {
         isLoading,
         document,
         backRoute,
-        downloadPdf,
         exportPdf,
         printPdf,
-        sendEmail,
         sheetProps: {
             document,
             documentTitle: 'Payment Confirmation',

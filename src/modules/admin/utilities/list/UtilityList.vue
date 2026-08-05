@@ -44,6 +44,14 @@
                             <router-link :to="{ name: 'newUtility' }">
                                 <Button label="Create" />
                             </router-link>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
                         </template>
                     </AdminListFilters>
                 </template>
@@ -69,7 +77,11 @@
                         <StatusBadge :value="data.status" />
                     </template>
                 </Column>
-                <Column field="created_by" header="Created By" :sortable="true" style="min-width: 120px" />
+                <Column field="created_by_name" header="Created By" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ data.created_by_name || '—' }}
+                    </template>
+                </Column>
                 <Column field="created_at" header="Created At" :sortable="true" style="min-width: 160px" />
                 <Column header="Actions" :exportable="false" style="width: 150px">
                     <template #body="{ data }">
@@ -98,6 +110,7 @@ import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { UTILITY_STATUS_OPTIONS } from '@/constants/constant';
@@ -112,8 +125,7 @@ export default defineComponent({
         Button,
         Loading,
         AdminListFilters,
-        StatusBadge,
-    },
+        StatusBadge, ListExportActions },
     setup() {
         const list = useUtilityList();
 

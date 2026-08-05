@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!isLoading" class="pdf-view">
+    <div v-if="!isLoading" class="min-h-screen">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
                 <Button
@@ -33,14 +33,7 @@
 
         <div class="pdf-canvas">
             <div class="pdf-frame">
-                <BillingDocumentSheet
-                    :document="document"
-                    :document-title="sheetProps.documentTitle"
-                    :reference-label="sheetProps.referenceLabel"
-                    :get-meta="sheetProps.getMeta"
-                    :render-lead="sheetProps.renderLead"
-                    :render-body="sheetProps.renderBody"
-                />
+                <InvoiceDocumentSheet :document="document" />
             </div>
         </div>
     </div>
@@ -52,12 +45,12 @@
 import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
-import BillingDocumentSheet from '@/components/admin/documents/BillingDocumentSheet.vue';
+import InvoiceDocumentSheet from '@/components/admin/documents/InvoiceDocumentSheet.vue';
 import useInvoiceDocumentPage from './useInvoiceDocumentPage';
 
 export default defineComponent({
     name: 'InvoiceDocument',
-    components: { Button, Loading, BillingDocumentSheet },
+    components: { Button, Loading, InvoiceDocumentSheet },
     setup() {
         return useInvoiceDocumentPage();
     },

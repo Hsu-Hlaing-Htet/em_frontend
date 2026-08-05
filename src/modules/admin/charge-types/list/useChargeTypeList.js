@@ -1,10 +1,12 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { useChargeTypeStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { CHARGE_TYPE_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useChargeTypeList = () => {
     const dt = ref();
@@ -121,6 +123,34 @@ export const useChargeTypeList = () => {
         }, 500),
     );
 
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Charge Types',
+        filenameBase: 'charge-types',
+        columns: CHARGE_TYPE_EXPORT_COLUMNS,
+        emptyMessage: 'No charge types available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({ name: item.name, status: item.status, created_at: item.created_at }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         chargeTypes,
         errors,
@@ -133,6 +163,12 @@ export const useChargeTypeList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
-        toggleStatus,
+                isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+toggleStatus,
     };
 };

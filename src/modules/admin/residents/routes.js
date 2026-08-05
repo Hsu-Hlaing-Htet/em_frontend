@@ -8,6 +8,8 @@ const routes = [
                 name: 'residentList',
                 component: () => import('@/modules/admin/residents/list/ResidentList.vue'),
                 meta: {
+                    navKey: 'residents',
+                    parentNavKey: 'users',
                     action: 'view',
                     resource: 'user',
                     layout: 'default',
@@ -22,6 +24,8 @@ const routes = [
                 name: 'newResident',
                 component: () => import('@/modules/admin/residents/entry/NewResident.vue'),
                 meta: {
+                    navKey: 'residents',
+                    parentNavKey: 'users',
                     action: 'create',
                     resource: 'user',
                     layout: 'default',
@@ -37,6 +41,8 @@ const routes = [
                 name: 'editResident',
                 component: () => import('@/modules/admin/residents/entry/EditResident.vue'),
                 meta: {
+                    navKey: 'residents',
+                    parentNavKey: 'users',
                     action: 'update',
                     resource: 'user',
                     layout: 'default',
@@ -52,6 +58,8 @@ const routes = [
                 name: 'showResident',
                 component: () => import('@/modules/admin/residents/detail/ShowResident.vue'),
                 meta: {
+                    navKey: 'residents',
+                    parentNavKey: 'users',
                     action: 'view',
                     resource: 'user',
                     layout: 'default',

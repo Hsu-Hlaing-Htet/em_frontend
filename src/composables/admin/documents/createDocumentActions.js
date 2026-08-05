@@ -20,14 +20,8 @@ export function createDocumentActions({
     } = messages;
 
     const downloadPdf = async () => {
-        const document = getDocument();
-
-        if (!document) {
-            return;
-        }
-
         try {
-            downloadDocument(document, getFilename());
+            await downloadDocument();
 
             EventBus.emit('show-toast', {
                 severity: 'success',

@@ -38,7 +38,6 @@ export default function useCustomerShowInvoice() {
 
     const paymentForm = reactive({
         payment_method_id: null,
-        amount: null,
         payment_date: new Date(),
         note: '',
     });
@@ -120,10 +119,6 @@ export default function useCustomerShowInvoice() {
                 invoicePayments.value = Array.isArray(data.payments)
                     ? data.payments.map((payment) => ({ ...payment }))
                     : [];
-                paymentForm.amount = Math.max(
-                    Number(data.total_amount || 0) - Number(data.paid_amount || 0),
-                    0,
-                ) || null;
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load invoice.');
@@ -137,10 +132,6 @@ export default function useCustomerShowInvoice() {
 
         if (!paymentForm.payment_method_id) {
             errors.record({ payment_method_id: ['Payment method is required.'] });
-        }
-
-        if (!paymentForm.amount || Number(paymentForm.amount) <= 0) {
-            errors.record({ amount: ['Enter a valid payment amount.'] });
         }
 
         if (!paymentForm.payment_date) {
@@ -161,7 +152,6 @@ export default function useCustomerShowInvoice() {
             await paymentStore.submitPayment({
                 invoice_id: state.id,
                 payment_method_id: paymentForm.payment_method_id,
-                amount: paymentForm.amount,
                 payment_date: formatDate(paymentForm.payment_date),
                 note: paymentForm.note,
                 proof: proofFile.value,
@@ -192,7 +182,7 @@ export default function useCustomerShowInvoice() {
         isDownloading.value = true;
 
         try {
-            await store.downloadDocument(state.id, `${state.invoice_number || 'invoice'}.html`);
+            await store.downloadDocument(state.id, `${state.invoice_number || 'invoice'}.pdf`);
             EventBus.emit('show-toast', {
                 severity: 'success',
                 summary: '',

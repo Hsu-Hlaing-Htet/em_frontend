@@ -1,13 +1,7 @@
 <template>
-    <div v-if="!isLoading" class="pdf-view">
+    <div v-if="!isLoading" class="min-h-screen">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
-                <Button
-                    icon="pi pi-download"
-                    label="Download"
-                    severity="secondary"
-                    @click="downloadPdf"
-                />
                 <Button
                     icon="pi pi-print"
                     label="Print"
@@ -19,11 +13,6 @@
                     label="Export"
                     severity="secondary"
                     @click="exportPdf"
-                />
-                <Button
-                    icon="pi pi-envelope"
-                    label="Send Email"
-                    @click="sendEmail"
                 />
                 <router-link :to="backRoute">
                     <Button label="Back" severity="secondary" />

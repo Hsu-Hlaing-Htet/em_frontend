@@ -19,7 +19,7 @@ export function createBillingDocumentActions({
         getFilename: () => getFilename(state),
         printDocument,
         exportDocument,
-        downloadDocument,
+        downloadDocument: () => downloadDocument(state),
         sendEmail: () => sendDocumentEmail(state),
         messages,
     });

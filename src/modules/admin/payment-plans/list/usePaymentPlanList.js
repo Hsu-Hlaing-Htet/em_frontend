@@ -1,10 +1,12 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { usePaymentPlanStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { PAYMENT_PLAN_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const usePaymentPlanList = () => {
     const dt = ref();
@@ -124,6 +126,34 @@ export const usePaymentPlanList = () => {
         }, 500),
     );
 
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Payment Plans',
+        filenameBase: 'payment-plans',
+        columns: PAYMENT_PLAN_EXPORT_COLUMNS,
+        emptyMessage: 'No payment plans available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({ name: item.name, payment_type: item.payment_type, duration_months: item.duration_months, interest_percentage: item.interest_percentage, status: item.status, created_at: item.created_at }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         paymentPlans,
         errors,
@@ -136,6 +166,12 @@ export const usePaymentPlanList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
-        toggleStatus,
+                isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+toggleStatus,
     };
 };

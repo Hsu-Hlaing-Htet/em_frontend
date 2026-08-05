@@ -8,6 +8,7 @@ const routes = [
                 name: 'buildingList',
                 component: () => import('@/modules/admin/buildings/list/BuildingList.vue'),
                 meta: {
+                    navKey: 'buildings',
                     action: 'view',
                     resource: 'building',
                     layout: 'default',
@@ -22,6 +23,7 @@ const routes = [
                 name: 'newBuilding',
                 component: () => import('@/modules/admin/buildings/entry/NewBuilding.vue'),
                 meta: {
+                    navKey: 'buildings',
                     action: 'create',
                     resource: 'building',
                     layout: 'default',
@@ -37,6 +39,7 @@ const routes = [
                 name: 'editBuilding',
                 component: () => import('@/modules/admin/buildings/entry/EditBuilding.vue'),
                 meta: {
+                    navKey: 'buildings',
                     action: 'update',
                     resource: 'building',
                     layout: 'default',
@@ -52,6 +55,7 @@ const routes = [
                 name: 'showBuilding',
                 component: () => import('@/modules/admin/buildings/detail/ShowBuilding.vue'),
                 meta: {
+                    navKey: 'buildings',
                     action: 'view',
                     resource: 'building',
                     layout: 'default',

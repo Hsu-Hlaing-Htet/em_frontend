@@ -1,4 +1,4 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import EventBus from '@/libs/AppEventBus';
@@ -112,6 +112,8 @@ export const useRentContractApprovalList = () => {
     });
 
     const {
+        isExporting,
+        canExport,
         downloadList,
         exportCsv,
         exportExcel,
@@ -135,6 +137,13 @@ export const useRentContractApprovalList = () => {
         },
         mapItem: mapRentListItemFromApi,
         applyFilters: applyExportFilters,
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+            { label: 'Payment Plan', value: (typeof getPaymentTypeLabel === 'function' ? getPaymentTypeLabel(selectedPaymentType.value) : selectedPaymentType.value) || '' },
+            { label: 'From Date', value: dateFrom.value ? String(dateFrom.value).slice(0, 10) : '' },
+            { label: 'To Date', value: dateTo.value ? String(dateTo.value).slice(0, 10) : '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
     });
 
     const approveContract = async (contract) => {
@@ -224,6 +233,8 @@ export const useRentContractApprovalList = () => {
         resetSearch,
         approveContract,
         rejectContract,
+        isExporting,
+        canExport,
         downloadList,
         exportCsv,
         exportExcel,

@@ -1,8 +1,10 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { MAINTENANCE_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 import { useMaintenanceRequestStore } from '../store';
 
 export const useMaintenanceRequestList = () => {
@@ -93,6 +95,36 @@ export const useMaintenanceRequestList = () => {
         }, 500),
     );
 
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Maintenance Requests',
+        filenameBase: 'maintenance-requests',
+        columns: MAINTENANCE_EXPORT_COLUMNS,
+        emptyMessage: 'No maintenance requests available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+            status: statusFilter.value || undefined,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({ title: item.title, room_number: item.room_number || item.room?.room_number || '', user_name: item.user_name || item.user?.name || '', status: item.status, created_at: item.created_at }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+            { label: 'Status', value: statusFilter.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         maintenanceRequests,
         errors,
@@ -106,5 +138,11 @@ export const useMaintenanceRequestList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
     };
 };

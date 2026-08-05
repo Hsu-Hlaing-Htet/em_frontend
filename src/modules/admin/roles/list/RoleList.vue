@@ -44,6 +44,15 @@
                             <router-link :to="{ name: 'newRole' }">
                                 <Button label="Create"  />
                             </router-link>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+
                         </div>
                     </div>
                 </template>
@@ -92,6 +101,7 @@ import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import { useRoleList } from './useRoleList';
 
 export default defineComponent({
@@ -101,8 +111,7 @@ export default defineComponent({
         Column,
         InputText,
         Button,
-        Loading,
-    },
+        Loading, ListExportActions },
     setup() {
         return useRoleList();
     },

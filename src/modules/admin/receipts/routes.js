@@ -8,6 +8,7 @@ const routes = [
                 name: 'receiptList',
                 component: () => import('@/modules/admin/receipts/list/ReceiptList.vue'),
                 meta: {
+                    navKey: 'receipts',
                     action: 'view',
                     resource: 'receipt',
                     layout: 'default',
@@ -22,6 +23,8 @@ const routes = [
                 name: 'receiptApprovalList',
                 component: () => import('@/modules/admin/receipts/approval/ReceiptApprovalList.vue'),
                 meta: {
+                    navKey: 'approval-receipts',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'receipt_approval',
                     layout: 'default',
@@ -37,6 +40,8 @@ const routes = [
                 name: 'showReceiptApproval',
                 component: () => import('@/modules/admin/receipts/detail/ShowReceipt.vue'),
                 meta: {
+                    navKey: 'approval-receipts',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'receipt_approval',
                     layout: 'default',
@@ -54,6 +59,7 @@ const routes = [
                 name: 'receiptDocument',
                 component: () => import('@/modules/admin/receipts/detail/ReceiptDocument.vue'),
                 meta: {
+                    navKey: 'receipts',
                     action: 'view',
                     resource: 'receipt',
                     layout: 'default',
@@ -70,6 +76,7 @@ const routes = [
                 name: 'showReceipt',
                 component: () => import('@/modules/admin/receipts/detail/ShowReceipt.vue'),
                 meta: {
+                    navKey: 'receipts',
                     action: 'view',
                     resource: 'receipt',
                     layout: 'default',

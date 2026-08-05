@@ -1,4 +1,4 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
@@ -142,6 +142,8 @@ export const useSaleDraftList = () => {
     });
 
     const {
+        isExporting,
+        canExport,
         downloadList,
         exportCsv,
         exportExcel,
@@ -165,6 +167,13 @@ export const useSaleDraftList = () => {
         },
         mapItem: mapListItem,
         applyFilters: applyExportFilters,
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+            { label: 'Payment Plan', value: getPaymentTypeLabel(selectedPaymentType.value) || '' },
+            { label: 'From Date', value: dateFrom.value ? String(dateFrom.value).slice(0, 10) : '' },
+            { label: 'To Date', value: dateTo.value ? String(dateTo.value).slice(0, 10) : '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
     });
 
     onMounted(() => {
@@ -199,6 +208,8 @@ export const useSaleDraftList = () => {
         onSort,
         resetSearch,
         showConfirmDialog,
+        isExporting,
+        canExport,
         downloadList,
         exportCsv,
         exportExcel,

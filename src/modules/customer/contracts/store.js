@@ -25,8 +25,8 @@ export const useCustomerContractStore = defineStore('customerContractStore', {
             this.detailResponse = await service.getContract(params);
         },
 
-        downloadDocument(id) {
-            return service.downloadContractDocument(id);
+        downloadDocument(id, fallbackFilename) {
+            return service.downloadContractDocument(id, fallbackFilename);
         },
     },
 });

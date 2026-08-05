@@ -1,9 +1,11 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useBuildingStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { BUILDING_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useBuildingList = () => {
     const dt = ref();
@@ -30,7 +32,7 @@ export const useBuildingList = () => {
         };
     };
 
-    const showConfirmDialog = (id,name) => {
+    const showConfirmDialog = (id, name) => {
         confirmDelete(`Are you sure you want to delete this ${name} building?`, async () => {
             await store.delete({ id });
             await loadingData();
@@ -90,6 +92,39 @@ export const useBuildingList = () => {
         }, 500),
     );
 
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Buildings',
+        filenameBase: 'buildings',
+        columns: BUILDING_EXPORT_COLUMNS,
+        emptyMessage: 'No buildings available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({
+            building_name: item.building_name,
+            location: item.location,
+            description: item.description || '',
+            created_at: item.created_at,
+        }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         buildings,
         errors,
@@ -102,6 +137,11 @@ export const useBuildingList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
-
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
     };
 };

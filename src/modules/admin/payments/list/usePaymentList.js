@@ -1,21 +1,53 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
+import { parseDate } from '@/utils/formatter';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import {
+    formatPropertyUnit,
+    resolvePaymentListStatus,
+} from '@/helpers/payments/paymentListHelpers';
+import {
+    omitEmptyParams,
+    queriesEqual,
+    readQueryDate,
+    readQueryNumber,
+    readQueryString,
+    toQueryDate,
+} from '@/helpers/lists/listQuery';
+import { useBuildingRoomFilterOptions } from '@/composables/admin/useBuildingRoomFilterOptions';
+import { useListExport } from '@/composables/admin/useListExport';
+import { PAYMENT_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
+import { service as paymentMethodService } from '@/modules/admin/payment-methods/service';
 import { usePaymentStore } from '../store';
 
 export const usePaymentList = () => {
+    const route = useRoute();
+    const router = useRouter();
     const dt = ref();
     const search = ref('');
-    const billingStatusFilter = ref(null);
-    const paymentTypeFilter = ref(null);
+    const buildingId = ref(null);
+    const roomId = ref(null);
+    const paymentMethodId = ref(null);
+    const paymentDateFrom = ref(null);
+    const paymentDateTo = ref(null);
+    const paymentMethodOptions = ref([]);
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const payments = ref([]);
     const lazyParams = ref({});
+    const isHydratingFromUrl = ref(true);
+    const isWritingQuery = ref(false);
     const store = usePaymentStore();
     const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
+    const {
+        buildingOptions,
+        roomOptions,
+        loadBuildings,
+        loadRooms,
+    } = useBuildingRoomFilterOptions(buildingId);
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -28,6 +60,52 @@ export const usePaymentList = () => {
             rows: dt.value?.rows || 10,
             first: 0,
         };
+    };
+
+    const mapPaymentRow = (item) => ({
+        ...item,
+        property_unit: item.property_unit || formatPropertyUnit(item),
+        display_status: resolvePaymentListStatus(item),
+        paid_amount: item.paid_amount ?? item.amount,
+        balance: item.balance ?? 0,
+        payment_method_name: item.payment_method_name || '',
+        customer_name: item.customer_name || '',
+        invoice_number: item.invoice_number || '',
+        invoice_amount: item.invoice_amount ?? 0,
+    });
+
+    const buildFilterQuery = () => omitEmptyParams({
+        search: search.value?.trim() || undefined,
+        building_id: buildingId.value || undefined,
+        room_id: roomId.value || undefined,
+        payment_method_id: paymentMethodId.value || undefined,
+        payment_date_from: toQueryDate(paymentDateFrom.value),
+        payment_date_to: toQueryDate(paymentDateTo.value),
+    });
+
+    const applyQueryToFilters = (query) => {
+        search.value = readQueryString(query, 'search', '');
+        buildingId.value = readQueryNumber(query, 'building_id');
+        roomId.value = readQueryNumber(query, 'room_id');
+        paymentMethodId.value = readQueryNumber(query, 'payment_method_id');
+        paymentDateFrom.value = readQueryDate(query, 'payment_date_from', parseDate);
+        paymentDateTo.value = readQueryDate(query, 'payment_date_to', parseDate);
+    };
+
+    const syncFiltersToUrl = async () => {
+        const nextQuery = buildFilterQuery();
+
+        if (queriesEqual(nextQuery, route.query)) {
+            return;
+        }
+
+        isWritingQuery.value = true;
+
+        try {
+            await router.replace({ query: nextQuery });
+        } finally {
+            isWritingQuery.value = false;
+        }
     };
 
     const showConfirmDialog = (id) => {
@@ -46,45 +124,129 @@ export const usePaymentList = () => {
     const loadingData = async () => {
         isLoading.value = true;
 
-        await store.fetchAll({
+        await store.fetchAll(omitEmptyParams({
             page: lazyParams.value.page + 1,
             per_page: lazyParams.value.rows,
-            search: search.value,
-            billing_status: billingStatusFilter.value || undefined,
-            payment_type: paymentTypeFilter.value || undefined,
-        });
+            ...buildFilterQuery(),
+        }));
 
         const response = store.getAllResponse;
 
         if (response) {
             const { data } = response;
-            payments.value = data.data || [];
+            payments.value = (data.data || []).map(mapPaymentRow);
             totalRecords.value = response.data.total;
         }
 
         isLoading.value = false;
     };
 
-    onMounted(() => {
-        resetPagination();
-        loadingData();
-    });
-
-    const resetSearch = () => {
-        resetPagination();
-        search.value = '';
-        billingStatusFilter.value = null;
-        paymentTypeFilter.value = null;
-        loadingData();
+    const loadPaymentMethods = async () => {
+        const response = await paymentMethodService.getAll({ per_page: 100, status: 'active' });
+        paymentMethodOptions.value = (response?.data?.data || []).map((method) => ({
+            label: method.name,
+            value: method.id,
+        }));
     };
 
+    const reloadFromFilters = useDebounceFn(async () => {
+        if (isHydratingFromUrl.value) {
+            return;
+        }
+
+        resetPagination();
+        await syncFiltersToUrl();
+        await loadingData();
+    }, 500);
+
+    const resetSearch = async () => {
+        search.value = '';
+        buildingId.value = null;
+        roomId.value = null;
+        paymentMethodId.value = null;
+        paymentDateFrom.value = null;
+        paymentDateTo.value = null;
+        roomOptions.value = [];
+        resetPagination();
+        await syncFiltersToUrl();
+        await loadingData();
+    };
+
+    watch(buildingId, (nextBuildingId, previousBuildingId) => {
+        if (isHydratingFromUrl.value) {
+            return;
+        }
+
+        if (nextBuildingId !== previousBuildingId) {
+            roomId.value = null;
+        }
+    });
+
     watch(
-        [search, billingStatusFilter, paymentTypeFilter],
-        useDebounceFn(() => {
-            resetPagination();
-            loadingData();
-        }, 500),
+        [
+            search,
+            buildingId,
+            roomId,
+            paymentMethodId,
+            paymentDateFrom,
+            paymentDateTo,
+        ],
+        () => {
+            reloadFromFilters();
+        },
     );
+
+    watch(() => route.query, async (query) => {
+        if (isWritingQuery.value || isHydratingFromUrl.value) {
+            return;
+        }
+
+        applyQueryToFilters(query);
+        await loadRooms(buildingId.value);
+        resetPagination();
+        await loadingData();
+    });
+
+    onMounted(async () => {
+        resetPagination();
+        applyQueryToFilters(route.query);
+        await Promise.all([loadBuildings(), loadPaymentMethods()]);
+        await loadRooms(buildingId.value);
+        isHydratingFromUrl.value = false;
+        await loadingData();
+    });
+
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Payments',
+        filenameBase: 'payments',
+        columns: PAYMENT_EXPORT_COLUMNS,
+        emptyMessage: 'No payments available to export.',
+        getFetchParams: () => ({
+            ...buildFilterQuery(),
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(omitEmptyParams(params));
+            return store.getAllResponse;
+        },
+        mapItem: mapPaymentRow,
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+            { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
+            { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
+            { label: 'Payment Method', value: paymentMethodOptions.value.find((o) => o.value === paymentMethodId.value)?.label || '' },
+            { label: 'Payment From', value: toQueryDate(paymentDateFrom.value) || '' },
+            { label: 'Payment To', value: toQueryDate(paymentDateTo.value) || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
 
     return {
         payments,
@@ -94,10 +256,22 @@ export const usePaymentList = () => {
         lazyParams,
         dt,
         search,
-        billingStatusFilter,
-        paymentTypeFilter,
+        buildingId,
+        roomId,
+        paymentMethodId,
+        paymentDateFrom,
+        paymentDateTo,
+        buildingOptions,
+        roomOptions,
+        paymentMethodOptions,
         onPage,
         resetSearch,
         showConfirmDialog,
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
     };
 };

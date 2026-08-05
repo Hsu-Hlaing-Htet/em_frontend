@@ -8,6 +8,11 @@ const CHART_PAYLOAD_KEYS = [
     'invoice_stats',
     'revenue_chart',
     'revenue_summary',
+    'revenue_collections',
+    'receivable_aging',
+    'occupancy_by_building',
+    'upcoming_contracts',
+    'pending_approval_breakdown',
 ];
 
 /**

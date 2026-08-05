@@ -8,6 +8,7 @@ const routes = [
                 name: 'roomList',
                 component: () => import('@/modules/admin/rooms/list/RoomList.vue'),
                 meta: {
+                    navKey: 'rooms',
                     action: 'view',
                     resource: 'room',
                     layout: 'default',
@@ -22,6 +23,7 @@ const routes = [
                 name: 'newRoom',
                 component: () => import('@/modules/admin/rooms/entry/NewRoom.vue'),
                 meta: {
+                    navKey: 'rooms',
                     action: 'create',
                     resource: 'room',
                     layout: 'default',
@@ -37,6 +39,7 @@ const routes = [
                 name: 'editRoom',
                 component: () => import('@/modules/admin/rooms/entry/EditRoom.vue'),
                 meta: {
+                    navKey: 'rooms',
                     action: 'update',
                     resource: 'room',
                     layout: 'default',
@@ -52,6 +55,7 @@ const routes = [
                 name: 'showRoom',
                 component: () => import('@/modules/admin/rooms/detail/ShowRoom.vue'),
                 meta: {
+                    navKey: 'rooms',
                     action: 'view',
                     resource: 'room',
                     layout: 'default',

@@ -3,6 +3,7 @@ import {
     formatBillingDocumentDate,
     hasBillingValue,
 } from '@/helpers/billing/billingDetailHelpers';
+import { buildDocumentAuthorizationRows } from './billingDocumentContent';
 import { escapeHtml } from './htmlUtils';
 
 export { formatBillingDocumentDate };
@@ -39,12 +40,23 @@ export function renderBillingTableSection({
     emptyMessage = 'No records found.',
     totalLabel = 'Total',
     totalValue = '',
-    minWidth = '44rem',
+    minWidth = '100%',
+    rowspanKeys = [],
+    tableClass = '',
+    wrapClass = '',
+    fixedLayout = false,
 }) {
     if (!columns.length) {
         return '';
     }
 
+    const rowspanKeySet = new Set(rowspanKeys);
+    const hasColumnWidths = columns.some((column) => column.width);
+    const colgroup = hasColumnWidths
+        ? `<colgroup>${columns.map((column) => (
+            `<col style="width: ${escapeHtml(column.width || 'auto')};">`
+        )).join('')}</colgroup>`
+        : '';
     const header = columns.map((column) => `
         <th class="billing-doc-table__head ${column.align === 'right' ? 'billing-doc-table__numeric' : ''}">
             ${escapeHtml(column.label)}
@@ -52,14 +64,23 @@ export function renderBillingTableSection({
     `).join('');
 
     const body = rows.length
-        ? rows.map((row) => `
+        ? rows.map((row, rowIndex) => `
             <tr>
                 ${columns.map((column) => {
+                    if (rowspanKeySet.has(column.key) && rowIndex > 0) {
+                        return '';
+                    }
+
                     const raw = row[column.key];
-                    const value = hasBillingValue(raw) ? raw : '';
+                    const value = (raw === '—' || raw === '–' || raw === '-')
+                        ? raw
+                        : (hasBillingValue(raw) ? raw : '');
+                    const rowspanAttr = rowspanKeySet.has(column.key) && rows.length > 1
+                        ? ` rowspan="${rows.length}"`
+                        : '';
 
                     return `
-                        <td class="billing-doc-table__cell ${column.align === 'right' ? 'billing-doc-table__numeric' : ''}">
+                        <td class="billing-doc-table__cell ${column.align === 'right' ? 'billing-doc-table__numeric' : ''}"${rowspanAttr}>
                             ${escapeHtml(value)}
                         </td>
                     `;
@@ -89,16 +110,61 @@ export function renderBillingTableSection({
         `
         : '';
 
+    const tableStyles = fixedLayout
+        ? 'width: 100%; table-layout: fixed; min-width: 0;'
+        : `min-width: ${minWidth}; width: 100%;`;
+
     return `
         <div class="billing-doc-divider"></div>
-        <div class="billing-doc-table-wrap">
-            <table class="billing-doc-table" style="min-width: ${minWidth};">
+        <div class="billing-doc-table-wrap ${escapeHtml(wrapClass)}">
+            <table class="billing-doc-table ${escapeHtml(tableClass)}" style="${tableStyles}">
+                ${colgroup}
                 <thead>
                     <tr>${header}</tr>
                 </thead>
                 <tbody>${body}</tbody>
                 ${footer}
             </table>
+        </div>
+    `;
+}
+
+export function renderBillingAmountSummary(rows = []) {
+    const visible = rows.filter((row) => hasBillingValue(row?.value));
+
+    if (!visible.length) {
+        return '';
+    }
+
+    return `
+        <div class="billing-doc-divider"></div>
+        <div class="billing-doc-amounts">
+            ${visible.map((row) => `
+                <div class="billing-doc-amounts__row">
+                    <span class="billing-doc-amounts__label">${escapeHtml(row.label)}</span>
+                    <span class="billing-doc-amounts__value">${escapeHtml(row.value)}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+export function renderBillingAuthorizationSection(authorization = {}) {
+    const rows = buildDocumentAuthorizationRows(authorization);
+
+    if (!rows.length) {
+        return '';
+    }
+
+    return `
+        <div class="billing-doc-divider"></div>
+        <div class="billing-doc-authorization">
+            ${rows.map((row) => `
+                <div class="billing-doc-authorization__row">
+                    <span class="billing-doc-authorization__label">${escapeHtml(row.label)}</span>
+                    <span class="billing-doc-authorization__value">${escapeHtml(row.value)}</span>
+                </div>
+            `).join('')}
         </div>
     `;
 }
@@ -114,6 +180,8 @@ export function renderBillingSummaryNote(note) {
 export function renderBillingDocumentBody({
     customerInfo,
     tables = [],
+    amountSummary = [],
+    authorization = null,
     summaryNote = '',
 }) {
     const tableHtml = tables.map((table) => renderBillingTableSection(table)).join('');
@@ -122,6 +190,8 @@ export function renderBillingDocumentBody({
         <section class="billing-doc-body">
             ${renderBillingCustomerSection(customerInfo)}
             ${tableHtml}
+            ${renderBillingAmountSummary(amountSummary)}
+            ${renderBillingAuthorizationSection(authorization)}
             ${renderBillingSummaryNote(summaryNote)}
         </section>
     `;

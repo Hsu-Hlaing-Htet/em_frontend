@@ -1,31 +1,3 @@
-export const DASHBOARD_SECTION_GROUPS = [
-    {
-        key: 'executive',
-        label: 'Executive',
-        sections: ['overview', 'revenue', 'reports'],
-    },
-    {
-        key: 'operations',
-        label: 'Operations',
-        sections: ['properties', 'bookings', 'maintenance', 'inquiries'],
-    },
-    {
-        key: 'finance',
-        label: 'Finance',
-        sections: ['contracts', 'invoices', 'payments'],
-    },
-    {
-        key: 'people',
-        label: 'People',
-        sections: ['customers', 'agents', 'tenants'],
-    },
-    {
-        key: 'system',
-        label: 'System',
-        sections: ['notifications', 'activity', 'roles', 'settings'],
-    },
-];
-
 export const DASHBOARD_SECTIONS = {
     overview: {
         key: 'overview',

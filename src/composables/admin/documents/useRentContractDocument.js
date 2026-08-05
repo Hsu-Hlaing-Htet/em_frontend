@@ -115,6 +115,12 @@ export function useContractDocument(state, options = {}) {
             documentField('Deposit', formatCurrency(state.deposit)),
             documentField('Payment Type', paymentTypeLabel.value),
         ],
+        authorization: {
+            preparedBy: state.created_by,
+            preparedAt: state.created_at,
+            approvedBy: showApproval ? state.approved_by : '',
+            approvedAt: showApproval ? state.approved_at : '',
+        },
         approval: showApproval ? [
             documentField('Prepared By', state.created_by),
             documentField('Created Date', state.created_at),

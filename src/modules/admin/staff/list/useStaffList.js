@@ -1,9 +1,11 @@
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { Errors } from '@/utils/validation';
 import { useStaffStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { useListExport } from '@/composables/admin/useListExport';
+import { STAFF_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useStaffList = () => {
     const dt = ref();
@@ -89,6 +91,34 @@ export const useStaffList = () => {
         }, 500),
     );
 
+
+    const {
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
+    } = useListExport({
+        title: 'Staff',
+        filenameBase: 'staff',
+        columns: STAFF_EXPORT_COLUMNS,
+        emptyMessage: 'No staff available to export.',
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta),
+            search: search.value,
+        }),
+        fetchPage: async (params) => {
+            await store.fetchAll(params);
+            return store.getAllResponse;
+        },
+        mapItem: (item) => ({ name: item.name, email: item.email, phone: item.phone || item.profile?.phone || '', nrc: item.nrc || item.profile?.nrc || '', gender: item.gender || item.profile?.gender || '', created_at: item.created_at }),
+        getFilterSummary: () => [
+            { label: 'Search', value: search.value || '' },
+        ],
+        hasData: computed(() => totalRecords.value > 0),
+    });
+
     return {
         staff,
         errors,
@@ -101,5 +131,11 @@ export const useStaffList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        isExporting,
+        canExport,
+        downloadList,
+        exportCsv,
+        exportExcel,
+        printList,
     };
 };

@@ -26,31 +26,88 @@
                     <AdminListFilters
                         title="Invoice Approvals"
                         :search="search"
-                        search-placeholder="Search invoice number..."
+                        search-placeholder="Search invoice # or customer..."
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
+                        <Dropdown
+                            v-model="buildingId"
+                            :options="buildingOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Building"
+                            show-clear
+                            class="w-44"
+                        />
+                        <Dropdown
+                            v-model="roomId"
+                            :options="roomOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Room"
+                            :disabled="!buildingId"
+                            show-clear
+                            class="w-36"
+                        />
                         <Calendar
-                            v-model="dateFrom"
-                            placeholder="From date"
+                            v-model="issuedFrom"
+                            placeholder="Issue from"
                             date-format="yy-mm-dd"
                             show-icon
                             class="w-40"
                         />
                         <Calendar
-                            v-model="dateTo"
-                            placeholder="To date"
+                            v-model="issuedTo"
+                            placeholder="Issue to"
                             date-format="yy-mm-dd"
                             show-icon
                             class="w-40"
                         />
+                        <Calendar
+                            v-model="dueFrom"
+                            placeholder="Due from"
+                            date-format="yy-mm-dd"
+                            show-icon
+                            class="w-40"
+                        />
+                        <Calendar
+                            v-model="dueTo"
+                            placeholder="Due to"
+                            date-format="yy-mm-dd"
+                            show-icon
+                            class="w-40"
+                        />
+                        <Dropdown
+                            v-model="paymentStatusFilter"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Payment Status"
+                            show-clear
+                            class="w-44"
+                        />
+                                            <template #actions>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+                        </template>
                     </AdminListFilters>
                 </template>
 
                 <template #empty>No pending invoices found.</template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
-                <Column field="invoice_number" header="Invoice #" :sortable="true" style="min-width: 150px">
+                <Column
+                    field="invoice_number"
+                    header="Invoice #"
+                    :sortable="true"
+                    style="min-width: 150px"
+                >
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showInvoiceApproval', params: { id: data.id } }"
@@ -60,10 +117,67 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="type" header="Type" :sortable="true" style="min-width: 90px" />
-                <Column field="total_amount" header="Total" :sortable="true" style="min-width: 110px" />
-                <Column field="due_date" header="Due Date" :sortable="true" style="min-width: 120px" />
-                <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 160px" />
+
+                <Column
+                    field="customer_name"
+                    header="Customer"
+                    :sortable="true"
+                    style="min-width: 150px"
+                />
+
+                <Column
+                    field="building_name"
+                    header="Building"
+                    :sortable="true"
+                    style="min-width: 180px"
+                />
+
+                <Column
+                    field="room_number"
+                    header="Room"
+                    :sortable="true"
+                    style="min-width: 100px"
+                />
+
+                <Column
+                    field="total_amount"
+                    header="Total"
+                    :sortable="true"
+                    style="min-width: 130px"
+                >
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.total_amount) }}
+                    </template>
+                </Column>
+
+                <Column
+                    field="issued_date"
+                    header="Issue Date"
+                    :sortable="true"
+                    style="min-width: 130px"
+                >
+                    <template #body="{ data }">
+                        {{ formatDate(data.issued_date) }}
+                    </template>
+                </Column>
+
+                <Column
+                    field="due_date"
+                    header="Due Date"
+                    :sortable="true"
+                    style="min-width: 130px"
+                >
+                    <template #body="{ data }">
+                        {{ formatDate(data.due_date) }}
+                    </template>
+                </Column>
+
+                <Column header="Status" style="min-width: 110px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.payment_status || data.display_status || data.status" />
+                    </template>
+                </Column>
+
                 <Column header="Actions" :exportable="false" style="min-width: 80px">
                     <template #body="{ data }">
                         <ApprovalListActions
@@ -84,10 +198,15 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
+import { INVOICE_LIST_STATUS_OPTIONS } from '@/constants/constant';
+import { formatCurrency, formatDate } from '@/utils/formatter';
 import { useInvoiceApprovalList } from './useInvoiceApprovalList';
 
 export default defineComponent({
@@ -95,11 +214,12 @@ export default defineComponent({
     components: {
         DataTable,
         Column,
+        Dropdown,
         Calendar,
         Loading,
         AdminListFilters,
-        ApprovalListActions,
-    },
+        StatusBadge,
+        ApprovalListActions, ListExportActions },
     setup() {
         const list = useInvoiceApprovalList();
 
@@ -109,6 +229,9 @@ export default defineComponent({
 
         return {
             ...list,
+            statusOptions: INVOICE_LIST_STATUS_OPTIONS,
+            formatCurrency,
+            formatDate,
             approveFromList,
         };
     },

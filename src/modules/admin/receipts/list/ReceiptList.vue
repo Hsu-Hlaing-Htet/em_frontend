@@ -26,19 +26,53 @@
                     <AdminListFilters
                         title="All Receipts"
                         :search="search"
-                        search-placeholder="Search receipt number..."
+                        search-placeholder="Search receipt #, payment ref, invoice #, or customer..."
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
                         <Dropdown
-                            v-model="statusFilter"
-                            :options="statusOptions"
+                            v-model="buildingId"
+                            :options="buildingOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="All Statuses"
+                            placeholder="Building"
                             show-clear
-                            class="w-52"
+                            class="w-44"
                         />
+                        <Dropdown
+                            v-model="roomId"
+                            :options="roomOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Room"
+                            :disabled="!buildingId"
+                            show-clear
+                            class="w-36"
+                        />
+                        <Calendar
+                            v-model="issuedFrom"
+                            placeholder="Issued from"
+                            date-format="yy-mm-dd"
+                            show-icon
+                            class="w-40"
+                        />
+                        <Calendar
+                            v-model="issuedTo"
+                            placeholder="Issued to"
+                            date-format="yy-mm-dd"
+                            show-icon
+                            class="w-40"
+                        />
+                                            <template #actions>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+                        </template>
                     </AdminListFilters>
                 </template>
 
@@ -55,13 +89,36 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="invoice_number" header="Invoice #" :sortable="true" style="min-width: 140px" />
-                <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
+                <Column field="customer_name" header="Customer Name" style="min-width: 150px" />
+                <Column field="property_unit" header="Property/Unit" style="min-width: 170px" />
+                <Column header="Invoice Amount" style="min-width: 130px">
                     <template #body="{ data }">
-                        <StatusBadge :value="data.status" />
+                        {{ formatCurrency(data.invoice_amount) }}
                     </template>
                 </Column>
-                <Column field="issued_at" header="Issued At" :sortable="true" style="min-width: 160px" />
+                <Column header="Paid Amount" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.paid_amount ?? data.amount) }}
+                    </template>
+                </Column>
+                <Column header="Balance" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.balance) }}
+                    </template>
+                </Column>
+                <Column header="Payment Type" style="min-width: 110px">
+                    <template #body="{ data }">
+                        {{ formatPaymentTypeLabel(data.payment_type) }}
+                    </template>
+                </Column>
+
+                <Column field="payment_date" header="Payment Date" style="min-width: 120px" />
+                <Column field="payment_method_name" header="Payment Method" style="min-width: 130px" />
+                <Column header="Status" style="min-width: 110px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.display_status || data.status" />
+                    </template>
+                </Column>
             </DataTable>
 
             <Loading v-if="isLoading" />
@@ -74,10 +131,13 @@ import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
+import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
-import { RECEIPT_STATUS_OPTIONS } from '@/constants/constant';
+import { formatCurrency } from '@/utils/formatter';
+import { formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
 import { useReceiptList } from './useReceiptList';
 
 export default defineComponent({
@@ -86,16 +146,17 @@ export default defineComponent({
         DataTable,
         Column,
         Dropdown,
+        Calendar,
         Loading,
         AdminListFilters,
-        StatusBadge,
-    },
+        StatusBadge, ListExportActions },
     setup() {
         const list = useReceiptList();
 
         return {
             ...list,
-            statusOptions: RECEIPT_STATUS_OPTIONS,
+            formatCurrency,
+            formatPaymentTypeLabel,
         };
     },
 });

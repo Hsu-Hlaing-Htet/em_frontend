@@ -8,6 +8,8 @@ const routes = [
                 name: 'utilityRateList',
                 component: () => import('@/modules/admin/utility-rates/list/UtilityRateList.vue'),
                 meta: {
+                    navKey: 'utility-rates',
+                    parentNavKey: 'settings',
                     action: 'view',
                     resource: 'utility_rate',
                     layout: 'default',
@@ -22,6 +24,8 @@ const routes = [
                 name: 'newUtilityRate',
                 component: () => import('@/modules/admin/utility-rates/entry/NewUtilityRate.vue'),
                 meta: {
+                    navKey: 'utility-rates',
+                    parentNavKey: 'settings',
                     action: 'create',
                     resource: 'utility_rate',
                     layout: 'default',
@@ -37,6 +41,8 @@ const routes = [
                 name: 'editUtilityRate',
                 component: () => import('@/modules/admin/utility-rates/entry/EditUtilityRate.vue'),
                 meta: {
+                    navKey: 'utility-rates',
+                    parentNavKey: 'settings',
                     action: 'update',
                     resource: 'utility_rate',
                     layout: 'default',

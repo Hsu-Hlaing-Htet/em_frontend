@@ -30,26 +30,32 @@
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
-                        <Calendar
-                            v-model="dateFrom"
-                            placeholder="From date"
-                            date-format="yy-mm-dd"
-                            show-icon
-                            class="w-40"
+                        <Dropdown
+                            v-model="statusFilter"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="All Statuses"
+                            show-clear
+                            class="w-52"
                         />
-                        <Calendar
-                            v-model="dateTo"
-                            placeholder="To date"
-                            date-format="yy-mm-dd"
-                            show-icon
-                            class="w-40"
-                        />
+                                            <template #actions>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+                        </template>
                     </AdminListFilters>
                 </template>
 
                 <template #empty>No pending utilities found.</template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
+                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 120px" />
                 <Column field="room_number" header="Room" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         <router-link
@@ -60,9 +66,14 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="billing_month" header="Billing Month" :sortable="true" style="min-width: 140px" />
                 <Column field="total_amount" header="Total" :sortable="true" style="min-width: 110px" />
-                <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 160px" />
+                <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.status" />
+                    </template>
+                </Column>
+                <Column field="created_by" header="Created By" :sortable="true" style="min-width: 120px" />
+                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 160px" />
                 <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions
@@ -83,10 +94,13 @@ import { defineComponent } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Calendar from 'primevue/calendar';
+import Dropdown from 'primevue/dropdown';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
+import { UTILITY_STATUS_OPTIONS } from '@/constants/constant';
 import { useUtilityApprovalList } from './useUtilityApprovalList';
 
 export default defineComponent({
@@ -94,11 +108,11 @@ export default defineComponent({
     components: {
         DataTable,
         Column,
-        Calendar,
+        Dropdown,
         Loading,
         AdminListFilters,
-        ApprovalListActions,
-    },
+        StatusBadge,
+        ApprovalListActions, ListExportActions },
     setup() {
         const confirm = useConfirm();
         const list = useUtilityApprovalList();
@@ -120,6 +134,7 @@ export default defineComponent({
 
         return {
             ...list,
+            statusOptions: UTILITY_STATUS_OPTIONS,
             approveFromList,
             rejectFromList,
         };

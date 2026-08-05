@@ -1,3 +1,5 @@
+import { hasBillingValue } from '@/helpers/billing/billingDetailHelpers';
+
 export function escapeHtml(value) {
     return String(value ?? '')
         .replace(/&/g, '&amp;')
@@ -7,18 +9,22 @@ export function escapeHtml(value) {
 }
 
 export function renderMetaItems(items = []) {
-    return items.map((item) => `
+    return items
+        .filter((item) => hasBillingValue(item?.value))
+        .map((item) => `
         <div class="pdf-meta-item">
             <span class="pdf-meta-label">${escapeHtml(item.label)}</span>
-            <span class="pdf-meta-value">${escapeHtml(item.value ?? '—')}</span>
+            <span class="pdf-meta-value">${escapeHtml(item.value)}</span>
         </div>
     `).join('');
 }
 
 export function renderFieldRows(items = []) {
-    return items.map((item) => `
+    return items
+        .filter((item) => hasBillingValue(item?.value))
+        .map((item) => `
         <dt>${escapeHtml(item.label)}</dt>
-        <dd>${escapeHtml(item.value ?? '—')}</dd>
+        <dd>${escapeHtml(item.value)}</dd>
     `).join('');
 }
 

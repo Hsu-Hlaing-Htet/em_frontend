@@ -8,6 +8,7 @@ const routes = [
                 name: 'invoiceList',
                 component: () => import('@/modules/admin/invoices/list/InvoiceList.vue'),
                 meta: {
+                    navKey: 'invoices',
                     action: 'view',
                     resource: 'invoice',
                     layout: 'default',
@@ -22,6 +23,8 @@ const routes = [
                 name: 'invoiceApprovalList',
                 component: () => import('@/modules/admin/invoices/approval/InvoiceApprovalList.vue'),
                 meta: {
+                    navKey: 'approval-invoices',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'invoice_approval',
                     layout: 'default',
@@ -37,6 +40,8 @@ const routes = [
                 name: 'showInvoiceApproval',
                 component: () => import('@/modules/admin/invoices/detail/ShowInvoice.vue'),
                 meta: {
+                    navKey: 'approval-invoices',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'invoice_approval',
                     layout: 'default',
@@ -54,6 +59,7 @@ const routes = [
                 name: 'invoiceDocument',
                 component: () => import('@/modules/admin/invoices/detail/InvoiceDocument.vue'),
                 meta: {
+                    navKey: 'invoices',
                     action: 'view',
                     resource: 'invoice',
                     layout: 'default',
@@ -70,6 +76,7 @@ const routes = [
                 name: 'showInvoice',
                 component: () => import('@/modules/admin/invoices/detail/ShowInvoice.vue'),
                 meta: {
+                    navKey: 'invoices',
                     action: 'view',
                     resource: 'invoice',
                     layout: 'default',

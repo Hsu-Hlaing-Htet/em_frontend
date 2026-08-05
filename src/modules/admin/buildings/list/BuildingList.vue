@@ -37,12 +37,7 @@
         class="w-72 !pl-10"
     />
 </div>
-<Dropdown
-                v-model="selectedLocation"
-                :options="locationOptions"
-                placeholder="All Locations"
-                class="w-48"
-            />
+
                             <Button
                                 label="Reset"
                                 @click="resetSearch"
@@ -50,6 +45,14 @@
                             <router-link :to="{ name: 'newBuilding' }">
                                 <Button label="Create" />
                             </router-link>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
                         </div>
                     </div>
                 </template>
@@ -111,13 +114,14 @@ import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import { useBuildingList } from './useBuildingList';
 
 export default defineComponent({
     name: 'RoomList',
-    components: { DataTable, Column, InputText, Button, Loading },
+    components: { DataTable, Column, InputText, Button, Loading, ListExportActions },
     setup() {
-        return useBuildingList  ();
+        return useBuildingList();
     },
 });
 </script>

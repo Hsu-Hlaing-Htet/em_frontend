@@ -8,6 +8,7 @@ const routes = [
                 name: 'paymentList',
                 component: () => import('@/modules/admin/payments/list/PaymentList.vue'),
                 meta: {
+                    navKey: 'payments',
                     action: 'view',
                     resource: 'payment',
                     layout: 'default',
@@ -22,6 +23,7 @@ const routes = [
                 name: 'newPayment',
                 component: () => import('@/modules/admin/payments/entry/NewPayment.vue'),
                 meta: {
+                    navKey: 'payments',
                     action: 'create',
                     resource: 'payment',
                     layout: 'default',
@@ -37,6 +39,8 @@ const routes = [
                 name: 'paymentApprovalList',
                 component: () => import('@/modules/admin/payments/approval/PaymentApprovalList.vue'),
                 meta: {
+                    navKey: 'approval-payments',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'payment_approval',
                     layout: 'default',
@@ -52,6 +56,8 @@ const routes = [
                 name: 'showPaymentApproval',
                 component: () => import('@/modules/admin/payments/detail/ShowPayment.vue'),
                 meta: {
+                    navKey: 'approval-payments',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'payment_approval',
                     layout: 'default',
@@ -65,26 +71,11 @@ const routes = [
                 },
             },
             {
-                path: ':id/document',
-                name: 'paymentDocument',
-                component: () => import('@/modules/admin/payments/detail/PaymentDocument.vue'),
-                meta: {
-                    action: 'view',
-                    resource: 'payment',
-                    layout: 'default',
-                    title: 'Payment Confirmation Document',
-                    breadcrumbs: [
-                        { title: 'Payment List', routeName: 'paymentList' },
-                        { title: 'Show Payment', routeName: 'showPayment' },
-                        { title: 'Document', routeName: 'paymentDocument' },
-                    ],
-                },
-            },
-            {
                 path: ':id',
                 name: 'showPayment',
                 component: () => import('@/modules/admin/payments/detail/ShowPayment.vue'),
                 meta: {
+                    navKey: 'payments',
                     action: 'view',
                     resource: 'payment',
                     layout: 'default',

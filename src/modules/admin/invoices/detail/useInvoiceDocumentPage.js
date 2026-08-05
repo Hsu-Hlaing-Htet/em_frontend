@@ -1,11 +1,6 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { showApiErrorToast } from '@/utils/apiError';
-import {
-    getBillingDocumentMeta,
-    renderInvoiceDocumentBody,
-    renderInvoiceDocumentLead,
-} from '@/helpers/documents/renderBillingDocument';
 import { useInvoiceStore } from '../store';
 import { useInvoiceDocument } from '@/composables/admin/documents/useInvoiceDocument';
 import { useInvoiceDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
@@ -23,13 +18,18 @@ export default function useInvoiceDocumentPage() {
         type: '',
         issued_date: '',
         due_date: '',
+        billing_period: '',
         late_fee: '',
         total_amount: '',
+        paid_amount: 0,
+        remaining_balance: 0,
+        notes: '',
         status: '',
         items: [],
         customer_name: '',
         customer_email: '',
         customer_phone: '',
+        customer_address: '',
         customer_nrc: '',
         building_name: '',
         room_number: '',
@@ -94,13 +94,5 @@ export default function useInvoiceDocumentPage() {
         printPdf,
         printContract: printPdf,
         sendEmail,
-        sheetProps: {
-            document,
-            documentTitle: 'Tax Invoice',
-            referenceLabel: 'Invoice No.',
-            getMeta: getBillingDocumentMeta,
-            renderLead: renderInvoiceDocumentLead,
-            renderBody: renderInvoiceDocumentBody,
-        },
     };
 }

@@ -8,6 +8,8 @@ const routes = [
                 name: 'lateFeeList',
                 component: () => import('@/modules/admin/late-fees/list/LateFeeList.vue'),
                 meta: {
+                    navKey: 'late-fees',
+                    parentNavKey: 'settings',
                     action: 'view',
                     resource: 'late_fee',
                     layout: 'default',
@@ -22,6 +24,8 @@ const routes = [
                 name: 'newLateFee',
                 component: () => import('@/modules/admin/late-fees/entry/NewLateFee.vue'),
                 meta: {
+                    navKey: 'late-fees',
+                    parentNavKey: 'settings',
                     action: 'create',
                     resource: 'late_fee',
                     layout: 'default',
@@ -37,6 +41,8 @@ const routes = [
                 name: 'editLateFee',
                 component: () => import('@/modules/admin/late-fees/entry/EditLateFee.vue'),
                 meta: {
+                    navKey: 'late-fees',
+                    parentNavKey: 'settings',
                     action: 'update',
                     resource: 'late_fee',
                     layout: 'default',

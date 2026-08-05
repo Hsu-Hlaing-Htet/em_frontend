@@ -17,17 +17,14 @@ import {
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
 import { useInvoiceStore } from '../store';
-import { usePaymentStore } from '@/modules/admin/payments/store';
 import { service } from '../service';
 
 export default function useShowInvoice() {
     const store = useInvoiceStore();
-    const paymentStore = usePaymentStore();
     const route = useRoute();
     const router = useRouter();
     const isLoading = ref(true);
     const isApproving = ref(false);
-    const payments = ref([]);
     const isApprovalView = computed(() => route.meta.approvalContext === true);
     const backRoute = computed(() => (
         isApprovalView.value
@@ -85,12 +82,6 @@ export default function useShowInvoice() {
         store.$dispose();
     });
 
-    const loadPayments = async (invoiceId) => {
-        await paymentStore.fetchAll({ invoice_id: invoiceId, per_page: 100 });
-        const response = paymentStore.getAllResponse;
-        payments.value = response?.data?.data || [];
-    };
-
     const loadInvoice = async () => {
         isLoading.value = true;
 
@@ -101,10 +92,6 @@ export default function useShowInvoice() {
             if (response?.data) {
                 Object.assign(state, response.data);
                 state.items = response.data.items || [];
-
-                if (state.status !== 'draft') {
-                    await loadPayments(state.id);
-                }
             }
         } finally {
             isLoading.value = false;
@@ -181,7 +168,6 @@ export default function useShowInvoice() {
         isLoading,
         isApproving,
         state,
-        payments,
         handleApprove,
         canApprove,
         canEdit,

@@ -30,7 +30,7 @@
                     :rows="lineItemRows"
                     empty-message="This invoice has no itemized charges."
                     :total-value="formatCurrency(state.total_amount)"
-                    min-width="32rem"
+                    min-width="44rem"
                 />
 
                 <BillingDetailTable
@@ -84,14 +84,6 @@
                         </small>
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">Amount</label>
-                        <InputNumber v-model="paymentForm.amount" class="w-full" :min="0.01" />
-                        <small class="text-[var(--admin-text-muted)]">Remaining: {{ formatCurrency(remainingAmount) }}</small>
-                        <small v-if="errors.has('amount')" class="p-error">
-                            <div v-for="error in errors.get('amount')" :key="error">{{ error }}</div>
-                        </small>
-                    </div>
-                    <div>
                         <label class="mb-2 block text-sm font-semibold">Payment Date</label>
                         <Calendar v-model="paymentForm.payment_date" date-format="yy-mm-dd" class="w-full" show-icon />
                         <small v-if="errors.has('payment_date')" class="p-error">
@@ -99,11 +91,14 @@
                         </small>
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">Note</label>
-                        <Textarea v-model="paymentForm.note" rows="3" class="w-full" />
+                        <label class="mb-2 block text-sm font-semibold">Note / Reference</label>
+                        <Textarea v-model="paymentForm.note" rows="3" class="w-full" placeholder="Optional bank reference or note" />
                     </div>
                     <div>
                         <label class="mb-2 block text-sm font-semibold">Payment Proof</label>
+                        <p class="mb-2 text-sm text-[var(--admin-text-muted)]">
+                            After transferring money, upload your payment-proof image. The Admin will verify the paid amount.
+                        </p>
                         <FileUpload
                             mode="basic"
                             choose-label="Upload Proof"
@@ -130,7 +125,6 @@ import { computed, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
-import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import FileUpload from 'primevue/fileupload';
 import Calendar from 'primevue/calendar';
@@ -140,6 +134,7 @@ import BillingDetailCustomerSection from '@/components/billing/BillingDetailCust
 import BillingDetailTable from '@/components/billing/BillingDetailTable.vue';
 import { billingDetailTableClasses } from '@/helpers/billing/billingDetailHelpers';
 import { invoiceLineItemColumns } from '@/helpers/billing/billingDetailColumns';
+import { mapInvoiceLineItemRow } from '@/helpers/invoices/invoiceDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
 import useCustomerShowInvoice from '@/composables/customer/useCustomerShowInvoice';
 
@@ -156,7 +151,6 @@ export default defineComponent({
     components: {
         Button,
         Dropdown,
-        InputNumber,
         Textarea,
         FileUpload,
         Calendar,
@@ -169,18 +163,15 @@ export default defineComponent({
         const router = useRouter();
         const invoice = useCustomerShowInvoice();
 
-        const lineItemRows = computed(() => invoice.invoiceItems.map((item) => ({
-            id: item.id,
-            description: item.description,
-            charge_type_name: item.charge_type_name,
-            amount: formatCurrency(item.amount),
-        })));
+        const lineItemRows = computed(() => invoice.invoiceItems.map((item) => (
+            mapInvoiceLineItemRow(item, formatCurrency)
+        )));
 
         const paymentRows = computed(() => invoice.invoicePayments.map((payment) => ({
             id: payment.id,
             receipt_id: payment.receipt_id,
             payment_date: payment.payment_date,
-            amount: formatCurrency(payment.amount),
+            amount: payment.amount == null ? 'Pending verification' : formatCurrency(payment.amount),
             payment_method_name: payment.payment_method_name,
             status: payment.status,
         })));

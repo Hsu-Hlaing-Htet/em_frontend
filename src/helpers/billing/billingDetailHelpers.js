@@ -36,7 +36,7 @@ export const formatBillingDocumentDate = (value) => {
 };
 
 export const billingDetailTableClasses = {
-    wrap: 'overflow-x-auto',
+    wrap: 'min-w-0 w-full overflow-x-auto',
     table: 'w-full border-collapse',
     th: 'border-b border-[var(--admin-border)] px-2 py-3 text-left text-sm font-semibold whitespace-nowrap text-[var(--admin-text-muted)]',
     thNumeric: 'border-b border-[var(--admin-border)] px-2 py-3 text-right text-sm font-semibold whitespace-nowrap text-[var(--admin-text-muted)]',

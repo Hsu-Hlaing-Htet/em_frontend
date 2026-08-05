@@ -8,6 +8,8 @@ const routes = [
                 name: 'staffList',
                 component: () => import('@/modules/admin/staff/list/StaffList.vue'),
                 meta: {
+                    navKey: 'staff',
+                    parentNavKey: 'users',
                     action: 'view',
                     resource: 'user',
                     layout: 'default',
@@ -22,6 +24,8 @@ const routes = [
                 name: 'newStaff',
                 component: () => import('@/modules/admin/staff/entry/NewStaff.vue'),
                 meta: {
+                    navKey: 'staff',
+                    parentNavKey: 'users',
                     action: 'create',
                     resource: 'user',
                     layout: 'default',
@@ -37,6 +41,8 @@ const routes = [
                 name: 'editStaff',
                 component: () => import('@/modules/admin/staff/entry/EditStaff.vue'),
                 meta: {
+                    navKey: 'staff',
+                    parentNavKey: 'users',
                     action: 'update',
                     resource: 'user',
                     layout: 'default',
@@ -52,6 +58,8 @@ const routes = [
                 name: 'showStaff',
                 component: () => import('@/modules/admin/staff/detail/ShowStaff.vue'),
                 meta: {
+                    navKey: 'staff',
+                    parentNavKey: 'users',
                     action: 'view',
                     resource: 'user',
                     layout: 'default',

@@ -1,31 +1,17 @@
 <script setup>
-import { computed } from 'vue';
-import ThemeToggle from '@/components/global/ThemeToggle.vue';
 import DashboardDetailModal from './components/DashboardDetailModal.vue';
-import DashboardSectionNav from './components/DashboardSectionNav.vue';
 import DashboardSkeleton from './components/DashboardSkeleton.vue';
 import PropertyCompareModal from './components/PropertyCompareModal.vue';
-import { DASHBOARD_SECTION_COMPONENTS } from './sections';
+import OverviewSection from './sections/OverviewSection.vue';
 import { useDashboard } from './useDashboard';
-import { useParallax } from './useParallax';
 import './dashboardEffects.css';
 import './dashboardShared.css';
 
 const {
     loading,
-    error,
-    lastUpdatedLabel,
-    autoRefresh,
-    activeSection,
-    activeSectionMeta,
-    globalSearch,
     modalOpen,
     modalTitle,
     modalItem,
-    unreadNotificationCount,
-    refresh,
-    toggleAutoRefresh,
-    setSection,
     closeModal,
     compareItems,
     compareModalOpen,
@@ -34,17 +20,10 @@ const {
     clearCompare,
     openCompareModal,
 } = useDashboard();
-
-const { layerBack, layerMid, layerFront } = useParallax();
-
-const activeSectionComponent = computed(() => DASHBOARD_SECTION_COMPONENTS[activeSection.value]);
 </script>
 
 <template>
     <div class="admin-dashboard flex flex-col gap-5">
-      
-
-
         <DashboardSkeleton
             v-if="loading"
             :rows="6"
@@ -55,23 +34,7 @@ const activeSectionComponent = computed(() => DASHBOARD_SECTION_COMPONENTS[activ
             v-else
             class="flex flex-col gap-5"
         >
-            <DashboardSectionNav
-                :active-section="activeSection"
-                :unread-notification-count="unreadNotificationCount"
-                @select="setSection"
-            />
-
-            <Transition
-                name="dashboard-tab"
-                mode="out-in"
-            >
-                <div
-                    :key="activeSection"
-                    class="dashboard-section-root"
-                >
-                    <component :is="activeSectionComponent" />
-                </div>
-            </Transition>
+            <OverviewSection />
         </div>
 
         <div
@@ -118,17 +81,3 @@ const activeSectionComponent = computed(() => DASHBOARD_SECTION_COMPONENTS[activ
         />
     </div>
 </template>
-
-<style scoped>
-.dashboard-alert {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(220, 38, 38, 0.18);
-    background: rgba(220, 38, 38, 0.08);
-    color: #b42318;
-    padding: 1rem 1.25rem;
-}
-</style>

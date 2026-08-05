@@ -8,6 +8,7 @@ const routes = [
                 name: 'utilityList',
                 component: () => import('@/modules/admin/utilities/list/UtilityList.vue'),
                 meta: {
+                    navKey: 'utilities',
                     action: 'view',
                     resource: 'utility',
                     layout: 'default',
@@ -22,6 +23,7 @@ const routes = [
                 name: 'newUtility',
                 component: () => import('@/modules/admin/utilities/entry/NewUtility.vue'),
                 meta: {
+                    navKey: 'utilities',
                     action: 'create',
                     resource: 'utility',
                     layout: 'default',
@@ -37,6 +39,8 @@ const routes = [
                 name: 'utilityApprovalList',
                 component: () => import('@/modules/admin/utilities/approval/UtilityApprovalList.vue'),
                 meta: {
+                    navKey: 'approval-utilities',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'utility_approval',
                     layout: 'default',
@@ -52,6 +56,8 @@ const routes = [
                 name: 'showUtilityApproval',
                 component: () => import('@/modules/admin/utilities/detail/ShowUtility.vue'),
                 meta: {
+                    navKey: 'approval-utilities',
+                    parentNavKey: 'approvals',
                     action: 'view',
                     resource: 'utility_approval',
                     layout: 'default',
@@ -69,6 +75,7 @@ const routes = [
                 name: 'utilityDocument',
                 component: () => import('@/modules/admin/utilities/detail/UtilityDocument.vue'),
                 meta: {
+                    navKey: 'utilities',
                     action: 'view',
                     resource: 'utility',
                     layout: 'default',
@@ -85,6 +92,7 @@ const routes = [
                 name: 'editUtility',
                 component: () => import('@/modules/admin/utilities/entry/EditUtility.vue'),
                 meta: {
+                    navKey: 'utilities',
                     action: 'update',
                     resource: 'utility',
                     layout: 'default',
@@ -101,6 +109,7 @@ const routes = [
                 name: 'showUtility',
                 component: () => import('@/modules/admin/utilities/detail/ShowUtility.vue'),
                 meta: {
+                    navKey: 'utilities',
                     action: 'view',
                     resource: 'utility',
                     layout: 'default',

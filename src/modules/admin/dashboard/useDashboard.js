@@ -7,7 +7,7 @@ import {
     ref,
     watch,
 } from 'vue';
-import { DASHBOARD_SECTION_LIST, DASHBOARD_SECTIONS } from './config/sections';
+import { DASHBOARD_SECTION_LIST } from './config/sections';
 import { SEARCHABLE_CONTROL_KEYS, useDashboardControls } from './composables/useDashboardControls';
 import { dashboardService } from './service';
 import { SORT_OPTIONS, STATUS_FILTER_OPTIONS } from './mockData';
@@ -28,7 +28,6 @@ export function useDashboard() {
     const autoRefresh = ref(false);
     const refreshTimer = ref(null);
 
-    const activeSection = ref('overview');
     const revenueRange = ref(6);
     const hoveredBar = ref(null);
     const selectedStat = ref(null);
@@ -45,6 +44,11 @@ export function useDashboard() {
     const invoiceStats = ref([]);
     const revenueOverview = ref([]);
     const revenueSummary = ref({});
+    const revenueCollections = ref({ collection_rate: 0, points: [] });
+    const receivableAging = ref([]);
+    const occupancyByBuilding = ref([]);
+    const upcomingContracts = ref([]);
+    const pendingApprovalBreakdown = ref({ total: 0, items: [] });
     const recentActivity = ref([]);
     const quickActions = ref([]);
 
@@ -166,7 +170,6 @@ export function useDashboard() {
         { label: 'Growth', value: `+${revenueSummary.value.growth_percent ?? 0}%` },
     ]);
 
-    const activeSectionMeta = computed(() => DASHBOARD_SECTIONS[activeSection.value]);
     const sections = DASHBOARD_SECTION_LIST;
 
     const selectedRole = computed(() => (
@@ -183,11 +186,6 @@ export function useDashboard() {
 
     function invoiceBarWidth(value) {
         return `${(value / Math.max(invoiceTotal.value, 1)) * 100}%`;
-    }
-
-    function setSection(section) {
-        activeSection.value = section;
-        settingsSaved.value = false;
     }
 
     function setRevenueRange(months) {
@@ -300,6 +298,11 @@ export function useDashboard() {
         invoiceStats.value = payload.invoice_stats ?? [];
         revenueOverview.value = payload.revenue_chart ?? [];
         revenueSummary.value = payload.revenue_summary ?? {};
+        revenueCollections.value = payload.revenue_collections ?? { collection_rate: 0, points: [] };
+        receivableAging.value = payload.receivable_aging ?? [];
+        occupancyByBuilding.value = payload.occupancy_by_building ?? [];
+        upcomingContracts.value = payload.upcoming_contracts ?? [];
+        pendingApprovalBreakdown.value = payload.pending_approval_breakdown ?? { total: 0, items: [] };
         recentActivity.value = payload.activity_timeline ?? [];
         quickActions.value = payload.quick_actions ?? [];
         properties.value = payload.properties ?? [];
@@ -401,8 +404,6 @@ export function useDashboard() {
         loading,
         error,
         autoRefresh,
-        activeSection,
-        activeSectionMeta,
         sections,
         revenueRange,
         hoveredBar,
@@ -419,6 +420,11 @@ export function useDashboard() {
         invoiceStats,
         revenueOverview,
         revenueSummary,
+        revenueCollections,
+        receivableAging,
+        occupancyByBuilding,
+        upcomingContracts,
+        pendingApprovalBreakdown,
         recentActivity,
         quickActions,
         properties,
@@ -453,7 +459,6 @@ export function useDashboard() {
         barHeight,
         propertyBarWidth,
         invoiceBarWidth,
-        setSection,
         setRevenueRange,
         selectStat,
         clearSelectedStat,
@@ -492,9 +497,6 @@ export function useDashboard() {
         error,
         lastUpdatedLabel,
         autoRefresh,
-        activeSection,
-        activeSectionMeta,
-        sections,
         globalSearch,
         modalOpen,
         modalTitle,
@@ -502,7 +504,6 @@ export function useDashboard() {
         unreadNotificationCount,
         refresh,
         toggleAutoRefresh,
-        setSection,
         closeModal,
         compareItems: propertyInteractions.compareItems,
         compareModalOpen: propertyInteractions.compareModalOpen,

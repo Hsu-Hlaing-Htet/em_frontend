@@ -44,6 +44,14 @@
                             <router-link :to="{ name: 'newPaymentMethod' }">
                                 <Button label="Create" />
                             </router-link>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
                         </template>
                     </AdminListFilters>
                 </template>
@@ -100,6 +108,7 @@ import Dropdown from 'primevue/dropdown';
 import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import { PAYMENT_METHOD_STATUS_OPTIONS } from '@/constants/constant';
@@ -115,8 +124,7 @@ export default defineComponent({
         StatusBadge,
         Button,
         Loading,
-        AdminListFilters,
-    },
+        AdminListFilters, ListExportActions },
     setup() {
         const list = usePaymentMethodList();
 

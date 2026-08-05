@@ -1,56 +1,90 @@
 <template>
     <div class="flex flex-col gap-5">
-        <div class="admin-panel relative">
+        <div class="admin-panel relative dashboard-panel">
             <DataTable
                 ref="dt"
                 data-key="id"
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
                 responsive-layout="scroll"
-                sort-mode="multiple"
-                scroll-height="50vh"
+                scroll-height="58vh"
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
                 :value="items"
-                :multi-sort-meta="lazyParams.multiSortMeta"
                 :total-records="totalRecords"
                 :rows="10"
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
-                removable-sort
                 @page="onPage($event)"
-                @sort="onSort($event)"
             >
                 <template #header>
                     <AdminListFilters
                         title="Payment Approvals"
                         :search="search"
-                        search-placeholder="Search invoice, method..."
+                        search-placeholder="Search payment ref, invoice #, or customer..."
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
+                        <Dropdown
+                            v-model="buildingId"
+                            :options="buildingOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Building"
+                            show-clear
+                            class="w-44"
+                        />
+                        <Dropdown
+                            v-model="roomId"
+                            :options="roomOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Room"
+                            :disabled="!buildingId"
+                            show-clear
+                            class="w-36"
+                        />
+                        <Dropdown
+                            v-model="paymentMethodId"
+                            :options="paymentMethodOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Payment method"
+                            show-clear
+                            class="w-44"
+                        />
                         <Calendar
-                            v-model="dateFrom"
-                            placeholder="From date"
+                            v-model="paymentDateFrom"
+                            placeholder="Payment from"
                             date-format="yy-mm-dd"
                             show-icon
                             class="w-40"
                         />
                         <Calendar
-                            v-model="dateTo"
-                            placeholder="To date"
+                            v-model="paymentDateTo"
+                            placeholder="Payment to"
                             date-format="yy-mm-dd"
                             show-icon
                             class="w-40"
                         />
+                                            <template #actions>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+                        </template>
                     </AdminListFilters>
                 </template>
 
                 <template #empty>No pending payments found.</template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
-                <Column field="invoice_number" header="Invoice #" :sortable="true" style="min-width: 140px">
+                <Column header="Invoice No" style="min-width: 130px" frozen>
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showPaymentApproval', params: { id: data.id } }"
@@ -60,10 +94,41 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="payment_method_name" header="Method" :sortable="true" style="min-width: 130px" />
-                <Column field="amount" header="Amount" :sortable="true" style="min-width: 110px" />
-                <Column field="payment_date" header="Payment Date" :sortable="true" style="min-width: 130px" />
-                <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 160px" />
+                <Column field="customer_name" header="Customer Name" style="min-width: 150px" />
+                <Column field="property_unit" header="Property/Unit" style="min-width: 170px" />
+                <Column header="Invoice Amount" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.invoice_amount) }}
+                    </template>
+                </Column>
+                <Column header="Previously Paid" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.paid_amount) }}
+                    </template>
+                </Column>
+                <Column header="Current Balance" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.balance) }}
+                    </template>
+                </Column>
+                <Column header="Payment Type" style="min-width: 110px">
+                    <template #body="{ data }">
+                        {{ formatPaymentTypeLabel(data.payment_type) }}
+                    </template>
+                </Column>
+
+                <Column field="payment_date" header="Payment Date" style="min-width: 120px" />
+                <Column field="payment_method_name" header="Payment Method" style="min-width: 130px" />
+                <Column header="Status" style="min-width: 110px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.display_status || data.status" />
+                    </template>
+                </Column>
+                <Column field="note" header="Notes" style="min-width: 160px">
+                    <template #body="{ data }">
+                        {{ data.note || '—' }}
+                    </template>
+                </Column>
                 <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions
@@ -76,18 +141,31 @@
 
             <Loading v-if="isLoading" />
         </div>
+
+        <RejectContractDialog
+            v-model="showRejectDialog"
+            header="Reject Payment"
+            description="Please provide a reason explaining why this payment is being rejected."
+            @confirm="confirmReject"
+        />
     </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
-import { useConfirm } from 'primevue/useconfirm';
+import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
+import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
+import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
+import { formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
+import { formatCurrency } from '@/utils/formatter';
 import { usePaymentApprovalList } from './usePaymentApprovalList';
 
 export default defineComponent({
@@ -95,35 +173,56 @@ export default defineComponent({
     components: {
         DataTable,
         Column,
+        Dropdown,
         Calendar,
         Loading,
         AdminListFilters,
+        StatusBadge,
         ApprovalListActions,
+        ListExportActions,
+        RejectContractDialog,
     },
     setup() {
-        const confirm = useConfirm();
+        const router = useRouter();
         const list = usePaymentApprovalList();
+        const showRejectDialog = ref(false);
+        const rejectTarget = ref(null);
 
         const approveFromList = (item) => {
-            list.approveItem(item);
+            router.push({ name: 'showPaymentApproval', params: { id: item.id } });
         };
 
         const rejectFromList = (item) => {
-            confirm.require({
-                message: 'Are you sure you want to reject this payment?',
-                header: 'Please confirm',
-                icon: 'pi pi-exclamation-triangle',
-                acceptLabel: 'Yes, reject',
-                rejectLabel: 'Cancel',
-                accept: () => list.rejectItem(item),
-            });
+            rejectTarget.value = item;
+            showRejectDialog.value = true;
+        };
+
+        const confirmReject = async (reason) => {
+            if (!rejectTarget.value) {
+                return;
+            }
+
+            await list.rejectItem(rejectTarget.value, { rejection_reason: reason });
+            rejectTarget.value = null;
         };
 
         return {
             ...list,
+            showRejectDialog,
+            formatPaymentTypeLabel,
+            formatCurrency,
             approveFromList,
             rejectFromList,
+            confirmReject,
         };
     },
 });
 </script>
+
+<style scoped>
+.dashboard-panel {
+    border-radius: 1rem;
+    border: 1px solid var(--admin-border);
+    box-shadow: var(--admin-shadow-soft);
+}
+</style>

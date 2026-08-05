@@ -22,7 +22,7 @@
             <slot />
 
             <Button
-                label="Reset"
+                :label="resetLabel"
                 class="btn-outline"
                 @click="$emit('reset')"
             />
@@ -59,6 +59,10 @@ export default defineComponent({
         searchPlaceholder: {
             type: String,
             default: 'Search...',
+        },
+        resetLabel: {
+            type: String,
+            default: 'Reset',
         },
         showSearch: {
             type: Boolean,

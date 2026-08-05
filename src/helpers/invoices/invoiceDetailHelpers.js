@@ -63,3 +63,30 @@ export function formatBillingPeriod(invoice) {
 
     return '—';
 }
+
+export function formatInvoiceMeterValue(value) {
+    if (value === null || value === undefined || value === '') {
+        return '—';
+    }
+
+    const number = Number(value);
+
+    return Number.isFinite(number) ? number.toFixed(2) : '—';
+}
+
+export function mapInvoiceLineItemRow(item, formatCurrency) {
+    const isMetered = Boolean(item?.is_metered);
+    const unitPrice = item?.unit_price;
+
+    return {
+        id: item.id,
+        description: item.description || '—',
+        previous_reading: isMetered ? formatInvoiceMeterValue(item.previous_reading) : '—',
+        current_reading: isMetered ? formatInvoiceMeterValue(item.current_reading) : '—',
+        usage: isMetered ? formatInvoiceMeterValue(item.usage) : '—',
+        unit_price: unitPrice === null || unitPrice === undefined || unitPrice === ''
+            ? '—'
+            : formatCurrency(unitPrice),
+        amount: formatCurrency(item.amount),
+    };
+}

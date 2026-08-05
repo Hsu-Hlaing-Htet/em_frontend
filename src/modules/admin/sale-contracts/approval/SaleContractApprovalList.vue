@@ -74,11 +74,13 @@
 
 <div class="ml-auto flex items-center gap-2">
  <ListExportActions
-     @download="downloadList"
-     @export-csv="exportCsv"
-     @export-excel="exportExcel"
-     @print="printList"
- />
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
 </div>
                     </div>
                 </template>

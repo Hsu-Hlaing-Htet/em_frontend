@@ -18,7 +18,7 @@
                 severity="success"
                 :loading="workflowLoading.complete"
                 :disabled="workflowLoading.start || workflowLoading.reject"
-                @click="runWorkflow('complete')"
+                @click="openCompleteDialog"
             />
             <Button
                 v-if="canReject()"
@@ -29,7 +29,7 @@
                 outlined
                 :loading="workflowLoading.reject"
                 :disabled="workflowLoading.start || workflowLoading.complete"
-                @click="runWorkflow('reject')"
+                @click="openRejectDialog"
             />
         </div>
         <div class="flex gap-2">
@@ -58,6 +58,14 @@
                 <p class="text-sm">{{ state.user_name || '—' }}</p>
             </div>
             <div class="p-3">
+                <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Category</p>
+                <p class="text-sm capitalize">{{ state.category || '—' }}</p>
+            </div>
+            <div class="p-3">
+                <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Priority</p>
+                <p class="text-sm capitalize">{{ state.priority || '—' }}</p>
+            </div>
+            <div class="p-3">
                 <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Created</p>
                 <p class="text-sm">{{ state.created_at }}</p>
             </div>
@@ -69,8 +77,37 @@
                 <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Description</p>
                 <p class="text-sm leading-7">{{ state.description || '—' }}</p>
             </div>
+            <div v-if="state.rejection_reason" class="p-3 md:col-span-2">
+                <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Rejection Reason</p>
+                <p class="text-sm leading-7">{{ state.rejection_reason }}</p>
+            </div>
+            <div v-if="state.resolution_note" class="p-3 md:col-span-2">
+                <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Resolution Note</p>
+                <p class="text-sm leading-7">{{ state.resolution_note }}</p>
+            </div>
         </div>
     </div>
+
+    <RejectContractDialog
+        v-model="showRejectDialog"
+        header="Reject Maintenance Request"
+        description="Please provide a reason explaining why this request is being rejected."
+        @confirm="confirmReject"
+    />
+
+    <Dialog
+        v-model:visible="showCompleteDialog"
+        modal
+        header="Complete Maintenance Request"
+        class="w-full max-w-lg"
+    >
+        <p class="mb-4">Optionally add a resolution note the customer can see.</p>
+        <Textarea v-model="resolutionNote" rows="4" class="w-full" placeholder="Resolution note..." />
+        <template #footer>
+            <Button label="Cancel" severity="secondary" text @click="showCompleteDialog = false" />
+            <Button label="Complete" severity="success" :loading="workflowLoading.complete" @click="confirmComplete" />
+        </template>
+    </Dialog>
 
     <Loading v-if="isLoading" />
 </template>
@@ -78,13 +115,16 @@
 <script>
 import { defineComponent } from 'vue';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import Textarea from 'primevue/textarea';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
+import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
 import useShowMaintenanceRequest from './useShowMaintenanceRequest';
 
 export default defineComponent({
     name: 'ShowMaintenanceRequest',
-    components: { Button, Loading, StatusBadge },
+    components: { Button, Dialog, Textarea, Loading, StatusBadge, RejectContractDialog },
     setup() {
         return useShowMaintenanceRequest();
     },

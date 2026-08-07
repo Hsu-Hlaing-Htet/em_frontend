@@ -31,7 +31,7 @@ export const paymentDetailColumns = [
     { label: 'Current Balance', key: 'balance', align: 'right' },
     { label: 'Paid Amount', key: 'entered_paid_amount', align: 'right' },
     { label: 'Remaining Balance', key: 'remaining_balance', align: 'right' },
-    { label: 'Payment Type', key: 'payment_method_type', align: 'left' },
+    { label: 'Payment Type', key: 'payment_type', align: 'left' },
     { label: 'Payment Date', key: 'payment_date', align: 'left' },
     { label: 'Payment Method', key: 'payment_method_name', align: 'left' },
 ];
@@ -43,7 +43,7 @@ export const receiptLineItemColumns = [
     { label: 'Invoice Amount', key: 'invoice_amount', align: 'right', width: '11%' },
     { label: 'Paid Amount', key: 'paid_amount', align: 'right', width: '10%' },
     { label: 'Balance', key: 'balance', align: 'right', width: '9%' },
-    { label: 'Payment Type', key: 'payment_method_type', align: 'left', width: '10%' },
+    { label: 'Payment Type', key: 'payment_type', align: 'left', width: '10%' },
     { label: 'Payment Date', key: 'payment_date', align: 'left', width: '14%' },
     { label: 'Payment Method', key: 'payment_method_name', align: 'left', width: '18%' },
 ];
@@ -52,7 +52,7 @@ export const receiptLineItemRowspanKeys = [
     'invoice_amount',
     'paid_amount',
     'balance',
-    'payment_method_type',
+    'payment_type',
     'payment_date',
     'payment_method_name',
 ];

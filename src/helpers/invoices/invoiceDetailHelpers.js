@@ -1,9 +1,9 @@
-const INVOICE_TYPE_LABELS = {
+export const INVOICE_TYPE_LABELS = {
     rent: 'Rent',
     utility: 'Utility',
     maintenance: 'Maintenance',
     other: 'Other',
-    sale: 'Other',
+    sale: 'Sale',
 };
 
 export function formatInvoiceTypeLabel(type) {

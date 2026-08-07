@@ -5,7 +5,7 @@
                 ref="dt"
                 data-key="id"
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
+                :current-page-report-template="$t('common.showingEntries')"
                 responsive-layout="scroll"
                 sort-mode="multiple"
                 scroll-height="50vh"
@@ -26,7 +26,7 @@
     <div class="flex flex-col gap-3">
         <!-- First row -->
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <p class="m-0 text-md">All Rooms</p>
+            <p class="m-0 text-md">{{ $t('property.allRooms') }}</p>
 
             <div class="flex flex-wrap items-center justify-end gap-2">
                 <div class="relative">
@@ -37,7 +37,7 @@
 
                     <InputText
                         v-model="search"
-                        placeholder="Search room number, building..."
+                        :placeholder="$t('common.keywordSearch')"
                         class="w-72 !pl-10"
                     />
                 </div>
@@ -47,7 +47,7 @@
                     :options="buildingOptions"
                     option-label="label"
                     option-value="value"
-                    placeholder="All Buildings"
+                    :placeholder="$t('property.allBuildings')"
                     class="w-52"
                 />
 
@@ -56,7 +56,7 @@
                     :options="typeOptions"
                     option-label="label"
                     option-value="value"
-                    placeholder="All Types"
+                    :placeholder="$t('property.roomType')"
                     class="w-40"
                 />
 
@@ -65,17 +65,17 @@
                     :options="statusOptions"
                     option-label="label"
                     option-value="value"
-                    placeholder="All Status"
+                    :placeholder="$t('property.roomStatus')"
                     class="w-40"
                 />
 
                 <Button
-                    label="Reset"
+                    :label="$t('common.reset')"
                     @click="resetSearch"
                 />
 
                 <router-link :to="{ name: 'newRoom' }">
-                    <Button label="Create" />
+                    <Button :label="$t('common.create')" />
                 </router-link>
             </div>
         </div>
@@ -93,31 +93,31 @@
         </div>
     </div>
 </template>
-                <template #empty>No rooms found.</template>
-                <template #loading>Loading rooms. Please wait.</template>
+                <template #empty>{{ $t('property.noRooms') }}</template>
+                <template #loading>{{ $t('property.loadingRooms') }}</template>
 
-                <Column field="building_name" header="Building" :sortable="true" style="min-width: 70px" />
-                <Column field="room_number" header="Room Number" :sortable="true" style="min-width: 70px" class="hover:underline">
+                <Column field="building_name" :header="$t('customer.building')" :sortable="true" style="min-width: 70px" />
+                <Column field="room_number" :header="$t('property.roomNumber')" :sortable="true" style="min-width: 70px" class="hover:underline">
                     <template #body="{ data }">
                         <router-link :to="{ name: 'showRoom', params: { id: data.id } }">
                             {{ data.room_number }}
                         </router-link>
                     </template>
                 </Column>
-                <Column field="floor_number" header="Floor" :sortable="true" style="min-width: 70px" />
+                <Column field="floor_number" :header="$t('property.floor')" :sortable="true" style="min-width: 70px" />
                 <Column field="area_sqft" header="Area (sqft)" :sortable="true" style="min-width: 70px" />
-                <Column field="type" header="Type" :sortable="true" style="min-width: 70px" />
-                <Column field="status" header="Status" :sortable="true" style="min-width: 70px">
+                <Column field="type" :header="$t('property.roomType')" :sortable="true" style="min-width: 70px" />
+                <Column field="status" :header="$t('common.status')" :sortable="true" style="min-width: 70px">
                     <template #body="{ data }">
                         <StatusBadge :value="data.status" />
                     </template>
                 </Column>
-                <Column field="sale_price" header="Sale Price (MMK)" :sortable="true" style="min-width: 120px">
+                <Column field="sale_price" :header="$t('property.salePrice') + ' (MMK)'" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.sale_price) }}
                     </template>
                 </Column>
-                <Column field="rent_price" header="Rent Price (MMK)" :sortable="true" style="min-width: 120px">
+                <Column field="rent_price" :header="$t('property.rentPrice') + ' (MMK)'" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.rent_price) }}
                     </template>
@@ -133,7 +133,7 @@
                     </template>
                 </Column>
                 <Column
-                    header="Actions"
+                    :header="$t('common.actions')"
                     :exportable="false"
                     style="width: 150px"
                 >

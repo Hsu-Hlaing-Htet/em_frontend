@@ -41,12 +41,16 @@ const service = {
     },
 
     complete: async (params) => {
-        const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/complete`);
+        const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/complete`, {
+            resolution_note: params.resolution_note,
+        });
         return result.data;
     },
 
     reject: async (params) => {
-        const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/reject`);
+        const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/reject`, {
+            rejection_reason: params.rejection_reason,
+        });
         return result.data;
     },
 };

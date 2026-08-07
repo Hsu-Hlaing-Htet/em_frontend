@@ -16,7 +16,7 @@
         >
                
                 <div class="field">
-                    <label for="building_name" class="mb-2 block text-md">Building Name</label>
+                    <label for="building_name" class="mb-2 block text-md">{{ $t('property.buildingName') }}</label>
                     <InputText id="building_name" v-model="state.building_name" class="w-full" />
                     <small v-if="errors.has('building_name')" class="p-error">
                         <div v-for="error in errors.get('building_name')" :key="error">{{ error }}</div>
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="field">
-                    <label for="location" class="mb-2 block text-md">Location</label>
+                    <label for="location" class="mb-2 block text-md">{{ $t('property.location') }}</label>
                     <InputText id="location" v-model="state.location" class="w-full" />
                     <small v-if="errors.has('location')" class="p-error">
                         <div v-for="error in errors.get('location')" :key="error">{{ error }}</div>
@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="field md:col-span-2">
-                    <label for="description" class="mb-2 block text-md">Description</label>
+                    <label for="description" class="mb-2 block text-md">{{ $t('property.description') }}</label>
                     <Textarea id="description" v-model="state.description" class="w-full" rows="4" />
                     <small v-if="errors.has('description')" class="p-error">
                         <div v-for="error in errors.get('description')" :key="error">{{ error }}</div>
@@ -40,9 +40,9 @@
                 </div>
 
                 <div class="flex justify-end md:col-span-2 gap-2">
-                    <Button type="submit" label="Save" />
+                    <Button type="submit" :label="$t('common.save')" />
                     <router-link :to="{ name: 'buildingList' }">
-                        <Button type="button" label="Cancel"/>
+                        <Button type="button" :label="$t('common.cancel')"/>
                     </router-link>
                 </div>
             </form>

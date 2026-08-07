@@ -14,23 +14,17 @@
                 @reject="runWorkflow('reject')"
             />
             <Button
-                v-if="canIssue()"
-                label="Issue Receipt"
-                icon="pi pi-send"
-                :loading="isIssuing"
-                @click="handleIssue"
+                v-if="canSendEmail()"
+                icon="pi pi-envelope"
+                label="Send Email"
+                :loading="isSendingEmail"
+                @click="handleSendEmail"
             />
             <Button
                 icon="pi pi-download"
                 label="Download"
                 severity="secondary"
                 @click="downloadPdf"
-            />
-            <Button
-                v-if="canSendEmail()"
-                icon="pi pi-envelope"
-                label="Send Email"
-                @click="sendEmail"
             />
             <router-link
                 v-if="documentRoute"

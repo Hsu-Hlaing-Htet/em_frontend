@@ -41,7 +41,7 @@
         v-for="image in roomImages"
         :key="image.id"
         type="button"
-        class="overflow-hidden border transition"
+        class="overflow-hidden border transition text-left"
         :class="
             coverImage?.id === image.id
                 ? 'border-[var(--admin-primary)]'
@@ -54,7 +54,9 @@
             :alt="image.description"
             class="h-20 w-28 object-cover"
         >
-  
+        <span class="block w-28 truncate px-1 py-1 text-xs text-[var(--admin-text-muted)]">
+            {{ image.description || 'Room photo' }}
+        </span>
     </button>
 </div>
 

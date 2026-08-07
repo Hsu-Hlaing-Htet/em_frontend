@@ -1,7 +1,8 @@
-const PAYMENT_TYPE_LABELS = {
+export const PAYMENT_TYPE_LABELS = {
     rent: 'Rent',
     utility: 'Utility',
     maintenance: 'Maintenance',
+    sale: 'Sale',
     other: 'Other',
 };
 

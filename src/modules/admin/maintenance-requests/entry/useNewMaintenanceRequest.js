@@ -2,6 +2,10 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import {
+    MAINTENANCE_CATEGORY_OPTIONS,
+    MAINTENANCE_PRIORITY_OPTIONS,
+} from '@/constants/constant';
 import { useMaintenanceRequestStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useResidentStore } from '@/modules/admin/residents/store';
@@ -20,6 +24,8 @@ export default function useNewMaintenanceRequest() {
         room_id: null,
         user_id: null,
         title: '',
+        category: null,
+        priority: null,
         description: '',
     });
 
@@ -82,6 +88,8 @@ export default function useNewMaintenanceRequest() {
         state,
         roomOptions,
         residentOptions,
+        categoryOptions: MAINTENANCE_CATEGORY_OPTIONS,
+        priorityOptions: MAINTENANCE_PRIORITY_OPTIONS,
         handleSubmit,
     };
 }

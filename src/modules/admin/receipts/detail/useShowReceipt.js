@@ -1,6 +1,7 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
+import { showApiErrorToast } from '@/utils/apiError';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { useReceiptDocument } from '@/composables/admin/documents/useReceiptDocument';
 import { useReceiptDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
@@ -12,7 +13,7 @@ export default function useShowReceipt() {
     const route = useRoute();
     const router = useRouter();
     const isLoading = ref(true);
-    const isIssuing = ref(false);
+    const isSendingEmail = ref(false);
     const workflowLoading = ref({ approve: false, reject: false });
     const isApprovalView = computed(() => route.meta.approvalContext === true);
     const backRoute = computed(() => (
@@ -49,11 +50,15 @@ export default function useShowReceipt() {
         created_by_name: '',
         approved_by_name: '',
         approved_at: '',
+        sent_at: '',
+        sent_by_name: '',
+        can_send_email: false,
+        is_sent: false,
         created_at: '',
     });
 
     const { document } = useReceiptDocument(state);
-    const { downloadPdf, sendEmail } = useReceiptDocumentActions(state, () => document.value, service);
+    const { downloadPdf } = useReceiptDocumentActions(state, () => document.value, service);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -102,7 +107,9 @@ export default function useShowReceipt() {
                     detail: response.message,
                 });
 
-                if (isApprovalView.value) {
+                if (isApprovalView.value && action === 'approve') {
+                    await router.push({ name: 'showReceipt', params: { id: state.id } });
+                } else if (isApprovalView.value) {
                     await router.push({ name: 'receiptApprovalList' });
                 }
             }
@@ -111,52 +118,57 @@ export default function useShowReceipt() {
         }
     };
 
-    const handleIssue = async () => {
-        isIssuing.value = true;
+    const handleSendEmail = async () => {
+        isSendingEmail.value = true;
 
         try {
-            await store.issue({ id: state.id });
-            const response = store.getActionResponse;
+            const response = await service.sendDocumentEmail({
+                id: state.id,
+                email: state.customer_email || undefined,
+            });
 
-            if (response) {
+            if (response?.data) {
                 Object.assign(state, response.data);
                 state.items = response.data.items || [];
-                EventBus.emit('show-toast', {
-                    severity: 'success',
-                    summary: '',
-                    detail: response.message,
-                });
             }
+
+            EventBus.emit('show-toast', {
+                severity: 'success',
+                summary: '',
+                detail: response?.message || 'Receipt sent to customer successfully.',
+            });
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to send receipt email. You can retry when mail delivery is available.');
         } finally {
-            isIssuing.value = false;
+            isSendingEmail.value = false;
         }
     };
 
     const canApprove = () => isApprovalView.value && state.approval_status === 'pending';
     const canReject = () => isApprovalView.value && state.approval_status === 'pending';
-    const canIssue = () => state.approval_status === 'approved' && state.status === 'draft';
-    const canSendEmail = () => state.approval_status === 'approved' && state.status === 'issued';
+    const canSendEmail = () => state.can_send_email
+        || (state.approval_status === 'approved' && !state.is_sent && !state.sent_at);
+    const formattedCreatedAt = computed(() => formatBillingDocumentDate(
+        state.sent_at || state.issued_at || state.created_at,
+    ));
     const documentRoute = computed(() => (
         state.id ? { name: 'receiptDocument', params: { id: state.id } } : null
     ));
-    const formattedCreatedAt = computed(() => formatBillingDocumentDate(state.issued_at || state.created_at));
 
     return {
         isApprovalView,
         backRoute,
         documentRoute,
         isLoading,
-        isIssuing,
+        isSendingEmail,
         workflowLoading,
         state,
         formattedCreatedAt,
-        handleIssue,
+        handleSendEmail,
         runWorkflow,
         canApprove,
         canReject,
-        canIssue,
         canSendEmail,
         downloadPdf,
-        sendEmail,
     };
 }

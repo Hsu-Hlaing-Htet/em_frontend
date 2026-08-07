@@ -141,6 +141,20 @@ export const MAINTENANCE_STATUS_OPTIONS = [
     { label: 'Rejected', value: 'rejected' },
 ];
 
+export const MAINTENANCE_CATEGORY_OPTIONS = [
+    { label: 'Plumbing', value: 'plumbing' },
+    { label: 'Electrical', value: 'electrical' },
+    { label: 'HVAC', value: 'hvac' },
+    { label: 'Appliance', value: 'appliance' },
+    { label: 'General', value: 'general' },
+];
+
+export const MAINTENANCE_PRIORITY_OPTIONS = [
+    { label: 'Low', value: 'low' },
+    { label: 'Medium', value: 'medium' },
+    { label: 'High', value: 'high' },
+];
+
 export const UTILITY_STATUS_OPTIONS = [
     { label: 'Draft', value: 'draft' },
     { label: 'Pending', value: 'pending' },

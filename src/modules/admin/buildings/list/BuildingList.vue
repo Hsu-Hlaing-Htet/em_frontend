@@ -5,7 +5,7 @@
                 ref="dt"
                 data-key="id"
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
+                :current-page-report-template="$t('common.showingEntries')"
                 responsive-layout="scroll"
                 sort-mode="multiple"
                 scroll-height="50vh"
@@ -24,7 +24,7 @@
             >
                 <template #header>
                     <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Buildings</p>
+                        <p class="m-0 text-md">{{ $t('property.allBuildings') }}</p>
                         <div class="flex flex-wrap items-center gap-2">
                             <div class="relative">
     <i
@@ -33,17 +33,17 @@
 
     <InputText
         v-model="search"
-        placeholder="Keyword search"
+        :placeholder="$t('common.keywordSearch')"
         class="w-72 !pl-10"
     />
 </div>
 
                             <Button
-                                label="Reset"
+                                :label="$t('common.reset')"
                                 @click="resetSearch"
                             />
                             <router-link :to="{ name: 'newBuilding' }">
-                                <Button label="Create" />
+                                <Button :label="$t('common.create')" />
                             </router-link>
                             <ListExportActions
                                 :loading="isExporting"
@@ -57,10 +57,10 @@
                     </div>
                 </template>
 
-                <template #empty>No buildings found.</template>
-                <template #loading>Loading buildings. Please wait.</template>
+                <template #empty>{{ $t('property.noBuildings') }}</template>
+                <template #loading>{{ $t('property.loadingBuildings') }}</template>
 
-                <Column field="building_name" header="Building Name" :sortable="true" style="min-width: 200px">
+                <Column field="building_name" :header="$t('property.buildingName')" :sortable="true" style="min-width: 200px">
                     <template #body="{ data }">
                         <router-link
     :to="{ name: 'showBuilding', params: { id: data.id } }"
@@ -71,15 +71,15 @@
                     </template>
                 </Column>
 
-                <Column field="location" header="Location" :sortable="true" style="min-width: 180px" />
-                <Column field="description" header="Description" :sortable="true" style="min-width: 220px">
+                <Column field="location" :header="$t('property.location')" :sortable="true" style="min-width: 180px" />
+                <Column field="description" :header="$t('property.description')" :sortable="true" style="min-width: 220px">
                     <template #body="{ data }">
                         <span class="line-clamp-2">{{ data.description || '—' }}</span>
                     </template>
                 </Column>
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 180px" />
+                <Column field="created_at" :header="$t('common.createdAt')" :sortable="true" style="min-width: 180px" />
                 <Column
-                                header="Actions"
+                                :header="$t('common.actions')"
                                 :exportable="false"
                                 style="width: 150px"
                             >   

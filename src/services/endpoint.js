@@ -16,6 +16,8 @@ export const endpoint = {
     customerReceipts: 'customer/receipts',
     customerNotifications: 'customer/notifications',
     customerPaymentMethods: 'customer/payment-methods',
+    customerMaintenanceRooms: 'customer/maintenance-rooms',
+    customerMaintenanceRequests: 'customer/maintenance-requests',
 
     /** Dashboard */
     dashboard: 'dashboard',

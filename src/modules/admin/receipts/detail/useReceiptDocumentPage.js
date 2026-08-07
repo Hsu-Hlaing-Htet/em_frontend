@@ -1,5 +1,6 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useReceiptStore } from '../store';
 import { useReceiptDocument } from '@/composables/admin/documents/useReceiptDocument';
@@ -10,6 +11,7 @@ export default function useReceiptDocumentPage() {
     const route = useRoute();
     const store = useReceiptStore();
     const isLoading = ref(true);
+    const isSendingEmail = ref(false);
 
     const state = reactive({
         id: null,
@@ -36,6 +38,9 @@ export default function useReceiptDocumentPage() {
         created_by_name: '',
         approved_by_name: '',
         approved_at: '',
+        sent_at: '',
+        can_send_email: false,
+        is_sent: false,
         created_at: '',
     });
 
@@ -44,8 +49,33 @@ export default function useReceiptDocumentPage() {
         downloadPdf,
         exportPdf,
         printPdf,
-        sendEmail,
     } = useReceiptDocumentActions(state, () => document.value, service);
+
+    const handleSendEmail = async () => {
+        isSendingEmail.value = true;
+
+        try {
+            const response = await service.sendDocumentEmail({
+                id: state.id,
+                email: state.customer_email || undefined,
+            });
+
+            if (response?.data) {
+                Object.assign(state, response.data);
+                state.items = response.data.items || [];
+            }
+
+            EventBus.emit('show-toast', {
+                severity: 'success',
+                summary: '',
+                detail: response?.message || 'Receipt sent to customer successfully.',
+            });
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to send receipt email. You can retry when mail delivery is available.');
+        } finally {
+            isSendingEmail.value = false;
+        }
+    };
 
     const backRoute = computed(() => (
         route.meta.approvalContext
@@ -92,9 +122,9 @@ export default function useReceiptDocumentPage() {
         exportPdf,
         printPdf,
         printContract: printPdf,
-        sendEmail,
-        canSendEmail: computed(() => (
-            state.approval_status === 'approved' && state.status === 'issued'
-        )),
+        handleSendEmail,
+        isSendingEmail,
+        canSendEmail: computed(() => state.can_send_email
+            || (state.approval_status === 'approved' && !state.is_sent && !state.sent_at)),
     };
 }

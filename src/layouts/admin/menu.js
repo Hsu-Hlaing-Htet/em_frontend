@@ -1,196 +1,188 @@
 const menuList = [
     {
-        label: 'Dashboard',
+        labelKey: 'navigation.dashboard',
         key: 'dashboard',
         icon: 'pi pi-th-large',
         to: '/admin/dashboard',
     },
-
     {
-        label: 'Buildings',
+        labelKey: 'navigation.buildings',
         key: 'buildings',
         icon: 'pi pi-building',
         to: '/admin/buildings',
     },
-
     {
-        label: 'Rooms',
+        labelKey: 'navigation.rooms',
         key: 'rooms',
         icon: 'pi pi-home',
         to: '/admin/rooms',
     },
-
     {
-        label: 'Users',
+        labelKey: 'navigation.users',
         key: 'users',
         icon: 'pi pi-users',
         items: [
             {
-                label: 'Residents',
+                labelKey: 'navigation.residents',
                 key: 'residents',
                 icon: 'pi pi-users',
                 to: '/admin/residents',
             },
             {
-                label: 'Staffs',
+                labelKey: 'navigation.staff',
                 key: 'staff',
                 icon: 'pi pi-user-plus',
                 to: '/admin/staff',
             },
         ],
     },
-
     {
-        label: 'Contracts',
+        labelKey: 'navigation.contracts',
         key: 'contracts',
         icon: 'pi pi-file',
         items: [
             {
-                label: 'Sale Drafts',
+                labelKey: 'navigation.saleDrafts',
                 key: 'sale-drafts',
                 icon: 'pi pi-file-edit',
                 to: '/admin/sale-contracts/drafts',
             },
             {
-                label: 'Active Sales',
+                labelKey: 'navigation.activeSales',
                 key: 'active-sales',
                 icon: 'pi pi-check-circle',
                 to: '/admin/sale-contracts/active',
             },
             {
-                label: 'Rent Drafts',
+                labelKey: 'navigation.rentDrafts',
                 key: 'rent-drafts',
                 icon: 'pi pi-file-edit',
                 to: '/admin/rent-contracts/drafts',
             },
             {
-                label: 'Active Rents',
+                labelKey: 'navigation.activeRents',
                 key: 'active-rents',
                 icon: 'pi pi-check-circle',
                 to: '/admin/rent-contracts/active',
             },
         ],
     },
-
     {
-        label: 'Utilities',
+        labelKey: 'navigation.utilities',
         key: 'utilities',
         icon: 'pi pi-bolt',
         to: '/admin/utilities',
     },
-
     {
-        label: 'Invoices',
+        labelKey: 'navigation.invoices',
         key: 'invoices',
         icon: 'pi pi-receipt',
         to: '/admin/invoices',
     },
-
     {
-        label: 'Payments',
+        labelKey: 'navigation.payments',
         key: 'payments',
         icon: 'pi pi-wallet',
         to: '/admin/payments',
     },
     {
-        label: 'Receipts',
+        labelKey: 'navigation.receipts',
         key: 'receipts',
         icon: 'pi pi-ticket',
         to: '/admin/receipts',
     },
     {
-        label: 'Maintenance Requests',
+        labelKey: 'navigation.maintenanceRequests',
         key: 'maintenance-requests',
         icon: 'pi pi-wrench',
         to: '/admin/maintenance-requests',
     },
     {
-        label: 'Approvals',
+        labelKey: 'navigation.approvals',
         key: 'approvals',
         icon: 'pi pi-verified',
         items: [
             {
-                label: 'Sale Contracts',
+                labelKey: 'navigation.approvalSaleContracts',
                 key: 'approval-sale-contracts',
                 icon: 'pi pi-file-check',
                 to: '/admin/approvals/sale-contracts',
             },
             {
-                label: 'Rent Contracts',
+                labelKey: 'navigation.approvalRentContracts',
                 key: 'approval-rent-contracts',
                 icon: 'pi pi-file-check',
                 to: '/admin/approvals/rent-contracts',
             },
             {
-                label: 'Utilities',
+                labelKey: 'navigation.utilities',
                 key: 'approval-utilities',
                 icon: 'pi pi-bolt',
                 to: '/admin/utilities/approval',
             },
             {
-                label: 'Invoices',
+                labelKey: 'navigation.invoices',
                 key: 'approval-invoices',
                 icon: 'pi pi-receipt',
                 to: '/admin/invoices/approval',
             },
             {
-                label: 'Payments',
+                labelKey: 'navigation.payments',
                 key: 'approval-payments',
                 icon: 'pi pi-wallet',
                 to: '/admin/payments/approval',
             },
             {
-                label: 'Receipts',
+                labelKey: 'navigation.receipts',
                 key: 'approval-receipts',
                 icon: 'pi pi-ticket',
                 to: '/admin/receipts/approval',
             },
         ],
     },
-
     {
-        label: 'Settings',
+        labelKey: 'navigation.settings',
         key: 'settings',
         icon: 'pi pi-cog',
         items: [
             {
-                label: 'Roles',
+                labelKey: 'navigation.roles',
                 key: 'roles',
                 icon: 'pi pi-shield',
                 to: '/admin/roles',
             },
             {
-                label: 'Utility Types',
+                labelKey: 'navigation.utilityTypes',
                 key: 'utility-types',
                 icon: 'pi pi-list',
                 to: '/admin/utility-types',
             },
             {
-                label: 'Utility Rates',
+                labelKey: 'navigation.utilityRates',
                 key: 'utility-rates',
                 icon: 'pi pi-dollar',
                 to: '/admin/utility-rates',
             },
             {
-                label: 'Charge Types',
+                labelKey: 'navigation.chargeTypes',
                 key: 'charge-types',
                 icon: 'pi pi-tags',
                 to: '/admin/charge-types',
             },
             {
-                label: 'Payment Plans',
+                labelKey: 'navigation.paymentPlans',
                 key: 'payment-plans',
                 icon: 'pi pi-calendar',
                 to: '/admin/payment-plans',
             },
             {
-                label: 'Late Fees',
+                labelKey: 'navigation.lateFees',
                 key: 'late-fees',
                 icon: 'pi pi-clock',
                 to: '/admin/late-fees',
             },
             {
-                label: 'Payment Methods',
+                labelKey: 'navigation.paymentMethods',
                 key: 'payment-methods',
                 icon: 'pi pi-credit-card',
                 to: '/admin/payment-methods',

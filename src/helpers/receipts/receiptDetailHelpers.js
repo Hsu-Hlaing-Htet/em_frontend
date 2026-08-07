@@ -1,5 +1,5 @@
 import { formatInvoiceMeterValue } from '@/helpers/invoices/invoiceDetailHelpers';
-import { formatPaymentMethodTypeLabel } from '@/helpers/payments/paymentListHelpers';
+import { formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
 import { formatCurrency, formatDate } from '@/utils/formatter';
 import { hasBillingValue } from '@/helpers/billing/billingDetailHelpers';
 
@@ -9,7 +9,7 @@ export function mapReceiptLineItemRows(state, currencyFormatter = formatCurrency
         invoice_amount: currencyFormatter(state?.invoice_amount),
         paid_amount: currencyFormatter(state?.paid_amount ?? state?.payment_amount ?? state?.amount),
         balance: currencyFormatter(state?.balance),
-        payment_method_type: formatPaymentMethodTypeLabel(state?.payment_method_type),
+        payment_type: formatPaymentTypeLabel(state?.payment_type),
         payment_date: formatDate(state?.payment_date) || '—',
         payment_method_name: state?.payment_method_name || '—',
     };

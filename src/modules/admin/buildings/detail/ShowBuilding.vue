@@ -3,7 +3,7 @@
         <div class="flex justify-end p-4">
             <div class="flex gap-2">
                 <router-link :to="{ name: 'buildingList' }">
-                    <Button label="Back" class="p-2"/>
+                    <Button :label="$t('common.back')" class="p-2"/>
                 </router-link>
                 <router-link v-if="state.id" :to="{ name: 'editBuilding', params: { id: state.id } }">
                     <Button
@@ -25,7 +25,7 @@
         class="p-3"
     >
         <p class="mb-2 text-md font-semibold uppercase tracking-wider text-[var(--admin-text-muted)]">
-            Building Name
+            {{ $t('property.buildingName') }}
         </p>
 
         <p class="text-base font-medium text-[var(--admin-text)]">
@@ -37,7 +37,7 @@
         class="p-2"
     >
         <p class="mb-2 text-md font-semibold uppercase tracking-wider text-[var(--admin-text-muted)]">
-            Location
+            {{ $t('property.location') }}
         </p>
 
         <p class="text-base font-medium text-[var(--admin-text)]">
@@ -49,7 +49,7 @@
         class="p-2 md:col-span-2"
     >
         <p class="mb-2 text-md font-semibold uppercase tracking-wider text-[var(--admin-text-muted)]">
-            Description
+            {{ $t('property.description') }}
         </p>
 
         <p class="leading-7 text-[var(--admin-text)]">

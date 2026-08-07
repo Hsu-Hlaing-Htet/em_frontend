@@ -116,6 +116,26 @@ const service = {
         const result = await api.get(endpoint.customerPaymentMethods);
         return result.data;
     },
+
+    getMaintenanceRooms: async () => {
+        const result = await api.get(endpoint.customerMaintenanceRooms);
+        return result.data;
+    },
+
+    getMaintenanceRequests: async (params) => {
+        const result = await api.get(endpoint.customerMaintenanceRequests, { params });
+        return result.data;
+    },
+
+    getMaintenanceRequest: async (params) => {
+        const result = await api.get(`${endpoint.customerMaintenanceRequests}/${params.id}`);
+        return result.data;
+    },
+
+    createMaintenanceRequest: async (params) => {
+        const result = await api.post(endpoint.customerMaintenanceRequests, params);
+        return result.data;
+    },
 };
 
 export { service };

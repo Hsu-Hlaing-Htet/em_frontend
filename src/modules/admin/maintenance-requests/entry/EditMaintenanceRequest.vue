@@ -34,6 +34,28 @@
                 <InputText id="title" v-model="state.title" class="w-full" />
             </div>
             <div class="field">
+                <label for="category" class="mb-2 block text-md">Category</label>
+                <Dropdown
+                    id="category"
+                    v-model="state.category"
+                    :options="categoryOptions"
+                    option-label="label"
+                    option-value="value"
+                    class="w-full"
+                />
+            </div>
+            <div class="field">
+                <label for="priority" class="mb-2 block text-md">Priority</label>
+                <Dropdown
+                    id="priority"
+                    v-model="state.priority"
+                    :options="priorityOptions"
+                    option-label="label"
+                    option-value="value"
+                    class="w-full"
+                />
+            </div>
+            <div class="field">
                 <label for="description" class="mb-2 block text-md">Description</label>
                 <Textarea id="description" v-model="state.description" rows="4" class="w-full" />
             </div>

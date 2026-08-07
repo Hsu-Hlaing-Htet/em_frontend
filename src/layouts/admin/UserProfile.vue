@@ -22,6 +22,7 @@
 
 <script>
 import { ref, computed, defineComponent } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/modules/auth/store';
 import { useRouter } from 'vue-router';
 import Avatar from 'primevue/avatar';
@@ -37,6 +38,7 @@ export default defineComponent({
     setup() {
         const authStore = useAuthStore();
         const router = useRouter();
+        const { t } = useI18n();
         const userMenu = ref();
 
         const user = computed(() => authStore.user);
@@ -60,16 +62,16 @@ export default defineComponent({
             await router.push({ name: 'login' });
         };
 
-        const profileMenuItems = ref([
+        const profileMenuItems = computed(() => [
             {
-                label: 'Profile',
+                label: t('common.profile'),
                 icon: 'pi pi-user',
                 command: () => {
                     router.push({ name: 'adminProfile' });
                 },
             },
             {
-                label: 'Logout',
+                label: t('common.logout'),
                 icon: 'pi pi-sign-out',
                 command: () => {
                     handleLogout();

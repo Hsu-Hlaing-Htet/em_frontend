@@ -40,7 +40,8 @@ export const useReceiptList = () => {
     const roomId = ref(null);
     const issuedFrom = ref(null);
     const issuedTo = ref(null);
-    const statusFilter = ref(null);
+    const statusFilter = ref('issued');
+    const deliveryStatusFilter = ref('sent');
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const receipts = ref([]);
@@ -77,6 +78,7 @@ export const useReceiptList = () => {
         issued_from: toQueryDate(issuedFrom.value),
         issued_to: toQueryDate(issuedTo.value),
         status: statusFilter.value || undefined,
+        delivery_status: deliveryStatusFilter.value || undefined,
     });
 
     const applyQueryToFilters = (query) => {
@@ -85,7 +87,8 @@ export const useReceiptList = () => {
         roomId.value = readQueryNumber(query, 'room_id');
         issuedFrom.value = readQueryDate(query, 'issued_from', parseDate);
         issuedTo.value = readQueryDate(query, 'issued_to', parseDate);
-        statusFilter.value = readQueryString(query, 'status', '') || null;
+        statusFilter.value = readQueryString(query, 'status', '') || 'issued';
+        deliveryStatusFilter.value = readQueryString(query, 'delivery_status', '') || 'sent';
     };
 
     const syncFiltersToUrl = async () => {
@@ -154,7 +157,8 @@ export const useReceiptList = () => {
         roomId.value = null;
         issuedFrom.value = null;
         issuedTo.value = null;
-        statusFilter.value = null;
+        statusFilter.value = 'issued';
+        deliveryStatusFilter.value = 'sent';
         roomOptions.value = [];
         resetPagination();
         await syncFiltersToUrl();
@@ -172,7 +176,7 @@ export const useReceiptList = () => {
     });
 
     watch(
-        [search, buildingId, roomId, issuedFrom, issuedTo, statusFilter],
+        [search, buildingId, roomId, issuedFrom, issuedTo, statusFilter, deliveryStatusFilter],
         () => {
             reloadFromFilters();
         },
@@ -244,6 +248,7 @@ export const useReceiptList = () => {
         issuedFrom,
         issuedTo,
         statusFilter,
+        deliveryStatusFilter,
         buildingOptions,
         roomOptions,
         onSort,

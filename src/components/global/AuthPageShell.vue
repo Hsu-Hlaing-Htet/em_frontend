@@ -11,12 +11,19 @@ defineProps({
         type: String,
         default: '',
     },
+    showThemeToggle: {
+        type: Boolean,
+        default: true,
+    },
 });
 </script>
 
 <template>
     <div class="rw-auth-shell relative flex min-h-screen items-center justify-center px-4">
-        <div class="absolute right-4 top-4">
+        <div
+            v-if="showThemeToggle"
+            class="absolute right-4 top-4"
+        >
             <ThemeToggle />
         </div>
 

@@ -24,7 +24,8 @@
                     v-if="canSendEmail"
                     icon="pi pi-envelope"
                     label="Send Email"
-                    @click="sendEmail"
+                    :loading="isSendingEmail"
+                    @click="handleSendEmail"
                 />
                 <router-link :to="backRoute">
                     <Button label="Back" severity="secondary" />

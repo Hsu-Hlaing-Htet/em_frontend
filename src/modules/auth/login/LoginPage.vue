@@ -1,6 +1,8 @@
 <script setup>
+import { onMounted, onUnmounted } from 'vue';
 import AuthPageShell from '@/components/global/AuthPageShell.vue';
 import { useLogin } from '@/composables/global/useLogin';
+import { useThemeStore } from '@/stores/themeStore';
 
 const {
     form,
@@ -8,12 +10,23 @@ const {
     showPassword,
     submit,
 } = useLogin();
+
+const themeStore = useThemeStore();
+
+onMounted(() => {
+    document.documentElement.setAttribute('data-theme', 'light');
+});
+
+onUnmounted(() => {
+    themeStore.applyTheme();
+});
 </script>
 
 <template>
     <AuthPageShell
         title="Welcome Back!"
         subtitle="Please enter your login details."
+        :show-theme-toggle="false"
     >
         <form class="space-y-4" @submit.prevent="submit">
             <div>

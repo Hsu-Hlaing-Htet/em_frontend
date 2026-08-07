@@ -33,13 +33,17 @@ import './assets/css/admin.css';
 import './assets/css/customer.css';
 import App from '@/App.vue';
 import router from '@/routes';
+import i18n from '@/i18n';
 import { useThemeStore } from '@/stores/themeStore';
+import { useLocaleStore } from '@/stores/localeStore';
 
 const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
 useThemeStore().applyTheme();
+useLocaleStore().init();
+app.use(i18n);
 app.use(router);
 app.use(PrimeVue, { ripple: false });
 app.use(ToastService);

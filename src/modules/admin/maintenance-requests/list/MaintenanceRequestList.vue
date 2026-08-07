@@ -69,6 +69,16 @@
                         </router-link>
                     </template>
                 </Column>
+                <Column field="category" header="Category" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        <span class="capitalize">{{ data.category || '—' }}</span>
+                    </template>
+                </Column>
+                <Column field="priority" header="Priority" :sortable="true" style="min-width: 110px">
+                    <template #body="{ data }">
+                        <span class="capitalize">{{ data.priority || '—' }}</span>
+                    </template>
+                </Column>
                 <Column field="room_number" header="Room" :sortable="true" style="min-width: 100px" />
                 <Column field="user_name" header="Resident" :sortable="true" style="min-width: 140px" />
                 <Column field="status" header="Status" :sortable="true" style="min-width: 130px">

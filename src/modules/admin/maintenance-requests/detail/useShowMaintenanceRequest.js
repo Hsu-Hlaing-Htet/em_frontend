@@ -8,6 +8,9 @@ export default function useShowMaintenanceRequest() {
     const route = useRoute();
     const isLoading = ref(true);
     const workflowLoading = ref({ start: false, complete: false, reject: false });
+    const showRejectDialog = ref(false);
+    const showCompleteDialog = ref(false);
+    const resolutionNote = ref('');
 
     const state = reactive({
         id: null,
@@ -16,8 +19,12 @@ export default function useShowMaintenanceRequest() {
         user_id: null,
         user_name: '',
         title: '',
+        category: '',
+        priority: '',
         description: '',
         status: '',
+        rejection_reason: '',
+        resolution_note: '',
         approved_at: '',
         created_at: '',
     });
@@ -52,17 +59,37 @@ export default function useShowMaintenanceRequest() {
         }
     };
 
-    const runWorkflow = async (action) => {
+    const openRejectDialog = () => {
+        showRejectDialog.value = true;
+    };
+
+    const openCompleteDialog = () => {
+        resolutionNote.value = '';
+        showCompleteDialog.value = true;
+    };
+
+    const confirmReject = async (reason) => {
+        await runWorkflow('reject', { rejection_reason: reason });
+    };
+
+    const confirmComplete = async () => {
+        showCompleteDialog.value = false;
+        await runWorkflow('complete', {
+            resolution_note: resolutionNote.value.trim() || null,
+        });
+    };
+
+    const runWorkflow = async (action, payload = {}) => {
         workflowLoading.value[action] = true;
 
         try {
-            await store[action]({ id: state.id });
+            await store[action]({ id: state.id, ...payload });
             const response = store.getActionResponse;
 
             if (response) {
                 Object.assign(state, response.data);
                 EventBus.emit('show-toast', {
-                    severity: 'success',
+                    severity: action === 'reject' ? 'warn' : 'success',
                     summary: '',
                     detail: response.message,
                 });
@@ -80,6 +107,13 @@ export default function useShowMaintenanceRequest() {
         isLoading,
         state,
         workflowLoading,
+        showRejectDialog,
+        showCompleteDialog,
+        resolutionNote,
+        openRejectDialog,
+        openCompleteDialog,
+        confirmReject,
+        confirmComplete,
         runWorkflow,
         canStart,
         canComplete,

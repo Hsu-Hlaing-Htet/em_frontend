@@ -17,7 +17,7 @@
                     {{ user.name }}
                 </div>
 
-                <nav class="customer-desktop-nav ml-auto" aria-label="Customer navigation">
+                <nav class="customer-desktop-nav ml-auto" :aria-label="$t('customer.dashboard')">
                     <router-link
                         v-for="item in navItems"
                         :key="item.to"
@@ -31,14 +31,15 @@
                     </router-link>
                 </nav>
 
-                <div class="ml-auto flex items-center gap-1 lg:ml-0">
+                <div class="ml-auto flex items-center gap-2.5 lg:ml-0">
                     <ThemeToggle />
+                    <LanguageSwitcher />
                     <Button
-                        label="Logout"
+                        :label="$t('common.logout')"
                         severity="secondary"
                         text
                         size="small"
-                        class="hidden sm:inline-flex"
+                        class="hidden sm:inline-flex ml-2"
                         @click="handleLogout"
                     />
                     <Button
@@ -47,7 +48,7 @@
                         text
                         rounded
                         class="sm:hidden"
-                        aria-label="Logout"
+                        :aria-label="$t('common.logout')"
                         @click="handleLogout"
                     />
                 </div>
@@ -82,9 +83,11 @@
 import { computed, defineComponent } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import AppBreadcrumb from '@/layouts/admin/Breadcrumb.vue';
 import ThemeToggle from '@/components/global/ThemeToggle.vue';
+import LanguageSwitcher from '@/components/global/LanguageSwitcher.vue';
 import DevelopedByCredit from '@/components/global/DevelopedByCredit.vue';
 import { useAuthStore } from '@/modules/auth/store';
 import { useThemeStore } from '@/stores/themeStore';
@@ -95,33 +98,36 @@ export default defineComponent({
         Button,
         AppBreadcrumb,
         ThemeToggle,
+        LanguageSwitcher,
         DevelopedByCredit,
     },
     setup() {
         const route = useRoute();
         const router = useRouter();
+        const { t } = useI18n();
         const authStore = useAuthStore();
         const themeStore = useThemeStore();
         const { user } = storeToRefs(authStore);
         const { mode: themeMode } = storeToRefs(themeStore);
 
-        const mobileNavItems = [
-            { label: 'Home', to: '/customer/dashboard', icon: 'pi pi-home' },
-            { label: 'Payments', to: '/customer/payments', icon: 'pi pi-wallet' },
-            { label: 'Invoices', to: '/customer/invoices', icon: 'pi pi-file' },
-            { label: 'Alerts', to: '/customer/notifications', icon: 'pi pi-bell' },
-            { label: 'Profile', to: '/customer/profile', icon: 'pi pi-user' },
-        ];
+        const mobileNavItems = computed(() => [
+            { label: t('common.home'), to: '/customer/dashboard', icon: 'pi pi-home' },
+            { label: t('customer.payments'), to: '/customer/payments', icon: 'pi pi-wallet' },
+            { label: t('customer.invoices'), to: '/customer/invoices', icon: 'pi pi-file' },
+            { label: t('common.alerts'), to: '/customer/notifications', icon: 'pi pi-bell' },
+            { label: t('customer.profile'), to: '/customer/profile', icon: 'pi pi-user' },
+        ]);
 
-        const navItems = [
-            { label: 'Dashboard', to: '/customer/dashboard' },
-            { label: 'Profile', to: '/customer/profile' },
-            { label: 'Contracts', to: '/customer/contracts' },
-            { label: 'Invoices', to: '/customer/invoices' },
-            { label: 'Payments', to: '/customer/payments' },
-            { label: 'Receipts', to: '/customer/receipts' },
-            { label: 'Notifications', to: '/customer/notifications' },
-        ];
+        const navItems = computed(() => [
+            { label: t('customer.dashboard'), to: '/customer/dashboard' },
+            { label: t('customer.profile'), to: '/customer/profile' },
+            { label: t('customer.contracts'), to: '/customer/contracts' },
+            { label: t('customer.invoices'), to: '/customer/invoices' },
+            { label: t('customer.payments'), to: '/customer/payments' },
+            { label: t('customer.receipts'), to: '/customer/receipts' },
+            { label: t('customer.maintenance'), to: '/customer/maintenance-requests' },
+            { label: t('customer.notifications'), to: '/customer/notifications' },
+        ]);
 
         const isActive = (path) => route.path.startsWith(path);
         const showBreadcrumbs = computed(() => Boolean(route.meta?.breadcrumbs?.length));

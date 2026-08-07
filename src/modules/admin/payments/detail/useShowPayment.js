@@ -1,7 +1,7 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
-import { formatPropertyUnit, formatPaymentMethodTypeLabel } from '@/helpers/payments/paymentListHelpers';
+import { formatPropertyUnit, formatPaymentMethodTypeLabel, formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
 import {
     buildPaymentCustomerInfo,
     buildPaymentSummaryNote,
@@ -35,6 +35,7 @@ export default function useShowPayment() {
         payment_method_id: null,
         payment_method_name: '',
         payment_method_type: '',
+        payment_type: '',
         amount: null,
         invoice_amount: 0,
         paid_amount: 0,
@@ -260,6 +261,7 @@ export default function useShowPayment() {
         balance: formatCurrency(state.balance),
         entered_paid_amount: null,
         remaining_balance: null,
+        payment_type: formatPaymentTypeLabel(state.payment_type),
         payment_method_type: formatPaymentMethodTypeLabel(state.payment_method_type),
         payment_date: formatDate(state.payment_date) || '—',
         payment_method_name: state.payment_method_name || '—',

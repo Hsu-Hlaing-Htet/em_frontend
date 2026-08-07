@@ -12,7 +12,7 @@
                     for="building_name"
                     class="mb-2 block text-md"
                 >
-                    Building Name
+                    {{ $t('property.buildingName') }}
                 </label>
 
                 <InputText
@@ -41,7 +41,7 @@
                     for="location"
                     class="mb-2 block text-md"
                 >
-                    Location
+                    {{ $t('property.location') }}
                 </label>
 
                 <InputText
@@ -70,7 +70,7 @@
                     for="description"
                     class="mb-2 block text-md"
                 >
-                    Description
+                    {{ $t('property.description') }}
                 </label>
 
                 <Textarea
@@ -98,7 +98,7 @@
             <div class="flex justify-end gap-2 md:col-span-2">
                 <Button
                     type="submit"
-                    label="Save Changes"
+                    :label="$t('common.save')"
                 />
 
                 <router-link
@@ -106,7 +106,7 @@
                 >
                     <Button
                         type="button"
-                        label="Cancel"
+                        :label="$t('common.cancel')"
                     />
                 </router-link>
             </div>
@@ -124,10 +124,10 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
-import useEditBuilding from './useEditBuilding';
+import useNewBuilding from './useNewBuilding';
 
 export default defineComponent({
-    name: 'EditBuilding',
+    name: 'NewBuilding',
     components: {
         InputText,
         Textarea,
@@ -135,7 +135,7 @@ export default defineComponent({
         Loading,
     },
     setup() {
-        return useEditBuilding();
+        return useNewBuilding();
     },
 });
 </script>

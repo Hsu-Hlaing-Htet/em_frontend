@@ -18,11 +18,11 @@
                         'menu-link--collapsed': isCollapsed,
                         'menu-link-active': isCollapsed && isGroupRouteActive(item),
                     }"
-                    :aria-label="item.label"
+                    :aria-label="resolveLabel(item)"
                     :aria-expanded="isCollapsed ? isFlyoutOpen(i) : isGroupOpen(item, i)"
                     :aria-haspopup="isCollapsed ? 'menu' : undefined"
                     :aria-controls="isCollapsed ? flyoutId(i) : undefined"
-                    :title="isCollapsed ? item.label : undefined"
+                    :title="isCollapsed ? resolveLabel(item) : undefined"
                     @click.prevent="onGroupClick(i, item)"
                     @keydown="onGroupKeydown($event, i, item)"
                 >
@@ -32,7 +32,7 @@
                         v-if="!isCollapsed"
                         class="menu-link-label"
                     >
-                        {{ item.label }}
+                        {{ resolveLabel(item) }}
                     </span>
 
                     <i
@@ -63,7 +63,7 @@
                                     class="menu-link submenu-link"
                                     :class="{ 'menu-link-active': isLeafActive(child) }"
                                     :aria-current="isLeafActive(child) ? 'page' : undefined"
-                                    :aria-label="`${item.label}: ${child.label}`"
+                                    :aria-label="`${resolveLabel(item)}: ${resolveLabel(child)}`"
                                     @click="onMenuNavigate($event, navigate)"
                                 >
                                     <i
@@ -71,7 +71,7 @@
                                         class="menu-link-icon"
                                         aria-hidden="true"
                                     />
-                                    <span class="menu-link-label">{{ child.label }}</span>
+                                    <span class="menu-link-label">{{ resolveLabel(child) }}</span>
                                 </a>
                             </router-link>
                         </li>
@@ -94,8 +94,8 @@
                             'menu-link-active': isLeafActive(item),
                         }"
                         :aria-current="isLeafActive(item) ? 'page' : undefined"
-                        :aria-label="item.label"
-                        :title="isCollapsed ? item.label : undefined"
+                        :aria-label="resolveLabel(item)"
+                        :title="isCollapsed ? resolveLabel(item) : undefined"
                         @click="onMenuNavigate($event, navigate)"
                     >
                         <i :class="item.icon" class="menu-link-icon" aria-hidden="true" />
@@ -103,7 +103,7 @@
                             v-if="!isCollapsed"
                             class="menu-link-label"
                         >
-                            {{ item.label }}
+                            {{ resolveLabel(item) }}
                         </span>
                     </a>
                 </router-link>
@@ -117,15 +117,15 @@
             :id="flyoutId(flyoutIndex)"
             class="menu-flyout"
             role="menu"
-            :aria-label="flyoutItem.label"
+            :aria-label="resolveLabel(flyoutItem)"
             :style="flyoutStyle"
             @mouseenter="keepFlyoutOpen"
             @mouseleave="onItemLeave"
         >
-            <p class="menu-flyout-title">{{ flyoutItem.label }}</p>
+            <p class="menu-flyout-title">{{ resolveLabel(flyoutItem) }}</p>
             <router-link
                 v-for="child in flyoutItem.items"
-                :key="child.key || child.label"
+                :key="child.key || child.labelKey || child.label"
                 v-slot="{ href, navigate }"
                 :to="child.to"
                 custom
@@ -144,7 +144,7 @@
                         class="menu-flyout-icon"
                         aria-hidden="true"
                     />
-                    <span>{{ child.label }}</span>
+                    <span>{{ resolveLabel(child) }}</span>
                 </a>
             </router-link>
         </div>
@@ -154,6 +154,7 @@
 <script>
 import { computed, inject, nextTick, onBeforeUnmount, ref, unref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 export default {
     name: 'Submenu',
@@ -167,8 +168,21 @@ export default {
 
     setup(props) {
         const route = useRoute();
+        const { t } = useI18n();
         const sidebarCollapsedInjected = inject('sidebarCollapsed', false);
         const isCollapsed = computed(() => Boolean(unref(sidebarCollapsedInjected)));
+
+        const resolveLabel = (item) => {
+            if (!item) {
+                return '';
+            }
+
+            if (item.labelKey) {
+                return t(item.labelKey);
+            }
+
+            return item.label || '';
+        };
 
         const manualOpenIndex = ref(null);
         const manualCloseIndex = ref(null);
@@ -359,6 +373,7 @@ export default {
 
         return {
             isCollapsed,
+            resolveLabel,
             isLeafActive,
             isGroupRouteActive,
             isGroupOpen,

@@ -6,6 +6,7 @@ import invoiceRoutes from './invoices/routes';
 import paymentRoutes from './payments/routes';
 import receiptRoutes from './receipts/routes';
 import notificationRoutes from './notifications/routes';
+import maintenanceRequestRoutes from './maintenance-requests/routes';
 import NotFound from '@/pages/404.vue';
 
 export const customerRoutes = [
@@ -25,6 +26,7 @@ export const customerRoutes = [
             ...paymentRoutes,
             ...receiptRoutes,
             ...notificationRoutes,
+            ...maintenanceRequestRoutes,
             {
                 path: ':pathMatch(.*)*',
                 name: 'customer-not-found',

@@ -37,6 +37,13 @@ const service = {
         return result.data;
     },
 
+    bulkDelete: async (params) => {
+        const result = await api.delete(`${endpoint.rooms}/bulk`, {
+            data: { ids: params.ids },
+        });
+        return result.data;
+    },
+
     getAllImages: async (params) => {
         try {
             const result = await api.get(endpoint.roomImages, { params });

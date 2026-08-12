@@ -7,6 +7,7 @@
         :payment-type-options="paymentTypeOptions"
         :duration-month-options="durationMonthOptions"
         :billing-day-options="billingDayOptions"
+        :errors="errors"
         :cancel-route="{ name: 'rentContractDraftList' }"
         @submit="handleSubmit"
     />

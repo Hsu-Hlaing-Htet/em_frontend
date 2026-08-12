@@ -47,9 +47,14 @@ export default function useEditUtilityRate() {
     };
 
     onMounted(async () => {
-        await utilityTypeStore.fetchAll({ per_page: 100, status: 'active' });
-        await fetchUtilityRate();
-        loadUtilityTypeOptions();
+        try {
+            await utilityTypeStore.fetchAll({ per_page: 100, status: 'active' });
+            await fetchUtilityRate();
+            loadUtilityTypeOptions();
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load utility rate form data.');
+            isLoading.value = false;
+        }
     });
 
     onBeforeUnmount(() => {
@@ -75,6 +80,8 @@ export default function useEditUtilityRate() {
                     status: response.data.status || 'active',
                 });
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load utility rate.');
         } finally {
             isLoading.value = false;
         }
@@ -138,6 +145,8 @@ export default function useEditUtilityRate() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save utility rate.');
             }
         } finally {
             isLoading.value = false;

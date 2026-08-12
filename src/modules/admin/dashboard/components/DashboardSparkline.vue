@@ -39,7 +39,6 @@
             stroke-linecap="round"
             stroke-linejoin="round"
             class="dashboard-sparkline__line"
-            :style="{ filter: `drop-shadow(0 0 4px ${glowColor})` }"
         />
         <circle
             v-if="lastPoint"
@@ -48,7 +47,6 @@
             r="3"
             :fill="color"
             class="dashboard-sparkline__dot"
-            :style="{ filter: `drop-shadow(0 0 5px ${glowColor})` }"
         />
     </svg>
 </template>
@@ -131,23 +129,11 @@ export default defineComponent({
             points.value.length ? points.value[points.value.length - 1] : null
         ));
 
-        const glowColor = computed(() => {
-            const alpha = '66';
-            const hex = String(props.color).replace('#', '');
-
-            if (hex.length === 6) {
-                return `#${hex}${alpha}`;
-            }
-
-            return props.color;
-        });
-
         return {
             gradientId,
             linePath,
             areaPath,
             lastPoint,
-            glowColor,
         };
     },
 });

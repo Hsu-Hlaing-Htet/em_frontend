@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import {
     PAYMENT_PLAN_STATUS_OPTIONS,
     PAYMENT_PLAN_TYPE_OPTIONS,
@@ -57,6 +58,8 @@ export default function useEditPaymentPlan() {
                     status: response.data.status || 'active',
                 });
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load payment plan.');
         } finally {
             isLoading.value = false;
         }
@@ -81,6 +84,8 @@ export default function useEditPaymentPlan() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save payment plan.');
             }
         } finally {
             isLoading.value = false;

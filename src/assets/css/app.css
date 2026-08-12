@@ -146,6 +146,37 @@ a {
     text-decoration: none;
 }
 
+form *:has(> .p-error) > :is(
+    .p-inputtext,
+    .p-dropdown,
+    .p-calendar,
+    .p-inputnumber,
+    .p-password,
+    .p-inputtextarea,
+    .p-multiselect,
+    .p-fileupload
+) {
+    border-color: var(--red-500) !important;
+}
+
+form *:has(> .p-error) > :is(.p-calendar, .p-inputnumber, .p-password) > .p-inputtext,
+form *:has(> .p-error) > .p-fileupload .p-fileupload-choose {
+    border-color: var(--red-500) !important;
+}
+
+form *:has(> .p-error) > :is(
+    .p-inputtext,
+    .p-dropdown,
+    .p-calendar,
+    .p-inputnumber,
+    .p-password,
+    .p-inputtextarea,
+    .p-multiselect,
+    .p-fileupload
+):focus-within {
+    box-shadow: 0 0 0 0.2rem var(--red-100);
+}
+
 .shell {
     min-height: 100vh;
 }

@@ -25,7 +25,7 @@ export const adminRoutes = [
     {
         path: '/admin',
         component: Layout,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, allowedRoles: ['admin', 'super_admin'] },
         children: [
             {
                 path: 'dashboard',

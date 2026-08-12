@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1 class="customer-page-heading">Receipts</h1>
-        <p class="customer-page-lead">Download and review your payment receipts</p>
+        <h1 class="customer-page-heading">{{ $t('customer.receipts') }}</h1>
+        <p class="customer-page-lead">{{ $t('customer.receiptsLead') }}</p>
 
         <Loading v-if="isLoading" />
 
@@ -10,7 +10,7 @@
                 v-for="receipt in receipts"
                 :key="receipt.id"
                 :transaction-id="receipt.receipt_number"
-                :title="receipt.invoice_number ? `Invoice ${receipt.invoice_number}` : 'Receipt'"
+                :title="receipt.invoice_number ? `${$t('customer.invoice')} ${receipt.invoice_number}` : $t('customer.receipt')"
                 :amount="receipt.payment_amount"
                 :subtitle="`${receipt.payment_date || '—'} · ${receipt.payment_method_name || '—'}`"
                 :status="receipt.status"
@@ -19,7 +19,7 @@
 
             <Button
                 v-if="hasMore()"
-                label="Load more"
+                :label="$t('common.loadMore')"
                 class="customer-load-more customer-btn-primary"
                 :loading="isLoadingMore"
                 @click="loadMore"
@@ -29,8 +29,8 @@
         <CustomerEmptyState
             v-else
             icon="pi pi-receipt"
-            title="No receipts yet"
-            message="Receipts appear here after payments are approved."
+            :title="$t('customer.noReceiptsTitle')"
+            :message="$t('customer.noReceiptsMessage')"
         />
     </div>
 </template>

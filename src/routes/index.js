@@ -83,13 +83,15 @@ router.beforeEach(async (to, from, next) => {
         });
     }
 
-    if (to.path.startsWith('/admin')) {
-        if (auth.isAuthenticated && !adminRoles.includes(auth.role)) {
-            return next({
-                name: 'forbidden',
-                query: forbiddenQuery(to.fullPath),
-            });
-        }
+    if (
+        auth.isAuthenticated
+        && Array.isArray(to.meta.allowedRoles)
+        && !to.meta.allowedRoles.includes(auth.role)
+    ) {
+        return next({
+            name: 'forbidden',
+            query: forbiddenQuery(to.fullPath),
+        });
     }
 
     if (to.path.startsWith('/customer')) {

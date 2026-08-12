@@ -1,7 +1,7 @@
 <template>
     <div v-if="!isLoading">
-        <h1 class="customer-page-heading">Dashboard</h1>
-        <p class="customer-page-lead">Your payment overview at a glance</p>
+        <h1 class="customer-page-heading">{{ $t('customer.dashboard') }}</h1>
+        <p class="customer-page-lead">{{ $t('customer.dashboardLead') }}</p>
 
         <section class="customer-section">
             <div class="customer-stat-grid">
@@ -16,7 +16,7 @@
         </section>
 
         <section class="customer-section">
-            <h2 class="customer-section-title">Quick Actions</h2>
+            <h2 class="customer-section-title">{{ $t('customer.quickActions') }}</h2>
             <div class="customer-quick-actions">
                 <router-link
                     v-for="action in quickActions"
@@ -32,9 +32,9 @@
 
         <section class="customer-section">
             <div class="mb-3 flex items-center justify-between gap-3">
-                <h2 class="customer-section-title m-0">Recent Transactions</h2>
+                <h2 class="customer-section-title m-0">{{ $t('customer.recentTransactions') }}</h2>
                 <router-link to="/customer/payments" class="text-sm font-semibold text-[var(--admin-primary)]">
-                    View all
+                    {{ $t('common.viewAll') }}
                 </router-link>
             </div>
 
@@ -43,9 +43,9 @@
                     v-for="payment in recentPayments"
                     :key="payment.id"
                     :transaction-id="payment.invoice_number"
-                    :title="payment.invoice_number || 'Payment'"
+                    :title="payment.invoice_number || $t('customer.payment')"
                     :amount="payment.amount"
-                    :subtitle="`${payment.payment_date || '—'} · ${payment.payment_method_name || 'Method pending'}`"
+                    :subtitle="`${payment.payment_date || '—'} · ${payment.payment_method_name || $t('customer.methodPending')}`"
                     :status="payment.status"
                     @select="openPayment(payment)"
                 />
@@ -53,8 +53,8 @@
             <CustomerEmptyState
                 v-else
                 icon="pi pi-wallet"
-                title="No transactions yet"
-                message="Your recent payments will appear here."
+                :title="$t('customer.noTransactionsTitle')"
+                :message="$t('customer.noTransactionsMessage')"
             />
         </section>
     </div>

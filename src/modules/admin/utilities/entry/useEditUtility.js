@@ -2,6 +2,7 @@ import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
@@ -40,30 +41,34 @@ export default function useEditUtility() {
     onMounted(async () => {
         isLoading.value = true;
 
-        await Promise.all([
-            roomStore.fetchAll({ per_page: 100 }),
-            utilityTypeStore.fetchAll({ per_page: 100, status: 'active' }),
-        ]);
+        try {
+            await Promise.all([
+                roomStore.fetchAll({ per_page: 100 }),
+                utilityTypeStore.fetchAll({ per_page: 100, status: 'active' }),
+            ]);
 
-        const rooms = roomStore.getAllResponse;
-        if (rooms?.data?.data) {
-            roomOptions.value = rooms.data.data.map((room) => ({
-                label: `${room.building_name || ''} - ${room.room_number}`,
-                value: room.id,
-            }));
+            const rooms = roomStore.getAllResponse;
+            if (rooms?.data?.data) {
+                roomOptions.value = rooms.data.data.map((room) => ({
+                    label: `${room.building_name || ''} - ${room.room_number}`,
+                    value: room.id,
+                }));
+            }
+
+            const types = utilityTypeStore.getAllResponse;
+            if (types?.data?.data) {
+                utilityTypeOptions.value = types.data.data.map((type) => ({
+                    label: type.name,
+                    value: type.id,
+                }));
+            }
+
+            await fetchUtility();
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load utility.');
+        } finally {
+            isLoading.value = false;
         }
-
-        const types = utilityTypeStore.getAllResponse;
-        if (types?.data?.data) {
-            utilityTypeOptions.value = types.data.data.map((type) => ({
-                label: type.name,
-                value: type.id,
-            }));
-        }
-
-        await fetchUtility();
-
-        isLoading.value = false;
     });
 
     onBeforeUnmount(() => {
@@ -130,6 +135,8 @@ export default function useEditUtility() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save utility.');
             }
         } finally {
             isSaving.value = false;
@@ -155,6 +162,8 @@ export default function useEditUtility() {
                     }
                 }
             }
+        } catch (error) {
+            showApiErrorToast(error, `Unable to ${action} utility.`);
         } finally {
             workflowLoading.value[action] = false;
         }

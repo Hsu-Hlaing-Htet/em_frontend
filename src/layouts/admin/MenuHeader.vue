@@ -24,7 +24,7 @@
                 v-if="!mobileMenuActive"
                 type="button"
                 class="flex h-5 w-5 cursor-pointer items-center justify-center text-[var(--admin-text-muted)] transition-all duration-300 hover:-translate-y-px hover:text-[var(--admin-text)]"
-                aria-label="Toggle sidebar"
+                :aria-label="$t('navigation.toggleSidebar')"
                 :aria-expanded="ariaExpanded"
                 @click="onMenuToggle"
             >

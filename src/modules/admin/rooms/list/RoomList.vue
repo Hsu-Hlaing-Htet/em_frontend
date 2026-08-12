@@ -13,6 +13,8 @@
                 :lazy="true"
                 :paginator="true"
                 :value="rooms"
+                v-model:selection="selectedRooms"
+                :meta-key-selection="false"
                 :multi-sort-meta="lazyParams.multiSortMeta"
                 :total-records="totalRecords"
                 :rows="10"
@@ -29,6 +31,18 @@
             <p class="m-0 text-md">{{ $t('property.allRooms') }}</p>
 
             <div class="flex flex-wrap items-center justify-end gap-2">
+                <span
+                    v-if="selectedRoomCount"
+                    class="text-sm font-semibold text-[var(--admin-text-muted)]"
+                >
+                    {{ selectedRoomCount }} selected
+                </span>
+                <Button
+                    label="Bulk Delete"
+                    severity="danger"
+                    :disabled="!selectedRoomCount"
+                    @click="showBulkDeleteConfirmDialog"
+                />
                 <div class="relative">
                     <i
                         class="pi pi-search absolute left-3 top-1/2 z-10
@@ -96,6 +110,7 @@
                 <template #empty>{{ $t('property.noRooms') }}</template>
                 <template #loading>{{ $t('property.loadingRooms') }}</template>
 
+                <Column selection-mode="multiple" header-style="width: 3rem" />
                 <Column field="building_name" :header="$t('customer.building')" :sortable="true" style="min-width: 70px" />
                 <Column field="room_number" :header="$t('property.roomNumber')" :sortable="true" style="min-width: 70px" class="hover:underline">
                     <template #body="{ data }">

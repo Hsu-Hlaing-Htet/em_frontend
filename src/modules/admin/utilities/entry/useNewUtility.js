@@ -2,6 +2,7 @@ import { reactive, ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import { formatCurrency } from '@/utils/formatter';
 import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
@@ -235,29 +236,33 @@ export default function useNewUtility() {
     onMounted(async () => {
         isLoading.value = true;
 
-        await Promise.all([
-            buildingStore.fetchAll({ per_page: 100 }),
-            utilityTypeStore.fetchAll({ per_page: 100, status: 'active' }),
-        ]);
+        try {
+            await Promise.all([
+                buildingStore.fetchAll({ per_page: 100 }),
+                utilityTypeStore.fetchAll({ per_page: 100, status: 'active' }),
+            ]);
 
-        const buildings = buildingStore.getAllResponse;
-        if (buildings?.data?.data) {
-            buildingOptions.value = buildings.data.data.map((building) => ({
-                label: building.building_name,
-                value: building.id,
-            }));
+            const buildings = buildingStore.getAllResponse;
+            if (buildings?.data?.data) {
+                buildingOptions.value = buildings.data.data.map((building) => ({
+                    label: building.building_name,
+                    value: building.id,
+                }));
+            }
+
+            const types = utilityTypeStore.getAllResponse;
+            if (types?.data?.data) {
+                utilityTypeOptions.value = types.data.data.map((type) => ({
+                    label: type.name,
+                    value: type.id,
+                }));
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load utility form data.');
+        } finally {
+            isLoading.value = false;
+            ensureDefaultRow();
         }
-
-        const types = utilityTypeStore.getAllResponse;
-        if (types?.data?.data) {
-            utilityTypeOptions.value = types.data.data.map((type) => ({
-                label: type.name,
-                value: type.id,
-            }));
-        }
-
-        isLoading.value = false;
-        ensureDefaultRow();
     });
 
     onBeforeUnmount(() => {
@@ -327,6 +332,8 @@ export default function useNewUtility() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save utility.');
             }
         } finally {
             isSaving.value = false;

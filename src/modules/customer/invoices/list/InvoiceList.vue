@@ -1,12 +1,12 @@
 <template>
     <div>
-        <h1 class="customer-page-heading">Invoices</h1>
-        <p class="customer-page-lead">View bills and make payments</p>
+        <h1 class="customer-page-heading">{{ $t('customer.invoices') }}</h1>
+        <p class="customer-page-lead">{{ $t('customer.invoicesLead') }}</p>
 
         <CustomerSearchBar
             v-model:search="search"
             v-model:status="status"
-            placeholder="Search by invoice number or type"
+            :placeholder="$t('customer.invoiceSearchPlaceholder')"
             :filters="statusFilters"
         />
 
@@ -17,16 +17,16 @@
                 v-for="invoice in invoices"
                 :key="invoice.id"
                 :transaction-id="invoice.invoice_number"
-                :title="`${invoice.type || 'Invoice'} · Due ${invoice.due_date || '—'}`"
+                :title="`${invoice.type || $t('customer.invoice')} · ${$t('customer.invoiceDue')} ${invoice.due_date || '—'}`"
                 :amount="invoice.total_amount"
-                :subtitle="`Paid ${invoice.paid_amount ?? 0}`"
+                :subtitle="`${$t('customer.paidAmount')} ${invoice.paid_amount ?? 0}`"
                 :status="invoice.status"
                 :to="{ name: 'customerShowInvoice', params: { id: invoice.id } }"
             />
 
             <Button
                 v-if="hasMore()"
-                label="Load more"
+                :label="$t('common.loadMore')"
                 class="customer-load-more customer-btn-primary"
                 :loading="isLoadingMore"
                 @click="loadMore"
@@ -36,8 +36,8 @@
         <CustomerEmptyState
             v-else
             icon="pi pi-file"
-            title="No invoices found"
-            message="Try changing your search or filter."
+            :title="$t('customer.noInvoicesTitle')"
+            :message="$t('customer.noInvoicesMessage')"
         />
     </div>
 </template>

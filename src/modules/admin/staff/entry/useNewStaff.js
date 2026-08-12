@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import { useRoleStore } from '@/modules/admin/roles/store';
 import { GENDER_OPTIONS } from '@/constants/constant';
 import { useStaffStore } from '../store';
@@ -30,18 +31,22 @@ export default function useNewStaff() {
     });
 
     onMounted(async () => {
-        await roleStore.fetchAll({ per_page: 100 });
-        const response = roleStore.getAllResponse;
+        try {
+            await roleStore.fetchAll({ per_page: 100 });
+            const response = roleStore.getAllResponse;
 
-        if (response?.data?.data) {
-            roleOptions.value = response.data.data
-            .filter((role) => role.name.toLowerCase() !== 'customer')
-            .map((role) => ({
-                label: role.name
-                    .replaceAll('_', ' ')
-                    .replace(/\b\w/g, (char) => char.toUpperCase()),
-                value: role.id,
-            }));
+            if (response?.data?.data) {
+                roleOptions.value = response.data.data
+                .filter((role) => role.name.toLowerCase() !== 'customer')
+                .map((role) => ({
+                    label: role.name
+                        .replaceAll('_', ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase()),
+                    value: role.id,
+                }));
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load staff form data.');
         }
     });
 
@@ -73,6 +78,8 @@ export default function useNewStaff() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save staff member.');
             }
         } finally {
             isLoading.value = false;

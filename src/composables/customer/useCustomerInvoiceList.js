@@ -1,5 +1,6 @@
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useCustomerInvoiceStore } from '@/modules/customer/invoices/store';
 import { showApiErrorToast } from '@/utils/apiError';
 
@@ -7,17 +8,10 @@ function cloneRows(rows) {
     return Array.isArray(rows) ? rows.map((row) => ({ ...row })) : [];
 }
 
-const STATUS_FILTERS = [
-    { label: 'All', value: '' },
-    { label: 'Open', value: 'issued' },
-    { label: 'Partial', value: 'partial' },
-    { label: 'Paid', value: 'paid' },
-    { label: 'Overdue', value: 'overdue' },
-];
-
 export default function useCustomerInvoiceList() {
     const store = useCustomerInvoiceStore();
     const router = useRouter();
+    const { t } = useI18n();
     const isLoading = ref(true);
     const isLoadingMore = ref(false);
     const invoices = ref([]);
@@ -27,6 +21,14 @@ export default function useCustomerInvoiceList() {
     const search = ref('');
     const status = ref('');
     let searchTimer = null;
+
+    const statusFilters = computed(() => [
+        { label: t('common.all'), value: '' },
+        { label: t('common.open'), value: 'issued' },
+        { label: t('common.partial'), value: 'partial' },
+        { label: t('common.paid'), value: 'paid' },
+        { label: t('common.overdue'), value: 'overdue' },
+    ]);
 
     const hasMore = () => invoices.value.length < totalRecords.value;
 
@@ -89,7 +91,7 @@ export default function useCustomerInvoiceList() {
         invoices,
         search,
         status,
-        statusFilters: STATUS_FILTERS,
+        statusFilters,
         hasMore,
         loadMore,
         openInvoice,

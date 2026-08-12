@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1 class="customer-page-heading">Notifications</h1>
-        <p class="customer-page-lead">Payment updates, invoice alerts, and announcements</p>
+        <h1 class="customer-page-heading">{{ $t('customer.notifications') }}</h1>
+        <p class="customer-page-lead">{{ $t('customer.notificationsLead') }}</p>
 
         <Loading v-if="isLoading" />
 
@@ -31,8 +31,8 @@
         <CustomerEmptyState
             v-else
             icon="pi pi-bell"
-            title="You're all caught up"
-            message="New payment and invoice alerts will show up here."
+            :title="$t('customer.noNotificationsTitle')"
+            :message="$t('customer.noNotificationsMessage')"
         />
     </div>
 </template>

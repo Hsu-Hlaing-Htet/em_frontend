@@ -4,6 +4,7 @@ import { useForgotPassword } from '@/composables/global/useForgotPassword';
 
 const {
     form,
+    errors,
     loading,
     submitted,
     submit,
@@ -18,6 +19,7 @@ const {
         <form
             v-if="!submitted"
             class="space-y-4"
+            novalidate
             @submit.prevent="submit"
         >
             <div>
@@ -32,6 +34,9 @@ const {
                     class="rw-input-shell w-full rounded-xl px-4 py-3 outline-none"
                     placeholder="you@example.com"
                 >
+                <small v-if="errors.has('email')" class="p-error mt-1 block">
+                    <div v-for="error in errors.get('email')" :key="error">{{ error }}</div>
+                </small>
             </div>
 
             <button

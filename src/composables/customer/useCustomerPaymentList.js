@@ -1,5 +1,6 @@
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useCustomerPaymentStore } from '@/modules/customer/payments/store';
 import { showApiErrorToast } from '@/utils/apiError';
 
@@ -7,16 +8,10 @@ function cloneRows(rows) {
     return Array.isArray(rows) ? rows.map((row) => ({ ...row })) : [];
 }
 
-const STATUS_FILTERS = [
-    { label: 'All', value: '' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Approved', value: 'approved' },
-    { label: 'Rejected', value: 'rejected' },
-];
-
 export default function useCustomerPaymentList() {
     const store = useCustomerPaymentStore();
     const router = useRouter();
+    const { t } = useI18n();
     const isLoading = ref(true);
     const isLoadingMore = ref(false);
     const payments = ref([]);
@@ -26,6 +21,13 @@ export default function useCustomerPaymentList() {
     const search = ref('');
     const status = ref('');
     let searchTimer = null;
+
+    const statusFilters = computed(() => [
+        { label: t('common.all'), value: '' },
+        { label: t('common.pending'), value: 'pending' },
+        { label: t('common.approved'), value: 'approved' },
+        { label: t('common.rejected'), value: 'rejected' },
+    ]);
 
     const hasMore = () => payments.value.length < totalRecords.value;
 
@@ -97,7 +99,7 @@ export default function useCustomerPaymentList() {
         totalRecords,
         search,
         status,
-        statusFilters: STATUS_FILTERS,
+        statusFilters,
         hasMore,
         loadMore,
         openPayment,

@@ -1,12 +1,12 @@
 <template>
-    <div class="language-switcher" ref="rootEl">
+    <div class="language-switcher" ref="rootEl" @click.stop>
         <button
             type="button"
             class="language-switcher-trigger"
             aria-haspopup="listbox"
             :aria-expanded="open"
-            aria-label="Change language"
-            @click="toggle"
+            :aria-label="$t('common.changeLanguage')"
+            @click.stop="toggle"
         >
             <span class="language-switcher-globe" aria-hidden="true">🌐</span>
             <span class="language-switcher-code">{{ codeLabel }}</span>
@@ -24,7 +24,7 @@
                 :aria-selected="locale === 'en'"
                 :class="{ 'is-active': locale === 'en' }"
                 tabindex="0"
-                @click="select('en')"
+                @click.stop="select('en')"
                 @keydown.enter.prevent="select('en')"
             >
                 {{ $t('common.english') }}
@@ -34,7 +34,7 @@
                 :aria-selected="locale === 'my'"
                 :class="{ 'is-active': locale === 'my' }"
                 tabindex="0"
-                @click="select('my')"
+                @click.stop="select('my')"
                 @keydown.enter.prevent="select('my')"
             >
                 {{ $t('common.myanmar') }}
@@ -75,12 +75,12 @@ function onEscape(event) {
 }
 
 onMounted(() => {
-    document.addEventListener('click', onDocumentClick);
+    document.addEventListener('click', onDocumentClick, true);
     document.addEventListener('keydown', onEscape);
 });
 
 onBeforeUnmount(() => {
-    document.removeEventListener('click', onDocumentClick);
+    document.removeEventListener('click', onDocumentClick, true);
     document.removeEventListener('keydown', onEscape);
 });
 </script>
@@ -88,6 +88,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .language-switcher {
     position: relative;
+    z-index: 1300;
+    overflow: visible !important;
+}
+
+:global(.language-switcher-surface),
+:global(.language-switcher-host) {
+    overflow: visible !important;
 }
 
 .language-switcher-trigger {
@@ -138,7 +145,7 @@ onBeforeUnmount(() => {
     position: absolute;
     top: calc(100% + 0.35rem);
     right: 0;
-    z-index: 1100;
+    z-index: 1301;
     min-width: 8.5rem;
     margin: 0;
     padding: 0.35rem;

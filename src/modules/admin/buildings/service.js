@@ -34,6 +34,13 @@ const service = {
         const result = await api.delete(`${endpoint.buildings}/${params.id}`);
         return result.data;
     },
+
+    bulkDelete: async (params) => {
+        const result = await api.delete(`${endpoint.buildings}/bulk`, {
+            data: { ids: params.ids },
+        });
+        return result.data;
+    },
 };
 
 export { service };

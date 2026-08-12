@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import {
     MAINTENANCE_CATEGORY_OPTIONS,
     MAINTENANCE_PRIORITY_OPTIONS,
@@ -72,6 +73,8 @@ export default function useEditMaintenanceRequest() {
             if (response?.data) {
                 Object.assign(state, response.data);
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load maintenance request.');
         } finally {
             isLoading.value = false;
         }
@@ -96,6 +99,8 @@ export default function useEditMaintenanceRequest() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save maintenance request.');
             }
         } finally {
             isSaving.value = false;

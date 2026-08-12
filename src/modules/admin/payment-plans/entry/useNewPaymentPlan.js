@@ -2,6 +2,7 @@ import { reactive, ref, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import {
     PAYMENT_PLAN_STATUS_OPTIONS,
     PAYMENT_PLAN_TYPE_OPTIONS,
@@ -47,6 +48,8 @@ export default function useNewPaymentPlan() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save payment plan.');
             }
         } finally {
             isLoading.value = false;

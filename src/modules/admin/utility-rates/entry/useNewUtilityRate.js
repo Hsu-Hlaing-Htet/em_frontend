@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import { formatDate } from '@/utils/formatter';
 import { UTILITY_RATE_STATUS_OPTIONS } from '@/constants/constant';
 import { useUtilityRateStore } from '../store';
@@ -25,11 +26,15 @@ export default function useNewUtilityRate() {
     });
 
     onMounted(async () => {
-        await utilityTypeStore.fetchAll({ per_page: 100, status: 'active' });
-        const response = utilityTypeStore.getAllResponse;
+        try {
+            await utilityTypeStore.fetchAll({ per_page: 100, status: 'active' });
+            const response = utilityTypeStore.getAllResponse;
 
-        if (response?.data?.data) {
-            utilityTypeOptions.value = toActiveOptions(response.data.data);
+            if (response?.data?.data) {
+                utilityTypeOptions.value = toActiveOptions(response.data.data);
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load utility rate form data.');
         }
     });
 
@@ -64,6 +69,8 @@ export default function useNewUtilityRate() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save utility rate.');
             }
         } finally {
             isLoading.value = false;

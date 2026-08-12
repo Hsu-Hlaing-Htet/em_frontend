@@ -43,19 +43,24 @@ export default function useEditStaff() {
     });
 
     onMounted(async () => {
-        await roleStore.fetchAll({ per_page: 100 });
-        const response = roleStore.getAllResponse;
+        try {
+            await roleStore.fetchAll({ per_page: 100 });
+            const response = roleStore.getAllResponse;
 
-        if (response?.data?.data) {
-            roleOptions.value = response.data.data
-                .filter((role) => STAFF_ROLE_NAMES.includes(role.name))
-                .map((role) => ({
-                    label: role.name.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-                    value: role.id,
-                }));
+            if (response?.data?.data) {
+                roleOptions.value = response.data.data
+                    .filter((role) => STAFF_ROLE_NAMES.includes(role.name))
+                    .map((role) => ({
+                        label: role.name.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+                        value: role.id,
+                    }));
+            }
+
+            await fetchStaff();
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load staff form data.');
+            isLoading.value = false;
         }
-
-        await fetchStaff();
     });
 
     onBeforeUnmount(() => {
@@ -85,6 +90,8 @@ export default function useEditStaff() {
                     avatar_path: response.data.avatar_path || '',
                 });
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load staff member.');
         } finally {
             isLoading.value = false;
         }
@@ -152,6 +159,8 @@ export default function useEditStaff() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save staff member.');
             }
         } finally {
             isLoading.value = false;

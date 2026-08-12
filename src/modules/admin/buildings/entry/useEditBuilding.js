@@ -52,6 +52,8 @@ export default function useEditBuilding() {
                     description: response.data.description || '',
                 });
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load building.');
         } finally {
             isLoading.value = false;
         }
@@ -110,6 +112,8 @@ export default function useEditBuilding() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save building.');
             }
         } finally {
             isLoading.value = false;

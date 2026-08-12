@@ -124,17 +124,17 @@ export default function useProfilePage() {
         const validationErrors = {};
 
         if (!state.name?.trim()) {
-            validationErrors.name = ['Name is required.'];
+            validationErrors.name = ['This field is required.'];
         }
 
         if (!state.email?.trim()) {
-            validationErrors.email = ['Email is required.'];
+            validationErrors.email = ['This field is required.'];
         } else if (!isValidEmail(state.email.trim())) {
-            validationErrors.email = ['Enter a valid email address.'];
+            validationErrors.email = ['Please enter a valid email address.'];
         }
 
         if (!state.phone?.trim()) {
-            validationErrors.phone = ['Phone number is required.'];
+            validationErrors.phone = ['This field is required.'];
         }
 
         if (state.avatar_path && state.avatar_path.length > MAX_AVATAR_PATH_LENGTH) {
@@ -149,7 +149,7 @@ export default function useProfilePage() {
             }
 
             if (state.password !== state.password_confirmation) {
-                validationErrors.password_confirmation = ['Password confirmation does not match.'];
+                validationErrors.password_confirmation = ['Passwords do not match.'];
             }
         }
 
@@ -173,14 +173,14 @@ export default function useProfilePage() {
         if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
             errors.record({
                 avatar_path: ['Please choose a JPEG, PNG, GIF, or WebP image.'],
-            });
+            }, false);
             return;
         }
 
         if (file.size > MAX_IMAGE_SIZE_BYTES) {
             errors.record({
                 avatar_path: ['Image must be 2 MB or smaller.'],
-            });
+            }, false);
             return;
         }
 

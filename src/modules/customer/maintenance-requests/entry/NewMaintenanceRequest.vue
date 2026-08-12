@@ -2,31 +2,31 @@
     <div>
         <div class="mb-4 flex flex-wrap gap-2">
             <router-link :to="{ name: 'customerMaintenanceRequestList' }" class="flex-1">
-                <Button label="Back" severity="secondary" class="customer-btn-block" />
+                <Button :label="$t('common.back')" severity="secondary" class="customer-btn-block" />
             </router-link>
         </div>
 
         <div class="admin-panel relative mx-auto max-w-3xl p-5">
-            <h1 class="customer-page-heading">New Maintenance Request</h1>
+            <h1 class="customer-page-heading">{{ $t('customer.newMaintenanceRequest') }}</h1>
             <p class="customer-page-lead mb-6">
-                Choose a room from your active contract and describe the issue.
+                {{ $t('customer.newMaintenanceLead') }}
             </p>
 
             <form class="grid grid-cols-1 gap-4" @submit.prevent="handleSubmit">
                 <div>
-                    <label for="room_id" class="mb-2 block text-sm font-semibold">Room</label>
+                    <label for="room_id" class="mb-2 block text-sm font-semibold">{{ $t('customer.room') }}</label>
                     <Dropdown
                         id="room_id"
                         v-model="state.room_id"
                         :options="roomOptions"
                         option-label="label"
                         option-value="value"
-                        placeholder="Select room"
+                        :placeholder="$t('customer.selectRoom')"
                         class="w-full"
                         :disabled="!roomOptions.length"
                     />
                     <small v-if="!roomOptions.length && !isLoading" class="text-[var(--admin-text-muted)]">
-                        No rooms are available from an active approved contract.
+                        {{ $t('customer.noRoomsForMaintenance') }}
                     </small>
                     <small v-if="errors.has('room_id')" class="p-error">
                         <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
@@ -34,7 +34,7 @@
                 </div>
 
                 <div>
-                    <label for="title" class="mb-2 block text-sm font-semibold">Title</label>
+                    <label for="title" class="mb-2 block text-sm font-semibold">{{ $t('customer.title') }}</label>
                     <InputText id="title" v-model="state.title" class="w-full" />
                     <small v-if="errors.has('title')" class="p-error">
                         <div v-for="error in errors.get('title')" :key="error">{{ error }}</div>
@@ -42,14 +42,14 @@
                 </div>
 
                 <div>
-                    <label for="category" class="mb-2 block text-sm font-semibold">Category</label>
+                    <label for="category" class="mb-2 block text-sm font-semibold">{{ $t('customer.category') }}</label>
                     <Dropdown
                         id="category"
                         v-model="state.category"
                         :options="categoryOptions"
                         option-label="label"
                         option-value="value"
-                        placeholder="Select category"
+                        :placeholder="$t('customer.selectCategory')"
                         class="w-full"
                     />
                     <small v-if="errors.has('category')" class="p-error">
@@ -58,14 +58,14 @@
                 </div>
 
                 <div>
-                    <label for="priority" class="mb-2 block text-sm font-semibold">Priority</label>
+                    <label for="priority" class="mb-2 block text-sm font-semibold">{{ $t('customer.priority') }}</label>
                     <Dropdown
                         id="priority"
                         v-model="state.priority"
                         :options="priorityOptions"
                         option-label="label"
                         option-value="value"
-                        placeholder="Select priority"
+                        :placeholder="$t('customer.selectPriority')"
                         class="w-full"
                     />
                     <small v-if="errors.has('priority')" class="p-error">
@@ -74,7 +74,7 @@
                 </div>
 
                 <div>
-                    <label for="description" class="mb-2 block text-sm font-semibold">Description</label>
+                    <label for="description" class="mb-2 block text-sm font-semibold">{{ $t('customer.description') }}</label>
                     <Textarea id="description" v-model="state.description" rows="5" class="w-full" />
                     <small v-if="errors.has('description')" class="p-error">
                         <div v-for="error in errors.get('description')" :key="error">{{ error }}</div>
@@ -83,7 +83,7 @@
 
                 <Button
                     type="submit"
-                    label="Submit Request"
+                    :label="$t('customer.submitRequest')"
                     class="customer-btn-block"
                     :loading="isSaving"
                     :disabled="!roomOptions.length"

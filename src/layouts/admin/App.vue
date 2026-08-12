@@ -1,5 +1,5 @@
 <template>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#main-content" class="skip-link">{{ $t('common.skipToMainContent') }}</a>
 
     <div
         data-admin-layout
@@ -11,7 +11,7 @@
     >
         <nav
             id="admin-navigation"
-            aria-label="Admin navigation"
+            :aria-label="$t('navigation.adminNavigation')"
             class="admin-sidebar fixed inset-y-0 left-0 z-[1000] flex w-[var(--sidebar-width)] flex-col border-r border-[var(--admin-border)] shadow-2xl transition-all duration-300"
             @click.stop="onSidebarClick"
         >

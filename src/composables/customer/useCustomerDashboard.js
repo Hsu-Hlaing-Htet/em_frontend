@@ -1,5 +1,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useCustomerDashboardStore } from '@/modules/customer/dashboard/store';
 import { showApiErrorToast } from '@/utils/apiError';
 import { formatCurrency } from '@/utils/formatter';
@@ -11,6 +12,7 @@ function cloneRows(rows) {
 export default function useCustomerDashboard() {
     const store = useCustomerDashboardStore();
     const router = useRouter();
+    const { t } = useI18n();
     const isLoading = ref(true);
     const summary = ref({
         active_contracts: 0,
@@ -24,21 +26,21 @@ export default function useCustomerDashboard() {
     });
     const recentPayments = ref([]);
 
-    const quickActions = [
-        { label: 'Pay Invoice', icon: 'pi pi-credit-card', to: '/customer/invoices' },
-        { label: 'Payment History', icon: 'pi pi-history', to: '/customer/payments' },
-        { label: 'My Receipts', icon: 'pi pi-receipt', to: '/customer/receipts' },
-        { label: 'My Contracts', icon: 'pi pi-home', to: '/customer/contracts' },
-    ];
+    const quickActions = computed(() => [
+        { label: t('customer.payInvoice'), icon: 'pi pi-credit-card', to: '/customer/invoices' },
+        { label: t('customer.paymentHistory'), icon: 'pi pi-history', to: '/customer/payments' },
+        { label: t('customer.myReceipts'), icon: 'pi pi-receipt', to: '/customer/receipts' },
+        { label: t('customer.myContracts'), icon: 'pi pi-home', to: '/customer/contracts' },
+    ]);
 
     const statCards = computed(() => [
-        { label: 'Total Paid', value: formatCurrency(summary.value.total_paid_amount), icon: 'pi pi-wallet' },
-        { label: 'Pending Payments', value: summary.value.pending_payments, icon: 'pi pi-clock' },
-        { label: 'Completed Payments', value: summary.value.completed_payments, icon: 'pi pi-check-circle' },
-        { label: 'Unpaid Invoices', value: summary.value.unpaid_invoices, icon: 'pi pi-exclamation-circle' },
-        { label: 'Paid Invoices', value: summary.value.paid_invoices, icon: 'pi pi-file-check' },
-        { label: 'Active Contracts', value: summary.value.active_contracts, icon: 'pi pi-building' },
-        { label: 'Past Contracts', value: summary.value.completed_contracts, icon: 'pi pi-history' },
+        { label: t('customer.totalPaid'), value: formatCurrency(summary.value.total_paid_amount), icon: 'pi pi-wallet' },
+        { label: t('customer.pendingPayments'), value: summary.value.pending_payments, icon: 'pi pi-clock' },
+        { label: t('customer.completedPayments'), value: summary.value.completed_payments, icon: 'pi pi-check-circle' },
+        { label: t('customer.unpaidInvoices'), value: summary.value.unpaid_invoices, icon: 'pi pi-exclamation-circle' },
+        { label: t('customer.paidInvoices'), value: summary.value.paid_invoices, icon: 'pi pi-file-check' },
+        { label: t('customer.activeContracts'), value: summary.value.active_contracts, icon: 'pi pi-building' },
+        { label: t('customer.pastContracts'), value: summary.value.completed_contracts, icon: 'pi pi-history' },
     ]);
 
     const openPayment = (payment) => {

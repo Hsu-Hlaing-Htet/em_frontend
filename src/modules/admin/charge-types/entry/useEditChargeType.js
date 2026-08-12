@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import { UTILITY_TYPE_STATUS_OPTIONS } from '@/constants/constant';
 import { useChargeTypeStore } from '../store';
 
@@ -48,6 +49,8 @@ export default function useEditChargeType() {
                     status: response.data.status || 'active',
                 });
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load charge type.');
         } finally {
             isLoading.value = false;
         }
@@ -72,6 +75,8 @@ export default function useEditChargeType() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save charge type.');
             }
         } finally {
             isLoading.value = false;

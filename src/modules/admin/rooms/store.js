@@ -8,6 +8,7 @@ export const useRoomStore = defineStore('useRoomStore', {
         updateResponse: null,
         addResponse: null,
         deleteResponse: null,
+        bulkDeleteResponse: null,
         imageListResponse: null,
         imageDetailResponse: null,
         imageAddResponse: null,
@@ -30,6 +31,9 @@ export const useRoomStore = defineStore('useRoomStore', {
         },
         getDeleteResponse(state) {
             return state.deleteResponse;
+        },
+        getBulkDeleteResponse(state) {
+            return state.bulkDeleteResponse;
         },
         getImageListResponse(state) {
             return state.imageListResponse;
@@ -72,6 +76,10 @@ export const useRoomStore = defineStore('useRoomStore', {
         async delete(params) {
             const response = await service.delete(params);
             this.deleteResponse = response;
+        },
+        async bulkDelete(params) {
+            const response = await service.bulkDelete(params);
+            this.bulkDeleteResponse = response;
         },
         async fetchAllImages(params) {
             const response = await service.getAllImages(params);

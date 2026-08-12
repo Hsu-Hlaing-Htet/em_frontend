@@ -47,6 +47,9 @@
                         filter
                         class="w-full"
                     />
+                    <small v-if="errors.has('room_id')" class="p-error">
+                        <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
                 <div class="field">
                     <label for="billing_month" class="mb-2 block text-md">Billing Month</label>
@@ -58,6 +61,9 @@
                         :disabled="!canEdit"
                         class="w-full"
                     />
+                    <small v-if="errors.has('billing_month')" class="p-error">
+                        <div v-for="error in errors.get('billing_month')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <div class="md:col-span-2">
@@ -138,6 +144,9 @@
                             </template>
                         </Column>
                     </DataTable>
+                    <small v-if="errors.has('utility_items')" class="p-error mt-2 block">
+                        <div v-for="error in errors.get('utility_items')" :key="error">{{ error }}</div>
+                    </small>
 
                     <p class="mt-3 text-right text-md font-medium">
                         Total: {{ totalAmount.toFixed(2) }}

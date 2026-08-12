@@ -2,14 +2,14 @@
     <div v-if="!isLoading">
         <div class="mb-10 flex flex-wrap gap-2">
             <Button
-                label="Download Invoice"
+                :label="$t('customer.downloadInvoice')"
                 icon="pi pi-download"
                 class="flex-1"
                 :loading="isDownloading"
                 @click="downloadPdf"
             />
             <router-link :to="{ name: 'customerInvoiceList' }" class="flex-1">
-                <Button label="Back" severity="secondary" class="customer-btn-block" />
+                <Button :label="$t('common.back')" severity="secondary" class="customer-btn-block" />
             </router-link>
         </div>
 
@@ -28,7 +28,7 @@
                 <BillingDetailTable
                     :columns="invoiceLineItemColumns"
                     :rows="lineItemRows"
-                    empty-message="This invoice has no itemized charges."
+                    :empty-message="$t('customer.noInvoiceCharges')"
                     :total-value="formatCurrency(state.total_amount)"
                     min-width="44rem"
                 />
@@ -37,7 +37,7 @@
                     class="mt-8"
                     :columns="customerPaymentColumns"
                     :rows="paymentRows"
-                    empty-message="Submitted payments for this invoice will appear here."
+                    :empty-message="$t('customer.noSubmittedPayments')"
                     min-width="36rem"
                 >
                     <template #cell-id="{ row }">
@@ -66,17 +66,17 @@
         </div>
 
         <section v-if="canPay" class="customer-section mx-auto mt-8 max-w-4xl px-4">
-            <h2 class="customer-section-title">Pay Invoice</h2>
+            <h2 class="customer-section-title">{{ $t('customer.payInvoice') }}</h2>
             <form class="admin-panel p-5" @submit.prevent="submitPayment">
                 <div class="flex flex-col gap-4">
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">Payment Method</label>
+                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.paymentMethod') }}</label>
                         <Dropdown
                             v-model="paymentForm.payment_method_id"
                             :options="paymentMethods"
                             option-label="label"
                             option-value="value"
-                            placeholder="Select method"
+                            :placeholder="$t('customer.selectMethod')"
                             class="w-full"
                         />
                         <small v-if="errors.has('payment_method_id')" class="p-error">
@@ -84,24 +84,24 @@
                         </small>
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">Payment Date</label>
+                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.paymentDate') }}</label>
                         <Calendar v-model="paymentForm.payment_date" date-format="yy-mm-dd" class="w-full" show-icon />
                         <small v-if="errors.has('payment_date')" class="p-error">
                             <div v-for="error in errors.get('payment_date')" :key="error">{{ error }}</div>
                         </small>
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">Note / Reference</label>
-                        <Textarea v-model="paymentForm.note" rows="3" class="w-full" placeholder="Optional bank reference or note" />
+                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.noteReference') }}</label>
+                        <Textarea v-model="paymentForm.note" rows="3" class="w-full" :placeholder="$t('customer.optionalBankReference')" />
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">Payment Proof</label>
+                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.paymentProof') }}</label>
                         <p class="mb-2 text-sm text-[var(--admin-text-muted)]">
-                            After transferring money, upload your payment-proof image. The Admin will verify the paid amount.
+                            {{ $t('customer.paymentProofHelp') }}
                         </p>
                         <FileUpload
                             mode="basic"
-                            choose-label="Upload Proof"
+                            :choose-label="$t('customer.uploadProof')"
                             accept="image/*,application/pdf"
                             :auto="false"
                             custom-upload
@@ -111,7 +111,7 @@
                             <div v-for="error in errors.get('proof')" :key="error">{{ error }}</div>
                         </small>
                     </div>
-                    <Button type="submit" label="Submit Payment" class="customer-btn-block" :loading="isSaving" />
+                    <Button type="submit" :label="$t('customer.submitPayment')" class="customer-btn-block" :loading="isSaving" />
                 </div>
             </form>
         </section>
@@ -123,6 +123,7 @@
 <script>
 import { computed, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Textarea from 'primevue/textarea';
@@ -137,14 +138,6 @@ import { invoiceLineItemColumns } from '@/helpers/billing/billingDetailColumns';
 import { mapInvoiceLineItemRow } from '@/helpers/invoices/invoiceDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
 import useCustomerShowInvoice from '@/composables/customer/useCustomerShowInvoice';
-
-const customerPaymentColumns = [
-    { label: 'Payment ID', key: 'id', align: 'left' },
-    { label: 'Payment Date', key: 'payment_date', align: 'left' },
-    { label: 'Amount', key: 'amount', align: 'right' },
-    { label: 'Method', key: 'payment_method_name', align: 'left' },
-    { label: 'Status', key: 'status', align: 'left' },
-];
 
 export default defineComponent({
     name: 'CustomerShowInvoice',
@@ -161,7 +154,16 @@ export default defineComponent({
     },
     setup() {
         const router = useRouter();
+        const { t } = useI18n();
         const invoice = useCustomerShowInvoice();
+
+        const customerPaymentColumns = computed(() => [
+            { label: t('customer.paymentId'), key: 'id', align: 'left' },
+            { label: t('customer.paymentDate'), key: 'payment_date', align: 'left' },
+            { label: t('customer.amount'), key: 'amount', align: 'right' },
+            { label: t('customer.method'), key: 'payment_method_name', align: 'left' },
+            { label: t('customer.status'), key: 'status', align: 'left' },
+        ]);
 
         const lineItemRows = computed(() => invoice.invoiceItems.map((item) => (
             mapInvoiceLineItemRow(item, formatCurrency)
@@ -171,7 +173,7 @@ export default defineComponent({
             id: payment.id,
             receipt_id: payment.receipt_id,
             payment_date: payment.payment_date,
-            amount: payment.amount == null ? 'Pending verification' : formatCurrency(payment.amount),
+            amount: payment.amount == null ? t('customer.pendingVerification') : formatCurrency(payment.amount),
             payment_method_name: payment.payment_method_name,
             status: payment.status,
         })));

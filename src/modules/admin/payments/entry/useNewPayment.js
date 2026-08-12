@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import { usePaymentStore } from '../store';
 import { useInvoiceStore } from '@/modules/admin/invoices/store';
 import { usePaymentMethodStore } from '@/modules/admin/payment-methods/store';
@@ -25,25 +26,29 @@ export default function useNewPayment() {
     });
 
     onMounted(async () => {
-        await Promise.all([
-            invoiceStore.fetchAll({ per_page: 100, status: 'issued' }),
-            paymentMethodStore.fetchAll({ per_page: 100 }),
-        ]);
+        try {
+            await Promise.all([
+                invoiceStore.fetchAll({ per_page: 100, status: 'issued' }),
+                paymentMethodStore.fetchAll({ per_page: 100 }),
+            ]);
 
-        const invoices = invoiceStore.getAllResponse;
-        if (invoices?.data?.data) {
-            invoiceOptions.value = invoices.data.data.map((invoice) => ({
-                label: `${invoice.invoice_number} (${invoice.total_amount})`,
-                value: invoice.id,
-            }));
-        }
+            const invoices = invoiceStore.getAllResponse;
+            if (invoices?.data?.data) {
+                invoiceOptions.value = invoices.data.data.map((invoice) => ({
+                    label: `${invoice.invoice_number} (${invoice.total_amount})`,
+                    value: invoice.id,
+                }));
+            }
 
-        const methods = paymentMethodStore.getAllResponse;
-        if (methods?.data?.data) {
-            paymentMethodOptions.value = methods.data.data.map((method) => ({
-                label: method.name,
-                value: method.id,
-            }));
+            const methods = paymentMethodStore.getAllResponse;
+            if (methods?.data?.data) {
+                paymentMethodOptions.value = methods.data.data.map((method) => ({
+                    label: method.name,
+                    value: method.id,
+                }));
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load payment form data.');
         }
     });
 
@@ -71,6 +76,8 @@ export default function useNewPayment() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save payment.');
             }
         } finally {
             isLoading.value = false;

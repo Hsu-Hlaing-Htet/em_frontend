@@ -2,6 +2,7 @@ import { reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { getApiErrorMessage } from '@/utils/apiError';
+import { Errors } from '@/utils/validation';
 import { useAuthStore } from '@/modules/auth/store';
 
 function resolveRedirectPath(route, role) {
@@ -30,6 +31,7 @@ export function useLogin() {
 
     const loading = ref(false);
     const showPassword = ref(false);
+    const errors = new Errors();
 
     const form = reactive({
         email: '',
@@ -37,6 +39,25 @@ export function useLogin() {
     });
 
     async function submit() {
+        errors.clear();
+
+        const validationErrors = {};
+
+        if (!form.email?.trim()) {
+            validationErrors.email = ['This field is required.'];
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+            validationErrors.email = ['Please enter a valid email address.'];
+        }
+
+        if (!form.password) {
+            validationErrors.password = ['This field is required.'];
+        }
+
+        if (Object.keys(validationErrors).length) {
+            errors.record(validationErrors);
+            return;
+        }
+
         loading.value = true;
 
         try {
@@ -52,6 +73,13 @@ export function useLogin() {
 
             await router.push(redirectTo);
         } catch (error) {
+            const fieldErrors = error?.data?.data || error?.data?.errors || error?.response?.data?.errors;
+
+            if (fieldErrors) {
+                errors.record(fieldErrors);
+                return;
+            }
+
             toast.add({
                 severity: 'error',
                 summary: 'Login Failed',
@@ -65,6 +93,7 @@ export function useLogin() {
 
     return {
         form,
+        errors,
         loading,
         showPassword,
         submit,

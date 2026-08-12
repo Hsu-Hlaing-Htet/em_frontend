@@ -20,6 +20,7 @@ export const useRoomList = () => {
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const rooms = ref([]);
+    const selectedRooms = ref([]);
     const lazyParams = ref({});
     const store = useRoomStore();
     const buildingStore = useBuildingStore();
@@ -40,9 +41,28 @@ export const useRoomList = () => {
         };
     };
 
+    const clearSelection = () => {
+        selectedRooms.value = [];
+    };
+
     const showConfirmDialog = (id,room_number) => {
         confirmDelete(`Are you sure you want to delete this ${room_number} room?`, async () => {
             await store.delete({ id });
+            clearSelection();
+            await loadingData();
+        });
+    };
+
+    const showBulkDeleteConfirmDialog = () => {
+        const ids = selectedRooms.value.map((room) => room.id).filter(Boolean);
+
+        if (!ids.length) {
+            return;
+        }
+
+        confirmDelete(`Are you sure you want to delete ${ids.length} selected rooms?`, async () => {
+            await store.bulkDelete({ ids });
+            clearSelection();
             await loadingData();
         });
     };
@@ -50,6 +70,7 @@ export const useRoomList = () => {
     const onPage = (event) => {
         lazyParams.value = event;
         lazyParams.value.page = event.page;
+        clearSelection();
         loadingData();
     };
 
@@ -57,6 +78,7 @@ export const useRoomList = () => {
         lazyParams.value = event;
         lazyParams.value.page = 0;
         lazyParams.value.first = 0;
+        clearSelection();
         loadingData();
     };
 
@@ -106,6 +128,7 @@ export const useRoomList = () => {
         selectedBuilding.value = null;
         selectedType.value = null;
         selectedStatus.value = null;
+        clearSelection();
         loadingData();
     };
 
@@ -113,6 +136,7 @@ export const useRoomList = () => {
         [search, selectedBuilding, selectedType, selectedStatus],
         useDebounceFn(() => {
             resetPagination();
+            clearSelection();
             loadingData();
         }, 500),
     );
@@ -164,6 +188,8 @@ export const useRoomList = () => {
 
     return {
         rooms,
+        selectedRooms,
+        selectedRoomCount: computed(() => selectedRooms.value.length),
         errors,
         isLoading,
         totalRecords,
@@ -180,6 +206,7 @@ export const useRoomList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        showBulkDeleteConfirmDialog,
         formatCurrency,
         isExporting,
         canExport,

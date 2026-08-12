@@ -18,7 +18,7 @@
                         :class="{
                             'breadcrumb-link-active': !isActive || !isExactActive,
                         }"
-                    >{{ item.title }}</a>
+                    >{{ resolveTitle(item) }}</a>
                 </router-link>
             </template>
         </Breadcrumb>
@@ -28,6 +28,7 @@
 <script>
 import { defineComponent, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 import Breadcrumb from 'primevue/breadcrumb';
 import Divider from 'primevue/divider';
@@ -37,17 +38,30 @@ export default defineComponent({
     components: { Breadcrumb, Divider },
     setup() {
         const route = useRoute();
+        const { t, te } = useI18n();
         const home = ref({
             routeName: 'dashboard',
             to: '/admin/dashboard',
-            title: 'Home',
+            titleKey: 'common.home',
         });
 
         const breadcumbs = computed(() => route.meta.breadcrumbs || []);
 
         const showBreadcrumb = computed(() => route.name !== 'dashboard');
 
-        return { breadcumbs, home, showBreadcrumb };
+        const resolveTitle = (item) => {
+            if (item?.titleKey) {
+                return t(item.titleKey);
+            }
+
+            if (item?.title && te(`routes.${item.title}`)) {
+                return t(`routes.${item.title}`);
+            }
+
+            return item?.title || '';
+        };
+
+        return { breadcumbs, home, showBreadcrumb, resolveTitle };
     },
 });
 </script>

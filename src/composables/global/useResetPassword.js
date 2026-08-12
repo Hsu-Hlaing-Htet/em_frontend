@@ -2,6 +2,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { getApiErrorMessage } from '@/utils/apiError';
+import { Errors } from '@/utils/validation';
 import { resetPassword } from '@/modules/auth/service';
 
 export function useResetPassword() {
@@ -13,6 +14,7 @@ export function useResetPassword() {
     const showPassword = ref(false);
     const showConfirmPassword = ref(false);
     const invalidLink = ref(false);
+    const errors = new Errors();
 
     const form = reactive({
         token: '',
@@ -24,8 +26,6 @@ export function useResetPassword() {
     const canSubmit = computed(() => (
         form.token
         && form.email
-        && form.password
-        && form.password_confirmation
     ));
 
     onMounted(() => {
@@ -39,6 +39,27 @@ export function useResetPassword() {
 
     async function submit() {
         if (!canSubmit.value) {
+            return;
+        }
+
+        errors.clear();
+
+        const validationErrors = {};
+
+        if (!form.password) {
+            validationErrors.password = ['This field is required.'];
+        } else if (form.password.length < 8) {
+            validationErrors.password = ['Password must be at least 8 characters.'];
+        }
+
+        if (!form.password_confirmation) {
+            validationErrors.password_confirmation = ['This field is required.'];
+        } else if (form.password !== form.password_confirmation) {
+            validationErrors.password_confirmation = ['Passwords do not match.'];
+        }
+
+        if (Object.keys(validationErrors).length) {
+            errors.record(validationErrors);
             return;
         }
 
@@ -56,6 +77,13 @@ export function useResetPassword() {
 
             await router.push({ name: 'login' });
         } catch (error) {
+            const fieldErrors = error?.data?.data || error?.data?.errors || error?.response?.data?.errors;
+
+            if (fieldErrors) {
+                errors.record(fieldErrors);
+                return;
+            }
+
             toast.add({
                 severity: 'error',
                 summary: 'Reset Failed',
@@ -69,6 +97,7 @@ export function useResetPassword() {
 
     return {
         form,
+        errors,
         loading,
         showPassword,
         showConfirmPassword,

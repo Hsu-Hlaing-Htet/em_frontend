@@ -15,12 +15,12 @@
                 >
                     <stop
                         offset="0%"
-                        stop-color="#e8e8e8"
+                        stop-color="var(--dashboard-chart-neutral)"
                         stop-opacity="0.22"
                     />
                     <stop
                         offset="100%"
-                        stop-color="#e8e8e8"
+                        stop-color="var(--dashboard-chart-neutral)"
                         stop-opacity="0"
                     />
                 </linearGradient>
@@ -33,12 +33,12 @@
                 >
                     <stop
                         offset="0%"
-                        stop-color="#9b2d45"
+                        stop-color="#ef3340"
                         stop-opacity="0.35"
                     />
                     <stop
                         offset="100%"
-                        stop-color="#9b2d45"
+                        stop-color="#ef3340"
                         stop-opacity="0"
                     />
                 </linearGradient>
@@ -237,7 +237,7 @@ export default defineComponent({
 }
 
 .dashboard-area-chart__grid line {
-    stroke: rgba(255, 255, 255, 0.06);
+    stroke: var(--dashboard-grid);
     stroke-width: 1;
 }
 
@@ -249,26 +249,24 @@ export default defineComponent({
 }
 
 .dashboard-area-chart__line--billed {
-    stroke: rgba(232, 232, 232, 0.92);
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.18));
+    stroke: var(--dashboard-chart-neutral);
 }
 
 .dashboard-area-chart__line--collected {
-    stroke: #b83a55;
-    filter: drop-shadow(0 0 6px rgba(184, 58, 85, 0.45));
+    stroke: var(--dashboard-red);
 }
 
 .dashboard-area-chart__dot {
-    fill: #121214;
+    fill: var(--dashboard-chart-dot);
     stroke-width: 2;
 }
 
 .dashboard-area-chart__dot--billed {
-    stroke: rgba(232, 232, 232, 0.92);
+    stroke: var(--dashboard-chart-neutral);
 }
 
 .dashboard-area-chart__dot--collected {
-    stroke: #d45a72;
+    stroke: var(--dashboard-red);
 }
 
 .dashboard-area-chart__labels {

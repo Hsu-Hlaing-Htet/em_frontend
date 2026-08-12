@@ -13,10 +13,13 @@
                     :options="roomOptions"
                     option-label="label"
                     option-value="value"
-                    filter
-                    class="w-full"
-                />
-            </div>
+                        filter
+                        class="w-full"
+                    />
+                    <small v-if="errors.has('room_id')" class="p-error">
+                        <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
             <div class="field">
                 <label for="user_id" class="mb-2 block text-md">Resident</label>
                 <Dropdown
@@ -25,14 +28,20 @@
                     :options="residentOptions"
                     option-label="label"
                     option-value="value"
-                    filter
-                    class="w-full"
-                />
-            </div>
-            <div class="field">
-                <label for="title" class="mb-2 block text-md">Title</label>
-                <InputText id="title" v-model="state.title" class="w-full" />
-            </div>
+                        filter
+                        class="w-full"
+                    />
+                    <small v-if="errors.has('user_id')" class="p-error">
+                        <div v-for="error in errors.get('user_id')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
+                <div class="field">
+                    <label for="title" class="mb-2 block text-md">Title</label>
+                    <InputText id="title" v-model="state.title" class="w-full" />
+                    <small v-if="errors.has('title')" class="p-error">
+                        <div v-for="error in errors.get('title')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
             <div class="field">
                 <label for="category" class="mb-2 block text-md">Category</label>
                 <Dropdown
@@ -41,9 +50,12 @@
                     :options="categoryOptions"
                     option-label="label"
                     option-value="value"
-                    class="w-full"
-                />
-            </div>
+                        class="w-full"
+                    />
+                    <small v-if="errors.has('category')" class="p-error">
+                        <div v-for="error in errors.get('category')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
             <div class="field">
                 <label for="priority" class="mb-2 block text-md">Priority</label>
                 <Dropdown
@@ -52,13 +64,19 @@
                     :options="priorityOptions"
                     option-label="label"
                     option-value="value"
-                    class="w-full"
-                />
-            </div>
-            <div class="field">
-                <label for="description" class="mb-2 block text-md">Description</label>
-                <Textarea id="description" v-model="state.description" rows="4" class="w-full" />
-            </div>
+                        class="w-full"
+                    />
+                    <small v-if="errors.has('priority')" class="p-error">
+                        <div v-for="error in errors.get('priority')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
+                <div class="field">
+                    <label for="description" class="mb-2 block text-md">Description</label>
+                    <Textarea id="description" v-model="state.description" rows="4" class="w-full" />
+                    <small v-if="errors.has('description')" class="p-error">
+                        <div v-for="error in errors.get('description')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
             <div class="flex justify-end gap-2">
                 <Button type="submit" label="Save" />
                 <router-link :to="{ name: 'showMaintenanceRequest', params: { id: state.id } }">

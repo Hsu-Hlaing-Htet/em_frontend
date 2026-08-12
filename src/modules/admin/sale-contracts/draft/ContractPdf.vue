@@ -1,6 +1,6 @@
 <template>
-    <div v-if="!isLoading" class="pdf-view">
-        <header class="pdf-bar no-print">
+    <div v-if="!isLoading" class="">
+        <header class="">
             <div class="pdf-actions">
                 <Button
                     icon="pi pi-download"

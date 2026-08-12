@@ -12,6 +12,9 @@
                         <Dropdown id="building_id" v-model="createState.building_id" :options="buildingOptions"
                             option-label="label" option-value="value" placeholder="Select building" filter
                             class="w-full" />
+                        <small v-if="errors.has('building_id')" class="p-error">
+                            <div v-for="error in errors.get('building_id')" :key="error">{{ error }}</div>
+                        </small>
                     </div>
 
                     <!-- Room -->
@@ -23,6 +26,9 @@
                         <Dropdown id="room_id" v-model="createState.room_id" :options="roomOptions" option-label="label"
                             option-value="value" placeholder="Select room" :disabled="!createState.building_id" filter
                             class="w-full" />
+                        <small v-if="errors.has('room_id')" class="p-error">
+                            <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
+                        </small>
                     </div>
 
                     <!-- Billing Month -->
@@ -33,6 +39,9 @@
 
                         <Calendar id="create_billing_month" v-model="createState.billing_month" view="month"
                             date-format="yy-mm-dd" :disabled="!createState.room_id" class="w-full" />
+                        <small v-if="errors.has('billing_month')" class="p-error">
+                            <div v-for="error in errors.get('billing_month')" :key="error">{{ error }}</div>
+                        </small>
                     </div>
                 </div>
 
@@ -87,6 +96,12 @@
                             </template>
                         </Column>
                     </DataTable>
+                    <small v-if="errors.has('utility_type_id')" class="p-error mt-2 block">
+                        <div v-for="error in errors.get('utility_type_id')" :key="error">{{ error }}</div>
+                    </small>
+                    <small v-if="errors.has('entries')" class="p-error mt-2 block">
+                        <div v-for="error in errors.get('entries')" :key="error">{{ error }}</div>
+                    </small>
 
                     <p class="mt-3 text-right text-md font-medium">
                         Total: {{ formatCurrency(totalAmount) }}

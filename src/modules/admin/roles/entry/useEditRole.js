@@ -46,6 +46,8 @@ export default function useEditRole() {
                 state.id = response.data.id;
                 state.name = response.data.name || '';
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load role.');
         } finally {
             isLoading.value = false;
         }
@@ -108,6 +110,8 @@ export default function useEditRole() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save role.');
             }
         } finally {
             isLoading.value = false;

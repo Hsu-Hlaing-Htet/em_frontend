@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1 class="customer-page-heading">Contracts</h1>
-        <p class="customer-page-lead">Your active and past property agreements</p>
+        <h1 class="customer-page-heading">{{ $t('customer.contracts') }}</h1>
+        <p class="customer-page-lead">{{ $t('customer.contractsLead') }}</p>
 
         <Loading v-if="isLoading" />
 
@@ -10,7 +10,7 @@
                 v-for="contract in contracts"
                 :key="contract.id"
                 :transaction-id="contract.contract_number"
-                :title="`${contract.type || 'Contract'} · Room ${contract.room_number || '—'}`"
+                :title="`${contract.type || $t('customer.contract')} · ${$t('customer.room')} ${contract.room_number || '—'}`"
                 :amount="contract.contract_total"
                 :subtitle="contract.building_name || '—'"
                 :status="contract.status"
@@ -19,7 +19,7 @@
 
             <Button
                 v-if="hasMore()"
-                label="Load more"
+                :label="$t('common.loadMore')"
                 class="customer-load-more customer-btn-primary"
                 :loading="isLoadingMore"
                 @click="loadMore"
@@ -29,8 +29,8 @@
         <CustomerEmptyState
             v-else
             icon="pi pi-home"
-            title="No contracts found"
-            message="Your approved and completed contracts will appear here."
+            :title="$t('customer.noContractsTitle')"
+            :message="$t('customer.noContractsMessage')"
         />
     </div>
 </template>

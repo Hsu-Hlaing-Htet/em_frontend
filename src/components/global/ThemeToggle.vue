@@ -2,7 +2,7 @@
     <button
         type="button"
         class="theme-toggle"
-        :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+        :aria-label="$t(isDark ? 'common.switchToLightTheme' : 'common.switchToDarkTheme')"
         @click="toggle"
     >
         <i class="pi" :class="isDark ? 'pi-sun' : 'pi-moon'" />

@@ -1,4 +1,5 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { formatDate, parseDate } from '@/utils/formatter';
@@ -18,6 +19,7 @@ function isValidEmail(value) {
 export default function useCustomerProfilePage() {
     const authStore = useAuthStore();
     const store = useCustomerProfileStore();
+    const { t } = useI18n();
     const isLoading = ref(true);
     const isSaving = ref(false);
     const errors = new Errors();
@@ -38,7 +40,7 @@ export default function useCustomerProfilePage() {
     });
 
     const displayAvatar = computed(() => avatarPreviewUrl.value || state.avatar_path || ProfileImage);
-    const roleLabel = computed(() => 'Customer');
+    const roleLabel = computed(() => t('customer.customerFallback'));
 
     onMounted(fetchProfile);
 
@@ -82,20 +84,20 @@ export default function useCustomerProfilePage() {
         errors.clear();
         const validationErrors = {};
 
-        if (!state.name?.trim()) validationErrors.name = ['Name is required.'];
+        if (!state.name?.trim()) validationErrors.name = ['This field is required.'];
         if (!state.email?.trim()) {
-            validationErrors.email = ['Email is required.'];
+            validationErrors.email = ['This field is required.'];
         } else if (!isValidEmail(state.email.trim())) {
-            validationErrors.email = ['Enter a valid email address.'];
+            validationErrors.email = ['Please enter a valid email address.'];
         }
-        if (!state.phone?.trim()) validationErrors.phone = ['Phone number is required.'];
+        if (!state.phone?.trim()) validationErrors.phone = ['This field is required.'];
         if (state.avatar_path && state.avatar_path.length > MAX_AVATAR_PATH_LENGTH) {
             validationErrors.avatar_path = [`Image URL must be ${MAX_AVATAR_PATH_LENGTH} characters or fewer.`];
         }
         if (state.password || state.password_confirmation) {
             if (state.password.length < 8) validationErrors.password = ['Password must be at least 8 characters.'];
             if (state.password !== state.password_confirmation) {
-                validationErrors.password_confirmation = ['Password confirmation does not match.'];
+                validationErrors.password_confirmation = ['Passwords do not match.'];
             }
         }
 
@@ -112,7 +114,7 @@ export default function useCustomerProfilePage() {
         if (!file) return;
 
         if (!ALLOWED_IMAGE_TYPES.includes(file.type) || file.size > MAX_IMAGE_SIZE_BYTES) {
-            errors.record({ avatar_path: ['Choose a valid image up to 2 MB.'] });
+            errors.record({ avatar_path: ['Choose a valid image up to 2 MB.'] }, false);
             return;
         }
 

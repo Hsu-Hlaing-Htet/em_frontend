@@ -6,6 +6,7 @@ import { useThemeStore } from '@/stores/themeStore';
 
 const {
     form,
+    errors,
     loading,
     showPassword,
     submit,
@@ -28,7 +29,7 @@ onUnmounted(() => {
         subtitle="Please enter your login details."
         :show-theme-toggle="false"
     >
-        <form class="space-y-4" @submit.prevent="submit">
+        <form class="space-y-4" novalidate @submit.prevent="submit">
             <div>
                 <label class="mb-2 block text-sm font-semibold text-[var(--rw-primary-deep)]">
                     Email
@@ -41,6 +42,9 @@ onUnmounted(() => {
                     class="rw-input-shell w-full rounded-xl px-4 py-3 outline-none"
                     placeholder="admin@rosewoodroyale.com"
                 >
+                <small v-if="errors.has('email')" class="p-error mt-1 block">
+                    <div v-for="error in errors.get('email')" :key="error">{{ error }}</div>
+                </small>
             </div>
 
             <div>
@@ -80,6 +84,9 @@ onUnmounted(() => {
                         />
                     </button>
                 </div>
+                <small v-if="errors.has('password')" class="p-error mt-1 block">
+                    <div v-for="error in errors.get('password')" :key="error">{{ error }}</div>
+                </small>
             </div>
 
             <button

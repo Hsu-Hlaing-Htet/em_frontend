@@ -12,6 +12,9 @@
                         placeholder="Select Customer"
                         class="w-full"
                     />
+                    <small v-if="errors.has('user_id')" class="p-error">
+                        <div v-for="error in errors.get('user_id')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <div class="field">
@@ -39,6 +42,9 @@
                         placeholder="Select building"
                         class="w-full"
                     />
+                    <small v-if="errors.has('building_id')" class="p-error">
+                        <div v-for="error in errors.get('building_id')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <div class="field">
@@ -52,6 +58,9 @@
                         class="w-full"
                         :disabled="!state.building_id"
                     />
+                    <small v-if="errors.has('room_id')" class="p-error">
+                        <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <div class="field">
@@ -76,6 +85,9 @@
                         placeholder="Select payment type"
                         class="w-full"
                     />
+                    <small v-if="errors.has('payment_type')" class="p-error">
+                        <div v-for="error in errors.get('payment_type')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <Transition name="draft-field">
@@ -89,6 +101,9 @@
                             placeholder="Select duration"
                             class="w-full"
                         />
+                        <small v-if="errors.has('duration_months')" class="p-error">
+                            <div v-for="error in errors.get('duration_months')" :key="error">{{ error }}</div>
+                        </small>
                     </div>
                 </Transition>
 
@@ -102,6 +117,9 @@
                         locale="en-MM"
                         :min="0"
                     />
+                    <small v-if="errors.has('contract_total')" class="p-error">
+                        <div v-for="error in errors.get('contract_total')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <div class="field">
@@ -152,6 +170,9 @@
                         date-format="yy-mm-dd"
                         show-icon
                     />
+                    <small v-if="errors.has('start_date')" class="p-error">
+                        <div v-for="error in errors.get('start_date')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
 
                 <Transition name="draft-field">
@@ -165,6 +186,9 @@
                             placeholder="Select billing day"
                             class="w-full"
                         />
+                        <small v-if="errors.has('billing_day')" class="p-error">
+                            <div v-for="error in errors.get('billing_day')" :key="error">{{ error }}</div>
+                        </small>
                     </div>
                 </Transition>
 
@@ -176,6 +200,9 @@
                         class="w-full"
                         placeholder="Optional remarks..."
                     />
+                    <small v-if="errors.has('remark')" class="p-error">
+                        <div v-for="error in errors.get('remark')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
             </div>
             <div class="flex justify-end gap-2">
@@ -251,6 +278,13 @@ export default defineComponent({
         billingDayOptions: {
             type: Array,
             default: () => [],
+        },
+        errors: {
+            type: Object,
+            default: () => ({
+                has: () => false,
+                get: () => [],
+            }),
         },
         cancelRoute: {
             type: Object,

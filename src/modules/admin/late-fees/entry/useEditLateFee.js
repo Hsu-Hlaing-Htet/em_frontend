@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import {
     LATE_FEE_TYPE_OPTIONS,
     LATE_FEE_PER_OPTIONS,
@@ -60,6 +61,8 @@ export default function useEditLateFee() {
                     status: response.data.status || 'active',
                 });
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load late fee.');
         } finally {
             isLoading.value = false;
         }
@@ -84,6 +87,8 @@ export default function useEditLateFee() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save late fee.');
             }
         } finally {
             isLoading.value = false;

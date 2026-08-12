@@ -2,18 +2,18 @@
     <div>
         <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
-                <h1 class="customer-page-heading">Maintenance</h1>
-                <p class="customer-page-lead">Track repair requests for your rooms</p>
+                <h1 class="customer-page-heading">{{ $t('customer.maintenance') }}</h1>
+                <p class="customer-page-lead">{{ $t('customer.maintenanceLead') }}</p>
             </div>
             <router-link :to="{ name: 'customerNewMaintenanceRequest' }">
-                <Button label="New Request" icon="pi pi-plus" />
+                <Button :label="$t('customer.newRequest')" icon="pi pi-plus" />
             </router-link>
         </div>
 
         <CustomerSearchBar
             v-model:search="search"
             v-model:status="status"
-            placeholder="Search by title, room, or category"
+            :placeholder="$t('customer.maintenanceSearchPlaceholder')"
             :filters="statusFilters"
         />
 
@@ -26,14 +26,14 @@
                 :transaction-id="`#${request.id}`"
                 :title="request.title"
                 :amount="null"
-                :subtitle="`${request.building_name || 'Room'} · ${request.room_number || '—'} · ${request.category || 'general'} · ${request.priority || 'medium'}`"
+                :subtitle="`${request.building_name || $t('customer.room')} · ${request.room_number || '—'} · ${request.category || 'general'} · ${request.priority || 'medium'}`"
                 :status="request.status"
                 :to="{ name: 'customerShowMaintenanceRequest', params: { id: request.id } }"
             />
 
             <Button
                 v-if="hasMore()"
-                label="Load more"
+                :label="$t('common.loadMore')"
                 class="customer-load-more customer-btn-primary"
                 :loading="isLoadingMore"
                 @click="loadMore"
@@ -43,8 +43,8 @@
         <CustomerEmptyState
             v-else
             icon="pi pi-wrench"
-            title="No maintenance requests"
-            message="Submit a request when something needs attention in your room."
+            :title="$t('customer.noMaintenanceTitle')"
+            :message="$t('customer.noMaintenanceMessage')"
         />
     </div>
 </template>

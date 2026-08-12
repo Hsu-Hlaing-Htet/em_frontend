@@ -2,6 +2,7 @@ import { reactive, ref, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { showApiErrorToast } from '@/utils/apiError';
 import { GENDER_OPTIONS } from '@/constants/constant';
 import { useResidentStore } from '../store';
 import { formatDate } from '@/utils/formatter';
@@ -53,6 +54,8 @@ export default function useNewResident() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save resident.');
             }
         } finally {
             isLoading.value = false;

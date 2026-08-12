@@ -8,6 +8,7 @@ export const useBuildingStore = defineStore('useBuildingStore', {
         updateResponse: null,
         addResponse: null,
         deleteResponse: null,
+        bulkDeleteResponse: null,
     }),
 
     getters: {
@@ -25,6 +26,9 @@ export const useBuildingStore = defineStore('useBuildingStore', {
         },
         getDeleteResponse(state) {
             return state.deleteResponse;
+        },
+        getBulkDeleteResponse(state) {
+            return state.bulkDeleteResponse;
         },
     },
 
@@ -52,6 +56,10 @@ export const useBuildingStore = defineStore('useBuildingStore', {
         async delete(params) {
             const response = await service.delete(params);
             this.deleteResponse = response;
+        },
+        async bulkDelete(params) {
+            const response = await service.bulkDelete(params);
+            this.bulkDeleteResponse = response;
         },
     },
 });

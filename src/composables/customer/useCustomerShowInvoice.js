@@ -129,20 +129,22 @@ export default function useCustomerShowInvoice() {
 
     async function submitPayment() {
         errors.clear();
+        const validationErrors = {};
 
         if (!paymentForm.payment_method_id) {
-            errors.record({ payment_method_id: ['Payment method is required.'] });
+            validationErrors.payment_method_id = ['This field is required.'];
         }
 
         if (!paymentForm.payment_date) {
-            errors.record({ payment_date: ['Payment date is required.'] });
+            validationErrors.payment_date = ['This field is required.'];
         }
 
         if (!proofFile.value) {
-            errors.record({ proof: ['Payment proof is required.'] });
+            validationErrors.proof = ['This field is required.'];
         }
 
-        if (errors.any()) {
+        if (Object.keys(validationErrors).length) {
+            errors.record(validationErrors);
             return;
         }
 

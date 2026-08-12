@@ -66,6 +66,8 @@ export default function useEditResident() {
                     avatar_path: response.data.avatar_path || '',
                 });
             }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load resident.');
         } finally {
             isLoading.value = false;
         }
@@ -133,6 +135,8 @@ export default function useEditResident() {
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
+            } else {
+                showApiErrorToast(error, 'Unable to save resident.');
             }
         } finally {
             isLoading.value = false;

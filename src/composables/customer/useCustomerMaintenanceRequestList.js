@@ -1,5 +1,6 @@
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useCustomerMaintenanceRequestStore } from '@/modules/customer/maintenance-requests/store';
 import { showApiErrorToast } from '@/utils/apiError';
 
@@ -7,17 +8,10 @@ function cloneRows(rows) {
     return Array.isArray(rows) ? rows.map((row) => ({ ...row })) : [];
 }
 
-const STATUS_FILTERS = [
-    { label: 'All', value: '' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'In Progress', value: 'in_progress' },
-    { label: 'Completed', value: 'completed' },
-    { label: 'Rejected', value: 'rejected' },
-];
-
 export default function useCustomerMaintenanceRequestList() {
     const store = useCustomerMaintenanceRequestStore();
     const router = useRouter();
+    const { t } = useI18n();
     const isLoading = ref(true);
     const isLoadingMore = ref(false);
     const requests = ref([]);
@@ -27,6 +21,14 @@ export default function useCustomerMaintenanceRequestList() {
     const search = ref('');
     const status = ref('');
     let searchTimer = null;
+
+    const statusFilters = computed(() => [
+        { label: t('common.all'), value: '' },
+        { label: t('common.pending'), value: 'pending' },
+        { label: t('common.inProgress'), value: 'in_progress' },
+        { label: t('common.completed'), value: 'completed' },
+        { label: t('common.rejected'), value: 'rejected' },
+    ]);
 
     const hasMore = () => requests.value.length < totalRecords.value;
 
@@ -89,7 +91,7 @@ export default function useCustomerMaintenanceRequestList() {
         requests,
         search,
         status,
-        statusFilters: STATUS_FILTERS,
+        statusFilters,
         hasMore,
         loadMore,
         openRequest,

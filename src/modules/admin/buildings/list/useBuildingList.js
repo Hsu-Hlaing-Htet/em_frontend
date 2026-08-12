@@ -13,6 +13,7 @@ export const useBuildingList = () => {
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const buildings = ref([]);
+    const selectedBuildings = ref([]);
     const lazyParams = ref({});
     const store = useBuildingStore();
     const errors = new Errors();
@@ -32,9 +33,28 @@ export const useBuildingList = () => {
         };
     };
 
+    const clearSelection = () => {
+        selectedBuildings.value = [];
+    };
+
     const showConfirmDialog = (id, name) => {
         confirmDelete(`Are you sure you want to delete this ${name} building?`, async () => {
             await store.delete({ id });
+            clearSelection();
+            await loadingData();
+        });
+    };
+
+    const showBulkDeleteConfirmDialog = () => {
+        const ids = selectedBuildings.value.map((building) => building.id).filter(Boolean);
+
+        if (!ids.length) {
+            return;
+        }
+
+        confirmDelete(`Are you sure you want to delete ${ids.length} selected buildings?`, async () => {
+            await store.bulkDelete({ ids });
+            clearSelection();
             await loadingData();
         });
     };
@@ -42,6 +62,7 @@ export const useBuildingList = () => {
     const onPage = (event) => {
         lazyParams.value = event;
         lazyParams.value.page = event.page;
+        clearSelection();
         loadingData();
     };
 
@@ -49,6 +70,7 @@ export const useBuildingList = () => {
         lazyParams.value = event;
         lazyParams.value.page = 0;
         lazyParams.value.first = 0;
+        clearSelection();
         loadingData();
     };
 
@@ -81,6 +103,7 @@ export const useBuildingList = () => {
     const resetSearch = () => {
         resetPagination();
         search.value = '';
+        clearSelection();
         loadingData();
     };
 
@@ -88,6 +111,7 @@ export const useBuildingList = () => {
         [search],
         useDebounceFn(() => {
             resetPagination();
+            clearSelection();
             loadingData();
         }, 500),
     );
@@ -127,6 +151,8 @@ export const useBuildingList = () => {
 
     return {
         buildings,
+        selectedBuildings,
+        selectedBuildingCount: computed(() => selectedBuildings.value.length),
         errors,
         isLoading,
         totalRecords,
@@ -137,6 +163,7 @@ export const useBuildingList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        showBulkDeleteConfirmDialog,
         isExporting,
         canExport,
         downloadList,

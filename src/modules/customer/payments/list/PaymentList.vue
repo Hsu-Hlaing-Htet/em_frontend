@@ -1,12 +1,12 @@
 <template>
     <div>
-        <h1 class="customer-page-heading">Payments</h1>
-        <p class="customer-page-lead">Track your payment history and status</p>
+        <h1 class="customer-page-heading">{{ $t('customer.payments') }}</h1>
+        <p class="customer-page-lead">{{ $t('customer.paymentsLead') }}</p>
 
         <CustomerSearchBar
             v-model:search="search"
             v-model:status="status"
-            placeholder="Search by invoice, method, or note"
+            :placeholder="$t('customer.paymentSearchPlaceholder')"
             :filters="statusFilters"
         />
 
@@ -17,16 +17,16 @@
                 v-for="payment in payments"
                 :key="payment.id"
                 :transaction-id="payment.invoice_number"
-                :title="payment.invoice_number || 'Invoice payment'"
+                :title="payment.invoice_number || $t('customer.invoicePayment')"
                 :amount="payment.amount"
-                :subtitle="`${payment.payment_date || '—'} · ${payment.payment_method_name || 'Method pending'}`"
+                :subtitle="`${payment.payment_date || '—'} · ${payment.payment_method_name || $t('customer.methodPending')}`"
                 :status="payment.status"
                 @select="openPayment(payment)"
             />
 
             <Button
                 v-if="hasMore()"
-                label="Load more"
+                :label="$t('common.loadMore')"
                 class="customer-load-more customer-btn-primary"
                 :loading="isLoadingMore"
                 @click="loadMore"
@@ -36,8 +36,8 @@
         <CustomerEmptyState
             v-else
             icon="pi pi-wallet"
-            title="No payments found"
-            message="Try changing your search or filter."
+            :title="$t('customer.noPaymentsTitle')"
+            :message="$t('customer.noPaymentsMessage')"
         />
     </div>
 </template>

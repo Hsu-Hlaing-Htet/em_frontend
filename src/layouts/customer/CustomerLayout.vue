@@ -4,8 +4,8 @@
         :data-theme="themeMode"
         class="customer-shell admin-background min-h-screen text-[var(--admin-text)] transition-colors duration-300"
     >
-        <header class="border-b border-[var(--admin-border)] bg-[var(--admin-surface-solid)]">
-            <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3">
+        <header class="language-switcher-surface border-b border-[var(--admin-border)] bg-[var(--admin-surface-solid)]">
+            <div class="language-switcher-host mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3">
                 <router-link
                     to="/customer/dashboard"
                     class="text-lg font-semibold text-[var(--admin-text)]"
@@ -31,7 +31,7 @@
                     </router-link>
                 </nav>
 
-                <div class="ml-auto flex items-center gap-2.5 lg:ml-0">
+                <div class="language-switcher-host ml-auto flex items-center gap-2.5 lg:ml-0">
                     <ThemeToggle />
                     <LanguageSwitcher />
                     <Button
@@ -64,7 +64,7 @@
             <DevelopedByCredit />
         </footer>
 
-        <nav class="customer-mobile-nav" aria-label="Mobile navigation">
+        <nav class="customer-mobile-nav" :aria-label="$t('navigation.mobileNavigation')">
             <router-link
                 v-for="item in mobileNavItems"
                 :key="item.to"

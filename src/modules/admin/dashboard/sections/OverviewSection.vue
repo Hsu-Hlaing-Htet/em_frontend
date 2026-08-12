@@ -27,6 +27,13 @@ const safeApprovalItems = computed(() => toSafeList(dashboard?.pendingApprovalBr
 const approvalTotal = computed(() => dashboard?.pendingApprovalBreakdown?.total ?? 0);
 const collectionRate = computed(() => dashboard?.revenueCollections?.collection_rate ?? 0);
 
+const statIcons = {
+    revenue: 'pi pi-chart-line',
+    occupancy: 'pi pi-users',
+    outstanding: 'pi pi-wallet',
+    pending_approvals: 'pi pi-clock',
+};
+
 const maxApprovalCount = computed(() => {
     const counts = safeApprovalItems.value.map((item) => Number(item.count) || 0);
     return Math.max(...counts, 1);
@@ -34,26 +41,22 @@ const maxApprovalCount = computed(() => {
 
 function sparkColor(stat) {
     if (stat?.key === 'pending_approvals') {
-        return '#c48d3d';
+        return '#e56b12';
     }
 
     if (stat?.key === 'revenue') {
-        return stat?.trend === 'up' ? '#d45a72' : '#b83a55';
+        return '#ef3340';
     }
 
-    if (stat?.key === 'occupancy' || stat?.key === 'outstanding') {
-        return '#e8e8e8';
+    if (stat?.key === 'occupancy') {
+        return '#2f7df4';
     }
 
-    if (stat?.trend === 'up') {
-        return '#d45a72';
+    if (stat?.key === 'outstanding') {
+        return '#20a85a';
     }
 
-    if (stat?.trend === 'down') {
-        return '#b83a55';
-    }
-
-    return '#9ca3af';
+    return '#667085';
 }
 
 function changeClass(stat) {
@@ -78,6 +81,10 @@ function handleStatClick(stat) {
     }
 }
 
+function statIcon(stat) {
+    return statIcons[stat?.key] ?? 'pi pi-chart-bar';
+}
+
 function navigateTo(path) {
     if (path) {
         router.push(path);
@@ -99,22 +106,30 @@ function approvalBarWidth(count) {
                 v-for="(stat, statIndex) in safeStats"
                 :key="stat.key ?? `overview-stat-${statIndex}`"
                 class="dashboard-stat-card dashboard-kpi-card"
-                :class="{ 'dashboard-kpi-card--link': Boolean(stat.to) }"
+                :class="[
+                    `dashboard-kpi-card--${stat.key}`,
+                    { 'dashboard-kpi-card--link': Boolean(stat.to) },
+                ]"
                 @click="handleStatClick(stat)"
             >
-                <div class="dashboard-kpi-copy">
-                    <p class="dashboard-kpi-label">
-                        {{ stat.label }}
-                    </p>
-                    <h3 class="dashboard-kpi-value">
-                        {{ stat.value }}
-                    </h3>
-                    <p
-                        class="dashboard-kpi-change"
-                        :class="changeClass(stat)"
-                    >
-                        {{ stat.change }}
-                    </p>
+                <div class="dashboard-kpi-header">
+                    <span class="dashboard-kpi-icon" aria-hidden="true">
+                        <i :class="statIcon(stat)" />
+                    </span>
+                    <div class="dashboard-kpi-copy">
+                        <p class="dashboard-kpi-label">
+                            {{ stat.label }}
+                        </p>
+                        <h3 class="dashboard-kpi-value">
+                            {{ stat.value }}
+                        </h3>
+                        <p
+                            class="dashboard-kpi-change"
+                            :class="changeClass(stat)"
+                        >
+                            {{ stat.change }}
+                        </p>
+                    </div>
                 </div>
                 <div class="dashboard-kpi-spark">
                     <DashboardSparkline

@@ -14,8 +14,19 @@ export const useLocaleStore = defineStore('locale', () => {
     const codeLabel = computed(() => (locale.value === 'my' ? 'MY' : 'EN'));
 
     function applyLocale(nextLocale) {
-        i18n.global.locale.value = nextLocale;
-        document.documentElement.setAttribute('lang', nextLocale === 'my' ? 'my' : 'en');
+        const normalizedLocale = SUPPORTED_LOCALES.includes(nextLocale)
+            ? nextLocale
+            : DEFAULT_LOCALE;
+
+        locale.value = normalizedLocale;
+
+        if (i18n.global.locale && typeof i18n.global.locale === 'object' && 'value' in i18n.global.locale) {
+            i18n.global.locale.value = normalizedLocale;
+        } else {
+            i18n.global.locale = normalizedLocale;
+        }
+
+        document.documentElement.setAttribute('lang', normalizedLocale);
     }
 
     function setLocale(nextLocale) {
@@ -23,13 +34,14 @@ export const useLocaleStore = defineStore('locale', () => {
             return;
         }
 
-        locale.value = nextLocale;
         localStorage.setItem(LOCALE_STORAGE_KEY, nextLocale);
         applyLocale(nextLocale);
     }
 
     function init() {
-        applyLocale(locale.value || DEFAULT_LOCALE);
+        const initialLocale = resolveInitialLocale();
+        localStorage.setItem(LOCALE_STORAGE_KEY, initialLocale);
+        applyLocale(initialLocale);
     }
 
     return {

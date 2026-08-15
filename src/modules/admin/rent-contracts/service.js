@@ -70,6 +70,13 @@ const rentService = {
         return result.data;
     },
 
+    cancel: async (params) => {
+        const result = await api.post(`${endpoint.rentContractsActive}/${params.id}/cancel`, {
+            reason: params.reason,
+        });
+        return result.data;
+    },
+
     fetchDocument: async (scope, id, action) => {
         const base = scope === 'active'
             ? `${endpoint.rentContractsActive}/${id}/document`

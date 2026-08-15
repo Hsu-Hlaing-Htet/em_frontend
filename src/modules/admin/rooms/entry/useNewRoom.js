@@ -53,10 +53,12 @@ export default function useNewRoom() {
         const response = buildingStore.getAllResponse;
 
         if (response?.data?.data) {
-            buildingOptions.value = response.data.data.map((building) => ({
+            buildingOptions.value = response.data.data
+                .filter((building) => building.status === 'active')
+                .map((building) => ({
                 label: building.building_name,
                 value: building.id,
-            }));
+                }));
         }
     });
 
@@ -119,7 +121,7 @@ export default function useNewRoom() {
         state,
         buildingOptions,
         typeOptions: ROOM_TYPE_OPTIONS,
-        statusOptions: ROOM_STATUS_OPTIONS,
+        statusOptions: ROOM_STATUS_OPTIONS.filter((option) => option.value !== 'inactive'),
         stagedImages,
         persistedImages,
         addStagedFiles,

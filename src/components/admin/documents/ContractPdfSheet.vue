@@ -18,6 +18,7 @@ import {
     renderRentContractDocumentLead,
 } from '@/helpers/documents/renderRentContractDocument';
 import { DOCUMENT_LOGO_URL } from '@/helpers/documents/documentOutput';
+import '@/assets/css/documents/document-font.css';
 import '@/assets/css/documents/document-styles.css';
 
 const VARIANTS = {

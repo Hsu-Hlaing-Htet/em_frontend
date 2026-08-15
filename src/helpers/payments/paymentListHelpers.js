@@ -44,23 +44,3 @@ export function formatPropertyUnit(item) {
 export function resolvePaymentListStatus(item) {
     return item?.display_status || item?.status || 'pending';
 }
-
-export function mapDashboardPaymentRow(item) {
-    return {
-        ...item,
-        payment_id: item.invoice_number || item.reference,
-        customer_name: item.customer_name || item.client,
-        property_unit: item.property_unit || formatPropertyUnit(item),
-        invoice_number: item.invoice_number || item.invoice,
-        payment_type: item.payment_type,
-        invoice_amount: item.invoice_amount ?? item.amount,
-        paid_amount: item.paid_amount ?? item.amount,
-        balance: item.balance ?? 0,
-        payment_date: item.payment_date || item.paid_at,
-        payment_method_name: item.payment_method_name || item.method,
-        display_status: resolvePaymentListStatus(item),
-        reference_number: item.reference_number || item.invoice_number || item.reference,
-        note: item.note || item.notes || '',
-        receipt_id: item.receipt_id ?? null,
-    };
-}

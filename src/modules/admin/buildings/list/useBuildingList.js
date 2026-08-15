@@ -1,7 +1,6 @@
 import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { useBuildingStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
@@ -16,7 +15,6 @@ export const useBuildingList = () => {
     const selectedBuildings = ref([]);
     const lazyParams = ref({});
     const store = useBuildingStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
@@ -45,10 +43,25 @@ export const useBuildingList = () => {
         });
     };
 
+    const showArchiveDialog = (building) => {
+        const action = building.status === 'archived' ? 'reactivate' : 'archive';
+
+        confirmDelete(`Are you sure you want to ${action} ${building.building_name}?`, async () => {
+            await store[action === 'archive' ? 'archive' : 'activate']({ id: building.id });
+            clearSelection();
+            await loadingData();
+        });
+    };
+
+    const canBulkDelete = computed(() => (
+        selectedBuildings.value.length > 0
+        && selectedBuildings.value.every((building) => building.can_delete === true)
+    ));
+
     const showBulkDeleteConfirmDialog = () => {
         const ids = selectedBuildings.value.map((building) => building.id).filter(Boolean);
 
-        if (!ids.length) {
+        if (!ids.length || !canBulkDelete.value) {
             return;
         }
 
@@ -153,7 +166,6 @@ export const useBuildingList = () => {
         buildings,
         selectedBuildings,
         selectedBuildingCount: computed(() => selectedBuildings.value.length),
-        errors,
         isLoading,
         totalRecords,
         lazyParams,
@@ -163,7 +175,9 @@ export const useBuildingList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        showArchiveDialog,
         showBulkDeleteConfirmDialog,
+        canBulkDelete,
         isExporting,
         canExport,
         downloadList,

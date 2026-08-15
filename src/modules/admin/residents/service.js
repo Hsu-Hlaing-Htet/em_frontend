@@ -36,6 +36,16 @@ const service = {
         const result = await api.delete(`${endpoint.residents}/${params.id}`);
         return result.data;
     },
+
+    deactivate: async (params) => {
+        const result = await api.post(`${endpoint.residents}/${params.id}/deactivate`);
+        return result.data;
+    },
+
+    activate: async (params) => {
+        const result = await api.post(`${endpoint.residents}/${params.id}/activate`);
+        return result.data;
+    },
 };
 
 export { service };

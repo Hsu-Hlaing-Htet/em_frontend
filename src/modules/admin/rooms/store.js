@@ -81,6 +81,12 @@ export const useRoomStore = defineStore('useRoomStore', {
             const response = await service.bulkDelete(params);
             this.bulkDeleteResponse = response;
         },
+        async deactivate(params) {
+            this.updateResponse = await service.deactivate(params);
+        },
+        async activate(params) {
+            this.updateResponse = await service.activate(params);
+        },
         async fetchAllImages(params) {
             const response = await service.getAllImages(params);
             this.imageListResponse = response;

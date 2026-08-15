@@ -2,7 +2,6 @@ import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { formatDate, parseDate } from '@/utils/formatter';
 import { formatPropertyUnit } from '@/helpers/invoices/invoiceDetailHelpers';
 import {
@@ -46,7 +45,6 @@ export const useInvoiceList = () => {
     const isHydratingFromUrl = ref(true);
     const isWritingQuery = ref(false);
     const store = useInvoiceStore();
-    const errors = new Errors();
     const {
         buildingOptions,
         roomOptions,
@@ -245,7 +243,6 @@ export const useInvoiceList = () => {
 
     return {
         invoices,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,

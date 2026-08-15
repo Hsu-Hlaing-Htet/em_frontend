@@ -61,5 +61,11 @@ export const useBuildingStore = defineStore('useBuildingStore', {
             const response = await service.bulkDelete(params);
             this.bulkDeleteResponse = response;
         },
+        async archive(params) {
+            this.updateResponse = await service.archive(params);
+        },
+        async activate(params) {
+            this.updateResponse = await service.activate(params);
+        },
     },
 });

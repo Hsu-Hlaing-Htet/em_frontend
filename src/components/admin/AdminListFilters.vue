@@ -1,11 +1,11 @@
 <template>
-    <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="m-0 text-md">{{ title }}</p>
+    <div class="admin-list-toolbar">
+        <p class="admin-list-toolbar__title">{{ title }}</p>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="admin-list-toolbar__controls">
             <div
                 v-if="showSearch"
-                class="relative"
+                class="admin-list-toolbar__search"
             >
                 <i
                     class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
@@ -14,25 +14,27 @@
                 <InputText
                     :model-value="search"
                     :placeholder="searchPlaceholder"
-                    class="w-72 !pl-10"
+                    class="w-full !pl-10"
                     @update:model-value="$emit('update:search', $event)"
                 />
             </div>
 
             <slot />
 
-            <Button
-                :label="resetLabel"
-                class="btn-outline"
-                @click="$emit('reset')"
-            />
+            <div class="admin-list-toolbar__actions">
+                <Button
+                    :label="resetLabel"
+                    class="btn-outline"
+                    @click="$emit('reset')"
+                />
 
-            <slot name="actions" />
+                <slot name="actions" />
+            </div>
         </div>
 
         <div
             v-if="$slots.trailing"
-            class="ml-auto flex items-center gap-2"
+            class="admin-list-toolbar__trailing"
         >
             <slot name="trailing" />
         </div>

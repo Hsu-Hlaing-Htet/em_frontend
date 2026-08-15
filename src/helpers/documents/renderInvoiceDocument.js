@@ -3,6 +3,7 @@ import { escapeHtml } from './htmlUtils';
 import { formatCurrency } from './billingDocumentHelpers';
 import { formatBillingDocumentDate } from './renderBillingDetailLayout';
 import { hasBillingValue } from '@/helpers/billing/billingDetailHelpers';
+import documentFontStyles from '@/assets/css/documents/document-font.css?inline';
 import invoiceDocumentStyles from '@/assets/css/documents/invoice-document.css?inline';
 
 function cell(value) {
@@ -168,7 +169,7 @@ export function renderInvoiceDocumentHtmlPage(document, logoSrc) {
 <head>
     <meta charset="utf-8" />
     <title>Invoice ${escapeHtml(invoiceNo)}</title>
-    <style>${invoiceDocumentStyles}</style>
+    <style>${documentFontStyles}\n${invoiceDocumentStyles}</style>
 </head>
 <body class="invoice-doc-body">
     ${renderInvoiceDocumentArticle(document, logoSrc)}

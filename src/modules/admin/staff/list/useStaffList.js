@@ -1,7 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { useStaffStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
@@ -15,7 +14,6 @@ export const useStaffList = () => {
     const staff = ref([]);
     const lazyParams = ref({});
     const store = useStaffStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
 
@@ -121,7 +119,6 @@ export const useStaffList = () => {
 
     return {
         staff,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,

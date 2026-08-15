@@ -2,23 +2,10 @@
     <div v-if="!isLoading" class="">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
-                <Button
-                    icon="pi pi-download"
-                    label="Download"
-                    severity="secondary"
-                    @click="downloadPdf"
-                />
-                <Button
-                    icon="pi pi-print"
-                    label="Print"
-                    severity="secondary"
-                    @click="printContract"
-                />
-                <Button
-                    icon="pi pi-file-export"
-                    label="Export"
-                    severity="secondary"
-                    @click="exportPdf"
+                <DocumentDownloadActions
+                    @download-pdf="downloadPdf"
+                    @export-document="exportPdf"
+                    @print="printContract"
                 />
                 <Button
                     icon="pi pi-envelope"
@@ -65,11 +52,12 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ContractPdfSheet from '@/components/admin/documents/ContractPdfSheet.vue';
 import CancelContractDialog from '@/components/admin/contracts/CancelContractDialog.vue';
+import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import useShowActiveRent from './useShowActiveRent';
 
 export default defineComponent({
     name: 'ShowActiveRent',
-    components: { Button, Loading, ContractPdfSheet, CancelContractDialog },
+    components: { Button, Loading, ContractPdfSheet, CancelContractDialog, DocumentDownloadActions },
     setup() {
         return useShowActiveRent();
     },

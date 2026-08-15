@@ -1,7 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { useUtilityTypeStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
@@ -16,7 +15,6 @@ export const useUtilityTypeList = () => {
     const utilityTypes = ref([]);
     const lazyParams = ref({});
     const store = useUtilityTypeStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
@@ -153,7 +151,6 @@ export const useUtilityTypeList = () => {
 
     return {
         utilityTypes,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,

@@ -108,5 +108,8 @@ export const useRentStore = defineStore('useRentStore', {
             const response = await rentService.reject(params);
             this.actionResponse = response;
         },
+        async cancel(params) {
+            this.actionResponse = await rentService.cancel(params);
+        },
     },
 });

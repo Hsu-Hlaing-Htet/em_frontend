@@ -25,32 +25,22 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">{{ $t('property.allBuildings') }}</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span
-                                v-if="selectedBuildingCount"
-                                class="text-sm font-semibold text-[var(--admin-text-muted)]"
-                            >
-                                {{ selectedBuildingCount }} selected
-                            </span>
-                            <Button
-                                label="Bulk Delete"
-                                severity="danger"
-                                :disabled="!selectedBuildingCount"
-                                @click="showBulkDeleteConfirmDialog"
-                            />
-                            <div class="relative">
-    <i
-        class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
-    />
+                    <div class="admin-list-toolbar admin-list-toolbar--selection">
+                        <p class="admin-list-toolbar__title">{{ $t('property.allBuildings') }}</p>
 
-    <InputText
-        v-model="search"
-        :placeholder="$t('common.keywordSearch')"
-        class="w-72 !pl-10"
-    />
-</div>
+
+                        <div class="admin-list-toolbar__controls">
+                            <div class="admin-list-toolbar__search">
+                                <i
+                                    class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
+                                />
+
+                                <InputText
+                                    v-model="search"
+                                    :placeholder="$t('common.keywordSearch')"
+                                    class="w-full !pl-10"
+                                />
+                            </div>
 
                             <Button
                                 :label="$t('common.reset')"
@@ -59,15 +49,35 @@
                             <router-link :to="{ name: 'newBuilding' }">
                                 <Button :label="$t('common.create')" />
                             </router-link>
+
                             <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"
                                 @download="downloadList"
                                 @export-csv="exportCsv"
-                                @export-excel="exportExcel"
                                 @print="printList"
                             />
                         </div>
+                        <div
+                            v-if="selectedBuildingCount"
+                            class="admin-selection-bar"
+                        >
+                            <span class="text-sm font-semibold text-[var(--admin-text)]">
+                                {{ selectedBuildingCount }} selected
+                            </span>
+
+                            <button
+                                type="button"
+                                class="admin-selection-delete"
+                                :disabled="!canBulkDelete"
+                                :title="canBulkDelete ? '' : 'Only empty buildings can be deleted'"
+                                @click="showBulkDeleteConfirmDialog"
+                            >
+                                <i class="pi pi-trash" />
+                                Delete
+                            </button>
+                        </div>
+
                     </div>
                 </template>
 
@@ -92,6 +102,11 @@
                         <span class="line-clamp-2">{{ data.description || '—' }}</span>
                     </template>
                 </Column>
+                <Column field="status" :header="$t('common.status')" :sortable="true" style="min-width: 110px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.status" />
+                    </template>
+                </Column>
                 <Column field="created_at" :header="$t('common.createdAt')" :sortable="true" style="min-width: 180px" />
                 <Column
                                 :header="$t('common.actions')"
@@ -110,10 +125,19 @@
         </router-link>
 
         <Button
+            v-if="data.can_delete"
             icon="pi pi-trash"
             text
             severity="danger"
             @click="showConfirmDialog(data.id, data.building_name)"
+        />
+        <Button
+            v-else
+            :icon="data.status === 'archived' ? 'pi pi-refresh' : 'pi pi-ban'"
+            text
+            :severity="data.status === 'archived' ? 'success' : 'warning'"
+            :title="data.status === 'archived' ? 'Reactivate' : 'Archive'"
+            @click="showArchiveDialog(data)"
         />
                     </template>
                 </Column>
@@ -128,13 +152,13 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
-import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useBuildingList } from './useBuildingList';
 
 export default defineComponent({
-    name: 'RoomList',
-    components: { DataTable, Column, InputText, Button, Loading, ListExportActions },
+    name: 'BuildingList',
+    components: { DataTable, Column, InputText, Button, ListExportActions, StatusBadge },
     setup() {
         return useBuildingList();
     },

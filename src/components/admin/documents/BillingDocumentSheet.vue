@@ -6,6 +6,7 @@
 import { computed, defineComponent } from 'vue';
 import { renderDocumentArticle } from '@/helpers/documents/documentLayout';
 import { DOCUMENT_LOGO_URL } from '@/helpers/documents/documentOutput';
+import '@/assets/css/documents/document-font.css';
 import '@/assets/css/documents/document-styles.css';
 
 export default defineComponent({

@@ -1,14 +1,16 @@
 <template>
     <div class="flex flex-col gap-5">
-        <div class="admin-panel relative">
+        <div class="admin-panel invoice-approval-panel relative">
             <DataTable
                 ref="dt"
+                class="invoice-approval-table"
                 data-key="id"
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
                 responsive-layout="scroll"
                 sort-mode="multiple"
                 scroll-height="50vh"
+                table-style="min-width: 1360px"
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
@@ -30,53 +32,59 @@
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
-                        <Dropdown
-                            v-model="buildingId"
-                            :options="buildingOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Building"
-                            show-clear
-                            class="w-44"
-                        />
-                        <Dropdown
-                            v-model="roomId"
-                            :options="roomOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Room"
-                            :disabled="!buildingId"
-                            show-clear
-                            class="w-36"
-                        />
-                        <Calendar
-                            v-model="issuedFrom"
-                            placeholder="Issue from"
-                            date-format="yy-mm-dd"
-                            show-icon
-                            class="w-40"
-                        />
-                        <Calendar
-                            v-model="issuedTo"
-                            placeholder="Issue to"
-                            date-format="yy-mm-dd"
-                            show-icon
-                            class="w-40"
-                        />
-                        <Calendar
-                            v-model="dueFrom"
-                            placeholder="Due from"
-                            date-format="yy-mm-dd"
-                            show-icon
-                            class="w-40"
-                        />
-                        <Calendar
-                            v-model="dueTo"
-                            placeholder="Due to"
-                            date-format="yy-mm-dd"
-                            show-icon
-                            class="w-40"
-                        />
+                        <div class="admin-filter-group">
+                            <Dropdown
+                                v-model="buildingId"
+                                :options="buildingOptions"
+                                option-label="label"
+                                option-value="value"
+                                placeholder="Building"
+                                show-clear
+                                class="w-44"
+                            />
+                            <Dropdown
+                                v-model="roomId"
+                                :options="roomOptions"
+                                option-label="label"
+                                option-value="value"
+                                placeholder="Room"
+                                :disabled="!buildingId"
+                                show-clear
+                                class="w-36"
+                            />
+                        </div>
+                        <div class="admin-filter-group admin-filter-group--dates">
+                            <Calendar
+                                v-model="issuedFrom"
+                                placeholder="Issue from"
+                                date-format="yy-mm-dd"
+                                show-icon
+                                class="w-40"
+                            />
+                            <Calendar
+                                v-model="issuedTo"
+                                placeholder="Issue to"
+                                date-format="yy-mm-dd"
+                                show-icon
+                                class="w-40"
+                            />
+                        </div>
+                        <div class="admin-filter-group admin-filter-group--dates">
+                            <Calendar
+                                v-model="dueFrom"
+                                placeholder="Due from"
+                                date-format="yy-mm-dd"
+                                show-icon
+                                class="w-40"
+                            />
+                            <Calendar
+                                v-model="dueTo"
+                                placeholder="Due to"
+                                date-format="yy-mm-dd"
+                                show-icon
+                                class="w-40"
+                            />
+                        </div>
                         <Dropdown
                             v-model="paymentStatusFilter"
                             :options="statusOptions"
@@ -86,7 +94,7 @@
                             show-clear
                             class="w-44"
                         />
-                                            <template #actions>
+                        <template #actions>
                             <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"
@@ -106,7 +114,7 @@
                     field="invoice_number"
                     header="Invoice #"
                     :sortable="true"
-                    style="min-width: 150px"
+                    style="width: 160px; min-width: 160px"
                 >
                     <template #body="{ data }">
                         <router-link
@@ -122,28 +130,30 @@
                     field="customer_name"
                     header="Customer"
                     :sortable="true"
-                    style="min-width: 150px"
+                    style="width: 180px; min-width: 180px"
                 />
 
                 <Column
                     field="building_name"
                     header="Building"
                     :sortable="true"
-                    style="min-width: 180px"
+                    style="width: 190px; min-width: 190px"
                 />
 
                 <Column
                     field="room_number"
                     header="Room"
                     :sortable="true"
-                    style="min-width: 100px"
+                    style="width: 110px; min-width: 110px"
                 />
 
                 <Column
                     field="total_amount"
                     header="Total"
                     :sortable="true"
-                    style="min-width: 130px"
+                    header-class="invoice-approval-numeric"
+                    body-class="invoice-approval-numeric"
+                    style="width: 150px; min-width: 150px"
                 >
                     <template #body="{ data }">
                         {{ formatCurrency(data.total_amount) }}
@@ -151,34 +161,36 @@
                 </Column>
 
                 <Column
-                    field="issued_date"
-                    header="Issue Date"
-                    :sortable="true"
-                    style="min-width: 130px"
-                >
-                    <template #body="{ data }">
-                        {{ formatDate(data.issued_date) }}
-                    </template>
-                </Column>
-
-                <Column
                     field="due_date"
                     header="Due Date"
                     :sortable="true"
-                    style="min-width: 130px"
+                    header-class="invoice-approval-nowrap"
+                    body-class="invoice-approval-nowrap"
+                    style="width: 150px; min-width: 150px"
                 >
                     <template #body="{ data }">
                         {{ formatDate(data.due_date) }}
                     </template>
                 </Column>
 
-                <Column header="Status" style="min-width: 110px">
+                <Column
+                    header="Status"
+                    header-class="invoice-approval-nowrap"
+                    body-class="invoice-approval-nowrap"
+                    style="width: 150px; min-width: 150px"
+                >
                     <template #body="{ data }">
                         <StatusBadge :value="data.payment_status || data.display_status || data.status" />
                     </template>
                 </Column>
 
-                <Column header="Actions" :exportable="false" style="min-width: 80px">
+                <Column
+                    header="Actions"
+                    :exportable="false"
+                    header-class="invoice-approval-nowrap"
+                    body-class="invoice-approval-nowrap"
+                    style="width: 120px; min-width: 120px"
+                >
                     <template #body="{ data }">
                         <ApprovalListActions
                             :can-reject="false"
@@ -237,3 +249,44 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.invoice-approval-panel {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+:deep(.invoice-approval-table),
+:deep(.invoice-approval-table .p-datatable-wrapper) {
+    min-width: 0;
+    max-width: 100%;
+}
+
+:deep(.invoice-approval-table .p-datatable-wrapper) {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+:deep(.invoice-approval-table .p-datatable-table) {
+    width: 100%;
+    min-width: 1360px;
+}
+
+:deep(.invoice-approval-table .p-datatable-thead > tr > th) {
+    vertical-align: middle;
+}
+
+:deep(.invoice-approval-table .invoice-approval-nowrap) {
+    white-space: nowrap;
+}
+
+:deep(.invoice-approval-table .invoice-approval-numeric) {
+    text-align: right;
+}
+
+:deep(.invoice-approval-table .p-paginator) {
+    max-width: 100%;
+}
+
+</style>

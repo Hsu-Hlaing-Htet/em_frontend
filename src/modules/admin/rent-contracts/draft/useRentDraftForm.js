@@ -39,17 +39,17 @@ export default function useRentDraftForm(initialState = null) {
         remarks: '',
     });
 
-    const customerOptions = computed(() => customers.value.map((customer) => ({
+    const customerOptions = computed(() => customers.value.filter((customer) => customer.status === 'active').map((customer) => ({
         label: customer.name,
         value: customer.id,
     })));
 
-    const buildingOptions = computed(() => buildings.value.map((building) => ({
+    const buildingOptions = computed(() => buildings.value.filter((building) => building.status === 'active').map((building) => ({
         label: building.building_name,
         value: building.id,
     })));
 
-    const roomOptions = computed(() => rooms.value.map((room) => ({
+    const roomOptions = computed(() => rooms.value.filter((room) => room.status === 'available').map((room) => ({
         label: room.room_number,
         value: room.id,
     })));

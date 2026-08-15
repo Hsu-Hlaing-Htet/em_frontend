@@ -9,8 +9,3 @@ node_modules/
 node_modules/
 .env
 dist/
-/playwright-report/
-/test-results/
-/test-results-demo/
-/blob-report/
-/playwright/.cache/

@@ -1,7 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { usePaymentMethodStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
@@ -17,7 +16,6 @@ export const usePaymentMethodList = () => {
     const paymentMethods = ref([]);
     const lazyParams = ref({});
     const store = usePaymentMethodStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
@@ -158,7 +156,6 @@ export const usePaymentMethodList = () => {
 
     return {
         paymentMethods,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,

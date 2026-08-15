@@ -30,6 +30,7 @@
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
+                        <div class="admin-filter-group">
                         <Dropdown
                             v-model="buildingId"
                             :options="buildingOptions"
@@ -49,6 +50,8 @@
                             show-clear
                             class="w-36"
                         />
+                        </div>
+                        <div class="admin-filter-group admin-filter-group--dates">
                         <Calendar
                             v-model="issuedFrom"
                             placeholder="Issue from"
@@ -63,6 +66,8 @@
                             show-icon
                             class="w-40"
                         />
+                        </div>
+                        <div class="admin-filter-group admin-filter-group--dates">
                         <Calendar
                             v-model="dueFrom"
                             placeholder="Due from"
@@ -77,6 +82,7 @@
                             show-icon
                             class="w-40"
                         />
+                        </div>
                         <Dropdown
                             v-model="paymentStatusFilter"
                             :options="statusOptions"

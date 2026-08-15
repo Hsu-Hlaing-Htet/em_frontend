@@ -70,6 +70,13 @@ const saleService = {
         return result.data;
     },
 
+    cancel: async (params) => {
+        const result = await api.post(`${endpoint.saleContractsApproved}/${params.id}/cancel`, {
+            reason: params.reason,
+        });
+        return result.data;
+    },
+
     fetchDocument: async (scope, id, action) => {
         const base = scope === 'approved'
             ? `${endpoint.saleContractsApproved}/${id}/document`

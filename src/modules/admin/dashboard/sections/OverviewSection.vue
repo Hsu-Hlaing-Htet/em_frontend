@@ -2,7 +2,7 @@
 import { computed, inject, unref } from 'vue';
 import { useRouter } from 'vue-router';
 import DashboardAreaChart from '../components/DashboardAreaChart.vue';
-import DashboardEmptyState from '../components/DashboardEmptyState.vue';
+import DashboardOperationalSections from '../components/DashboardOperationalSections.vue';
 import DashboardSparkline from '../components/DashboardSparkline.vue';
 
 const dashboard = inject('dashboard', null);
@@ -21,10 +21,6 @@ function toSafeList(source) {
 const safeStats = computed(() => toSafeList(dashboard?.stats));
 const safeRevenueCollections = computed(() => dashboard?.revenueCollections?.points ?? []);
 const safeReceivableAging = computed(() => toSafeList(dashboard?.receivableAging));
-const safeOccupancyByBuilding = computed(() => toSafeList(dashboard?.occupancyByBuilding).slice(0, 5));
-const safeUpcomingContracts = computed(() => toSafeList(dashboard?.upcomingContracts));
-const safeApprovalItems = computed(() => toSafeList(dashboard?.pendingApprovalBreakdown?.items));
-const approvalTotal = computed(() => dashboard?.pendingApprovalBreakdown?.total ?? 0);
 const collectionRate = computed(() => dashboard?.revenueCollections?.collection_rate ?? 0);
 
 const statIcons = {
@@ -33,11 +29,6 @@ const statIcons = {
     outstanding: 'pi pi-wallet',
     pending_approvals: 'pi pi-clock',
 };
-
-const maxApprovalCount = computed(() => {
-    const counts = safeApprovalItems.value.map((item) => Number(item.count) || 0);
-    return Math.max(...counts, 1);
-});
 
 function sparkColor(stat) {
     if (stat?.key === 'pending_approvals') {
@@ -83,16 +74,6 @@ function handleStatClick(stat) {
 
 function statIcon(stat) {
     return statIcons[stat?.key] ?? 'pi pi-chart-bar';
-}
-
-function navigateTo(path) {
-    if (path) {
-        router.push(path);
-    }
-}
-
-function approvalBarWidth(count) {
-    return `${((Number(count) || 0) / maxApprovalCount.value) * 100}%`;
 }
 </script>
 
@@ -207,137 +188,7 @@ function approvalBarWidth(count) {
             </article>
         </section>
 
-        <section class="dashboard-bottom-grid">
-            <article class="dashboard-panel">
-                <div class="dashboard-panel__header dashboard-panel__header--compact">
-                    <h2 class="dashboard-panel__title">
-                        Occupancy by Building
-                    </h2>
-                </div>
-
-                <div class="dashboard-building-list">
-                    <div
-                        v-for="(building, buildingIndex) in safeOccupancyByBuilding"
-                        :key="building.key ?? `building-${buildingIndex}`"
-                        class="dashboard-building-row"
-                    >
-                        <span class="dashboard-building-label">{{ building.label }}</span>
-                        <div class="dashboard-building-track">
-                            <div
-                                class="dashboard-building-fill"
-                                :style="{ width: `${building.percent || 0}%` }"
-                            />
-                        </div>
-                        <div class="dashboard-building-meta">
-                            <span>{{ building.ratio_label }}</span>
-                            <strong>{{ building.percent || 0 }}%</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <DashboardEmptyState
-                    v-if="safeOccupancyByBuilding.length === 0"
-                    title="No buildings yet"
-                    message="Occupancy will appear once buildings and rooms are configured."
-                    icon="pi pi-building"
-                />
-            </article>
-
-            <article class="dashboard-panel">
-                <div class="dashboard-panel__header">
-                    <div>
-                        <h2 class="dashboard-panel__title">
-                            Upcoming Contracts
-                        </h2>
-                        <p class="dashboard-panel__subtitle">
-                            Active contracts ending within the next 60 days
-                        </p>
-                    </div>
-                    <router-link
-                        to="/admin/rent-contracts"
-                        class="dashboard-panel__link"
-                    >
-                        View contracts
-                        <i class="pi pi-angle-right" />
-                    </router-link>
-                </div>
-
-                <div
-                    v-if="safeUpcomingContracts.length"
-                    class="dashboard-contract-list"
-                >
-                    <div
-                        v-for="(contract, contractIndex) in safeUpcomingContracts"
-                        :key="contract.id ?? `contract-${contractIndex}`"
-                        class="dashboard-contract-row"
-                        @click="navigateTo(contract.to)"
-                    >
-                        <span class="dashboard-contract-marker" />
-                        <div class="dashboard-contract-copy">
-                            <strong>{{ contract.number }}</strong>
-                            <span>{{ contract.property }}</span>
-                        </div>
-                        <span class="dashboard-contract-date">{{ contract.end_date }}</span>
-                        <span class="dashboard-contract-days">{{ contract.days_left }} days</span>
-                    </div>
-                </div>
-
-                <DashboardEmptyState
-                    v-else
-                    title="No upcoming expirations"
-                    message="No active contracts are scheduled to end in the next 60 days."
-                    icon="pi pi-calendar"
-                />
-            </article>
-
-            <article class="dashboard-panel">
-                <div class="dashboard-panel__header">
-                    <div>
-                        <h2 class="dashboard-panel__title">
-                            Pending Approvals
-                        </h2>
-                        <p class="dashboard-panel__subtitle">
-                            Items waiting in approval queues
-                        </p>
-                    </div>
-                    <div class="dashboard-panel__metric dashboard-panel__metric--compact">
-                        <strong class="dashboard-panel__metric-value">{{ approvalTotal }}</strong>
-                    </div>
-                </div>
-
-                <div class="dashboard-approval-list">
-                    <button
-                        v-for="(item, itemIndex) in safeApprovalItems"
-                        :key="item.key ?? `approval-${itemIndex}`"
-                        type="button"
-                        class="dashboard-approval-row"
-                        @click="navigateTo(item.to)"
-                    >
-                        <span class="dashboard-approval-icon">
-                            <i :class="item.icon" />
-                        </span>
-                        <div class="dashboard-approval-copy">
-                            <span>{{ item.label }}</span>
-                            <div class="dashboard-approval-track">
-                                <div
-                                    class="dashboard-approval-fill"
-                                    :style="{ width: approvalBarWidth(item.count) }"
-                                />
-                            </div>
-                        </div>
-                        <strong class="dashboard-approval-count">{{ item.count }}</strong>
-                    </button>
-                </div>
-
-                <router-link
-                    to="/admin/approvals/sale-contracts"
-                    class="dashboard-panel__link dashboard-panel__link--footer"
-                >
-                    Review all
-                    <i class="pi pi-angle-right" />
-                </router-link>
-            </article>
-        </section>
+        <DashboardOperationalSections />
     </div>
 </template>
 

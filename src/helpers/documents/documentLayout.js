@@ -1,5 +1,6 @@
 import { COMPANY_INFO } from './companyInfo';
 import { escapeHtml, renderMetaItems } from './htmlUtils';
+import documentFontStyles from '@/assets/css/documents/document-font.css?inline';
 import documentStyles from '@/assets/css/documents/document-styles.css?inline';
 
 export function renderDocumentHeader({ documentTitle, meta = [], logoSrc }) {
@@ -67,7 +68,7 @@ export function renderDocumentPage({
 <head>
     <meta charset="utf-8" />
     <title>${escapeHtml(pageTitle)}</title>
-    <style>${documentStyles}</style>
+    <style>${documentFontStyles}\n${documentStyles}</style>
 </head>
 <body>
     ${renderDocumentArticle({ documentTitle, meta, bodyHtml, leadHtml, logoSrc })}

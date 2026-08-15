@@ -1,70 +1,69 @@
 import api from '@/libs/axios';
 import { endpoint } from '@/services/endpoint';
-import { mockRepository } from './data/mockRepository';
 
-const CHART_PAYLOAD_KEYS = [
-    'kpi_stats',
-    'property_stats',
-    'invoice_stats',
-    'revenue_chart',
-    'revenue_summary',
-    'revenue_collections',
-    'receivable_aging',
-    'occupancy_by_building',
-    'upcoming_contracts',
-    'pending_approval_breakdown',
-];
+function paginatedPayload(response) {
+    const payload = response?.data?.data;
 
-/**
- * List sections still use mock data until dedicated admin dashboard list APIs exist.
- * Chart metrics are loaded from the backend on every refresh.
- */
+    return {
+        items: Array.isArray(payload?.data) ? payload.data : [],
+        total: Number(payload?.total) || 0,
+    };
+}
+
+function countExpiredContracts(contracts) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return contracts.filter((contract) => {
+        if (!contract?.end_date) {
+            return false;
+        }
+
+        const endDate = new Date(`${contract.end_date}T00:00:00`);
+        return !Number.isNaN(endDate.getTime()) && endDate < today;
+    }).length;
+}
+
 const dashboardService = {
     async fetchChartMetrics() {
         const result = await api.get(endpoint.adminDashboardCharts);
         return result.data;
     },
 
-    async fetchAll(options = {}) {
-        const mockPayload = await mockRepository.getAll(options);
+    async fetchAll() {
+        const [chartPayload, pendingMaintenanceResponse, activeMaintenanceResponse, activeRentResponse] = await Promise.all([
+            this.fetchChartMetrics(),
+            api.get(endpoint.maintenanceRequests, {
+                params: { status: 'pending', per_page: 1 },
+            }),
+            api.get(endpoint.maintenanceRequests, {
+                params: { status: 'in_progress', per_page: 1 },
+            }),
+            api.get(endpoint.rentContractsActive, {
+                params: { per_page: 1000 },
+            }),
+        ]);
 
-        try {
-            const chartPayload = await this.fetchChartMetrics();
+        const pendingMaintenance = paginatedPayload(pendingMaintenanceResponse);
+        const activeMaintenance = paginatedPayload(activeMaintenanceResponse);
+        const activeRentContracts = paginatedPayload(activeRentResponse);
 
-            return {
-                ...mockPayload,
-                ...CHART_PAYLOAD_KEYS.reduce((merged, key) => {
-                    if (chartPayload[key] !== undefined) {
-                        merged[key] = chartPayload[key];
-                    }
-
-                    return merged;
-                }, {}),
-            };
-        } catch (chartError) {
-            console.warn('Dashboard chart API unavailable; falling back to mock chart data.', chartError);
-
-            return mockPayload;
-        }
+        return {
+            ...chartPayload,
+            activity_timeline: [],
+            system_alerts: {
+                expired_contracts: countExpiredContracts(activeRentContracts.items),
+                unresolved_maintenance: pendingMaintenance.total + activeMaintenance.total,
+            },
+        };
     },
 
-    async fetchSection(sectionKey) {
-        if (CHART_PAYLOAD_KEYS.includes(sectionKey)) {
-            const chartPayload = await this.fetchChartMetrics();
-            return chartPayload[sectionKey];
-        }
-
-        return mockRepository.getSection(sectionKey);
+    async updateSettings() {
+        throw new Error('Dashboard settings are unavailable because no backend endpoint exists.');
     },
 
-    async updateSettings(payload) {
-        await mockRepository.getSection('settings');
-        return { settings: payload };
-    },
-
-    async generateReport(reportId) {
-        await mockRepository.getSection('reports');
-        return { id: reportId, status: 'generating' };
+    async generateReport() {
+        throw new Error('Dashboard report generation is unavailable because no backend endpoint exists.');
     },
 };
 

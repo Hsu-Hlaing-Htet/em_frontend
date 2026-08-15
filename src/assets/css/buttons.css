@@ -229,29 +229,22 @@ html[data-theme='dark'] [data-customer-layout] .btn {
 [data-customer-layout] .p-button.p-button-warning:not(.p-button-text),
 .p-dialog .p-button.p-button-warning:not(.p-button-text),
 .p-confirm-dialog .p-button.p-button-warning:not(.p-button-text) {
-    --rw-btn-accent: #eab308;
-    --rw-btn-accent-hover: #eab308;
+    --rw-btn-accent: var(--rw-warning);
+    --rw-btn-accent-hover: var(--rw-warning);
     --rw-btn-glow-active: var(--rw-btn-glow-warning);
 
     background: transparent !important;
-    border: 1px solid #eab308 !important;
-    color: #a16207 !important;
+    border: 1px solid var(--rw-warning) !important;
+    color: var(--rw-warning-text) !important;
     box-shadow: none;
-}
-
-html[data-theme='dark'] [data-admin-layout] .p-button.p-button-warning:not(.p-button-text),
-html[data-theme='dark'] [data-customer-layout] .p-button.p-button-warning:not(.p-button-text),
-html[data-theme='dark'] .p-dialog .p-button.p-button-warning:not(.p-button-text),
-html[data-theme='dark'] .p-confirm-dialog .p-button.p-button-warning:not(.p-button-text) {
-    color: #fcd34d !important;
 }
 
 [data-admin-layout] .p-button.p-button-warning:not(.p-button-text):hover,
 [data-customer-layout] .p-button.p-button-warning:not(.p-button-text):hover,
 .p-dialog .p-button.p-button-warning:not(.p-button-text):hover,
 .p-confirm-dialog .p-button.p-button-warning:not(.p-button-text):hover {
-    background: #eab308 !important;
-    border-color: #eab308 !important;
+    background: var(--rw-warning) !important;
+    border-color: var(--rw-warning) !important;
     color: var(--rw-on-primary) !important;
     box-shadow: var(--rw-btn-glow-warning);
 }

@@ -30,6 +30,7 @@
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
+                        <div class="admin-filter-group">
                         <Dropdown
                             v-model="buildingId"
                             :options="buildingOptions"
@@ -49,6 +50,8 @@
                             show-clear
                             class="w-36"
                         />
+                        </div>
+                        <div class="admin-filter-group admin-filter-group--dates">
                         <Calendar
                             v-model="issuedFrom"
                             placeholder="Issued from"
@@ -63,6 +66,7 @@
                             show-icon
                             class="w-40"
                         />
+                        </div>
                                             <template #actions>
                             <ListExportActions
                                 :loading="isExporting"

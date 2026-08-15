@@ -108,5 +108,8 @@ export const useSaleStore = defineStore('useSaleStore', {
             const response = await saleService.reject(params);
             this.actionResponse = response;
         },
+        async cancel(params) {
+            this.actionResponse = await saleService.cancel(params);
+        },
     },
 });

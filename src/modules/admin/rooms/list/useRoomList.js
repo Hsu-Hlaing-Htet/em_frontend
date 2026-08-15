@@ -1,7 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { formatCurrency } from '@/utils/formatter';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
@@ -24,7 +23,6 @@ export const useRoomList = () => {
     const lazyParams = ref({});
     const store = useRoomStore();
     const buildingStore = useBuildingStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
@@ -53,10 +51,26 @@ export const useRoomList = () => {
         });
     };
 
+    const showLifecycleDialog = (room) => {
+        const action = room.status === 'inactive' ? 'activate' : 'deactivate';
+        const label = action === 'activate' ? 'make available' : 'mark inactive';
+
+        confirmDelete(`Are you sure you want to ${label} room ${room.room_number}?`, async () => {
+            await store[action]({ id: room.id });
+            clearSelection();
+            await loadingData();
+        });
+    };
+
+    const canBulkDelete = computed(() => (
+        selectedRooms.value.length > 0
+        && selectedRooms.value.every((room) => room.can_delete === true)
+    ));
+
     const showBulkDeleteConfirmDialog = () => {
         const ids = selectedRooms.value.map((room) => room.id).filter(Boolean);
 
-        if (!ids.length) {
+        if (!ids.length || !canBulkDelete.value) {
             return;
         }
 
@@ -190,7 +204,6 @@ export const useRoomList = () => {
         rooms,
         selectedRooms,
         selectedRoomCount: computed(() => selectedRooms.value.length),
-        errors,
         isLoading,
         totalRecords,
         lazyParams,
@@ -206,7 +219,9 @@ export const useRoomList = () => {
         onPage,
         resetSearch,
         showConfirmDialog,
+        showLifecycleDialog,
         showBulkDeleteConfirmDialog,
+        canBulkDelete,
         formatCurrency,
         isExporting,
         canExport,

@@ -1,8 +1,12 @@
 <template>
     <div v-if="!isLoading">
-        <div class="mb-4 flex flex-wrap gap-2">
-            <router-link :to="{ name: 'customerMaintenanceRequestList' }" class="flex-1">
-                <Button :label="$t('common.back')" severity="secondary" class="customer-btn-block" />
+        <div class="customer-detail-actions mb-4">
+            <router-link :to="{ name: 'customerMaintenanceRequestList' }">
+                <Button
+                    :label="$t('common.back')"
+                    icon="pi pi-arrow-left"
+                    class="btn-outline"
+                />
             </router-link>
         </div>
 

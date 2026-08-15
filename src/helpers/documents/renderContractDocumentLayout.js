@@ -1,6 +1,7 @@
 import { hasBillingValue } from '@/helpers/billing/billingDetailHelpers';
 import { COMPANY_INFO } from './companyInfo';
 import { escapeHtml } from './htmlUtils';
+import documentFontStyles from '@/assets/css/documents/document-font.css?inline';
 import documentStyles from '@/assets/css/documents/document-styles.css?inline';
 
 function formatMetaValue(value) {
@@ -177,7 +178,7 @@ export function renderContractDocumentPage({
 <head>
     <meta charset="utf-8" />
     <title>${escapeHtml(pageTitle)}</title>
-    <style>${documentStyles}</style>
+    <style>${documentFontStyles}\n${documentStyles}</style>
 </head>
 <body>
     ${renderContractDocumentArticle({

@@ -1,7 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { useResidentStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
@@ -15,7 +14,6 @@ export const useResidentList = () => {
     const residents = ref([]);
     const lazyParams = ref({});
     const store = useResidentStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
@@ -32,9 +30,11 @@ export const useResidentList = () => {
         };
     };
 
-    const showConfirmDialog = (id,name) => {
-        confirmDelete('Are you sure you want to delete this ${name} resident?', async () => {
-            await store.delete({ id });
+    const showLifecycleDialog = (resident) => {
+        const action = resident.status === 'inactive' ? 'activate' : 'deactivate';
+
+        confirmDelete(`Are you sure you want to ${action} ${resident.name}?`, async () => {
+            await store[action]({ id: resident.id });
             await loadingData();
         });
     };
@@ -122,7 +122,6 @@ export const useResidentList = () => {
 
     return {
         residents,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,
@@ -131,7 +130,7 @@ export const useResidentList = () => {
         onSort,
         onPage,
         resetSearch,
-        showConfirmDialog,
+        showLifecycleDialog,
         isExporting,
         canExport,
         downloadList,

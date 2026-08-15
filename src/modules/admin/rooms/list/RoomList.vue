@@ -24,89 +24,90 @@
                 @page="onPage($event)"
                 @sort="onSort($event)"
             >
-            <template #header>
-    <div class="flex flex-col gap-3">
-        <!-- First row -->
-        <div class="flex flex-wrap items-center justify-between gap-3">
-            <p class="m-0 text-md">{{ $t('property.allRooms') }}</p>
+                <template #header>
+                    <div class="admin-list-toolbar admin-list-toolbar--selection">
+                        <p class="admin-list-toolbar__title">{{ $t('property.allRooms') }}</p>
 
-            <div class="flex flex-wrap items-center justify-end gap-2">
-                <span
-                    v-if="selectedRoomCount"
-                    class="text-sm font-semibold text-[var(--admin-text-muted)]"
-                >
-                    {{ selectedRoomCount }} selected
-                </span>
-                <Button
-                    label="Bulk Delete"
-                    severity="danger"
-                    :disabled="!selectedRoomCount"
-                    @click="showBulkDeleteConfirmDialog"
-                />
-                <div class="relative">
-                    <i
-                        class="pi pi-search absolute left-3 top-1/2 z-10
-                               -translate-y-1/2 text-[var(--admin-text-muted)]"
-                    />
+                        <div class="admin-list-toolbar__controls">
+                            <div class="admin-list-toolbar__search">
+                                <i
+                                    class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
+                                />
 
-                    <InputText
-                        v-model="search"
-                        :placeholder="$t('common.keywordSearch')"
-                        class="w-72 !pl-10"
-                    />
-                </div>
+                                <InputText
+                                    v-model="search"
+                                    :placeholder="$t('common.keywordSearch')"
+                                    class="w-full !pl-10"
+                                />
+                            </div>
 
-                <Dropdown
-                    v-model="selectedBuilding"
-                    :options="buildingOptions"
-                    option-label="label"
-                    option-value="value"
-                    :placeholder="$t('property.allBuildings')"
-                    class="w-52"
-                />
+                            <Dropdown
+                                v-model="selectedBuilding"
+                                :options="buildingOptions"
+                                option-label="label"
+                                option-value="value"
+                                :placeholder="$t('property.allBuildings')"
+                                class="w-52"
+                            />
 
-                <Dropdown
-                    v-model="selectedType"
-                    :options="typeOptions"
-                    option-label="label"
-                    option-value="value"
-                    :placeholder="$t('property.roomType')"
-                    class="w-40"
-                />
+                            <Dropdown
+                                v-model="selectedType"
+                                :options="typeOptions"
+                                option-label="label"
+                                option-value="value"
+                                :placeholder="$t('property.roomType')"
+                                class="w-40"
+                            />
 
-                <Dropdown
-                    v-model="selectedStatus"
-                    :options="statusOptions"
-                    option-label="label"
-                    option-value="value"
-                    :placeholder="$t('property.roomStatus')"
-                    class="w-40"
-                />
+                            <Dropdown
+                                v-model="selectedStatus"
+                                :options="statusOptions"
+                                option-label="label"
+                                option-value="value"
+                                :placeholder="$t('property.roomStatus')"
+                                class="w-40"
+                            />
 
-                <Button
-                    :label="$t('common.reset')"
-                    @click="resetSearch"
-                />
+                            <Button
+                                :label="$t('common.reset')"
+                                @click="resetSearch"
+                            />
 
-                <router-link :to="{ name: 'newRoom' }">
-                    <Button :label="$t('common.create')" />
-                </router-link>
-            </div>
-        </div>
+                            <router-link :to="{ name: 'newRoom' }">
+                                <Button :label="$t('common.create')" />
+                            </router-link>
 
-        <!-- Under Reset / Create -->
-        <div class="flex justify-end">
-            <ListExportActions
-                :loading="isExporting"
-                :disabled="!canExport"
-                @download="downloadList"
-                @export-csv="exportCsv"
-                @export-excel="exportExcel"
-                @print="printList"
-            />
-        </div>
-    </div>
-</template>
+                            <ListExportActions
+                                :loading="isExporting"
+                                :disabled="!canExport"
+                                @download="downloadList"
+                                @export-csv="exportCsv"
+                                @export-excel="exportExcel"
+                                @print="printList"
+                            />
+                        </div>
+
+                        <div
+                            v-if="selectedRoomCount"
+                            class="admin-selection-bar"
+                        >
+                            <span class="text-sm font-semibold text-[var(--admin-text)]">
+                                {{ selectedRoomCount }} selected
+                            </span>
+
+                            <button
+                                type="button"
+                                class="admin-selection-delete"
+                                :disabled="!canBulkDelete"
+                                :title="canBulkDelete ? '' : 'Only available rooms without contract history can be deleted'"
+                                @click="showBulkDeleteConfirmDialog"
+                            >
+                                <i class="pi pi-trash" />
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </template>
                 <template #empty>{{ $t('property.noRooms') }}</template>
                 <template #loading>{{ $t('property.loadingRooms') }}</template>
 
@@ -162,10 +163,19 @@
                         </router-link>
 
                         <Button
+                            v-if="data.can_delete"
                             icon="pi pi-trash"
                             text
                             severity="danger"
                             @click="showConfirmDialog(data.id,data.room_number)"
+                        />
+                        <Button
+                            v-else
+                            :icon="data.status === 'inactive' ? 'pi pi-refresh' : 'pi pi-ban'"
+                            text
+                            :severity="data.status === 'inactive' ? 'success' : 'warning'"
+                            :title="data.status === 'inactive' ? 'Make available' : 'Mark inactive'"
+                            @click="showLifecycleDialog(data)"
                         />
                     </template>
                 </Column>

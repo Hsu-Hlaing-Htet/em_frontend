@@ -23,21 +23,21 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                            <p class="m-0 text-md">Sale Contract Approvals</p>
+                    <div class="admin-list-toolbar">
+                        <div class="admin-list-toolbar__heading">
+                            <p class="admin-list-toolbar__title">Sale Contract Approvals</p>
 
                         </div>
-                        <div class="flex flex-wrap items-center gap-2">
+                        <div class="admin-list-toolbar__controls">
  
- <div class="relative">
+ <div class="admin-list-toolbar__search">
                              <i
                                  class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
                              />
                              <InputText
                                  v-model="search"
                                  placeholder="Search contract, customer, room..."
-                                 class="w-72 !pl-10"
+                                 class="w-full !pl-10"
                              />
                          </div>
 
@@ -51,6 +51,7 @@
                              class="w-52"
                          />
 
+                         <div class="admin-filter-group admin-filter-group--dates">
                          <Calendar
                              v-model="dateFrom"
                              placeholder="From date"
@@ -66,13 +67,14 @@
                              show-icon
                              class="w-40"
                          />
+                         </div>
 
                          <Button label="Reset" @click="resetSearch" class="btn-outline"/>
 
                
 </div>
 
-<div class="ml-auto flex items-center gap-2">
+<div class="admin-list-toolbar__actions">
  <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"

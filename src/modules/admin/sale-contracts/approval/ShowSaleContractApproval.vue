@@ -2,23 +2,10 @@
     <div v-if="!isLoading" class="">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
-                <Button
-                    icon="pi pi-download"
-                    label="Download"
-                    severity="secondary"
-                    @click="downloadPdf"
-                />
-                <Button
-                    icon="pi pi-print"
-                    label="Print"
-                    severity="secondary"
-                    @click="printContract"
-                />
-                <Button
-                    icon="pi pi-file-export"
-                    label="Export"
-                    severity="secondary"
-                    @click="exportPdf"
+                <DocumentDownloadActions
+                    @download-pdf="downloadPdf"
+                    @export-document="exportPdf"
+                    @print="printContract"
                 />
                 <Button
                     icon="pi pi-envelope"
@@ -69,11 +56,12 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ContractPdfSheet from '@/components/admin/documents/ContractPdfSheet.vue';
 import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
+import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import useShowSaleContractApproval from './useShowSaleContractApproval';
 
 export default defineComponent({
     name: 'ShowSaleContractApproval',
-    components: { Button, Loading, ContractPdfSheet, RejectContractDialog },
+    components: { Button, Loading, ContractPdfSheet, RejectContractDialog, DocumentDownloadActions },
     setup() {
         return useShowSaleContractApproval();
     },

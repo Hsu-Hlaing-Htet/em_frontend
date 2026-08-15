@@ -2,23 +2,10 @@
     <div v-if="!isLoading" class="min-h-screen">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
-                <Button
-                    icon="pi pi-download"
-                    label="Download"
-                    severity="secondary"
-                    @click="downloadPdf"
-                />
-                <Button
-                    icon="pi pi-print"
-                    label="Print"
-                    severity="secondary"
-                    @click="printPdf"
-                />
-                <Button
-                    icon="pi pi-file-export"
-                    label="Export"
-                    severity="secondary"
-                    @click="exportPdf"
+                <DocumentDownloadActions
+                    @download-pdf="downloadPdf"
+                    @export-document="exportPdf"
+                    @print="printPdf"
                 />
                 <Button
                     icon="pi pi-envelope"
@@ -46,11 +33,12 @@ import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import InvoiceDocumentSheet from '@/components/admin/documents/InvoiceDocumentSheet.vue';
+import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import useInvoiceDocumentPage from './useInvoiceDocumentPage';
 
 export default defineComponent({
     name: 'InvoiceDocument',
-    components: { Button, Loading, InvoiceDocumentSheet },
+    components: { Button, Loading, InvoiceDocumentSheet, DocumentDownloadActions },
     setup() {
         return useInvoiceDocumentPage();
     },

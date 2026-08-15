@@ -28,6 +28,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import 'primevue/resources/themes/aura-light-noir/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
+import './assets/css/foundation.css';
 import './assets/css/public.css';
 import './assets/css/admin.css';
 import './assets/css/customer.css';

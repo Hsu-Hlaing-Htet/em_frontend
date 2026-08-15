@@ -44,6 +44,16 @@ const service = {
         return result.data;
     },
 
+    deactivate: async (params) => {
+        const result = await api.post(`${endpoint.rooms}/${params.id}/deactivate`);
+        return result.data;
+    },
+
+    activate: async (params) => {
+        const result = await api.post(`${endpoint.rooms}/${params.id}/activate`);
+        return result.data;
+    },
+
     getAllImages: async (params) => {
         try {
             const result = await api.get(endpoint.roomImages, { params });

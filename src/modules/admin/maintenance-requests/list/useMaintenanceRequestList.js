@@ -1,7 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
 import { MAINTENANCE_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
@@ -16,7 +15,6 @@ export const useMaintenanceRequestList = () => {
     const maintenanceRequests = ref([]);
     const lazyParams = ref({});
     const store = useMaintenanceRequestStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
@@ -127,7 +125,6 @@ export const useMaintenanceRequestList = () => {
 
     return {
         maintenanceRequests,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,

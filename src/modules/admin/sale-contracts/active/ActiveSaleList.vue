@@ -23,20 +23,20 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="admin-list-toolbar">
 
-<p class="m-0 text-md">Active Sales</p>
+<p class="admin-list-toolbar__title">Active Sales</p>
 
-<div class="flex flex-wrap items-center gap-2">
+                        <div class="admin-list-toolbar__controls">
  
-    <div class="relative">
+ <div class="admin-list-toolbar__search">
                                 <i
                                     class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
                                 />
                                 <InputText
                                     v-model="search"
                                     placeholder="Search contract, customer, room..."
-                                    class="w-72 !pl-10"
+                                 class="w-full !pl-10"
                                 />
                             </div>
 
@@ -50,7 +50,8 @@
                                 class="w-52"
                             />
 
-                            <Calendar
+                         <div class="admin-filter-group admin-filter-group--dates">
+                         <Calendar
                                 v-model="dateFrom"
                                 placeholder="From date"
                                 date-format="yy-mm-dd"
@@ -58,18 +59,19 @@
                                 class="w-40"
                             />
 
-                            <Calendar
+                         <Calendar
                                 v-model="dateTo"
                                 placeholder="To date"
                                 date-format="yy-mm-dd"
                                 show-icon
                                 class="w-40"
-                            />
+                         />
+                         </div>
 
-                            <Button label="Reset" @click="resetSearch" class="btn-outline"/>
+                         <Button label="Reset" @click="resetSearch" class="btn-outline"/>
 </div>
 
-<div class="ml-auto flex items-center gap-2">
+<div class="admin-list-toolbar__actions">
     <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"

@@ -1,5 +1,6 @@
 import { COMPANY_INFO } from './companyInfo';
 import { escapeHtml } from './htmlUtils';
+import documentFontStyles from '@/assets/css/documents/document-font.css?inline';
 import receiptDocumentStyles from '@/assets/css/documents/receipt-document.css?inline';
 import {
     buildReceiptCustomerInfo,
@@ -169,7 +170,7 @@ export function renderReceiptDocumentHtmlPage(document, logoSrc) {
 <head>
     <meta charset="utf-8" />
     <title>Receipt ${escapeHtml(receiptNo)}</title>
-    <style>${receiptDocumentStyles}</style>
+    <style>${documentFontStyles}\n${receiptDocumentStyles}</style>
 </head>
 <body class="receipt-doc-body">
     ${renderReceiptDocumentArticle(document, logoSrc)}

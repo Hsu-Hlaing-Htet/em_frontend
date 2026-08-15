@@ -1,7 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { useRoleStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
@@ -15,7 +14,6 @@ export const useRoleList = () => {
     const roles = ref([]);
     const lazyParams = ref({});
     const store = useRoleStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
@@ -122,7 +120,6 @@ export const useRoleList = () => {
 
     return {
         roles,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,

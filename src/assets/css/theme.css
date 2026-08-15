@@ -23,6 +23,7 @@ html:not([data-theme]) {
     --rw-text: #111827;
     --rw-text-muted: #6b7280;
     --rw-border: #e5e7eb;
+    --rw-control-border: color-mix(in srgb, #6b7280 55%, #e5e7eb);
     --rw-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.04);
     --rw-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.05);
     --rw-mask: rgba(0, 0, 0, 0.4);
@@ -33,13 +34,22 @@ html:not([data-theme]) {
     --rw-nav-active-text: #80152f;
     --rw-nav-active-border: transparent;
     --rw-focus-ring: rgba(128, 21, 47, 0.2);
+    --rw-focus-shadow: 0 0 0 2px rgba(128, 21, 47, 0.2);
     --rw-hover-bg: rgba(128, 21, 47, 0.05);
+    --rw-selected-row-bg: rgba(128, 21, 47, 0.05);
+    --rw-danger-border: rgba(239, 68, 68, 0.48);
+    --rw-danger-hover-bg: rgba(239, 68, 68, 0.07);
+    --rw-nav-focus-shadow: 0 0 0 2px rgba(128, 21, 47, 0.2);
+    --rw-status-focus-ring: rgba(122, 49, 73, 0.35);
     --rw-on-primary: #ffffff;
     --rw-btn-text: #ffffff;
     --rw-btn-gradient-start: #80152f;
     --rw-btn-gradient-end: #6b1127;
     --rw-success: #10b981;
     --rw-danger: #ef4444;
+    --rw-danger-focus-bg: rgba(239, 68, 68, 0.12);
+    --rw-warning: #eab308;
+    --rw-warning-text: #a16207;
     --rw-btn-glow: 0 0 30px 5px rgba(128, 21, 47, 0.45);
     --rw-btn-glow-success: 0 0 30px 5px rgba(16, 185, 129, 0.45);
     --rw-btn-glow-danger: 0 0 30px 5px rgba(239, 68, 68, 0.45);
@@ -121,6 +131,7 @@ html[data-theme='dark'] {
     --rw-text: #ffffff;
     --rw-text-muted: #9ca3af;
     --rw-border: #2d2d30;
+    --rw-control-border: #2d2d30;
     --rw-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
     --rw-shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.32);
     --rw-mask: rgba(0, 0, 0, 0.65);
@@ -131,13 +142,22 @@ html[data-theme='dark'] {
     --rw-nav-active-text: #ffffff;
     --rw-nav-active-border: rgba(193, 39, 79, 0.35);
     --rw-focus-ring: rgba(193, 39, 79, 0.35);
+    --rw-focus-shadow: 0 0 0 2px rgba(193, 39, 79, 0.35);
     --rw-hover-bg: rgba(193, 39, 79, 0.08);
+    --rw-selected-row-bg: rgba(193, 39, 79, 0.16);
+    --rw-danger-border: rgba(239, 68, 68, 0.48);
+    --rw-danger-hover-bg: rgba(239, 68, 68, 0.07);
+    --rw-nav-focus-shadow: 0 0 16px rgba(193, 39, 79, 0.18);
+    --rw-status-focus-ring: rgba(122, 49, 73, 0.35);
     --rw-on-primary: #ffffff;
     --rw-btn-text: #ffffff;
     --rw-btn-gradient-start: #c1274f;
     --rw-btn-gradient-end: #80152f;
     --rw-success: #10b981;
     --rw-danger: #ef4444;
+    --rw-danger-focus-bg: rgba(239, 68, 68, 0.14);
+    --rw-warning: #eab308;
+    --rw-warning-text: #fcd34d;
     --rw-btn-glow: 0 0 30px 5px rgba(193, 39, 79, 0.55);
     --rw-btn-glow-success: 0 0 30px 5px rgba(16, 185, 129, 0.5);
     --rw-btn-glow-danger: 0 0 30px 5px rgba(239, 68, 68, 0.55);
@@ -385,6 +405,113 @@ html[data-theme='dark'] .p-select-option:hover {
     color: var(--rw-text-muted);
 }
 
+.rw-status-page {
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--rw-accent) 35%, transparent), transparent 42%),
+        var(--rw-bg);
+    padding: 1.5rem;
+}
+
+.rw-status-card {
+    width: min(100%, 34rem);
+    border: 1px solid var(--rw-border);
+    border-radius: 1.5rem;
+    background: var(--rw-surface);
+    box-shadow: var(--rw-shadow);
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+
+.rw-status-code {
+    margin: 0;
+    color: color-mix(in srgb, var(--rw-primary-deep) 14%, transparent);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(4rem, 14vw, 6rem);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.rw-status-icon {
+    display: grid;
+    width: 4rem;
+    height: 4rem;
+    margin: -1.5rem auto 1rem;
+    place-items: center;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, var(--rw-primary-deep), var(--rw-primary));
+    color: var(--rw-bg);
+    font-size: 1.5rem;
+}
+
+.rw-status-title {
+    margin: 0;
+    color: var(--rw-primary-deep);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+}
+
+.rw-status-message {
+    margin: 0.75rem 0 0;
+    color: var(--rw-text-muted);
+    line-height: 1.6;
+}
+
+.rw-status-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.rw-status-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 9rem;
+    border-radius: 9999px;
+    padding: 0.8rem 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.rw-status-button:focus-visible {
+    outline: 3px solid var(--rw-status-focus-ring);
+    outline-offset: 2px;
+}
+
+.rw-status-button--primary {
+    background: linear-gradient(135deg, var(--rw-primary-deep), var(--rw-primary));
+    color: var(--rw-bg);
+    box-shadow: var(--rw-shadow-soft);
+}
+
+.rw-status-button--secondary {
+    border: 1px solid var(--rw-border);
+    background: var(--rw-surface-solid);
+    color: var(--rw-primary-deep);
+}
+
+.rw-status-button:hover {
+    transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rw-status-button {
+        transition: none;
+    }
+
+    .rw-status-button:hover {
+        transform: none;
+    }
+}
+
 /* PrimeVue — cards, panels, navigation (override Aura hardcoded colors) */
 .p-card,
 .p-panel,
@@ -514,7 +641,7 @@ html[data-theme='dark'] .p-tabview-nav li.p-highlight .p-tabview-nav-link {
 }
 
 .p-datatable .p-datatable-tbody > tr.p-highlight {
-    background: var(--highlight-bg) !important;
+    background: var(--rw-selected-row-bg) !important;
     color: var(--highlight-text-color) !important;
 }
 
@@ -531,7 +658,21 @@ html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr:hover {
 .p-checkbox .p-checkbox-box,
 .p-radiobutton .p-radiobutton-box {
     background: var(--rw-surface-solid);
-    border-color: var(--rw-border);
+    border-color: var(--rw-control-border);
+}
+
+.p-checkbox .p-checkbox-input:checked + .p-checkbox-box,
+.p-checkbox[data-p-highlight='true'] .p-checkbox-box {
+    border-color: var(--rw-primary) !important;
+    background: var(--rw-primary) !important;
+}
+
+.p-checkbox .p-checkbox-input:checked + .p-checkbox-box .p-checkbox-icon,
+.p-checkbox[data-p-highlight='true'] .p-checkbox-icon {
+    color: var(--rw-on-primary) !important;
+    stroke: var(--rw-on-primary) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .p-progressspinner-circle {

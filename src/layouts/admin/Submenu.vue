@@ -518,12 +518,7 @@ export default {
 }
 
 .menu-link:focus-visible {
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-primary) 35%, transparent);
-}
-
-html[data-theme='dark'] .menu-link.menu-link-active,
-html[data-theme='dark'] .menu-link:focus-visible {
-    box-shadow: 0 0 16px rgba(193, 39, 79, 0.18);
+    box-shadow: var(--rw-nav-focus-shadow);
 }
 
 .menu-link-icon {
@@ -611,7 +606,7 @@ html[data-theme='dark'] .menu-link:focus-visible {
 }
 
 .menu-flyout-link:focus-visible {
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-primary) 35%, transparent);
+    box-shadow: var(--rw-focus-shadow);
 }
 
 .menu-flyout-icon {

@@ -1,7 +1,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import EventBus from '@/libs/AppEventBus';
 import { useLateFeeStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
@@ -16,7 +15,6 @@ export const useLateFeeList = () => {
     const lateFees = ref([]);
     const lazyParams = ref({});
     const store = useLateFeeStore();
-    const errors = new Errors();
     const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
@@ -157,7 +155,6 @@ export const useLateFeeList = () => {
 
     return {
         lateFees,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,

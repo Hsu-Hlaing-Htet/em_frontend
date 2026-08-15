@@ -22,10 +22,8 @@
                         v-for="item in navItems"
                         :key="item.to"
                         :to="item.to"
-                        class="rounded px-3 py-2 text-sm transition-colors"
-                        :class="isActive(item.to)
-                            ? 'bg-[var(--admin-primary)] text-[var(--rw-on-primary)]'
-                            : 'text-[var(--admin-text-muted)] hover:bg-[var(--admin-border)]'"
+                        class="customer-desktop-nav-item"
+                        :class="{ 'is-active': isActive(item.to) }"
                     >
                         {{ item.label }}
                     </router-link>

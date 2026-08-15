@@ -1,9 +1,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { parseDate } from '@/utils/formatter';
-import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import {
     formatPropertyUnit,
     resolvePaymentListStatus,
@@ -40,8 +38,6 @@ export const usePaymentList = () => {
     const isHydratingFromUrl = ref(true);
     const isWritingQuery = ref(false);
     const store = usePaymentStore();
-    const errors = new Errors();
-    const { confirmDelete } = useDeleteConfirm();
     const {
         buildingOptions,
         roomOptions,
@@ -106,13 +102,6 @@ export const usePaymentList = () => {
         } finally {
             isWritingQuery.value = false;
         }
-    };
-
-    const showConfirmDialog = (id) => {
-        confirmDelete('Are you sure you want to delete this payment?', async () => {
-            await store.delete({ id });
-            await loadingData();
-        });
     };
 
     const onPage = (event) => {
@@ -250,7 +239,6 @@ export const usePaymentList = () => {
 
     return {
         payments,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,
@@ -266,7 +254,6 @@ export const usePaymentList = () => {
         paymentMethodOptions,
         onPage,
         resetSearch,
-        showConfirmDialog,
         isExporting,
         canExport,
         downloadList,

@@ -53,5 +53,11 @@ export const useResidentStore = defineStore('useResidentStore', {
             const response = await service.delete(params);
             this.deleteResponse = response;
         },
+        async deactivate(params) {
+            this.updateResponse = await service.deactivate(params);
+        },
+        async activate(params) {
+            this.updateResponse = await service.activate(params);
+        },
     },
 });

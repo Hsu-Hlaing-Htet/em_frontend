@@ -23,10 +23,10 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <p class="m-0 text-md">All Residents</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="relative">
+                    <div class="admin-list-toolbar">
+                        <p class="admin-list-toolbar__title">All Residents</p>
+                        <div class="admin-list-toolbar__controls">
+                            <div class="admin-list-toolbar__search">
                                 <i
                                     class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
                                 />
@@ -34,7 +34,7 @@
                                 <InputText
                                     v-model="search"
                                     placeholder="Search name, email, phone, nrc..."
-                                    class="w-72 !pl-10"
+                                    class="w-full !pl-10"
                                 />
                             </div>
 
@@ -76,6 +76,11 @@
                 <Column field="phone" header="Phone" :sortable="true" style="min-width: 160px" />
                 <Column field="nrc" header="NRC" :sortable="true" style="min-width: 100px" />
                 <Column field="gender" header="Gender" :sortable="true" style="min-width: 90px" />
+                <Column field="status" header="Status" :sortable="true" style="min-width: 100px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.status" />
+                    </template>
+                </Column>
                 <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px" />
                 <Column
                     header="Actions"
@@ -92,10 +97,11 @@
                         </router-link>
 
                         <Button
-                            icon="pi pi-trash"
+                            :icon="data.status === 'inactive' ? 'pi pi-refresh' : 'pi pi-ban'"
                             text
-                            severity="danger"
-                            @click="showConfirmDialog(data.id,data.name)"
+                            :severity="data.status === 'inactive' ? 'success' : 'warning'"
+                            :title="data.status === 'inactive' ? 'Reactivate' : 'Deactivate'"
+                            @click="showLifecycleDialog(data)"
                         />
                     </template>
                 </Column>
@@ -114,11 +120,12 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useResidentList } from './useResidentList';
 
 export default defineComponent({
     name: 'ResidentList',
-    components: { DataTable, Column, InputText, Button, Loading, ListExportActions },
+    components: { DataTable, Column, InputText, Button, Loading, ListExportActions, StatusBadge },
     setup() {
         return useResidentList();
     },

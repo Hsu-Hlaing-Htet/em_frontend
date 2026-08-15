@@ -26,6 +26,7 @@
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
+                        <div class="admin-filter-group">
                         <Dropdown
                             v-model="buildingId"
                             :options="buildingOptions"
@@ -45,6 +46,7 @@
                             show-clear
                             class="w-36"
                         />
+                        </div>
                         <Dropdown
                             v-model="paymentMethodId"
                             :options="paymentMethodOptions"
@@ -54,6 +56,7 @@
                             show-clear
                             class="w-44"
                         />
+                        <div class="admin-filter-group admin-filter-group--dates">
                         <Calendar
                             v-model="paymentDateFrom"
                             placeholder="Payment from"
@@ -68,6 +71,7 @@
                             show-icon
                             class="w-40"
                         />
+                        </div>
                         <template #actions>
                             <router-link :to="{ name: 'newPayment' }">
                                 <Button label="Create" />

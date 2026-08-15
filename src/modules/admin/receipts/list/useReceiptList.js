@@ -2,7 +2,6 @@ import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { Errors } from '@/utils/validation';
 import { parseDate } from '@/utils/formatter';
 import { formatPropertyUnit } from '@/helpers/payments/paymentListHelpers';
 import {
@@ -49,7 +48,6 @@ export const useReceiptList = () => {
     const isHydratingFromUrl = ref(true);
     const isWritingQuery = ref(false);
     const store = useReceiptStore();
-    const errors = new Errors();
     const {
         buildingOptions,
         roomOptions,
@@ -237,7 +235,6 @@ export const useReceiptList = () => {
 
     return {
         receipts,
-        errors,
         isLoading,
         totalRecords,
         lazyParams,

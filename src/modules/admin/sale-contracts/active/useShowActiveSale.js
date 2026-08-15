@@ -1,5 +1,6 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import EventBus from '@/libs/AppEventBus';
 import { buildFieldSections } from '@/helpers/contracts/contractDocument';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useSaleStore } from '../store';
@@ -9,6 +10,7 @@ import { useSaleContractDocumentActions } from '@/composables/admin/contracts/co
 
 export default function useShowActiveSale() {
     const route = useRoute();
+    const router = useRouter();
     const store = useSaleStore();
     const isLoading = ref(true);
     const showCancelDialog = ref(false);
@@ -58,7 +60,7 @@ export default function useShowActiveSale() {
 
     const fieldSections = computed(() => buildFieldSections(document.value));
     const contractStatus = computed(() => state.status || '');
-    const canCancel = computed(() => false);
+    const canCancel = computed(() => ['approved', 'active'].includes(state.status));
     const backRoute = { name: 'activeSaleList' };
 
     const fetchContract = async () => {
@@ -85,8 +87,19 @@ export default function useShowActiveSale() {
         showCancelDialog.value = true;
     };
 
-    const cancelContract = () => {
-        showCancelDialog.value = false;
+    const cancelContract = async (reason) => {
+        try {
+            await store.cancel({ id: state.id, reason });
+            showCancelDialog.value = false;
+            EventBus.emit('show-toast', {
+                severity: 'success',
+                summary: '',
+                detail: store.getActionResponse?.message || 'Sale contract cancelled successfully.',
+            });
+            await router.push(backRoute);
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to cancel sale contract.');
+        }
     };
 
     watch(() => route.params.id, (newId) => {

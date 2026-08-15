@@ -23,10 +23,10 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <h2 class="m-0">All Roles</h2>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="relative">
+                    <div class="admin-list-toolbar">
+                        <h2 class="admin-list-toolbar__title">All Roles</h2>
+                        <div class="admin-list-toolbar__controls">
+                            <div class="admin-list-toolbar__search">
     <i
         class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
     />
@@ -34,7 +34,7 @@
     <InputText
         v-model="search"
         placeholder="Keyword search"
-        class="w-72 !pl-10"
+        class="w-full !pl-10"
     />
 </div>
                             <Button

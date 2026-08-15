@@ -9,6 +9,7 @@ export default function useCustomerReceiptList() {
     const router = useRouter();
     const isLoading = ref(true);
     const isLoadingMore = ref(false);
+    const downloadingReceiptId = ref(null);
     const receipts = ref([]);
     const totalRecords = ref(0);
     const page = ref(1);
@@ -52,12 +53,26 @@ export default function useCustomerReceiptList() {
         router.push({ name: 'customerShowReceipt', params: { id } });
     };
 
+    const downloadReceipt = async (receipt) => {
+        downloadingReceiptId.value = receipt.id;
+
+        try {
+            await store.downloadDocument(receipt.id, `${receipt.receipt_number || 'receipt'}.pdf`);
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to download receipt.');
+        } finally {
+            downloadingReceiptId.value = null;
+        }
+    };
+
     return {
         isLoading,
         isLoadingMore,
+        downloadingReceiptId,
         receipts,
         hasMore,
         loadMore,
         openReceipt,
+        downloadReceipt,
     };
 }

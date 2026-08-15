@@ -41,6 +41,16 @@ const service = {
         });
         return result.data;
     },
+
+    archive: async (params) => {
+        const result = await api.post(`${endpoint.buildings}/${params.id}/archive`);
+        return result.data;
+    },
+
+    activate: async (params) => {
+        const result = await api.post(`${endpoint.buildings}/${params.id}/activate`);
+        return result.data;
+    },
 };
 
 export { service };

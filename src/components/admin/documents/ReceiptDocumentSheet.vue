@@ -6,6 +6,7 @@
 import { computed, defineComponent } from 'vue';
 import { renderReceiptDocumentArticle } from '@/helpers/documents/renderReceiptDocument';
 import { DOCUMENT_LOGO_URL } from '@/helpers/documents/documentOutput';
+import '@/assets/css/documents/document-font.css';
 import '@/assets/css/documents/receipt-document.css';
 
 export default defineComponent({

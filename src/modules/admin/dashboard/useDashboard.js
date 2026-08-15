@@ -8,9 +8,9 @@ import {
     watch,
 } from 'vue';
 import { DASHBOARD_SECTION_LIST } from './config/sections';
+import { SORT_OPTIONS, STATUS_FILTER_OPTIONS } from './config/listOptions';
 import { SEARCHABLE_CONTROL_KEYS, useDashboardControls } from './composables/useDashboardControls';
 import { dashboardService } from './service';
-import { SORT_OPTIONS, STATUS_FILTER_OPTIONS } from './mockData';
 import { usePropertyInteractions } from './usePropertyInteractions';
 import {
     formatCurrency,
@@ -18,8 +18,6 @@ import {
     formatDetailRecord,
     formatNumber,
 } from './utils/formatters';
-
-const MOCK_LOAD_DELAY_MS = 900;
 
 export function useDashboard() {
     const loading = ref(true);
@@ -46,10 +44,12 @@ export function useDashboard() {
     const revenueSummary = ref({});
     const revenueCollections = ref({ collection_rate: 0, points: [] });
     const receivableAging = ref([]);
-    const occupancyByBuilding = ref([]);
     const upcomingContracts = ref([]);
-    const pendingApprovalBreakdown = ref({ total: 0, items: [] });
     const recentActivity = ref([]);
+    const systemAlerts = ref({
+        expired_contracts: 0,
+        unresolved_maintenance: 0,
+    });
     const quickActions = ref([]);
 
     const properties = ref([]);
@@ -300,10 +300,12 @@ export function useDashboard() {
         revenueSummary.value = payload.revenue_summary ?? {};
         revenueCollections.value = payload.revenue_collections ?? { collection_rate: 0, points: [] };
         receivableAging.value = payload.receivable_aging ?? [];
-        occupancyByBuilding.value = payload.occupancy_by_building ?? [];
         upcomingContracts.value = payload.upcoming_contracts ?? [];
-        pendingApprovalBreakdown.value = payload.pending_approval_breakdown ?? { total: 0, items: [] };
         recentActivity.value = payload.activity_timeline ?? [];
+        systemAlerts.value = payload.system_alerts ?? {
+            expired_contracts: 0,
+            unresolved_maintenance: 0,
+        };
         quickActions.value = payload.quick_actions ?? [];
         properties.value = payload.properties ?? [];
         customers.value = payload.customers ?? [];
@@ -351,12 +353,6 @@ export function useDashboard() {
         error.value = null;
 
         try {
-            if (!silent) {
-                await new Promise((resolve) => {
-                    window.setTimeout(resolve, MOCK_LOAD_DELAY_MS);
-                });
-            }
-
             const payload = await dashboardService.fetchAll();
             applyPayload(payload);
             lastUpdated.value = new Date();
@@ -422,10 +418,9 @@ export function useDashboard() {
         revenueSummary,
         revenueCollections,
         receivableAging,
-        occupancyByBuilding,
         upcomingContracts,
-        pendingApprovalBreakdown,
         recentActivity,
+        systemAlerts,
         quickActions,
         properties,
         customers,

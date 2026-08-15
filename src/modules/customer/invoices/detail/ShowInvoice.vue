@@ -1,16 +1,19 @@
 <template>
     <div v-if="!isLoading">
-        <div class="mb-10 flex flex-wrap gap-2">
+        <div class="customer-detail-actions mb-10">
+            <router-link :to="{ name: 'customerInvoiceList' }">
+                <Button
+                    :label="$t('common.back')"
+                    icon="pi pi-arrow-left"
+                    class="btn-outline"
+                />
+            </router-link>
             <Button
                 :label="$t('customer.downloadInvoice')"
                 icon="pi pi-download"
-                class="flex-1"
                 :loading="isDownloading"
                 @click="downloadPdf"
             />
-            <router-link :to="{ name: 'customerInvoiceList' }" class="flex-1">
-                <Button :label="$t('common.back')" severity="secondary" class="customer-btn-block" />
-            </router-link>
         </div>
 
         <div class="mx-auto flex max-w-4xl flex-col px-4 pb-8">

@@ -16,6 +16,7 @@ export const ROOM_STATUS_OPTIONS = [
     { label: 'Occupied', value: 'occupied' },
     { label: 'Sold', value: 'sold' },
     { label: 'Maintenance', value: 'maintenance' },
+    { label: 'Inactive', value: 'inactive' },
 ];
 
 export const ROOM_IMAGE_DESCRIPTION_OPTIONS = [

@@ -31,7 +31,6 @@ body.receipt-doc-body {
     --inv-paper: #faf7f2;
     --inv-panel: #f5ebe6;
     --inv-panel-border: #630d16;
-    --inv-font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
 
     display: flex;
     flex-direction: column;
@@ -44,7 +43,7 @@ body.receipt-doc-body {
     background: var(--inv-paper);
     border: 1px solid #d8d2c8;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    font-family: var(--inv-font);
+    font-family: var(--document-font-family);
     font-size: 9.5pt;
     font-weight: 400;
     line-height: 1.45;

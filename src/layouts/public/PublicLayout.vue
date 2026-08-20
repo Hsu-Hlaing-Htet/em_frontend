@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/global/useAppToast';
 import PublicHeader from './PublicHeader.vue';
 import PublicFooter from './PublicFooter.vue';
 import { useThemeStore } from '@/stores/themeStore';
@@ -10,7 +10,7 @@ import { useAuthStore } from '@/modules/auth/store';
 
 const route = useRoute();
 const router = useRouter();
-const toast = useToast();
+const toast = useAppToast();
 const themeStore = useThemeStore();
 const authStore = useAuthStore();
 const { mode: themeMode } = storeToRefs(themeStore);

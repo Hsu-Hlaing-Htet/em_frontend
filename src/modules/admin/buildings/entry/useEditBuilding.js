@@ -3,6 +3,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useConfirm } from 'primevue/useconfirm';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { useBuildingStore } from '../store';
 import { showApiErrorToast } from '@/utils/apiError';
 
@@ -21,6 +22,8 @@ export default function useEditBuilding() {
         location: '',
         description: '',
     });
+
+    bindErrorClearing(state, errors);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -94,8 +97,16 @@ export default function useEditBuilding() {
     };
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'building_name', type: 'text' },
+            { field: 'location', type: 'text' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.update({ ...state });

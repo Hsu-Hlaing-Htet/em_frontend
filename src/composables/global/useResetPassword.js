@@ -1,14 +1,42 @@
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/global/useAppToast';
 import { getApiErrorMessage } from '@/utils/apiError';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { resetPassword } from '@/modules/auth/service';
+
+function firstQueryValue(value) {
+    if (Array.isArray(value)) {
+        return value.find((item) => typeof item === 'string' && item !== '') ?? '';
+    }
+
+    return typeof value === 'string' ? value : '';
+}
+
+function readResetLinkParams(route) {
+    let token = firstQueryValue(route.query.token);
+    let email = firstQueryValue(route.query.email);
+
+    if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+
+        if (!token) {
+            token = params.get('token') ?? '';
+        }
+
+        if (!email) {
+            email = params.get('email') ?? '';
+        }
+    }
+
+    return { token, email };
+}
 
 export function useResetPassword() {
     const route = useRoute();
     const router = useRouter();
-    const toast = useToast();
+    const toast = useAppToast();
 
     const loading = ref(false);
     const showPassword = ref(false);
@@ -23,19 +51,23 @@ export function useResetPassword() {
         password_confirmation: '',
     });
 
+    bindErrorClearing(form, errors, ['password', 'password_confirmation', 'email']);
+
     const canSubmit = computed(() => (
         form.token
         && form.email
     ));
 
-    onMounted(() => {
-        form.token = typeof route.query.token === 'string' ? route.query.token : '';
-        form.email = typeof route.query.email === 'string' ? route.query.email : '';
-
-        if (!form.token || !form.email) {
-            invalidLink.value = true;
-        }
-    });
+    watch(
+        () => [route.query.token, route.query.email, route.fullPath],
+        () => {
+            const { token, email } = readResetLinkParams(route);
+            form.token = token;
+            form.email = email;
+            invalidLink.value = !token || !email;
+        },
+        { immediate: true },
+    );
 
     async function submit() {
         if (!canSubmit.value) {
@@ -44,22 +76,14 @@ export function useResetPassword() {
 
         errors.clear();
 
-        const validationErrors = {};
-
-        if (!form.password) {
-            validationErrors.password = ['This field is required.'];
-        } else if (form.password.length < 8) {
-            validationErrors.password = ['Password must be at least 8 characters.'];
-        }
-
-        if (!form.password_confirmation) {
-            validationErrors.password_confirmation = ['This field is required.'];
-        } else if (form.password !== form.password_confirmation) {
-            validationErrors.password_confirmation = ['Passwords do not match.'];
-        }
-
-        if (Object.keys(validationErrors).length) {
-            errors.record(validationErrors);
+        if (!applyValidation(errors, form, [
+            {
+                field: 'password',
+                type: 'password',
+                required: true,
+                confirmationField: 'password_confirmation',
+            },
+        ])) {
             return;
         }
 
@@ -80,7 +104,13 @@ export function useResetPassword() {
             const fieldErrors = error?.data?.data || error?.data?.errors || error?.response?.data?.errors;
 
             if (fieldErrors) {
-                errors.record(fieldErrors);
+                errors.record(fieldErrors, false);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Reset Failed',
+                    detail: getApiErrorMessage(error, 'Unable to reset password.'),
+                    life: 3500,
+                });
                 return;
             }
 

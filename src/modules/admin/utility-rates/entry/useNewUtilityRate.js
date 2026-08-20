@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import { formatDate } from '@/utils/formatter';
 import { UTILITY_RATE_STATUS_OPTIONS } from '@/constants/constant';
@@ -25,6 +26,8 @@ export default function useNewUtilityRate() {
         status: 'active',
     });
 
+    bindErrorClearing(state, errors);
+
     onMounted(async () => {
         try {
             await utilityTypeStore.fetchAll({ per_page: 100, status: 'active' });
@@ -46,8 +49,18 @@ export default function useNewUtilityRate() {
     });
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'utility_type_id', type: 'select' },
+            { field: 'unit_price', type: 'number', min: 0 },
+            { field: 'effective_date', type: 'date' },
+            { field: 'status', type: 'select' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             const payload = {

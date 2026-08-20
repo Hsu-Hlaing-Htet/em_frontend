@@ -74,6 +74,12 @@ export default defineComponent({
             }
         });
 
+        watch(reason, () => {
+            if (error.value) {
+                error.value = '';
+            }
+        });
+
         const close = () => {
             emit('update:modelValue', false);
         };

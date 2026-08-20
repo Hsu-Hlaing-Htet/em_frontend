@@ -23,26 +23,16 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="admin-list-toolbar">
-                        <h2 class="admin-list-toolbar__title">All Roles</h2>
-                        <div class="admin-list-toolbar__controls">
-                            <div class="admin-list-toolbar__search">
-    <i
-        class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
-    />
-
-    <InputText
-        v-model="search"
-        placeholder="Keyword search"
-        class="w-full !pl-10"
-    />
-</div>
-                            <Button
-                                label="Reset"
-                                @click="resetSearch"
-                            />
+                    <AdminListFilters
+                        title="All Roles"
+                        :search="search"
+                        search-placeholder="Keyword search"
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <template #actions>
                             <router-link :to="{ name: 'newRole' }">
-                                <Button label="Create"  />
+                                <Button label="Create" />
                             </router-link>
                             <ListExportActions
                                 :loading="isExporting"
@@ -52,9 +42,8 @@
                                 @export-excel="exportExcel"
                                 @print="printList"
                             />
-
-                        </div>
-                    </div>
+                        </template>
+                    </AdminListFilters>
                 </template>
 
                 <template #empty>No roles found.</template>
@@ -98,10 +87,10 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import { useRoleList } from './useRoleList';
 
 export default defineComponent({
@@ -109,9 +98,11 @@ export default defineComponent({
     components: {
         DataTable,
         Column,
-        InputText,
         Button,
-        Loading, ListExportActions },
+        Loading,
+        ListExportActions,
+        AdminListFilters,
+    },
     setup() {
         return useRoleList();
     },

@@ -1,12 +1,26 @@
 <template>
-    <div class="admin-list-toolbar">
-        <p class="admin-list-toolbar__title">{{ title }}</p>
+    <div
+        class="admin-list-toolbar"
+        :class="{ 'admin-list-toolbar--selection': $slots.selection }"
+    >
+        <div class="admin-list-toolbar__heading">
+            <p class="admin-list-toolbar__title">{{ title }}</p>
 
-        <div class="admin-list-toolbar__controls">
             <div
-                v-if="showSearch"
-                class="admin-list-toolbar__search"
+                v-if="$slots.actions"
+                class="admin-list-toolbar__heading-actions"
             >
+                <slot name="actions" />
+            </div>
+        </div>
+
+        <slot name="selection" />
+
+        <div
+            v-if="showSearch"
+            class="admin-list-toolbar__search-row"
+        >
+            <div class="admin-list-toolbar__search">
                 <i
                     class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
                 />
@@ -19,24 +33,18 @@
                 />
             </div>
 
-            <slot />
-
-            <div class="admin-list-toolbar__actions">
-                <Button
-                    :label="resetLabel"
-                    class="btn-outline"
-                    @click="$emit('reset')"
-                />
-
-                <slot name="actions" />
-            </div>
+            <Button
+                :label="resetLabel"
+                class="btn-outline admin-list-toolbar__reset"
+                @click="$emit('reset')"
+            />
         </div>
 
         <div
-            v-if="$slots.trailing"
-            class="admin-list-toolbar__trailing"
+            v-if="$slots.default"
+            class="admin-list-toolbar__filters"
         >
-            <slot name="trailing" />
+            <slot />
         </div>
     </div>
 </template>

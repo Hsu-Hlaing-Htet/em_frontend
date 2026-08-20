@@ -20,3 +20,7 @@ export function requestPasswordReset(payload) {
 export function resetPassword(payload) {
     return api.post(endpoint.resetPassword, payload);
 }
+
+export function changePassword(payload) {
+    return api.post(endpoint.changePassword, payload);
+}

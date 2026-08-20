@@ -2,6 +2,7 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { formatDate, formatCurrency } from '@/utils/formatter';
 import { formatBillingDocumentDate, compactBillingValues } from '@/helpers/billing/billingDetailHelpers';
 import { showApiErrorToast } from '@/utils/apiError';
@@ -40,6 +41,14 @@ export default function useCustomerShowInvoice() {
         payment_method_id: null,
         payment_date: new Date(),
         note: '',
+    });
+
+    bindErrorClearing(paymentForm, errors);
+
+    watch(proofFile, () => {
+        if (errors.has('proof')) {
+            errors.clear('proof');
+        }
     });
 
     const remainingAmount = computed(() => {
@@ -113,12 +122,10 @@ export default function useCustomerShowInvoice() {
                     building_name: data.building_name || '',
                     room_number: data.room_number || '',
                 });
-                invoiceItems.value = Array.isArray(data.items)
-                    ? data.items.map((item) => ({ ...item }))
-                    : [];
-                invoicePayments.value = Array.isArray(data.payments)
-                    ? data.payments.map((payment) => ({ ...payment }))
-                    : [];
+                // Backend InvoiceResource field is `items` (may be wrapped as { data: [] }).
+                const rawItems = data.items ?? data.invoice_items ?? data.invoiceItems;
+                invoiceItems.value = normalizeList(rawItems).map((item) => ({ ...item }));
+                invoicePayments.value = normalizeList(data.payments).map((payment) => ({ ...payment }));
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load invoice.');
@@ -129,22 +136,16 @@ export default function useCustomerShowInvoice() {
 
     async function submitPayment() {
         errors.clear();
-        const validationErrors = {};
 
-        if (!paymentForm.payment_method_id) {
-            validationErrors.payment_method_id = ['This field is required.'];
-        }
-
-        if (!paymentForm.payment_date) {
-            validationErrors.payment_date = ['This field is required.'];
-        }
-
-        if (!proofFile.value) {
-            validationErrors.proof = ['This field is required.'];
-        }
-
-        if (Object.keys(validationErrors).length) {
-            errors.record(validationErrors);
+        if (!applyValidation(errors, {
+            payment_method_id: paymentForm.payment_method_id,
+            payment_date: paymentForm.payment_date,
+            proof: proofFile.value,
+        }, [
+            { field: 'payment_method_id', type: 'select' },
+            { field: 'payment_date', type: 'date' },
+            { field: 'proof', type: 'file' },
+        ])) {
             return;
         }
 
@@ -200,6 +201,18 @@ export default function useCustomerShowInvoice() {
     const onProofSelected = (event) => {
         proofFile.value = event.files?.[0] || null;
     };
+
+    function normalizeList(value) {
+        if (Array.isArray(value)) {
+            return value;
+        }
+
+        if (value && Array.isArray(value.data)) {
+            return value.data;
+        }
+
+        return [];
+    }
 
     return {
         isLoading,

@@ -39,15 +39,24 @@ export default defineComponent({
     setup() {
         const route = useRoute();
         const { t, te } = useI18n();
-        const home = ref({
-            routeName: 'dashboard',
-            to: '/admin/dashboard',
+        const isCustomerPortal = computed(() => (
+            route.path.startsWith('/customer')
+            || route.name?.startsWith('customer')
+            || route.name === 'customerDashboard'
+        ));
+
+        const home = computed(() => ({
+            routeName: isCustomerPortal.value ? 'customerDashboard' : 'dashboard',
+            to: { name: isCustomerPortal.value ? 'customerDashboard' : 'dashboard' },
             titleKey: 'common.home',
-        });
+        }));
 
         const breadcumbs = computed(() => route.meta.breadcrumbs || []);
 
-        const showBreadcrumb = computed(() => route.name !== 'dashboard');
+        const showBreadcrumb = computed(() => (
+            route.name !== 'dashboard'
+            && route.name !== 'customerDashboard'
+        ));
 
         const resolveTitle = (item) => {
             if (item?.titleKey) {

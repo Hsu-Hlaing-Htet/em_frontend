@@ -43,4 +43,5 @@ export const emptyUtilityItem = () => ({
     usage: 0,
     unit_price: null,
     amount: 0,
+    rowError: '',
 });

@@ -2,6 +2,7 @@ import { reactive, ref, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import {
     LATE_FEE_TYPE_OPTIONS,
@@ -26,14 +27,28 @@ export default function useNewLateFee() {
         status: 'active',
     });
 
+    bindErrorClearing(state, errors);
+
     onBeforeUnmount(() => {
         store.$reset();
         store.$dispose();
     });
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'name', type: 'text' },
+            { field: 'type', type: 'select' },
+            { field: 'value', type: 'number', min: 0 },
+            { field: 'per', type: 'select' },
+            { field: 'grace_days', type: 'number', min: 0 },
+            { field: 'status', type: 'select' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.add({ ...state });

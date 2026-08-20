@@ -37,7 +37,7 @@
             <Button
                 v-if="hasMore()"
                 :label="$t('common.loadMore')"
-                class="customer-load-more customer-btn-primary"
+                class="customer-load-more btn"
                 :loading="isLoadingMore"
                 @click="loadMore"
             />

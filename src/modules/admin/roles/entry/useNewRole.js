@@ -2,6 +2,7 @@ import { reactive, ref, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useRoleStore } from '../store';
 
@@ -16,14 +17,23 @@ export default function useNewRole() {
         name: '',
     });
 
+    bindErrorClearing(state, errors);
+
     onBeforeUnmount(() => {
         store.$reset();
         store.$dispose();
     });
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'name', type: 'text' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.add({ name: state.name });

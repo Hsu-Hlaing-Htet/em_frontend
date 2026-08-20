@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import { usePaymentStore } from '../store';
 import { useInvoiceStore } from '@/modules/admin/invoices/store';
@@ -24,6 +25,8 @@ export default function useNewPayment() {
         note: '',
         payment_date: new Date(),
     });
+
+    bindErrorClearing(state, errors);
 
     onMounted(async () => {
         try {
@@ -58,8 +61,18 @@ export default function useNewPayment() {
     });
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'invoice_id', type: 'select' },
+            { field: 'payment_method_id', type: 'select' },
+            { field: 'amount', type: 'number', gt: 0 },
+            { field: 'payment_date', type: 'date' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.add({ ...state });

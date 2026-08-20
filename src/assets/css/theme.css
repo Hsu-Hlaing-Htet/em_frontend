@@ -253,6 +253,23 @@ body,
     background: var(--rw-surface-solid);
 }
 
+.theme-toggle--plain {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+}
+
+.theme-toggle--plain:hover,
+.theme-toggle--plain:focus-visible {
+    color: var(--rw-text, var(--admin-text));
+    background: var(--rw-hover-bg, var(--admin-nav-active-bg));
+    outline: none;
+}
+
+.theme-toggle--plain:focus-visible {
+    box-shadow: var(--rw-focus-shadow);
+}
+
 [data-public-layout] .shell {
     min-height: 100vh;
     background: var(--rw-bg);
@@ -382,6 +399,15 @@ html[data-theme='dark'] .p-select-option:hover {
     min-height: 100vh;
     background: var(--rw-bg);
     color: var(--rw-text);
+}
+
+.rw-auth-shell button:focus,
+.rw-auth-shell button:focus-visible,
+.admin-user-profile > button:focus,
+.admin-user-profile > button:focus-visible,
+.customer-user-profile > button:focus,
+.customer-user-profile > button:focus-visible {
+    outline: none;
 }
 
 .rw-auth-card {
@@ -525,8 +551,6 @@ html[data-theme='dark'] .p-select-option:hover {
 .p-sidebar .p-sidebar-content,
 .p-menu,
 .p-menubar,
-.p-toast,
-.p-toast-message,
 .p-fileupload,
 .p-fileupload-content,
 .p-fileupload-buttonbar,
@@ -677,12 +701,6 @@ html[data-theme='dark'] .p-datatable .p-datatable-tbody > tr:hover {
 
 .p-progressspinner-circle {
     stroke: var(--rw-primary) !important;
-}
-
-.p-toast-message-text,
-.p-toast-summary,
-.p-toast-detail {
-    color: var(--rw-text);
 }
 
 .p-confirm-dialog,

@@ -23,59 +23,40 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="admin-list-toolbar">
-                        <div class="admin-list-toolbar__heading">
-                            <p class="admin-list-toolbar__title">Sale Contract Approvals</p>
-
+                    <AdminListFilters
+                        title="Sale Contract Approvals"
+                        :search="search"
+                        search-placeholder="Search contract, customer, room..."
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <Dropdown
+                            v-model="selectedPaymentType"
+                            :options="paymentTypeOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="All Payment Plan Types"
+                            show-clear
+                            class="w-52"
+                        />
+                        <div class="admin-filter-group admin-filter-group--dates">
+                            <Calendar
+                                v-model="dateFrom"
+                                placeholder="From date"
+                                date-format="yy-mm-dd"
+                                show-icon
+                                class="w-40"
+                            />
+                            <Calendar
+                                v-model="dateTo"
+                                placeholder="To date"
+                                date-format="yy-mm-dd"
+                                show-icon
+                                class="w-40"
+                            />
                         </div>
-                        <div class="admin-list-toolbar__controls">
- 
- <div class="admin-list-toolbar__search">
-                             <i
-                                 class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
-                             />
-                             <InputText
-                                 v-model="search"
-                                 placeholder="Search contract, customer, room..."
-                                 class="w-full !pl-10"
-                             />
-                         </div>
-
-                         <Dropdown
-                             v-model="selectedPaymentType"
-                             :options="paymentTypeOptions"
-                             option-label="label"
-                             option-value="value"
-                             placeholder="All Payment Plan Types"
-                             show-clear
-                             class="w-52"
-                         />
-
-                         <div class="admin-filter-group admin-filter-group--dates">
-                         <Calendar
-                             v-model="dateFrom"
-                             placeholder="From date"
-                             date-format="yy-mm-dd"
-                             show-icon
-                             class="w-40"
-                         />
-
-                         <Calendar
-                             v-model="dateTo"
-                             placeholder="To date"
-                             date-format="yy-mm-dd"
-                             show-icon
-                             class="w-40"
-                         />
-                         </div>
-
-                         <Button label="Reset" @click="resetSearch" class="btn-outline"/>
-
-               
-</div>
-
-<div class="admin-list-toolbar__actions">
- <ListExportActions
+                        <template #actions>
+                            <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"
                                 @download="downloadList"
@@ -83,8 +64,8 @@
                                 @export-excel="exportExcel"
                                 @print="printList"
                             />
-</div>
-                    </div>
+                        </template>
+                    </AdminListFilters>
                 </template>
 
                 <template #empty>No pending sale contracts found.</template>
@@ -148,13 +129,13 @@ import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import { PAYMENT_PLAN_TYPE_FILTER_OPTIONS } from '@/constants/constant';
 import { useSaleContractApprovalList } from './useSaleContractApprovalList';
 
@@ -163,13 +144,13 @@ export default defineComponent({
     components: {
         DataTable,
         Column,
-        InputText,
         Dropdown,
         Calendar,
         Button,
         Loading,
         RejectContractDialog,
         ListExportActions,
+        AdminListFilters,
     },
     setup() {
         const router = useRouter();

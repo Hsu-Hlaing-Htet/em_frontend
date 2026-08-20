@@ -1,6 +1,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { bindErrorClearing, collectValidationErrors } from '@/utils/formValidation';
 import { formatDate, parseDate } from '@/utils/formatter';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useAuthStore } from '@/modules/auth/store';
@@ -11,6 +12,12 @@ const MAX_AVATAR_PATH_LENGTH = 255;
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
+const PROFILE_RULES = [
+    { field: 'name', type: 'text' },
+    { field: 'email', type: 'email' },
+    { field: 'phone', type: 'phone' },
+];
+
 function formatRoleLabel(role) {
     if (!role) {
         return '—';
@@ -19,18 +26,16 @@ function formatRoleLabel(role) {
     return role.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function isValidEmail(value) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
 export default function useProfilePage() {
     const authStore = useAuthStore();
     const store = useProfileStore();
     const isLoading = ref(true);
     const isSaving = ref(false);
+    const showChangePasswordDialog = ref(false);
     const errors = new Errors();
     const avatarPreviewUrl = ref('');
     const avatarObjectUrl = ref('');
+    const avatarFileInput = ref(null);
 
     const state = reactive({
         id: null,
@@ -39,14 +44,14 @@ export default function useProfilePage() {
         name: '',
         email: '',
         phone: '',
-        password: '',
-        password_confirmation: '',
         nrc: '',
         dob: null,
         gender: '',
         address: '',
         avatar_path: '',
     });
+
+    bindErrorClearing(state, errors);
 
     const displayAvatar = computed(() => {
         if (avatarPreviewUrl.value) {
@@ -61,6 +66,7 @@ export default function useProfilePage() {
     });
 
     const roleLabel = computed(() => formatRoleLabel(state.role_name || authStore.user?.role));
+    const hasCustomAvatar = computed(() => Boolean(avatarPreviewUrl.value || state.avatar_path));
 
     onMounted(async () => {
         await fetchProfile();
@@ -102,8 +108,6 @@ export default function useProfilePage() {
                     name: response.data.name || '',
                     email: response.data.email || '',
                     phone: response.data.phone || '',
-                    password: '',
-                    password_confirmation: '',
                     nrc: response.data.nrc || '',
                     dob: parseDate(response.data.dob),
                     gender: response.data.gender || '',
@@ -121,36 +125,12 @@ export default function useProfilePage() {
 
     const validateForm = () => {
         errors.clear();
-        const validationErrors = {};
-
-        if (!state.name?.trim()) {
-            validationErrors.name = ['This field is required.'];
-        }
-
-        if (!state.email?.trim()) {
-            validationErrors.email = ['This field is required.'];
-        } else if (!isValidEmail(state.email.trim())) {
-            validationErrors.email = ['Please enter a valid email address.'];
-        }
-
-        if (!state.phone?.trim()) {
-            validationErrors.phone = ['This field is required.'];
-        }
+        const validationErrors = collectValidationErrors(state, PROFILE_RULES);
 
         if (state.avatar_path && state.avatar_path.length > MAX_AVATAR_PATH_LENGTH) {
             validationErrors.avatar_path = [
                 `Image URL must be ${MAX_AVATAR_PATH_LENGTH} characters or fewer.`,
             ];
-        }
-
-        if (state.password || state.password_confirmation) {
-            if (state.password.length < 8) {
-                validationErrors.password = ['Password must be at least 8 characters.'];
-            }
-
-            if (state.password !== state.password_confirmation) {
-                validationErrors.password_confirmation = ['Passwords do not match.'];
-            }
         }
 
         if (Object.keys(validationErrors).length) {
@@ -161,8 +141,16 @@ export default function useProfilePage() {
         return true;
     };
 
-    const onAvatarSelected = (event) => {
-        const file = event.files?.[0];
+    const openAvatarPicker = () => {
+        avatarFileInput.value?.click();
+    };
+
+    const onAvatarFileChange = (event) => {
+        const file = event.target?.files?.[0];
+
+        if (event.target) {
+            event.target.value = '';
+        }
 
         if (!file) {
             return;
@@ -187,12 +175,6 @@ export default function useProfilePage() {
         revokeAvatarPreview();
         avatarObjectUrl.value = URL.createObjectURL(file);
         avatarPreviewUrl.value = avatarObjectUrl.value;
-
-        EventBus.emit('show-toast', {
-            severity: 'info',
-            summary: '',
-            detail: 'Image preview updated. Enter a hosted image URL below to save it to your profile.',
-        });
     };
 
     const clearAvatar = () => {
@@ -223,10 +205,6 @@ export default function useProfilePage() {
                 avatar_path: state.avatar_path?.trim() || null,
             };
 
-            if (state.password) {
-                payload.password = state.password;
-            }
-
             await store.updateProfile(payload);
             const response = store.getUpdateResponse;
 
@@ -240,8 +218,6 @@ export default function useProfilePage() {
                     state.phone = response.data.phone || state.phone;
                 }
 
-                state.password = '';
-                state.password_confirmation = '';
                 revokeAvatarPreview();
                 avatarPreviewUrl.value = '';
 
@@ -266,13 +242,17 @@ export default function useProfilePage() {
     return {
         isLoading,
         isSaving,
+        showChangePasswordDialog,
         errors,
         state,
         displayAvatar,
+        hasCustomAvatar,
         avatarPreviewUrl,
+        avatarFileInput,
         roleLabel,
         handleSubmit,
-        onAvatarSelected,
+        openAvatarPicker,
+        onAvatarFileChange,
         clearAvatar,
     };
 }

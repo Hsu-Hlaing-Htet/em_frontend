@@ -17,12 +17,12 @@
 
         <ul class="language-switcher-host ml-auto flex list-none items-center gap-2.5 p-0">
             <li>
-                <ThemeToggle />
+                <ThemeToggle plain />
             </li>
             <li class="language-switcher-host">
-                <LanguageSwitcher />
+                <LanguageSwitcher plain />
             </li>
-            <li class="ml-2">
+            <li class="ml-2 overflow-visible">
                 <UserProfile />
             </li>
         </ul>

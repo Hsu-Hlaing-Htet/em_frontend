@@ -6,41 +6,38 @@
         >
             <div class="field md:col-span-2">
                 <label class="mb-2 block text-md">Profile Image</label>
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                    <Avatar
-                        :image="displayAvatar"
-                        size="xlarge"
-                        shape="circle"
-                        class="shrink-0"
-                    />
-
-                    <div class="flex flex-1 flex-col gap-2">
-                        <InputText
-                            v-model="state.avatar_path"
-                            class="w-full"
-                            placeholder="Image URL"
+                <div class="admin-profile-photo">
+                    <div class="admin-profile-photo-avatar">
+                        <Avatar
+                            :image="displayAvatar"
+                            size="xlarge"
+                            shape="circle"
                         />
-                        <div class="flex flex-wrap items-center gap-2">
-                            <FileUpload
-                                mode="basic"
-                                choose-label="Choose Image"
-                                accept="image/*"
-                                :auto="false"
-                                custom-upload
-                                @uploader="onAvatarSelected"
-                            />
-                            <Button
-                                v-if="state.avatar_path || avatarPreviewUrl"
-                                type="button"
-                                label="Remove"
-                                severity="secondary"
-                                text
-                                @click="clearAvatar"
-                            />
-                        </div>
-                        <small class="text-[var(--admin-text-muted)]">
-                            Paste a hosted image URL to save your profile photo.
-                        </small>
+                        <button
+                            v-if="hasCustomAvatar"
+                            type="button"
+                            class="admin-profile-photo-remove"
+                            aria-label="Remove photo"
+                            @click="clearAvatar"
+                        >
+                            <i class="pi pi-times" aria-hidden="true" />
+                        </button>
+                    </div>
+
+                    <div class="admin-profile-photo-actions">
+                        <input
+                            ref="avatarFileInput"
+                            type="file"
+                            accept="image/jpeg,image/png,image/gif,image/webp"
+                            class="admin-profile-photo-input"
+                            @change="onAvatarFileChange"
+                        >
+                        <Button
+                            type="button"
+                            label="Upload Photo"
+                            outlined
+                            @click="openAvatarPicker"
+                        />
                         <small v-if="errors.has('avatar_path')" class="p-error">
                             <div v-for="error in errors.get('avatar_path')" :key="error">{{ error }}</div>
                         </small>
@@ -77,34 +74,17 @@
                 </small>
             </div>
 
-            <div class="field">
-                <label class="mb-2 block text-md">New Password</label>
-                <Password
-                    v-model="state.password"
-                    toggle-mask
-                    :feedback="false"
-                    class="w-full"
-                    input-class="w-full"
-                    placeholder="Leave blank to keep current password"
+            <div class="field md:col-span-2">
+                <label class="mb-2 block text-md">Password</label>
+                <p class="mb-3 text-sm text-[var(--admin-text-muted)]">
+                    You will need to sign in again after changing your password.
+                </p>
+                <Button
+                    type="button"
+                    label="Change Password"
+                    outlined
+                    @click="showChangePasswordDialog = true"
                 />
-                <small v-if="errors.has('password')" class="p-error">
-                    <div v-for="error in errors.get('password')" :key="error">{{ error }}</div>
-                </small>
-            </div>
-
-            <div class="field">
-                <label class="mb-2 block text-md">Confirm Password</label>
-                <Password
-                    v-model="state.password_confirmation"
-                    toggle-mask
-                    :feedback="false"
-                    class="w-full"
-                    input-class="w-full"
-                    placeholder="Confirm new password"
-                />
-                <small v-if="errors.has('password_confirmation')" class="p-error">
-                    <div v-for="error in errors.get('password_confirmation')" :key="error">{{ error }}</div>
-                </small>
             </div>
 
             <div class="col-span-1 pt-2 md:col-span-2">
@@ -113,6 +93,8 @@
         </form>
     </div>
 
+    <ChangePasswordDialog v-model="showChangePasswordDialog" />
+
     <Loading v-if="isLoading" />
 </template>
 
@@ -120,10 +102,9 @@
 import { defineComponent } from 'vue';
 import Avatar from 'primevue/avatar';
 import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ChangePasswordDialog from '@/components/admin/ChangePasswordDialog.vue';
 import useProfilePage from './useProfilePage';
 
 export default defineComponent({
@@ -131,10 +112,9 @@ export default defineComponent({
     components: {
         Avatar,
         InputText,
-        Password,
-        FileUpload,
         Button,
         Loading,
+        ChangePasswordDialog,
     },
     setup() {
         return useProfilePage();

@@ -4,8 +4,6 @@ import {
     printInvoiceDocument,
     exportReceiptDocument,
     printReceiptDocument,
-    exportPaymentDocument,
-    printPaymentDocument,
     exportUtilityDocument,
     printUtilityDocument,
 } from '@/helpers/documents/documentOutput';
@@ -59,32 +57,6 @@ export function useReceiptDocumentActions(state, getDocument, service) {
             downloadError: 'Unable to download receipt document.',
             exportError: 'Unable to export receipt document.',
             emailError: 'Unable to send receipt document.',
-        },
-    });
-}
-
-export function usePaymentDocumentActions(state, getDocument, service) {
-    return createBillingDocumentActions({
-        state,
-        getDocument,
-        getFilename: (current) => `${current.invoice_number || 'payment'}.html`,
-        printDocument: printPaymentDocument,
-        exportDocument: exportPaymentDocument,
-        // Payment has no document download endpoint; keep export/print only.
-        downloadDocument: async () => {
-            throw new Error('Payment documents cannot be downloaded.');
-        },
-        sendDocumentEmail: (current) => service.sendDocumentEmail({
-            id: current.id,
-            email: current.customer_email || undefined,
-        }),
-        messages: {
-            downloadSuccess: 'Payment confirmation downloaded.',
-            exportSuccess: 'Payment confirmation exported.',
-            emailSuccess: 'Payment confirmation sent by email.',
-            downloadError: 'Unable to download payment confirmation.',
-            exportError: 'Unable to export payment confirmation.',
-            emailError: 'Unable to send payment confirmation.',
         },
     });
 }

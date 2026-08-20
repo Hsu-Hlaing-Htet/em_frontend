@@ -23,26 +23,14 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="admin-list-toolbar">
-                        <p class="admin-list-toolbar__title">All Payment Plans</p>
-                        <div class="admin-list-toolbar__controls">
-                            <div class="admin-list-toolbar__search">
-                                <i
-                                    class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
-                                />
-
-                                <InputText
-                                    v-model="search"
-                                    placeholder="Keyword search"
-                                    class="w-full !pl-10"
-                                />
-                            </div>
-
-                            <Button
-                                label="Reset"
-                                @click="resetSearch"
-                            />
-
+                    <AdminListFilters
+                        title="All Payment Plans"
+                        :search="search"
+                        search-placeholder="Keyword search"
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <template #actions>
                             <router-link :to="{ name: 'newPaymentPlan' }">
                                 <Button label="Create" />
                             </router-link>
@@ -54,9 +42,8 @@
                                 @export-excel="exportExcel"
                                 @print="printList"
                             />
-
-                        </div>
-                    </div>
+                        </template>
+                    </AdminListFilters>
                 </template>
 
                 <template #empty>No payment plans found.</template>
@@ -111,17 +98,17 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { usePaymentPlanList } from './usePaymentPlanList';
 
 export default defineComponent({
     name: 'PaymentPlanList',
-    components: { DataTable, Column, InputText, InputSwitch, StatusBadge, Button, Loading, ListExportActions },
+    components: { DataTable, Column, InputSwitch, StatusBadge, Button, Loading, ListExportActions, AdminListFilters },
     setup() {
         return usePaymentPlanList();
     },

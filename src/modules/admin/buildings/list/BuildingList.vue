@@ -25,31 +25,18 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="admin-list-toolbar admin-list-toolbar--selection">
-                        <p class="admin-list-toolbar__title">{{ $t('property.allBuildings') }}</p>
-
-
-                        <div class="admin-list-toolbar__controls">
-                            <div class="admin-list-toolbar__search">
-                                <i
-                                    class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
-                                />
-
-                                <InputText
-                                    v-model="search"
-                                    :placeholder="$t('common.keywordSearch')"
-                                    class="w-full !pl-10"
-                                />
-                            </div>
-
-                            <Button
-                                :label="$t('common.reset')"
-                                @click="resetSearch"
-                            />
+                    <AdminListFilters
+                        :title="$t('property.allBuildings')"
+                        :search="search"
+                        :search-placeholder="$t('common.keywordSearch')"
+                        :reset-label="$t('common.reset')"
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <template #actions>
                             <router-link :to="{ name: 'newBuilding' }">
                                 <Button :label="$t('common.create')" />
                             </router-link>
-
                             <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"
@@ -57,28 +44,29 @@
                                 @export-csv="exportCsv"
                                 @print="printList"
                             />
-                        </div>
-                        <div
-                            v-if="selectedBuildingCount"
-                            class="admin-selection-bar"
-                        >
-                            <span class="text-sm font-semibold text-[var(--admin-text)]">
-                                {{ selectedBuildingCount }} selected
-                            </span>
-
-                            <button
-                                type="button"
-                                class="admin-selection-delete"
-                                :disabled="!canBulkDelete"
-                                :title="canBulkDelete ? '' : 'Only empty buildings can be deleted'"
-                                @click="showBulkDeleteConfirmDialog"
+                        </template>
+                        <template #selection>
+                            <div
+                                v-if="selectedBuildingCount"
+                                class="admin-selection-bar"
                             >
-                                <i class="pi pi-trash" />
-                                Delete
-                            </button>
-                        </div>
+                                <span class="text-sm font-semibold text-[var(--admin-text)]">
+                                    {{ selectedBuildingCount }} selected
+                                </span>
 
-                    </div>
+                                <button
+                                    type="button"
+                                    class="admin-selection-delete"
+                                    :disabled="!canBulkDelete"
+                                    :title="canBulkDelete ? '' : 'Only empty buildings can be deleted'"
+                                    @click="showBulkDeleteConfirmDialog"
+                                >
+                                    <i class="pi pi-trash" />
+                                    Delete
+                                </button>
+                            </div>
+                        </template>
+                    </AdminListFilters>
                 </template>
 
                 <template #empty>{{ $t('property.noBuildings') }}</template>
@@ -150,15 +138,15 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useBuildingList } from './useBuildingList';
 
 export default defineComponent({
     name: 'BuildingList',
-    components: { DataTable, Column, InputText, Button, ListExportActions, StatusBadge },
+    components: { DataTable, Column, Button, ListExportActions, AdminListFilters, StatusBadge },
     setup() {
         return useBuildingList();
     },

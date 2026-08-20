@@ -18,7 +18,7 @@
 
             <form class="grid grid-cols-1 gap-4" @submit.prevent="handleSubmit">
                 <div>
-                    <label for="room_id" class="mb-2 block text-sm font-semibold">{{ $t('customer.room') }}</label>
+                    <label for="room_id" class="mb-2 block text-md">{{ $t('customer.room') }}</label>
                     <Dropdown
                         id="room_id"
                         v-model="state.room_id"
@@ -38,7 +38,7 @@
                 </div>
 
                 <div>
-                    <label for="title" class="mb-2 block text-sm font-semibold">{{ $t('customer.title') }}</label>
+                    <label for="title" class="mb-2 block text-md">{{ $t('customer.title') }}</label>
                     <InputText id="title" v-model="state.title" class="w-full" />
                     <small v-if="errors.has('title')" class="p-error">
                         <div v-for="error in errors.get('title')" :key="error">{{ error }}</div>
@@ -46,7 +46,7 @@
                 </div>
 
                 <div>
-                    <label for="category" class="mb-2 block text-sm font-semibold">{{ $t('customer.category') }}</label>
+                    <label for="category" class="mb-2 block text-md">{{ $t('customer.category') }}</label>
                     <Dropdown
                         id="category"
                         v-model="state.category"
@@ -62,7 +62,7 @@
                 </div>
 
                 <div>
-                    <label for="priority" class="mb-2 block text-sm font-semibold">{{ $t('customer.priority') }}</label>
+                    <label for="priority" class="mb-2 block text-md">{{ $t('customer.priority') }}</label>
                     <Dropdown
                         id="priority"
                         v-model="state.priority"
@@ -78,7 +78,7 @@
                 </div>
 
                 <div>
-                    <label for="description" class="mb-2 block text-sm font-semibold">{{ $t('customer.description') }}</label>
+                    <label for="description" class="mb-2 block text-md">{{ $t('customer.description') }}</label>
                     <Textarea id="description" v-model="state.description" rows="5" class="w-full" />
                     <small v-if="errors.has('description')" class="p-error">
                         <div v-for="error in errors.get('description')" :key="error">{{ error }}</div>

@@ -3,6 +3,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useConfirm } from 'primevue/useconfirm';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { UTILITY_RATE_STATUS_OPTIONS } from '@/constants/constant';
 import { useUtilityRateStore } from '../store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
@@ -28,6 +29,8 @@ export default function useEditUtilityRate() {
         effective_date: null,
         status: 'active',
     });
+
+    bindErrorClearing(state, errors);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -122,8 +125,18 @@ export default function useEditUtilityRate() {
     };
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'utility_type_id', type: 'select' },
+            { field: 'unit_price', type: 'number', min: 0 },
+            { field: 'effective_date', type: 'date' },
+            { field: 'status', type: 'select' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             const payload = {

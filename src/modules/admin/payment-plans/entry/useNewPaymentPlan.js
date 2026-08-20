@@ -2,6 +2,7 @@ import { reactive, ref, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import {
     PAYMENT_PLAN_STATUS_OPTIONS,
@@ -24,14 +25,31 @@ export default function useNewPaymentPlan() {
         status: 'active',
     });
 
+    bindErrorClearing(state, errors);
+
     onBeforeUnmount(() => {
         store.$reset();
         store.$dispose();
     });
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'name', type: 'text' },
+            { field: 'payment_type', type: 'select' },
+            { field: 'interest_percentage', type: 'number', min: 0 },
+            { field: 'status', type: 'select' },
+            {
+                field: 'duration_months',
+                type: 'select',
+                when: (values) => values.payment_type === 'installment',
+            },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.add({ ...state });

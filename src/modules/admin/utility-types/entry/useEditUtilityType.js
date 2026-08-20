@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import { UTILITY_TYPE_STATUS_OPTIONS } from '@/constants/constant';
 import { useUtilityTypeStore } from '../store';
@@ -19,6 +20,8 @@ export default function useEditUtilityType() {
         name: '',
         status: 'active',
     });
+
+    bindErrorClearing(state, errors);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -57,8 +60,16 @@ export default function useEditUtilityType() {
     };
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'name', type: 'text' },
+            { field: 'status', type: 'select' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.update({ ...state });

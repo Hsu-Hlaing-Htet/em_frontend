@@ -3,6 +3,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useConfirm } from 'primevue/useconfirm';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { useRoleStore } from '@/modules/admin/roles/store';
 import { GENDER_OPTIONS} from '@/constants/constant';
 import { useStaffStore } from '../store';
@@ -35,6 +36,8 @@ export default function useEditStaff() {
         address: '',
         avatar_path: '',
     });
+
+    bindErrorClearing(state, errors);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -132,8 +135,23 @@ export default function useEditStaff() {
     };
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'role_id', type: 'select' },
+            { field: 'name', type: 'text' },
+            { field: 'email', type: 'email' },
+            { field: 'password', type: 'password', required: false },
+            { field: 'phone', type: 'phone' },
+            { field: 'nrc', type: 'text' },
+            { field: 'dob', type: 'date' },
+            { field: 'gender', type: 'select' },
+            { field: 'address', type: 'text' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             const payload = {

@@ -2,6 +2,7 @@ import { reactive, ref, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import { GENDER_OPTIONS } from '@/constants/constant';
 import { useResidentStore } from '../store';
@@ -26,14 +27,30 @@ export default function useNewResident() {
         avatar_path: '',
     });
 
+    bindErrorClearing(state, errors);
+
     onBeforeUnmount(() => {
         store.$reset();
         store.$dispose();
     });
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'name', type: 'text' },
+            { field: 'email', type: 'email' },
+            { field: 'password', type: 'password', required: true },
+            { field: 'phone', type: 'phone' },
+            { field: 'nrc', type: 'text' },
+            { field: 'dob', type: 'date' },
+            { field: 'gender', type: 'select' },
+            { field: 'address', type: 'text' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.add({

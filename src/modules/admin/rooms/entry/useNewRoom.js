@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing, isBlank } from '@/utils/formValidation';
 import { useRoomStore } from '../store';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
@@ -9,6 +10,31 @@ import useRoomImages from './useRoomImages';
 import useRoomDimensions from '@/composables/admin/rooms/useRoomDimensions';
 import { buildRoomPayload } from '../roomForm';
 import { showApiErrorToast } from '@/utils/apiError';
+
+const ROOM_VALIDATION_RULES = [
+    { field: 'building_id', type: 'select' },
+    { field: 'room_number', type: 'text' },
+    { field: 'floor_number', type: 'number', min: 0 },
+    { field: 'area_sqft', type: 'number', min: 0 },
+    { field: 'type', type: 'select' },
+    { field: 'status', type: 'select' },
+    { field: 'sale_price', type: 'number', min: 0 },
+    { field: 'rent_price', type: 'number', min: 0 },
+    { field: 'rent_deposit_price', type: 'number', min: 0 },
+    { field: 'booking_deposit_price', type: 'number', min: 0 },
+    {
+        field: 'width_ft',
+        type: 'number',
+        min: 0,
+        when: (values) => !isBlank(values.width_ft),
+    },
+    {
+        field: 'length_ft',
+        type: 'number',
+        min: 0,
+        when: (values) => !isBlank(values.length_ft),
+    },
+];
 
 export default function useNewRoom() {
     const store = useRoomStore();
@@ -46,6 +72,7 @@ export default function useNewRoom() {
         booking_deposit_price: 0,
     });
 
+    bindErrorClearing(state, errors);
     useRoomDimensions(state);
 
     onMounted(async () => {
@@ -69,8 +96,13 @@ export default function useNewRoom() {
     });
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, ROOM_VALIDATION_RULES)) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.add(buildRoomPayload(state));

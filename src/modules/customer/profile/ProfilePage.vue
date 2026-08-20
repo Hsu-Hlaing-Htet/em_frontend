@@ -1,137 +1,144 @@
 <template>
-    <div v-if="!isLoading" class="mx-auto max-w-4xl">
-        <h1 class="customer-page-heading">{{ $t('customer.profile') }}</h1>
-        <p class="customer-page-lead">{{ $t('customer.profileLead') }}</p>
-
-        <div class="admin-panel customer-profile-hero">
-            <Avatar :image="displayAvatar" size="xlarge" shape="circle" />
+    <div v-if="!isLoading" class="customer-portal-page">
+        <header class="customer-portal-page-header">
             <div>
-                <p class="m-0 text-lg font-bold">{{ state.name || $t('customer.customerFallback') }}</p>
-                <p class="m-0 text-sm text-[var(--admin-text-muted)]">{{ state.email }}</p>
-                <p class="m-0 mt-1 text-xs font-semibold uppercase tracking-wide text-[var(--admin-primary)]">{{ roleLabel }}</p>
+                <h1 class="customer-portal-page-title">{{ $t('customer.account') }}</h1>
+                <p class="customer-portal-page-lead">{{ $t('customer.accountLead') }}</p>
             </div>
-        </div>
+        </header>
 
-        <form @submit.prevent="handleSubmit">
-            <section class="admin-panel customer-form-section">
-                <h3>{{ $t('customer.profilePhoto') }}</h3>
-                <div class="flex flex-col gap-3">
-                    <InputText v-model="state.avatar_path" class="w-full" :placeholder="$t('common.imageUrl')" />
-                    <div class="flex flex-wrap gap-2">
-                        <FileUpload
-                            mode="basic"
-                            :choose-label="$t('common.chooseImage')"
-                            accept="image/*"
-                            :auto="false"
-                            custom-upload
-                            @uploader="onAvatarSelected"
-                        />
-                        <Button
-                            v-if="state.avatar_path || avatarPreviewUrl"
-                            type="button"
-                            :label="$t('common.remove')"
-                            severity="secondary"
-                            text
-                            @click="clearAvatar"
-                        />
+        <div class="admin-panel relative mx-auto w-full">
+            <form
+                class="grid grid-cols-1 gap-4 md:grid-cols-2"
+                @submit.prevent="handleSubmit"
+            >
+                <div class="field md:col-span-2">
+                    <label class="mb-2 block text-md">{{ $t('customer.profilePhoto') }}</label>
+                    <div class="admin-profile-photo">
+                        <div class="admin-profile-photo-avatar">
+                            <Avatar
+                                :image="displayAvatar"
+                                size="xlarge"
+                                shape="circle"
+                            />
+                            <button
+                                v-if="hasCustomAvatar"
+                                type="button"
+                                class="admin-profile-photo-remove"
+                                :aria-label="$t('common.remove')"
+                                @click="clearAvatar"
+                            >
+                                <i class="pi pi-times" aria-hidden="true" />
+                            </button>
+                        </div>
+
+                        <div class="admin-profile-photo-actions">
+                            <input
+                                ref="avatarFileInput"
+                                type="file"
+                                accept="image/jpeg,image/png,image/gif,image/webp"
+                                class="admin-profile-photo-input"
+                                @change="onAvatarFileChange"
+                            >
+                            <Button
+                                type="button"
+                                :label="$t('common.uploadPhoto')"
+                                outlined
+                                @click="openAvatarPicker"
+                            />
+                            <small v-if="errors.has('avatar_path')" class="p-error">
+                                <div v-for="error in errors.get('avatar_path')" :key="error">{{ error }}</div>
+                            </small>
+                        </div>
                     </div>
-                    <small v-if="errors.has('avatar_path')" class="p-error">
-                        <div v-for="error in errors.get('avatar_path')" :key="error">{{ error }}</div>
+                </div>
+
+                <div class="field">
+                    <label class="mb-2 block text-md">{{ $t('common.name') }}</label>
+                    <InputText v-model="state.name" class="w-full" />
+                    <small v-if="errors.has('name')" class="p-error">
+                        <div v-for="error in errors.get('name')" :key="error">{{ error }}</div>
                     </small>
                 </div>
-            </section>
 
-            <section class="admin-panel customer-form-section">
-                <h3>{{ $t('customer.personalInformation') }}</h3>
-                <div class="flex flex-col gap-4">
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('common.name') }}</label>
-                        <InputText v-model="state.name" class="w-full" />
-                        <small v-if="errors.has('name')" class="p-error">
-                            <div v-for="error in errors.get('name')" :key="error">{{ error }}</div>
-                        </small>
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('common.email') }}</label>
-                        <InputText v-model="state.email" type="email" class="w-full" />
-                        <small v-if="errors.has('email')" class="p-error">
-                            <div v-for="error in errors.get('email')" :key="error">{{ error }}</div>
-                        </small>
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('common.phone') }}</label>
-                        <InputText v-model="state.phone" class="w-full" />
-                        <small v-if="errors.has('phone')" class="p-error">
-                            <div v-for="error in errors.get('phone')" :key="error">{{ error }}</div>
-                        </small>
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('common.nrc') }}</label>
-                        <InputText v-model="state.nrc" class="w-full" />
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('common.address') }}</label>
-                        <Textarea v-model="state.address" rows="3" class="w-full" />
-                    </div>
+                <div class="field">
+                    <label class="mb-2 block text-md">{{ $t('common.email') }}</label>
+                    <InputText v-model="state.email" type="email" class="w-full" />
+                    <small v-if="errors.has('email')" class="p-error">
+                        <div v-for="error in errors.get('email')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
-            </section>
 
-            <section class="admin-panel customer-form-section">
-                <h3>{{ $t('customer.security') }}</h3>
-                <div class="flex flex-col gap-4">
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.newPassword') }}</label>
-                        <Password
-                            v-model="state.password"
-                            toggle-mask
-                            :feedback="false"
-                            class="w-full"
-                            input-class="w-full"
-                            :placeholder="$t('customer.leavePasswordBlank')"
-                        />
-                        <small v-if="errors.has('password')" class="p-error">
-                            <div v-for="error in errors.get('password')" :key="error">{{ error }}</div>
-                        </small>
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.confirmPassword') }}</label>
-                        <Password
-                            v-model="state.password_confirmation"
-                            toggle-mask
-                            :feedback="false"
-                            class="w-full"
-                            input-class="w-full"
-                        />
-                        <small v-if="errors.has('password_confirmation')" class="p-error">
-                            <div v-for="error in errors.get('password_confirmation')" :key="error">{{ error }}</div>
-                        </small>
-                    </div>
+                <div class="field">
+                    <label class="mb-2 block text-md">{{ $t('common.phone') }}</label>
+                    <InputText v-model="state.phone" class="w-full" />
+                    <small v-if="errors.has('phone')" class="p-error">
+                        <div v-for="error in errors.get('phone')" :key="error">{{ error }}</div>
+                    </small>
                 </div>
-            </section>
 
-            <Button type="submit" :label="$t('customer.saveProfile')" class="customer-btn-block" :loading="isSaving" />
-        </form>
+                <div class="field">
+                    <label class="mb-2 block text-md">{{ $t('common.nrc') }}</label>
+                    <InputText v-model="state.nrc" class="w-full" />
+                    <small v-if="errors.has('nrc')" class="p-error">
+                        <div v-for="error in errors.get('nrc')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
+
+                <div class="field md:col-span-2">
+                    <label class="mb-2 block text-md">{{ $t('common.address') }}</label>
+                    <Textarea v-model="state.address" rows="3" class="w-full" />
+                    <small v-if="errors.has('address')" class="p-error">
+                        <div v-for="error in errors.get('address')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
+
+                <div class="field md:col-span-2">
+                    <label class="mb-2 block text-md">{{ $t('customer.security') }}</label>
+                    <p class="mb-3 text-sm text-[var(--admin-text-muted)]">
+                        {{ $t('customer.changePasswordLead') }}
+                    </p>
+                    <Button
+                        type="button"
+                        :label="$t('common.changePassword')"
+                        outlined
+                        @click="showChangePasswordDialog = true"
+                    />
+                </div>
+
+                <div class="col-span-1 pt-2 md:col-span-2">
+                    <Button type="submit" :label="$t('customer.saveProfile')" :loading="isSaving" />
+                </div>
+            </form>
+        </div>
     </div>
+
+    <ChangePasswordDialog v-model="showChangePasswordDialog" />
 
     <Loading v-if="isLoading" />
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script setup>
 import Avatar from 'primevue/avatar';
 import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import FileUpload from 'primevue/fileupload';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ChangePasswordDialog from '@/components/admin/ChangePasswordDialog.vue';
 import useCustomerProfilePage from '@/composables/customer/useCustomerProfilePage';
 
-export default defineComponent({
-    name: 'CustomerProfilePage',
-    components: { Avatar, InputText, Password, FileUpload, Textarea, Button, Loading },
-    setup() {
-        return useCustomerProfilePage();
-    },
-});
+const {
+    isLoading,
+    isSaving,
+    showChangePasswordDialog,
+    errors,
+    state,
+    displayAvatar,
+    hasCustomAvatar,
+    avatarFileInput,
+    handleSubmit,
+    openAvatarPicker,
+    onAvatarFileChange,
+    clearAvatar,
+} = useCustomerProfilePage();
 </script>

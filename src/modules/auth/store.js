@@ -53,15 +53,19 @@ export const useAuthStore = defineStore('auth', () => {
         return result;
     }
 
+    function clearSession() {
+        token.value = null;
+        user.value = null;
+
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+    }
+
     async function logout() {
         try {
             await logoutUser();
         } finally {
-            token.value = null;
-            user.value = null;
-
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            clearSession();
         }
     }
 
@@ -101,6 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated,
         login,
         logout,
+        clearSession,
         ensureLoaded,
         refreshUser,
     };

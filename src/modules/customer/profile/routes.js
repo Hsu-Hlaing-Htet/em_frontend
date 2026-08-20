@@ -1,11 +1,12 @@
 const routes = [
     {
         path: 'profile',
+        alias: 'account',
         name: 'customerProfile',
         component: () => import('./ProfilePage.vue'),
         meta: {
-            title: 'Profile',
-            breadcrumbs: [{ title: 'Profile', routeName: 'customerProfile' }],
+            title: 'Account',
+            breadcrumbs: [{ title: 'Account', routeName: 'customerProfile' }],
         },
     },
 ];

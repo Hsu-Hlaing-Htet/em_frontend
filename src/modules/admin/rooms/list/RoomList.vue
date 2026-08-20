@@ -25,58 +25,42 @@
                 @sort="onSort($event)"
             >
                 <template #header>
-                    <div class="admin-list-toolbar admin-list-toolbar--selection">
-                        <p class="admin-list-toolbar__title">{{ $t('property.allRooms') }}</p>
-
-                        <div class="admin-list-toolbar__controls">
-                            <div class="admin-list-toolbar__search">
-                                <i
-                                    class="pi pi-search absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--admin-text-muted)]"
-                                />
-
-                                <InputText
-                                    v-model="search"
-                                    :placeholder="$t('common.keywordSearch')"
-                                    class="w-full !pl-10"
-                                />
-                            </div>
-
-                            <Dropdown
-                                v-model="selectedBuilding"
-                                :options="buildingOptions"
-                                option-label="label"
-                                option-value="value"
-                                :placeholder="$t('property.allBuildings')"
-                                class="w-52"
-                            />
-
-                            <Dropdown
-                                v-model="selectedType"
-                                :options="typeOptions"
-                                option-label="label"
-                                option-value="value"
-                                :placeholder="$t('property.roomType')"
-                                class="w-40"
-                            />
-
-                            <Dropdown
-                                v-model="selectedStatus"
-                                :options="statusOptions"
-                                option-label="label"
-                                option-value="value"
-                                :placeholder="$t('property.roomStatus')"
-                                class="w-40"
-                            />
-
-                            <Button
-                                :label="$t('common.reset')"
-                                @click="resetSearch"
-                            />
-
+                    <AdminListFilters
+                        :title="$t('property.allRooms')"
+                        :search="search"
+                        :search-placeholder="$t('common.keywordSearch')"
+                        :reset-label="$t('common.reset')"
+                        @update:search="search = $event"
+                        @reset="resetSearch"
+                    >
+                        <Dropdown
+                            v-model="selectedBuilding"
+                            :options="buildingOptions"
+                            option-label="label"
+                            option-value="value"
+                            :placeholder="$t('property.allBuildings')"
+                            class="w-52"
+                        />
+                        <Dropdown
+                            v-model="selectedType"
+                            :options="typeOptions"
+                            option-label="label"
+                            option-value="value"
+                            :placeholder="$t('property.roomType')"
+                            class="w-40"
+                        />
+                        <Dropdown
+                            v-model="selectedStatus"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            :placeholder="$t('property.roomStatus')"
+                            class="w-40"
+                        />
+                        <template #actions>
                             <router-link :to="{ name: 'newRoom' }">
                                 <Button :label="$t('common.create')" />
                             </router-link>
-
                             <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"
@@ -85,28 +69,29 @@
                                 @export-excel="exportExcel"
                                 @print="printList"
                             />
-                        </div>
-
-                        <div
-                            v-if="selectedRoomCount"
-                            class="admin-selection-bar"
-                        >
-                            <span class="text-sm font-semibold text-[var(--admin-text)]">
-                                {{ selectedRoomCount }} selected
-                            </span>
-
-                            <button
-                                type="button"
-                                class="admin-selection-delete"
-                                :disabled="!canBulkDelete"
-                                :title="canBulkDelete ? '' : 'Only available rooms without contract history can be deleted'"
-                                @click="showBulkDeleteConfirmDialog"
+                        </template>
+                        <template #selection>
+                            <div
+                                v-if="selectedRoomCount"
+                                class="admin-selection-bar"
                             >
-                                <i class="pi pi-trash" />
-                                Delete
-                            </button>
-                        </div>
-                    </div>
+                                <span class="text-sm font-semibold text-[var(--admin-text)]">
+                                    {{ selectedRoomCount }} selected
+                                </span>
+
+                                <button
+                                    type="button"
+                                    class="admin-selection-delete"
+                                    :disabled="!canBulkDelete"
+                                    :title="canBulkDelete ? '' : 'Only available rooms without contract history can be deleted'"
+                                    @click="showBulkDeleteConfirmDialog"
+                                >
+                                    <i class="pi pi-trash" />
+                                    Delete
+                                </button>
+                            </div>
+                        </template>
+                    </AdminListFilters>
                 </template>
                 <template #empty>{{ $t('property.noRooms') }}</template>
                 <template #loading>{{ $t('property.loadingRooms') }}</template>
@@ -190,17 +175,17 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
+import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useRoomList } from './useRoomList';
 
 export default defineComponent({
     name: 'RoomList',
-    components: { DataTable, Column, InputText, Dropdown, Button, Loading, StatusBadge, ListExportActions },
+    components: { DataTable, Column, Dropdown, Button, Loading, StatusBadge, ListExportActions, AdminListFilters },
     setup() {
         return useRoomList();
     },

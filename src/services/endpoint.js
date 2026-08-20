@@ -6,6 +6,7 @@ export const endpoint = {
     me: 'auth/me',
     forgotPassword: 'auth/forgot-password',
     resetPassword: 'auth/reset-password',
+    changePassword: 'auth/change-password',
 
     /** Customer portal */
     customerDashboard: 'customer/dashboard',

@@ -2,6 +2,7 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { bindErrorClearing, collectValidationErrors } from '@/utils/formValidation';
 import { formatDate, parseDate } from '@/utils/formatter';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useAuthStore } from '@/modules/auth/store';
@@ -12,9 +13,11 @@ const MAX_AVATAR_PATH_LENGTH = 255;
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-function isValidEmail(value) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
+const PROFILE_RULES = [
+    { field: 'name', type: 'text' },
+    { field: 'email', type: 'email' },
+    { field: 'phone', type: 'phone' },
+];
 
 export default function useCustomerProfilePage() {
     const authStore = useAuthStore();
@@ -22,16 +25,16 @@ export default function useCustomerProfilePage() {
     const { t } = useI18n();
     const isLoading = ref(true);
     const isSaving = ref(false);
+    const showChangePasswordDialog = ref(false);
     const errors = new Errors();
     const avatarPreviewUrl = ref('');
     const avatarObjectUrl = ref('');
+    const avatarFileInput = ref(null);
 
     const state = reactive({
         name: '',
         email: '',
         phone: '',
-        password: '',
-        password_confirmation: '',
         nrc: '',
         dob: null,
         gender: '',
@@ -39,7 +42,10 @@ export default function useCustomerProfilePage() {
         avatar_path: '',
     });
 
+    bindErrorClearing(state, errors);
+
     const displayAvatar = computed(() => avatarPreviewUrl.value || state.avatar_path || ProfileImage);
+    const hasCustomAvatar = computed(() => Boolean(avatarPreviewUrl.value || state.avatar_path));
     const roleLabel = computed(() => t('customer.customerFallback'));
 
     onMounted(fetchProfile);
@@ -64,8 +70,6 @@ export default function useCustomerProfilePage() {
                     name: data.name || '',
                     email: data.email || '',
                     phone: data.phone || '',
-                    password: '',
-                    password_confirmation: '',
                     nrc: data.nrc || '',
                     dob: parseDate(data.dob),
                     gender: data.gender || '',
@@ -82,23 +86,12 @@ export default function useCustomerProfilePage() {
 
     function validateForm() {
         errors.clear();
-        const validationErrors = {};
+        const validationErrors = collectValidationErrors(state, PROFILE_RULES);
 
-        if (!state.name?.trim()) validationErrors.name = ['This field is required.'];
-        if (!state.email?.trim()) {
-            validationErrors.email = ['This field is required.'];
-        } else if (!isValidEmail(state.email.trim())) {
-            validationErrors.email = ['Please enter a valid email address.'];
-        }
-        if (!state.phone?.trim()) validationErrors.phone = ['This field is required.'];
         if (state.avatar_path && state.avatar_path.length > MAX_AVATAR_PATH_LENGTH) {
-            validationErrors.avatar_path = [`Image URL must be ${MAX_AVATAR_PATH_LENGTH} characters or fewer.`];
-        }
-        if (state.password || state.password_confirmation) {
-            if (state.password.length < 8) validationErrors.password = ['Password must be at least 8 characters.'];
-            if (state.password !== state.password_confirmation) {
-                validationErrors.password_confirmation = ['Passwords do not match.'];
-            }
+            validationErrors.avatar_path = [
+                `Image URL must be ${MAX_AVATAR_PATH_LENGTH} characters or fewer.`,
+            ];
         }
 
         if (Object.keys(validationErrors).length) {
@@ -109,16 +102,32 @@ export default function useCustomerProfilePage() {
         return true;
     }
 
-    function onAvatarSelected(event) {
-        const file = event.files?.[0];
-        if (!file) return;
+    function openAvatarPicker() {
+        avatarFileInput.value?.click();
+    }
+
+    function onAvatarFileChange(event) {
+        const file = event.target?.files?.[0];
+
+        if (event.target) {
+            event.target.value = '';
+        }
+
+        if (!file) {
+            return;
+        }
+
+        errors.clear('avatar_path');
 
         if (!ALLOWED_IMAGE_TYPES.includes(file.type) || file.size > MAX_IMAGE_SIZE_BYTES) {
             errors.record({ avatar_path: ['Choose a valid image up to 2 MB.'] }, false);
             return;
         }
 
-        if (avatarObjectUrl.value) URL.revokeObjectURL(avatarObjectUrl.value);
+        if (avatarObjectUrl.value) {
+            URL.revokeObjectURL(avatarObjectUrl.value);
+        }
+
         avatarObjectUrl.value = URL.createObjectURL(file);
         avatarPreviewUrl.value = avatarObjectUrl.value;
     }
@@ -148,15 +157,11 @@ export default function useCustomerProfilePage() {
                 avatar_path: state.avatar_path?.trim() || null,
             };
 
-            if (state.password) payload.password = state.password;
-
             await store.updateProfile(payload);
             const response = store.getUpdateResponse;
 
             if (response) {
                 await authStore.refreshUser();
-                state.password = '';
-                state.password_confirmation = '';
                 clearAvatar();
 
                 EventBus.emit('show-toast', {
@@ -179,13 +184,17 @@ export default function useCustomerProfilePage() {
     return {
         isLoading,
         isSaving,
+        showChangePasswordDialog,
         errors,
         state,
         displayAvatar,
+        hasCustomAvatar,
         avatarPreviewUrl,
+        avatarFileInput,
         roleLabel,
         handleSubmit,
-        onAvatarSelected,
+        openAvatarPicker,
+        onAvatarFileChange,
         clearAvatar,
     };
 }

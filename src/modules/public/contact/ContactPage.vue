@@ -6,8 +6,11 @@ import Textarea from 'primevue/textarea';
 import { reactive, ref } from 'vue';
 
 import contactBanner from '@/assets/images/contact_banner.png';
+import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 
 const sending = ref(false);
+const errors = new Errors();
 
 const form = reactive({
     name: '',
@@ -16,9 +19,27 @@ const form = reactive({
     message: '',
 });
 
-function submit() {
+bindErrorClearing(form, errors);
 
-    console.log(form);
+function submit() {
+    errors.clear();
+
+    if (!applyValidation(errors, form, [
+        { field: 'name', type: 'text' },
+        { field: 'email', type: 'email' },
+        { field: 'phone', type: 'phone' },
+        { field: 'message', type: 'text' },
+    ])) {
+        return;
+    }
+
+    sending.value = true;
+
+    try {
+        console.log(form);
+    } finally {
+        sending.value = false;
+    }
 }
 
 </script>
@@ -107,65 +128,87 @@ function submit() {
 
                 <div class="space-y-5">
 
-                    <InputText
-                        v-model="form.name"
-                        placeholder="Your Name*"
-                        class="
-                            w-full
-                            border
-                            border-[var(--rw-input-border)]
-                            px-5
-                            py-5
-                            text-base
-                            shadow-none
-                        "
-                    />
+                    <div>
+                        <InputText
+                            v-model="form.name"
+                            placeholder="Your Name*"
+                            class="
+                                w-full
+                                border
+                                border-[var(--rw-input-border)]
+                                px-5
+                                py-5
+                                text-base
+                                shadow-none
+                            "
+                        />
+                        <small v-if="errors.has('name')" class="p-error">
+                            <div v-for="error in errors.get('name')" :key="error">{{ error }}</div>
+                        </small>
+                    </div>
 
-                    <InputText
-                        v-model="form.email"
-                        placeholder="Your Email*"
-                        class="
-                            w-full
-                            border
-                            border-[var(--rw-input-border)]
-                            px-5
-                            py-5
-                            text-base
-                            shadow-none
-                        "
-                    />
+                    <div>
+                        <InputText
+                            v-model="form.email"
+                            placeholder="Your Email*"
+                            class="
+                                w-full
+                                border
+                                border-[var(--rw-input-border)]
+                                px-5
+                                py-5
+                                text-base
+                                shadow-none
+                            "
+                        />
+                        <small v-if="errors.has('email')" class="p-error">
+                            <div v-for="error in errors.get('email')" :key="error">{{ error }}</div>
+                        </small>
+                    </div>
 
-                    <InputText
-                        v-model="form.phone"
-                        placeholder="Your Phone"
-                        class="
-                            w-full
-                            border
-                            border-[var(--rw-input-border)]
-                            px-5
-                            py-5
-                            text-base
-                            shadow-none
-                        "
-                    />
+                    <div>
+                        <InputText
+                            v-model="form.phone"
+                            placeholder="Your Phone"
+                            class="
+                                w-full
+                                border
+                                border-[var(--rw-input-border)]
+                                px-5
+                                py-5
+                                text-base
+                                shadow-none
+                            "
+                        />
+                        <small v-if="errors.has('phone')" class="p-error">
+                            <div v-for="error in errors.get('phone')" :key="error">{{ error }}</div>
+                        </small>
+                    </div>
 
-                    <Textarea
-                        v-model="form.message"
-                        rows="7"
-                        placeholder="Your Message..."
-                        class="
-                            w-full
-                            border
-                            border-[var(--rw-input-border)]
-                            px-5
-                            py-5
-                            text-base
-                            shadow-none
-                        "
-                    />
+                    <div>
+                        <Textarea
+                            v-model="form.message"
+                            rows="7"
+                            placeholder="Your Message..."
+                            class="
+                                w-full
+                                border
+                                border-[var(--rw-input-border)]
+                                px-5
+                                py-5
+                                text-base
+                                shadow-none
+                            "
+                        />
+                        <small v-if="errors.has('message')" class="p-error">
+                            <div v-for="error in errors.get('message')" :key="error">{{ error }}</div>
+                        </small>
+                    </div>
 
                     <!-- BUTTON -->
             <button
+  type="button"
+  :disabled="sending"
   class="items-center justify-end group relative overflow-hidden
          px-4 py-2 mb-10
          rounded-md
@@ -180,6 +223,7 @@ function submit() {
              hover:scale-105
              hover:invert-0
              transition-all duration-500 ease-out"
+  @click="submit"
 >
   <!-- Background Animation -->
   <span

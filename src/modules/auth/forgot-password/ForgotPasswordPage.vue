@@ -1,6 +1,8 @@
 <script setup>
+import { onMounted, onUnmounted } from 'vue';
 import AuthPageShell from '@/components/global/AuthPageShell.vue';
 import { useForgotPassword } from '@/composables/global/useForgotPassword';
+import { useThemeStore } from '@/stores/themeStore';
 
 const {
     form,
@@ -9,12 +11,23 @@ const {
     submitted,
     submit,
 } = useForgotPassword();
+
+const themeStore = useThemeStore();
+
+onMounted(() => {
+    document.documentElement.setAttribute('data-theme', 'light');
+});
+
+onUnmounted(() => {
+    themeStore.applyTheme();
+});
 </script>
 
 <template>
     <AuthPageShell
         title="Forgot Password"
         subtitle="Enter your email and we will send you a reset link."
+        :show-theme-toggle="false"
     >
         <form
             v-if="!submitted"
@@ -41,7 +54,7 @@ const {
 
             <button
                 type="submit"
-                class="group relative flex w-full scale-100 items-center justify-center overflow-hidden rounded-md border-2 border-[var(--rw-primary-deep)] bg-rw-surface px-4 py-2 text-[var(--rw-primary-deep)] transition-all duration-300 hover:scale-105 hover:border-white hover:text-white hover:shadow-lg hover:shadow-[var(--rw-brand)]/40 active:scale-95"
+                class="group relative mb-2 flex w-full scale-100 items-center justify-center overflow-hidden rounded-md border-2 border-[var(--rw-primary-deep)] bg-rw-surface px-4 py-2 text-[var(--rw-primary-deep)] transition-all duration-300 hover:scale-105 hover:border-white hover:text-white hover:shadow-lg hover:shadow-[var(--rw-brand)]/40 active:scale-95"
             >
                 <span
                     class="absolute inset-0 origin-left scale-x-0 bg-[var(--rw-primary-deep)] transition-transform duration-500 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)] group-hover:scale-x-100"
@@ -50,7 +63,7 @@ const {
                 <span class="relative z-10 flex items-center gap-3">
                     <i
                         v-if="loading"
-                        class="fas fa-spinner fa-spin text-base"
+                        class="fas fa-spinner fa-spin text-base transition-all duration-300 group-hover:scale-110 group-hover:rotate-[20deg]"
                     />
 
                     Send reset link

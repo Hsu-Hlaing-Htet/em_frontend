@@ -91,6 +91,7 @@
                                     placeholder="Type"
                                     class="w-full"
                                 />
+                                <small v-if="data.rowError" class="p-error mt-1 block">{{ data.rowError }}</small>
                             </template>
                         </Column>
                         <Column header="Previous" style="min-width: 110px">
@@ -146,6 +147,12 @@
                     </DataTable>
                     <small v-if="errors.has('utility_items')" class="p-error mt-2 block">
                         <div v-for="error in errors.get('utility_items')" :key="error">{{ error }}</div>
+                    </small>
+                    <small v-if="errors.has('utility_type_id')" class="p-error mt-2 block">
+                        <div v-for="error in errors.get('utility_type_id')" :key="error">{{ error }}</div>
+                    </small>
+                    <small v-if="errors.has('unit_price')" class="p-error mt-2 block">
+                        <div v-for="error in errors.get('unit_price')" :key="error">{{ error }}</div>
                     </small>
 
                     <p class="mt-3 text-right text-md font-medium">

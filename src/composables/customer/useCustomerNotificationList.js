@@ -1,24 +1,50 @@
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useCustomerNotificationStore } from '@/modules/customer/notifications/store';
 import { showApiErrorToast } from '@/utils/apiError';
+import {
+    customerNotificationIcon,
+    customerNotificationRoute,
+    customerNotificationTone,
+    formatRelativeTime,
+    isCustomerNotificationUnread,
+} from '@/helpers/customer/notifications';
 
-function cloneRows(rows) {
-    return Array.isArray(rows) ? rows.map((row) => ({ ...row })) : [];
-}
+const FILTER_TYPES = ['all', 'invoice', 'payment', 'receipt', 'contract', 'maintenance', 'announcement'];
 
 export default function useCustomerNotificationList() {
-    const store = useCustomerNotificationStore();
+    const notificationStore = useCustomerNotificationStore();
     const router = useRouter();
+    const { locale } = useI18n();
     const isLoading = ref(true);
-    const notifications = ref([]);
+    const activeFilter = ref('all');
+
+    const filteredNotifications = computed(() => {
+        if (activeFilter.value === 'all') {
+            return notificationStore.notifications;
+        }
+
+        return notificationStore.notifications.filter((item) => item.type === activeFilter.value);
+    });
+
+    const unreadCount = computed(() => notificationStore.unreadCount);
+
+    const filterOptions = computed(() => FILTER_TYPES.map((type) => ({
+        value: type,
+        label: type === 'all' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1),
+        count: type === 'all'
+            ? notificationStore.notifications.length
+            : notificationStore.notifications.filter((item) => item.type === type).length,
+    })).filter((option) => option.value === 'all' || option.count > 0));
 
     onMounted(async () => {
         isLoading.value = true;
 
         try {
-            await store.fetchAll();
-            notifications.value = cloneRows(store.getAllResponse?.data);
+            if (!notificationStore.getAllResponse) {
+                await notificationStore.fetchAll();
+            }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load notifications.');
         } finally {
@@ -27,25 +53,32 @@ export default function useCustomerNotificationList() {
     });
 
     const openNotification = (item) => {
-        if (item.type === 'invoice') {
-            router.push({ name: 'customerShowInvoice', params: { id: item.resource_id } });
+        const target = customerNotificationRoute(item);
+
+        if (!target) {
             return;
         }
 
-        if (item.type === 'payment') {
-            router.push({ name: 'customerShowInvoice', params: { id: item.resource_id } });
-            return;
-        }
-
-        if (item.type === 'receipt') {
-            router.push({ name: 'customerShowReceipt', params: { id: item.resource_id } });
-            return;
-        }
-
-        if (item.type === 'contract') {
-            router.push({ name: 'customerShowContract', params: { id: item.resource_id } });
-        }
+        notificationStore.markAsRead(item.id);
+        router.push(target);
     };
 
-    return { isLoading, notifications, openNotification };
+    const formatDisplayDateTime = (value) => formatRelativeTime(
+        value,
+        locale.value === 'my' ? 'my-MM' : 'en-GB',
+    );
+
+    return {
+        isLoading,
+        notifications: computed(() => notificationStore.notifications),
+        filteredNotifications,
+        unreadCount,
+        activeFilter,
+        filterOptions,
+        openNotification,
+        formatDisplayDateTime,
+        notificationIcon: customerNotificationIcon,
+        notificationTone: customerNotificationTone,
+        isNotificationUnread: isCustomerNotificationUnread,
+    };
 }

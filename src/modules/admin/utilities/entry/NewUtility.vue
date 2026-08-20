@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="flex justify-end gap-2 md:col-span-2 mt-4">
-                    <Button type="submit" label="Save" :disabled="!canCreate" />
+                    <Button type="submit" label="Save" :disabled="isSaving" />
                     <router-link :to="backRoute">
                         <Button type="button" label="Cancel" severity="secondary" />
                     </router-link>

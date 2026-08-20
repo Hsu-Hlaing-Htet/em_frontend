@@ -73,7 +73,7 @@
             <form class="admin-panel p-5" @submit.prevent="submitPayment">
                 <div class="flex flex-col gap-4">
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.paymentMethod') }}</label>
+                        <label class="mb-2 block text-md">{{ $t('customer.paymentMethod') }}</label>
                         <Dropdown
                             v-model="paymentForm.payment_method_id"
                             :options="paymentMethods"
@@ -87,18 +87,18 @@
                         </small>
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.paymentDate') }}</label>
+                        <label class="mb-2 block text-md">{{ $t('customer.paymentDate') }}</label>
                         <Calendar v-model="paymentForm.payment_date" date-format="yy-mm-dd" class="w-full" show-icon />
                         <small v-if="errors.has('payment_date')" class="p-error">
                             <div v-for="error in errors.get('payment_date')" :key="error">{{ error }}</div>
                         </small>
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.noteReference') }}</label>
+                        <label class="mb-2 block text-md">{{ $t('customer.noteReference') }}</label>
                         <Textarea v-model="paymentForm.note" rows="3" class="w-full" :placeholder="$t('customer.optionalBankReference')" />
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-semibold">{{ $t('customer.paymentProof') }}</label>
+                        <label class="mb-2 block text-md">{{ $t('customer.paymentProof') }}</label>
                         <p class="mb-2 text-sm text-[var(--admin-text-muted)]">
                             {{ $t('customer.paymentProofHelp') }}
                         </p>
@@ -168,11 +168,25 @@ export default defineComponent({
             { label: t('customer.status'), key: 'status', align: 'left' },
         ]);
 
-        const lineItemRows = computed(() => invoice.invoiceItems.map((item) => (
+        const asArray = (value) => {
+            const raw = value && typeof value === 'object' && 'value' in value ? value.value : value;
+
+            if (Array.isArray(raw)) {
+                return raw;
+            }
+
+            if (raw && Array.isArray(raw.data)) {
+                return raw.data;
+            }
+
+            return [];
+        };
+
+        const lineItemRows = computed(() => asArray(invoice.invoiceItems).map((item) => (
             mapInvoiceLineItemRow(item, formatCurrency)
         )));
 
-        const paymentRows = computed(() => invoice.invoicePayments.map((payment) => ({
+        const paymentRows = computed(() => asArray(invoice.invoicePayments).map((payment) => ({
             id: payment.id,
             receipt_id: payment.receipt_id,
             payment_date: payment.payment_date,

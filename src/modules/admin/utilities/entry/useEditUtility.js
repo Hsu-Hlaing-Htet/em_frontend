@@ -2,6 +2,14 @@ import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import {
+    applyValidation,
+    bindErrorClearing,
+    isBlank,
+    isValidNumber,
+    requiredMessage,
+    VALIDATION_MESSAGES,
+} from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
@@ -37,6 +45,8 @@ export default function useEditUtility() {
     });
 
     const items = ref([emptyUtilityItem()]);
+
+    bindErrorClearing(state, errors);
 
     onMounted(async () => {
         isLoading.value = true;
@@ -83,7 +93,7 @@ export default function useEditUtility() {
         if (response?.data) {
             Object.assign(state, response.data);
             items.value = (response.data.items || []).length
-                ? response.data.items.map((item) => ({ ...item }))
+                ? response.data.items.map((item) => ({ ...item, rowError: '' }))
                 : [emptyUtilityItem()];
         }
     };
@@ -92,6 +102,7 @@ export default function useEditUtility() {
         const usage = Math.max(0, Number(item.current_reading) - Number(item.previous_reading));
         item.usage = usage;
         item.amount = Number((usage * Number(item.unit_price)).toFixed(2));
+        item.rowError = '';
     };
 
     const addItem = () => {
@@ -108,9 +119,76 @@ export default function useEditUtility() {
         items.value.reduce((sum, item) => sum + Number(item.amount || 0), 0)
     ));
 
+    const validateItems = () => {
+        let valid = true;
+        const fieldErrors = {};
+
+        items.value.forEach((item) => {
+            item.rowError = '';
+        });
+
+        if (!items.value.length) {
+            fieldErrors.utility_items = ['At least one utility item is required.'];
+            valid = false;
+        }
+
+        items.value.forEach((item) => {
+            if (isBlank(item.utility_type_id)) {
+                item.rowError = VALIDATION_MESSAGES.select;
+                fieldErrors.utility_type_id = [VALIDATION_MESSAGES.select];
+                valid = false;
+                return;
+            }
+
+            if (!isValidNumber(item.previous_reading, { min: 0 })
+                || !isValidNumber(item.current_reading, { min: 0 })) {
+                item.rowError = requiredMessage('current_reading');
+                fieldErrors.utility_items = [
+                    fieldErrors.utility_items?.[0]
+                    || 'Each item needs valid readings and unit price.',
+                ];
+                valid = false;
+                return;
+            }
+
+            if (Number(item.current_reading) < Number(item.previous_reading)) {
+                item.rowError = 'Current reading must be greater than or equal to previous reading.';
+                fieldErrors.utility_items = [
+                    fieldErrors.utility_items?.[0]
+                    || 'Each item needs valid readings and unit price.',
+                ];
+                valid = false;
+                return;
+            }
+
+            if (!isValidNumber(item.unit_price, { min: 0 })) {
+                item.rowError = requiredMessage('unit_price');
+                fieldErrors.unit_price = [requiredMessage('unit_price')];
+                valid = false;
+            }
+        });
+
+        if (Object.keys(fieldErrors).length) {
+            errors.record(fieldErrors);
+        }
+
+        return valid;
+    };
+
     const handleSubmit = async () => {
-        isSaving.value = true;
         errors.clear();
+
+        const stateValid = applyValidation(errors, state, [
+            { field: 'room_id', type: 'select' },
+            { field: 'billing_month', type: 'date' },
+        ]);
+        const itemsValid = validateItems();
+
+        if (!stateValid || !itemsValid) {
+            return;
+        }
+
+        isSaving.value = true;
 
         const payload = {
             ...state,

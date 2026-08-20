@@ -1,11 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/modules/auth/store';
+import ResetPassword from '@/modules/auth/reset-password/ResetPasswordPage.vue';
 import { publicRoutes } from '../modules/public/route.js';
 import { authRoutes } from '../modules/auth/route.js';
 import { adminRoutes } from '../modules/admin/routes.js';
 import { customerRoutes } from '../modules/customer/routes.js';
 import NotFound from '@/pages/404.vue';
 import Forbidden from '@/pages/Forbidden.vue';
+
+const resetPasswordRoute = {
+    path: '/reset-password',
+    name: 'reset-password',
+    component: ResetPassword,
+    alias: ['/reset-password/'],
+    meta: { public: true },
+};
 
 const legacyUserRedirects = [
     { path: '/user', redirect: '/customer/dashboard' },
@@ -18,11 +27,12 @@ const legacyUserRedirects = [
 ];
 
 const routes = [
+    resetPasswordRoute,
+    ...authRoutes,
     ...publicRoutes,
     ...adminRoutes,
     ...customerRoutes,
     ...legacyUserRedirects,
-    ...authRoutes,
     {
         path: '/forbidden',
         name: 'forbidden',
@@ -73,6 +83,14 @@ function forbiddenQuery(from) {
 }
 
 router.beforeEach(async (to, from, next) => {
+    const isResetPasswordRoute = to.name === 'reset-password'
+        || to.path === '/reset-password'
+        || to.path === '/reset-password/';
+
+    if (to.meta.public || isResetPasswordRoute) {
+        return next();
+    }
+
     const auth = useAuthStore();
     await auth.ensureLoaded();
 

@@ -3,6 +3,7 @@
         <button
             type="button"
             class="language-switcher-trigger"
+            :class="{ 'language-switcher-trigger--plain': plain }"
             aria-haspopup="listbox"
             :aria-expanded="open"
             :aria-label="$t('common.changeLanguage')"
@@ -47,6 +48,13 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useLocaleStore } from '@/stores/localeStore';
+
+defineProps({
+    plain: {
+        type: Boolean,
+        default: false,
+    },
+});
 
 const localeStore = useLocaleStore();
 const { locale, codeLabel } = storeToRefs(localeStore);
@@ -124,6 +132,23 @@ onBeforeUnmount(() => {
 
 .language-switcher-trigger:focus-visible {
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-primary, #8b5a2b) 35%, transparent);
+}
+
+.language-switcher-trigger--plain {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+}
+
+.language-switcher-trigger--plain:hover,
+.language-switcher-trigger--plain:focus-visible {
+    color: var(--rw-text, var(--admin-text));
+    background: var(--rw-hover-bg, var(--admin-nav-active-bg));
+    outline: none;
+}
+
+.language-switcher-trigger--plain:focus-visible {
+    box-shadow: var(--rw-focus-shadow);
 }
 
 .language-switcher-globe {

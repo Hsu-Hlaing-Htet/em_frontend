@@ -146,6 +146,11 @@ a {
     text-decoration: none;
 }
 
+.p-error,
+small.p-error {
+    color: var(--rw-danger) !important;
+}
+
 form *:has(> .p-error) > :is(
     .p-inputtext,
     .p-dropdown,
@@ -154,13 +159,16 @@ form *:has(> .p-error) > :is(
     .p-password,
     .p-inputtextarea,
     .p-multiselect,
-    .p-fileupload
+    .p-fileupload,
+    .rw-input-shell,
+    input.rw-input-shell
 ) {
     border-color: var(--rw-danger) !important;
 }
 
 form *:has(> .p-error) > :is(.p-calendar, .p-inputnumber, .p-password) > .p-inputtext,
-form *:has(> .p-error) > .p-fileupload .p-fileupload-choose {
+form *:has(> .p-error) > .p-fileupload .p-fileupload-choose,
+form *:has(> .p-error) > .rw-input-shell input {
     border-color: var(--rw-danger) !important;
 }
 
@@ -172,7 +180,9 @@ form *:has(> .p-error) > :is(
     .p-password,
     .p-inputtextarea,
     .p-multiselect,
-    .p-fileupload
+    .p-fileupload,
+    .rw-input-shell,
+    input.rw-input-shell
 ):focus-within {
     box-shadow: 0 0 0 0.2rem var(--rw-danger-focus-bg);
 }

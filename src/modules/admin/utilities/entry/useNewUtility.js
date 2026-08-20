@@ -2,6 +2,14 @@ import { reactive, ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import {
+    applyValidation,
+    bindErrorClearing,
+    isBlank,
+    isValidNumber,
+    requiredMessage,
+    VALIDATION_MESSAGES,
+} from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import { formatCurrency } from '@/utils/formatter';
 import { useUtilityStore } from '../store';
@@ -48,6 +56,8 @@ export default function useNewUtility() {
         room_id: null,
         billing_month: null,
     });
+
+    bindErrorClearing(createState, errors);
 
     const selectedRoomLabel = computed(() => (
         roomOptions.value.find((room) => room.value === createState.room_id)?.label || ''
@@ -289,9 +299,68 @@ export default function useNewUtility() {
         ))
     ));
 
+    const validateReadingRows = () => {
+        let valid = true;
+        const fieldErrors = {};
+
+        if (!readingRows.value.length) {
+            fieldErrors.entries = ['At least one utility reading is required.'];
+            valid = false;
+        }
+
+        readingRows.value.forEach((row) => {
+            if (isBlank(row.utility_type_id)) {
+                patchReadingRow(row.id, { rowError: VALIDATION_MESSAGES.select });
+                fieldErrors.utility_type_id = [VALIDATION_MESSAGES.select];
+                valid = false;
+                return;
+            }
+
+            if (!isValidNumber(row.previous_reading, { min: 0 })
+                || !isValidNumber(row.current_reading, { min: 0 })) {
+                patchReadingRow(row.id, { rowError: requiredMessage('current_reading') });
+                valid = false;
+                return;
+            }
+
+            if (Number(row.current_reading) < Number(row.previous_reading)) {
+                patchReadingRow(row.id, {
+                    rowError: 'Current reading must be greater than or equal to previous reading.',
+                });
+                valid = false;
+                return;
+            }
+
+            if (!isValidNumber(row.unit_price, { gt: 0 })) {
+                patchReadingRow(row.id, {
+                    rowError: row.rowError || requiredMessage('unit_price'),
+                });
+                valid = false;
+            }
+        });
+
+        if (Object.keys(fieldErrors).length) {
+            errors.record(fieldErrors);
+        }
+
+        return valid;
+    };
+
     const handleSubmit = async () => {
-        isSaving.value = true;
         errors.clear();
+
+        const createValid = applyValidation(errors, createState, [
+            { field: 'building_id', type: 'select' },
+            { field: 'room_id', type: 'select' },
+            { field: 'billing_month', type: 'date' },
+        ]);
+        const rowsValid = validateReadingRows();
+
+        if (!createValid || !rowsValid) {
+            return;
+        }
+
+        isSaving.value = true;
 
         const groupedRows = readingRows.value.reduce((groups, row) => {
             const billingMonth = formatBillingMonth(row.billing_month);

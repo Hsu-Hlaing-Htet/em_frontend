@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import {
     MAINTENANCE_CATEGORY_OPTIONS,
@@ -33,6 +34,8 @@ export default function useEditMaintenanceRequest() {
         description: '',
         status: '',
     });
+
+    bindErrorClearing(state, errors);
 
     onMounted(async () => {
         await Promise.all([
@@ -81,8 +84,19 @@ export default function useEditMaintenanceRequest() {
     };
 
     const handleSubmit = async () => {
-        isSaving.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'room_id', type: 'select' },
+            { field: 'user_id', type: 'select' },
+            { field: 'title', type: 'text' },
+            { field: 'category', type: 'select' },
+            { field: 'priority', type: 'select' },
+        ])) {
+            return;
+        }
+
+        isSaving.value = true;
 
         try {
             await store.update({ ...state });

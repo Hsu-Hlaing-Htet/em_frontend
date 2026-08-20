@@ -8,7 +8,7 @@ import {
 } from 'vue';
 
 import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/global/useAppToast';
 
 import {
     getFeaturedProperties,
@@ -19,7 +19,7 @@ import { formatCurrency } from '@/utils/formatter';
 
 export function useLanding() {
     const router = useRouter();
-    const toast = useToast();
+    const toast = useAppToast();
 
     const loading = ref(false);
 

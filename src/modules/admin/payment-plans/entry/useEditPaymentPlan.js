@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import {
     PAYMENT_PLAN_STATUS_OPTIONS,
@@ -25,6 +26,8 @@ export default function useEditPaymentPlan() {
         interest_percentage: 0,
         status: 'active',
     });
+
+    bindErrorClearing(state, errors);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -66,8 +69,23 @@ export default function useEditPaymentPlan() {
     };
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'name', type: 'text' },
+            { field: 'payment_type', type: 'select' },
+            { field: 'interest_percentage', type: 'number', min: 0 },
+            { field: 'status', type: 'select' },
+            {
+                field: 'duration_months',
+                type: 'select',
+                when: (values) => values.payment_type === 'installment',
+            },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.update({ ...state });

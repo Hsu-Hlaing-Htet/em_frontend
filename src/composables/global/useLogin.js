@@ -1,9 +1,63 @@
 import { reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/global/useAppToast';
 import { getApiErrorMessage } from '@/utils/apiError';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { useAuthStore } from '@/modules/auth/store';
+
+function firstMessage(value) {
+    if (Array.isArray(value)) {
+        return String(value[0] || '');
+    }
+
+    return String(value || '');
+}
+
+function mapLoginFieldErrors(fieldErrors) {
+    const mapped = {};
+
+    Object.entries(fieldErrors || {}).forEach(([field, messages]) => {
+        const list = Array.isArray(messages) ? messages : [messages];
+        const text = firstMessage(list);
+        const lower = text.toLowerCase();
+
+        if (lower.includes('required') || lower.includes('valid email')) {
+            mapped[field] = list;
+            return;
+        }
+
+        if (
+            field === 'password'
+            && (
+                lower.includes('incorrect')
+                || lower.includes('invalid')
+                || lower.includes('wrong')
+                || lower.includes('credentials')
+            )
+        ) {
+            mapped.password = ['Incorrect password.'];
+            return;
+        }
+
+        if (
+            field === 'email'
+            && (
+                lower.includes('not found')
+                || lower.includes('does not exist')
+                || lower.includes('no account')
+                || lower.includes('unknown user')
+            )
+        ) {
+            mapped.email = ['Email not found.'];
+            return;
+        }
+
+        mapped[field] = list;
+    });
+
+    return mapped;
+}
 
 function resolveRedirectPath(route, role) {
     const redirect = route.query.redirect;
@@ -26,7 +80,7 @@ function resolveRedirectPath(route, role) {
 export function useLogin() {
     const route = useRoute();
     const router = useRouter();
-    const toast = useToast();
+    const toast = useAppToast();
     const auth = useAuthStore();
 
     const loading = ref(false);
@@ -38,23 +92,15 @@ export function useLogin() {
         password: '',
     });
 
+    bindErrorClearing(form, errors);
+
     async function submit() {
         errors.clear();
 
-        const validationErrors = {};
-
-        if (!form.email?.trim()) {
-            validationErrors.email = ['This field is required.'];
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-            validationErrors.email = ['Please enter a valid email address.'];
-        }
-
-        if (!form.password) {
-            validationErrors.password = ['This field is required.'];
-        }
-
-        if (Object.keys(validationErrors).length) {
-            errors.record(validationErrors);
+        if (!applyValidation(errors, form, [
+            { field: 'email', type: 'email' },
+            { field: 'password', type: 'text' },
+        ])) {
             return;
         }
 
@@ -75,8 +121,14 @@ export function useLogin() {
         } catch (error) {
             const fieldErrors = error?.data?.data || error?.data?.errors || error?.response?.data?.errors;
 
-            if (fieldErrors) {
-                errors.record(fieldErrors);
+            if (fieldErrors && typeof fieldErrors === 'object' && Object.keys(fieldErrors).length) {
+                errors.record(mapLoginFieldErrors(fieldErrors), false);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Login Failed',
+                    detail: getApiErrorMessage(error, 'Invalid credentials.'),
+                    life: 3500,
+                });
                 return;
             }
 

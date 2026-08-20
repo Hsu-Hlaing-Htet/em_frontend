@@ -80,6 +80,12 @@ export default defineComponent({
             }
         });
 
+        watch(remark, () => {
+            if (error.value) {
+                error.value = '';
+            }
+        });
+
         const close = () => {
             emit('update:modelValue', false);
         };

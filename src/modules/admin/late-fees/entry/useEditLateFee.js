@@ -2,6 +2,7 @@ import { reactive, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
 import {
     LATE_FEE_TYPE_OPTIONS,
@@ -27,6 +28,8 @@ export default function useEditLateFee() {
         grace_days: 0,
         status: 'active',
     });
+
+    bindErrorClearing(state, errors);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -69,8 +72,20 @@ export default function useEditLateFee() {
     };
 
     const handleSubmit = async () => {
-        isLoading.value = true;
         errors.clear();
+
+        if (!applyValidation(errors, state, [
+            { field: 'name', type: 'text' },
+            { field: 'type', type: 'select' },
+            { field: 'value', type: 'number', min: 0 },
+            { field: 'per', type: 'select' },
+            { field: 'grace_days', type: 'number', min: 0 },
+            { field: 'status', type: 'select' },
+        ])) {
+            return;
+        }
+
+        isLoading.value = true;
 
         try {
             await store.update({ ...state });

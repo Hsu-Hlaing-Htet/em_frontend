@@ -6,7 +6,7 @@
 
 .customer-shell {
     min-height: 100dvh;
-    padding-bottom: calc(var(--customer-nav-height) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 0;
 }
 
 @media (min-width: 1024px) {
@@ -31,24 +31,7 @@
 }
 
 .customer-mobile-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 40;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.25rem;
-    min-height: var(--customer-nav-height);
-    padding: 0.5rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
-    background: var(--admin-surface-solid);
-    border-top: 1px solid var(--admin-border);
-}
-
-@media (min-width: 1024px) {
-    .customer-mobile-nav {
-        display: none;
-    }
+    display: none;
 }
 
 .customer-mobile-nav-item {
@@ -60,12 +43,16 @@
     gap: 0.25rem;
     min-height: 52px;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--customer-portal-card-radius, 3px);
     color: var(--admin-text-muted);
     text-decoration: none;
     font-size: 0.6875rem;
     font-weight: 600;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.18s ease;
 }
 
 .customer-mobile-nav-item i {
@@ -85,568 +72,15 @@
     box-shadow: inset 0 3px 0 var(--admin-primary);
 }
 
+.customer-mobile-nav-item:active {
+    transform: scale(0.98);
+    background: var(--rw-hover-bg);
+}
+
 .customer-mobile-nav-item:focus-visible {
     box-shadow: var(--rw-nav-focus-shadow);
 }
 
-.customer-desktop-nav {
-    display: none;
-}
-
-.customer-desktop-nav-item {
-    position: relative;
-    overflow: hidden;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    color: var(--admin-text-muted);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.customer-desktop-nav-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 2px;
-    background: var(--admin-primary);
-    opacity: 0;
-    transform: scaleY(0);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.customer-desktop-nav-item:hover,
-.customer-desktop-nav-item:focus-visible,
-.customer-desktop-nav-item.is-active {
-    background: var(--admin-nav-active-bg);
-    border-color: var(--admin-nav-active-border);
-    color: var(--admin-nav-active-text);
-    outline: none;
-}
-
-.customer-desktop-nav-item:hover::before,
-.customer-desktop-nav-item:focus-visible::before,
-.customer-desktop-nav-item.is-active::before {
-    opacity: 1;
-    transform: scaleY(1);
-}
-
-.customer-desktop-nav-item:focus-visible {
-    box-shadow: var(--rw-nav-focus-shadow);
-}
-
-@media (min-width: 1024px) {
-    .customer-desktop-nav {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.25rem;
-    }
-}
-
-.customer-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-}
-
-@media (min-width: 768px) {
-    .customer-stat-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-.customer-stat-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    margin-bottom: 0.75rem;
-    border-radius: 6px;
-    background: var(--admin-nav-active-bg);
-    color: var(--admin-primary);
-}
-
-/* Customer dashboard */
-.customer-dashboard {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.customer-dashboard-welcome {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1.25rem;
-    border: 1px solid var(--admin-border);
-    border-left: 3px solid var(--admin-primary);
-    border-radius: 6px;
-    background: var(--admin-surface-solid);
-    box-shadow: var(--admin-shadow-soft);
-}
-
-.customer-dashboard-eyebrow,
-.customer-dashboard-lead,
-.customer-dashboard-kpi-label,
-.customer-dashboard-kpi-detail,
-.customer-dashboard-mini-label {
-    margin: 0;
-    color: var(--admin-text-muted);
-}
-
-.customer-dashboard-eyebrow {
-    margin-bottom: 0.25rem;
-    color: var(--admin-primary);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.customer-dashboard-title {
-    margin: 0;
-    color: var(--admin-text);
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.customer-dashboard-lead {
-    margin-top: 0.375rem;
-    font-size: 0.875rem;
-}
-
-.customer-dashboard-account-link,
-.customer-dashboard-card-link,
-.customer-dashboard-view-all {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--admin-primary);
-    text-decoration: none;
-    font-size: 0.75rem;
-    font-weight: 700;
-}
-
-.customer-dashboard-account-link {
-    align-self: flex-start;
-    min-height: 36px;
-    padding: 0 0.75rem;
-    border: 1px solid var(--admin-nav-active-border);
-    border-radius: 5px;
-    background: var(--admin-nav-active-bg);
-}
-
-.customer-dashboard-account-link:hover,
-.customer-dashboard-account-link:focus-visible,
-.customer-dashboard-card-link:hover,
-.customer-dashboard-card-link:focus-visible,
-.customer-dashboard-view-all:hover,
-.customer-dashboard-view-all:focus-visible {
-    color: var(--admin-nav-active-text);
-    outline: none;
-}
-
-.customer-dashboard-account-link:focus-visible,
-.customer-dashboard-card-link:focus-visible,
-.customer-dashboard-view-all:focus-visible {
-    box-shadow: var(--rw-focus-shadow);
-}
-
-.customer-dashboard-primary-grid,
-.customer-dashboard-secondary-grid,
-.customer-dashboard-bottom-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-}
-
-.customer-dashboard-kpi,
-.customer-dashboard-mini-card,
-.customer-dashboard-panel {
-    min-width: 0;
-    border: 1px solid var(--admin-border);
-    border-radius: 6px;
-    background: var(--admin-surface-solid);
-    box-shadow: var(--admin-shadow-soft);
-}
-
-.customer-dashboard-kpi {
-    position: relative;
-    display: flex;
-    min-height: 158px;
-    flex-direction: column;
-    padding: 1rem;
-    overflow: hidden;
-}
-
-.customer-dashboard-kpi::before {
-    content: '';
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 2px;
-    background: var(--customer-kpi-accent, var(--admin-primary));
-}
-
-.customer-dashboard-kpi.is-burgundy { --customer-kpi-accent: var(--admin-primary); }
-.customer-dashboard-kpi.is-gold { --customer-kpi-accent: var(--rw-warning); }
-.customer-dashboard-kpi.is-green { --customer-kpi-accent: var(--rw-success); }
-.customer-dashboard-kpi.is-neutral { --customer-kpi-accent: var(--admin-text-muted); }
-
-.customer-dashboard-kpi-head {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-}
-
-.customer-dashboard-kpi-icon,
-.customer-dashboard-mini-icon,
-.customer-dashboard-notification-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    color: var(--customer-kpi-accent, var(--admin-primary));
-}
-
-.customer-dashboard-kpi-icon {
-    width: 1.75rem;
-    height: 1.75rem;
-    border: 1px solid color-mix(in srgb, var(--customer-kpi-accent, var(--admin-primary)) 35%, var(--admin-border));
-    border-radius: 5px;
-    background: color-mix(in srgb, var(--customer-kpi-accent, var(--admin-primary)) 7%, var(--admin-surface-solid));
-}
-
-.customer-dashboard-kpi-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.customer-dashboard-kpi-value {
-    margin: 0.75rem 0 0.2rem;
-    color: var(--admin-text);
-    font-size: 1.375rem;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.customer-dashboard-kpi-detail {
-    min-height: 1.25rem;
-    font-size: 0.75rem;
-}
-
-.customer-dashboard-card-link {
-    width: max-content;
-    margin-top: auto;
-    padding-top: 0.65rem;
-}
-
-.customer-dashboard-secondary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.customer-dashboard-mini-card {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 84px;
-    padding: 0.875rem;
-}
-
-.customer-dashboard-mini-icon {
-    width: 1.75rem;
-    height: 1.75rem;
-    color: var(--admin-primary);
-}
-
-.customer-dashboard-mini-label {
-    font-size: 0.75rem;
-}
-
-.customer-dashboard-mini-value {
-    margin: 0.15rem 0 0;
-    color: var(--admin-text);
-    font-size: 1.125rem;
-    font-weight: 700;
-}
-
-.customer-dashboard-panel {
-    padding: 1rem;
-}
-
-.customer-dashboard-section-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--admin-border);
-}
-
-.customer-dashboard-section-head h2 {
-    margin: 0;
-    color: var(--admin-text);
-    font-size: 1rem;
-    font-weight: 700;
-}
-
-.customer-dashboard-view-all {
-    flex: 0 0 auto;
-    min-height: 28px;
-}
-
-.customer-dashboard-transactions,
-.customer-dashboard-notifications {
-    display: flex;
-    flex-direction: column;
-}
-
-.customer-dashboard-transaction-row,
-.customer-dashboard-notification-row {
-    width: 100%;
-    border: 0;
-    border-bottom: 1px solid var(--admin-border);
-    background: var(--admin-surface-solid);
-    color: var(--admin-text);
-    text-align: left;
-    cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.customer-dashboard-transaction-row:last-child,
-.customer-dashboard-notification-row:last-child {
-    border-bottom: 0;
-}
-
-.customer-dashboard-transaction-row:hover,
-.customer-dashboard-transaction-row:focus-visible,
-.customer-dashboard-notification-row:hover,
-.customer-dashboard-notification-row:focus-visible {
-    background-color: var(--admin-surface-solid) !important;
-    background-image: none !important;
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--admin-primary) 55%, transparent), inset 0 0 0 9999px var(--rw-hover-bg);
-    outline: none;
-}
-
-.customer-dashboard-transaction-row:focus-visible,
-.customer-dashboard-notification-row:focus-visible {
-    box-shadow: inset 3px 0 0 var(--admin-primary), var(--rw-focus-shadow);
-}
-
-.customer-dashboard-transaction-row {
-    display: grid;
-    grid-template-columns: minmax(72px, 0.75fr) minmax(0, 1.5fr) auto;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 0.5rem;
-}
-
-.customer-dashboard-transaction-date,
-.customer-dashboard-transaction-reference small,
-.customer-dashboard-notification-copy small,
-.customer-dashboard-notification-copy time {
-    color: var(--admin-text-muted);
-    font-size: 0.75rem;
-}
-
-.customer-dashboard-transaction-reference {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 0.15rem;
-}
-
-.customer-dashboard-transaction-reference strong,
-.customer-dashboard-notification-copy strong {
-    overflow: hidden;
-    font-size: 0.8125rem;
-    font-weight: 650;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.customer-dashboard-transaction-amount {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.customer-dashboard-transaction-row .status-badge {
-    grid-column: 2 / -1;
-    justify-self: end;
-}
-
-.customer-dashboard-notification-row {
-    display: grid;
-    grid-template-columns: 1.75rem minmax(0, 1fr) auto;
-    align-items: start;
-    gap: 0.625rem;
-    padding: 0.75rem 0.5rem;
-}
-
-.customer-dashboard-notification-icon {
-    width: 1.75rem;
-    height: 1.75rem;
-    border: 1px solid var(--admin-border);
-    border-radius: 5px;
-    color: var(--admin-primary);
-}
-
-.customer-dashboard-notification-copy {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.customer-dashboard-notification-copy small {
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-}
-
-.customer-dashboard-notification-copy time {
-    margin-top: 0.1rem;
-}
-
-.customer-dashboard-panel > .admin-panel {
-    border: 0;
-    box-shadow: none;
-}
-
-@media (min-width: 640px) {
-    .customer-dashboard-welcome {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .customer-dashboard-account-link {
-        align-self: center;
-    }
-
-    .customer-dashboard-transaction-row {
-        grid-template-columns: minmax(86px, 0.75fr) minmax(0, 1.5fr) auto auto;
-    }
-
-    .customer-dashboard-transaction-row .status-badge {
-        grid-column: auto;
-    }
-}
-
-@media (min-width: 768px) {
-    .customer-dashboard-title {
-        font-size: 1.875rem;
-    }
-
-    .customer-dashboard-primary-grid,
-    .customer-dashboard-secondary-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-
-@media (min-width: 1024px) {
-    .customer-dashboard-bottom-grid {
-        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-        align-items: start;
-    }
-}
-
-.customer-quick-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-}
-
-@media (min-width: 768px) {
-    .customer-quick-actions {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-
-.customer-quick-action {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 52px;
-    padding: 0.875rem 1rem;
-    border-radius: 3px;
-    border: 1px solid var(--admin-border);
-    background: var(--admin-surface-solid);
-    color: var(--admin-text);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 600;
-    box-shadow: var(--admin-shadow-soft);
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.customer-quick-action i {
-    color: var(--admin-primary);
-}
-
-.customer-quick-action:hover,
-.customer-quick-action:focus-visible {
-    background: var(--rw-hover-bg);
-    border-color: var(--admin-nav-active-border);
-    outline: none;
-}
-
-.customer-quick-action:focus-visible {
-    box-shadow: var(--rw-focus-shadow);
-}
-
-.customer-list-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-
-
-
-.customer-transaction-top,
-.customer-transaction-bottom {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.75rem;
-}
-
-.customer-transaction-bottom {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--admin-border);
-    font-size: 0.8125rem;
-    color: var(--admin-text-muted);
-}
-
-.customer-transaction-id {
-    margin: 0 0 0.25rem;
-    font-size: 0.8125rem;
-    color: var(--admin-text-muted);
-}
-
-.customer-transaction-title {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.customer-transaction-amount {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
 
 .customer-search-bar {
     display: flex;
@@ -829,10 +263,12 @@
 .customer-record-row:focus-visible,
 .customer-record-row:focus-within,
 .customer-record-row:active {
-    background-color: var(--admin-surface-solid) !important;
+    background-color: color-mix(in srgb, var(--admin-surface-solid) 92%, var(--admin-primary) 8%) !important;
     background-image: none !important;
     border-color: color-mix(in srgb, var(--admin-primary) 35%, var(--admin-border));
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--admin-primary) 60%, transparent), var(--admin-shadow-soft);
+    box-shadow:
+        inset 3px 0 0 color-mix(in srgb, var(--admin-primary) 38%, transparent),
+        var(--admin-shadow);
     outline: none;
 }
 
@@ -851,15 +287,10 @@
 
 .customer-record-label {
     color: var(--admin-text-muted);
-    font-size: 0.625rem;
-    font-weight: 700;
-    text-transform: uppercase;
 }
 
 .customer-record-cell strong {
     overflow: hidden;
-    font-size: 0.8125rem;
-    font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -867,7 +298,6 @@
 .customer-record-cell small {
     overflow: hidden;
     color: var(--admin-text-muted);
-    font-size: 0.75rem;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -885,32 +315,6 @@
 .customer-record-status {
     align-items: flex-end;
     justify-self: end;
-}
-
-.customer-notification-row {
-    grid-template-columns: 2rem minmax(0, 1.7fr) minmax(150px, 0.8fr) auto;
-}
-
-.customer-notification-row.is-unread {
-    border-color: color-mix(in srgb, var(--admin-primary) 28%, var(--admin-border));
-}
-
-.customer-notification-type {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid var(--admin-border);
-    border-radius: 5px;
-    color: var(--admin-primary);
-}
-
-.customer-notification-time strong {
-    color: var(--admin-text-muted);
-    font-size: 0.75rem;
-    font-weight: 500;
-    white-space: normal;
 }
 
 .customer-receipt-row {
@@ -943,14 +347,9 @@
 }
 
 @media (max-width: 767px) {
-    .customer-record-row,
-    .customer-notification-row {
+    .customer-record-row {
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 0.75rem 1rem;
-    }
-
-    .customer-notification-type {
-        display: none;
     }
 
     .customer-receipt-row {
@@ -986,46 +385,10 @@
     .customer-receipt-main {
         padding: 0.5rem;
     }
-
-    .customer-notification-time {
-        grid-column: 1;
-    }
-}
-
-.customer-line-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--admin-border);
-}
-
-.customer-line-item:last-child {
-    border-bottom: 0;
-}
-
-.customer-profile-hero {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-}
-
-.customer-form-section {
-    margin-bottom: 1rem;
-}
-
-.customer-form-section h3 {
-    margin: 0 0 1rem;
-    font-size: 0.9375rem;
-    font-weight: 600;
 }
 
 .customer-page-heading {
     margin: 0 0 0.25rem;
-    font-size: 1.25rem;
-    font-weight: 600;
 }
 
 .customer-page-lead {
@@ -1049,4 +412,918 @@
     .customer-btn-block-sm-auto {
         width: auto;
     }
+}
+
+/* Customer portal — aligned with admin panel tokens */
+[data-customer-layout] {
+    --customer-portal-accent: var(--admin-primary);
+    --customer-portal-burgundy: var(--rw-primary-deep);
+    --customer-portal-burgundy-deep: var(--rw-primary-darker);
+    --customer-portal-gold: var(--rw-warning);
+    --customer-portal-card-radius: 3px;
+    --customer-portal-card-padding: 20px;
+    --customer-portal-transition: 0.18s ease;
+}
+
+/* Typography — mirrors Admin Portal (.admin-list-toolbar__title, forms, tables) */
+[data-customer-layout] .customer-page-heading,
+[data-customer-layout] .customer-portal-page-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--admin-text);
+}
+
+[data-customer-layout] .customer-page-lead,
+[data-customer-layout] .customer-portal-page-lead,
+[data-customer-layout] .customer-portal-unread-summary {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--admin-text-muted);
+}
+
+[data-customer-layout] .customer-portal-panel-head h2,
+[data-customer-layout] .customer-portal-contract-card h2,
+[data-customer-layout] .customer-portal-help-card h2,
+[data-customer-layout] .customer-portal-quick-action h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+[data-customer-layout] .customer-portal-card-eyebrow,
+[data-customer-layout] .customer-portal-contract-meta dt,
+[data-customer-layout] .customer-record-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+[data-customer-layout] .customer-record-cell strong,
+[data-customer-layout] .customer-portal-notification-copy strong,
+[data-customer-layout] .customer-portal-notification-feed-copy strong {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+[data-customer-layout] .customer-record-cell small,
+[data-customer-layout] .customer-portal-notification-copy small,
+[data-customer-layout] .customer-portal-notification-copy time,
+[data-customer-layout] .customer-portal-notification-feed-copy small,
+[data-customer-layout] .customer-portal-notification-feed-copy time {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+[data-customer-layout] .customer-portal-action-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.customer-portal-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    min-height: var(--admin-topbar-height);
+    border-bottom: 1px solid var(--admin-border);
+    background: var(--admin-topbar-bg);
+    backdrop-filter: blur(12px);
+    overflow: visible;
+}
+
+.customer-portal-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: min(100%, 80rem);
+    min-height: var(--admin-topbar-height);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    overflow: visible;
+}
+
+.customer-portal-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-width: 0;
+    color: var(--admin-text);
+    text-decoration: none;
+}
+
+.customer-portal-brand-mark {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+}
+
+.customer-portal-brand-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.customer-portal-brand-name {
+    display: block;
+    letter-spacing: 0.025em;
+    color: var(--admin-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.customer-portal-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin: 0 0 0 auto;
+    padding: 0;
+    list-style: none;
+    overflow: visible;
+}
+
+.customer-portal-header-actions > li {
+    display: flex;
+    align-items: center;
+    overflow: visible;
+}
+
+.customer-portal-header-profile {
+    margin-left: 0.5rem;
+    overflow: visible;
+}
+
+.customer-portal-header-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: visible;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--rw-text-muted, var(--admin-text-muted));
+    text-decoration: none;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.customer-portal-header-icon:hover,
+.customer-portal-header-icon:focus-visible {
+    color: var(--rw-text, var(--admin-text));
+    background: var(--rw-hover-bg, var(--admin-nav-active-bg));
+    outline: none;
+}
+
+.customer-portal-header-icon:focus-visible {
+    box-shadow: var(--rw-focus-shadow);
+}
+
+.customer-portal-header-icon-bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    overflow: visible;
+    line-height: 0;
+}
+
+.customer-portal-header-icon-bell .pi {
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+.customer-portal-header-icon-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.2rem;
+    border-radius: 999px;
+    background: var(--rw-danger);
+    color: var(--rw-on-primary);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    line-height: 1;
+    transform: translate(42%, -28%);
+    pointer-events: none;
+}
+
+.customer-mobile-nav-icon {
+    position: relative;
+    display: inline-flex;
+}
+
+.customer-mobile-nav-badge {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.55rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background: var(--rw-danger);
+    color: var(--rw-on-primary);
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.customer-portal-footer {
+    padding: 1.5rem 1rem 1rem;
+    text-align: center;
+    color: var(--admin-text-muted);
+    font-size: 0.875rem;
+}
+
+.customer-portal-footer p {
+    margin: 0;
+}
+
+.customer-portal-home,
+.customer-portal-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Shared card shell — mirrors .admin-panel */
+.customer-portal-card,
+.customer-portal-panel,
+.customer-portal-help-card,
+.customer-portal-quick-action {
+    min-width: 0;
+    padding: var(--customer-portal-card-padding);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius);
+    background: var(--admin-surface-solid);
+    box-shadow: var(--admin-shadow-soft);
+}
+
+.customer-portal-card--interactive {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        transform var(--customer-portal-transition),
+        border-color var(--customer-portal-transition),
+        box-shadow var(--customer-portal-transition),
+        background-color var(--customer-portal-transition);
+}
+
+.customer-portal-card--interactive:hover,
+.customer-portal-card--interactive:focus-visible {
+    border-color: color-mix(in srgb, var(--admin-primary) 28%, var(--admin-border));
+    background-color: color-mix(in srgb, var(--admin-surface-solid) 92%, var(--admin-primary) 8%);
+    box-shadow: var(--admin-shadow);
+    outline: none;
+}
+
+.customer-portal-card--interactive:active {
+    background-color: color-mix(in srgb, var(--admin-surface-solid) 88%, var(--admin-primary) 12%);
+}
+
+.customer-portal-hero {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius);
+    min-height: 80px;
+    box-shadow: none;
+    background: var(--admin-surface-solid);
+}
+
+.customer-portal-hero-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.8rem 1.1rem;
+    gap: 0.25rem;
+    color: var(--admin-text);
+}
+
+.customer-portal-hero-eyebrow {
+    margin: 0 0 0.35rem;
+    font-size: 0.875rem;
+    color: var(--admin-primary);
+}
+
+.customer-portal-hero-title {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.customer-portal-hero-lead {
+    margin: 0.1rem 0 0;
+    color: var(--admin-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.customer-portal-hero-property {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.35rem;
+    color: var(--admin-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.customer-portal-hero-property-icon {
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--admin-primary);
+}
+
+.customer-portal-hero-image-wrap {
+    display: none;
+}
+
+.customer-portal-feature-grid,
+.customer-portal-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.customer-portal-contract-card {
+    padding: var(--customer-portal-card-padding);
+    color: var(--admin-text);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius);
+    background: var(--admin-surface-solid);
+    box-shadow: var(--admin-shadow-soft);
+}
+
+.customer-portal-contract-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.customer-portal-contract-card,
+.customer-portal-help-card,
+.customer-portal-panel {
+    position: relative;
+}
+
+.customer-portal-contract-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.customer-portal-contract-card .customer-portal-contract-type,
+.customer-portal-contract-card .customer-portal-card-copy,
+.customer-portal-contract-card .customer-portal-contract-meta dt {
+    color: var(--admin-text-muted);
+    opacity: 1;
+}
+
+.customer-portal-contract-card .customer-portal-contract-meta dd {
+    color: var(--admin-text);
+}
+
+.customer-portal-contract-card.is-empty h2,
+.customer-portal-contract-card h2,
+.customer-portal-help-card h2,
+.customer-portal-panel-head h2,
+.customer-portal-quick-action h3 {
+    margin: 0;
+}
+
+.customer-portal-card-eyebrow {
+    margin: 0 0 0.35rem;
+    color: var(--admin-primary);
+    opacity: 1;
+}
+
+.customer-portal-contract-type,
+.customer-portal-card-copy {
+    margin: 0.35rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    opacity: 1;
+}
+
+.customer-portal-contract-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.customer-portal-contract-thumb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 0.95rem;
+}
+
+.customer-portal-contract-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem 1rem;
+    margin: 1.15rem 0 0;
+}
+
+.customer-portal-contract-meta div {
+    min-width: 0;
+}
+
+.customer-portal-contract-meta dt {
+    margin: 0 0 0.2rem;
+    opacity: 1;
+}
+
+.customer-portal-contract-meta dd {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.customer-portal-card-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem 1.25rem;
+    margin-top: 1.15rem;
+}
+
+.customer-portal-help-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.customer-portal-panel {
+    padding: var(--customer-portal-card-padding);
+}
+
+.customer-portal-block-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 2.625rem;
+    padding: 0.65rem 1rem;
+    text-decoration: none;
+}
+
+.customer-portal-action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 0;
+    background: transparent;
+    color: var(--admin-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        color var(--customer-portal-transition),
+        gap var(--customer-portal-transition);
+}
+
+.customer-portal-action-link i {
+    transition: transform var(--customer-portal-transition);
+}
+
+.customer-portal-action-link:hover,
+.customer-portal-action-link:focus-visible {
+    color: var(--admin-nav-active-text);
+    outline: none;
+}
+
+.customer-portal-action-link:hover i,
+.customer-portal-action-link:focus-visible i {
+    transform: translateX(3px);
+}
+
+.customer-portal-action-link--inverse {
+    color: var(--admin-primary);
+}
+
+.customer-portal-action-link--inverse:hover,
+.customer-portal-action-link--inverse:focus-visible {
+    color: var(--admin-nav-active-text);
+}
+
+html[data-theme='light'] .customer-portal-hero-eyebrow {
+    color: var(--admin-primary);
+}
+
+html[data-theme='light'] .customer-portal-contract-card::before {
+    opacity: 0.18; /* keep burgundy accent subtle on light backgrounds */
+}
+
+html[data-theme='light']
+    .customer-portal-contract-card .customer-portal-contract-type,
+html[data-theme='light']
+    .customer-portal-contract-card .customer-portal-card-copy,
+html[data-theme='light']
+    .customer-portal-contract-card .customer-portal-contract-meta dt {
+    color: var(--admin-text-muted);
+}
+
+.customer-portal-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.customer-portal-quick-action p {
+    margin: 0;
+    flex: 1;
+    color: var(--admin-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.customer-portal-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius);
+    font-size: 0.95rem;
+}
+
+.customer-portal-icon-badge--round {
+    border-radius: 999px;
+}
+
+.customer-portal-icon-badge.tone-gold {
+    background: var(--status-warning-bg);
+    border-color: var(--status-warning-border);
+    color: var(--status-warning-text);
+}
+
+.customer-portal-icon-badge.tone-green {
+    background: var(--status-success-bg);
+    border-color: var(--status-success-border);
+    color: var(--status-success-text);
+}
+
+.customer-portal-icon-badge.tone-purple {
+    background: var(--status-accent-bg);
+    border-color: var(--status-accent-border);
+    color: var(--status-accent-text);
+}
+
+.customer-portal-icon-badge.tone-blue {
+    background: color-mix(in srgb, #3b82f6 14%, transparent);
+    border-color: color-mix(in srgb, #3b82f6 24%, var(--admin-border));
+    color: #3b82f6;
+}
+
+.customer-portal-icon-badge.tone-burgundy {
+    background: var(--status-info-bg);
+    border-color: var(--status-info-border);
+    color: var(--status-info-text);
+}
+
+.customer-portal-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.customer-portal-notification-list,
+.customer-portal-notification-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.customer-portal-notification-item,
+.customer-portal-notification-feed-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    align-items: start;
+    width: 100%;
+    padding: 0.85rem 0.75rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    background: var(--admin-surface-solid);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.customer-portal-notification-item:last-child,
+.customer-portal-notification-feed-item:last-child {
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.customer-portal-notification-item:hover,
+.customer-portal-notification-feed-item:hover,
+.customer-portal-notification-item:focus-visible,
+.customer-portal-notification-feed-item:focus-visible,
+.customer-portal-notification-item.is-unread:hover,
+.customer-portal-notification-feed-item.is-unread:hover,
+.customer-portal-notification-item.is-unread:focus-visible,
+.customer-portal-notification-feed-item.is-unread:focus-visible {
+    border-color: color-mix(in srgb, var(--admin-primary) 28%, var(--admin-border));
+    background-color: color-mix(in srgb, var(--admin-surface-solid) 92%, var(--admin-primary) 8%);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--admin-primary) 55%, transparent);
+    outline: none;
+}
+
+.customer-portal-notification-copy,
+.customer-portal-notification-feed-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.customer-portal-notification-copy strong,
+.customer-portal-notification-feed-copy strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.customer-portal-notification-copy small,
+.customer-portal-notification-feed-copy small,
+.customer-portal-notification-copy time,
+.customer-portal-notification-feed-copy time {
+    color: var(--admin-text-muted);
+}
+
+.customer-portal-unread-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    margin-top: 0.35rem;
+    border-radius: 999px;
+    background: var(--rw-danger);
+    flex-shrink: 0;
+}
+
+.customer-portal-payment-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.85rem;
+    padding: 0.85rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius);
+    background: color-mix(in srgb, var(--admin-surface-solid) 94%, var(--status-warning-bg) 6%);
+}
+
+.customer-portal-payment-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.5rem;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius);
+    background: var(--admin-surface-solid);
+    text-align: center;
+}
+
+.customer-portal-payment-day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.customer-portal-payment-month,
+.customer-portal-payment-year {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--admin-text-muted);
+}
+
+.customer-portal-payment-details p {
+    margin: 0.2rem 0 0;
+    color: var(--admin-text-muted);
+    font-size: 0.8125rem;
+}
+
+.customer-portal-payment-topline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.customer-portal-payment-amount {
+    margin-top: 0.35rem !important;
+    color: var(--admin-text) !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+}
+
+.customer-portal-outstanding {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    color: var(--admin-text-muted);
+    font-size: 0.875rem;
+}
+
+.customer-portal-outstanding strong {
+    color: var(--admin-text);
+    font-size: 1.125rem;
+}
+
+.customer-portal-page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.customer-portal-page-title {
+    margin: 0;
+}
+
+.customer-portal-page-lead,
+.customer-portal-unread-summary {
+    margin: 0.35rem 0 0;
+}
+
+.customer-portal-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.customer-portal-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 36px;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 999px;
+    background: var(--admin-surface-solid);
+    color: var(--admin-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        background-color var(--customer-portal-transition),
+        border-color var(--customer-portal-transition),
+        color var(--customer-portal-transition);
+}
+
+.customer-portal-filter-chip.is-active {
+    border-color: var(--admin-nav-active-border);
+    background: var(--admin-nav-active-bg);
+    color: var(--admin-primary);
+}
+
+.customer-portal-filter-chip span {
+    color: var(--admin-text-muted);
+    font-size: 0.75rem;
+}
+
+.customer-portal-notification-type-badge {
+    align-self: flex-start;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    background: var(--admin-nav-active-bg);
+    color: var(--admin-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+
+@media (min-width: 768px) {
+    .customer-portal-hero {
+        grid-template-columns: 1fr;
+        align-items: start;
+        min-height: 128px;
+    }
+
+    .customer-portal-hero-copy {
+        padding: 0.95rem 1.4rem;
+    }
+
+    .customer-portal-hero-image-wrap {
+        display: none;
+    }
+
+    .customer-portal-hero-image-wrap::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background:
+            linear-gradient(180deg, rgba(17, 17, 17, 0.08) 0%, rgba(17, 17, 17, 0.2) 100%);
+        pointer-events: none;
+    }
+
+    .customer-portal-hero-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        object-fit: cover;
+        object-position: center;
+        mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.28) 18%, rgba(0, 0, 0, 0.82) 42%, #000 100%);
+    }
+
+    .customer-portal-feature-grid,
+    .customer-portal-bottom-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .customer-portal-quick-actions {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (hover: none) {
+    .customer-portal-card--interactive:active {
+        background-color: color-mix(in srgb, var(--admin-surface-solid) 88%, var(--admin-primary) 12%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .customer-portal-card--interactive,
+    .customer-portal-action-link,
+    .customer-portal-action-link i,
+    .customer-portal-filter-chip,
+    .customer-portal-notification-item,
+    .customer-portal-notification-feed-item {
+        transition: none;
+    }
+}
+
+/* Customer Portal: replace default bright blue focus outline */
+.customer-shell :focus-visible {
+    outline: 2px solid var(--rw-focus-ring);
+    outline-offset: 2px;
+}
+
+/* theme.css intentionally removes outline for the user-profile trigger;
+   re-add a subtle focus ring for keyboard users. */
+.customer-shell .customer-user-profile > button:focus-visible {
+    outline: none;
+    box-shadow: var(--rw-focus-shadow);
+}
+
+/* Same idea for items inside the dropdown menu. */
+.customer-shell .customer-user-profile-menu li:focus-visible {
+    outline: none;
+    box-shadow: var(--rw-focus-shadow);
 }

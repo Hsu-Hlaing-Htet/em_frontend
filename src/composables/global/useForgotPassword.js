@@ -1,11 +1,12 @@
 import { reactive, ref } from 'vue';
-import { useToast } from 'primevue/usetoast';
+import { useAppToast } from '@/composables/global/useAppToast';
 import { getApiErrorMessage } from '@/utils/apiError';
 import { Errors } from '@/utils/validation';
+import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { requestPasswordReset } from '@/modules/auth/service';
 
 export function useForgotPassword() {
-    const toast = useToast();
+    const toast = useAppToast();
     const loading = ref(false);
     const submitted = ref(false);
     const errors = new Errors();
@@ -14,23 +15,21 @@ export function useForgotPassword() {
         email: '',
     });
 
+    bindErrorClearing(form, errors);
+
     async function submit() {
         errors.clear();
 
-        if (!form.email?.trim()) {
-            errors.record({ email: ['This field is required.'] });
-            return;
-        }
-
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-            errors.record({ email: ['Please enter a valid email address.'] });
+        if (!applyValidation(errors, form, [
+            { field: 'email', type: 'email' },
+        ])) {
             return;
         }
 
         loading.value = true;
 
         try {
-            await requestPasswordReset({ email: form.email });
+            await requestPasswordReset({ email: form.email.trim() });
 
             submitted.value = true;
 
@@ -44,7 +43,13 @@ export function useForgotPassword() {
             const fieldErrors = error?.data?.data || error?.data?.errors || error?.response?.data?.errors;
 
             if (fieldErrors) {
-                errors.record(fieldErrors);
+                errors.record(fieldErrors, false);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Request Failed',
+                    detail: getApiErrorMessage(error, 'Unable to send reset link.'),
+                    life: 3500,
+                });
                 return;
             }
 

@@ -3,7 +3,6 @@ import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { buildFieldSections } from '@/helpers/contracts/contractDocument';
 import { showApiErrorToast } from '@/utils/apiError';
-import { generateInvoiceForContract } from '@/composables/admin/contracts/generateInvoiceForContract';
 import { useSaleStore } from '../store';
 import { buildSaleTimeline, mapSaleFromApi } from '../mapSale';
 import { useContractDocument } from '@/composables/admin/documents/useSaleContractDocument';
@@ -14,6 +13,7 @@ export default function useShowSaleContractApproval() {
     const route = useRoute();
     const store = useSaleStore();
     const isLoading = ref(true);
+    const isApproving = ref(false);
     const showRejectDialog = ref(false);
 
     const state = reactive({
@@ -49,7 +49,6 @@ export default function useShowSaleContractApproval() {
         downloadPdf,
         exportPdf,
         printContract,
-        sendEmail,
     } = useSaleContractDocumentActions('draft', state, () => document.value);
 
     const fieldSections = computed(() => buildFieldSections(document.value));
@@ -76,17 +75,16 @@ export default function useShowSaleContractApproval() {
     };
 
     const approveContract = async () => {
+        if (isApproving.value) {
+            return;
+        }
+
+        isApproving.value = true;
+
         try {
             await store.approve({ id: state.id });
 
             const response = store.getActionResponse;
-            const approvedContract = response?.data || { ...state, id: state.id, type: 'sale' };
-
-            try {
-                await generateInvoiceForContract(approvedContract);
-            } catch (error) {
-                showApiErrorToast(error, 'Contract approved, but invoice generation failed.');
-            }
 
             EventBus.emit('show-toast', {
                 severity: 'success',
@@ -96,6 +94,8 @@ export default function useShowSaleContractApproval() {
             router.push({ name: 'activeSaleList' });
         } catch (error) {
             showApiErrorToast(error, 'Unable to approve sale.');
+        } finally {
+            isApproving.value = false;
         }
     };
 
@@ -115,9 +115,9 @@ export default function useShowSaleContractApproval() {
             EventBus.emit('show-toast', {
                 severity: 'warn',
                 summary: '',
-                detail: response?.message || `${state.contract_no} has been rejected.`,
+                detail: response?.message || 'Sale contract rejected successfully.',
             });
-            router.push({ name: 'saleContractApprovalList' });
+            router.push({ name: 'saleContractDraftList' });
         } catch (error) {
             showApiErrorToast(error, 'Unable to reject sale.');
         }
@@ -138,6 +138,7 @@ export default function useShowSaleContractApproval() {
 
     return {
         isLoading,
+        isApproving,
         document,
         fieldSections,
         showRejectDialog,
@@ -148,6 +149,5 @@ export default function useShowSaleContractApproval() {
         downloadPdf,
         exportPdf,
         printContract,
-        sendEmail,
     };
 }

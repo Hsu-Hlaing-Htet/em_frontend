@@ -1,4 +1,6 @@
 import {
+    downloadContractDocumentPdf,
+    downloadRentContractDocumentPdf,
     exportContractDocument,
     exportRentContractDocument,
     printContractDocument,
@@ -11,14 +13,14 @@ import { rentService } from '@/modules/admin/rent-contracts/service';
 const contractDocumentConfig = {
     sale: {
         fallbackName: 'sale-contract',
-        downloadDocument: (scope, id, fallbackFilename) => saleService.downloadDocument(scope, id, fallbackFilename),
+        downloadDocument: downloadContractDocumentPdf,
         exportDocument: exportContractDocument,
         printDocument: printContractDocument,
         sendDocumentEmail: saleService.sendDocumentEmail.bind(saleService),
     },
     rent: {
         fallbackName: 'rent-contract',
-        downloadDocument: (scope, id, fallbackFilename) => rentService.downloadDocument(scope, id, fallbackFilename),
+        downloadDocument: downloadRentContractDocumentPdf,
         exportDocument: exportRentContractDocument,
         printDocument: printRentContractDocument,
         sendDocumentEmail: rentService.sendDocumentEmail.bind(rentService),

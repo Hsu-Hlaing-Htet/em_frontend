@@ -1,6 +1,5 @@
 import api from '@/libs/axios';
 import { endpoint } from '@/services/endpoint';
-import { downloadPdfResponse, PDF_DOWNLOAD_HEADERS } from '@/utils/downloadPdfResponse';
 
 const service = {
     getAll: async (params) => {
@@ -73,35 +72,9 @@ const rentService = {
     cancel: async (params) => {
         const result = await api.post(`${endpoint.rentContractsActive}/${params.id}/cancel`, {
             reason: params.reason,
+            termination_date: params.termination_date,
         });
         return result.data;
-    },
-
-    fetchDocument: async (scope, id, action) => {
-        const base = scope === 'active'
-            ? `${endpoint.rentContractsActive}/${id}/document`
-            : `${endpoint.rentContractDrafts}/${id}/document`;
-        const requestConfig = {
-            responseType: 'blob',
-            headers: action === 'download'
-                ? PDF_DOWNLOAD_HEADERS
-                : { Accept: 'text/html, application/xhtml+xml, */*' },
-        };
-
-        if (action === 'download') {
-            return api.get(`${base}/download`, requestConfig);
-        }
-
-        if (action === 'export') {
-            return api.get(`${base}/export`, requestConfig);
-        }
-
-        throw new Error(`Unsupported document action: ${action}`);
-    },
-
-    downloadDocument: async (scope, id, fallbackFilename = 'rent-contract.pdf') => {
-        const response = await rentService.fetchDocument(scope, id, 'download');
-        return downloadPdfResponse(response, fallbackFilename);
     },
 
     sendDocumentEmail: async (scope, id, payload = {}) => {

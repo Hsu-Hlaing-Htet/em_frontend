@@ -14,7 +14,7 @@ const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp
 
 const PROFILE_RULES = [
     { field: 'name', type: 'text' },
-    { field: 'email', type: 'email' },
+    { field: 'email', type: 'email', accountEmail: true, originalEmailField: 'original_email' },
     { field: 'phone', type: 'phone' },
 ];
 
@@ -43,6 +43,7 @@ export default function useProfilePage() {
         role_name: '',
         name: '',
         email: '',
+        original_email: '',
         phone: '',
         nrc: '',
         dob: null,
@@ -107,6 +108,7 @@ export default function useProfilePage() {
                     role_name: response.data.role_name || authStore.user?.role || '',
                     name: response.data.name || '',
                     email: response.data.email || '',
+                    original_email: response.data.email || '',
                     phone: response.data.phone || '',
                     nrc: response.data.nrc || '',
                     dob: parseDate(response.data.dob),

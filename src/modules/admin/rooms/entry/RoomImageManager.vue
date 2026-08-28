@@ -4,8 +4,11 @@
 
         <div class="flex flex-col gap-4">
             <div>
-                <p v-if="!persistedImages.length && !stagedImages.length" class="mb-2 text-sm">
-                No images added yet.
+                <p
+                    v-if="!persistedImages.length && !stagedImages.length"
+                    class="mb-2 text-sm text-[var(--admin-text-muted)]"
+                >
+                    No images added yet.
                 </p>
 
                 <FileUpload
@@ -21,65 +24,73 @@
                 />
             </div>
 
-
             <div
                 v-for="image in persistedImages"
                 :key="`persisted-${image.id}`"
-                class="grid gap-3 p-3 md:grid-cols-[120px_1fr]"
+                class="rounded-md border border-[var(--admin-border)] bg-[var(--admin-surface-solid)] p-4"
             >
-                <img
-                    :src="image.image_url"
-                    alt="Room image preview"
-                    class="h-24 w-full object-cover"
-                >
-
-                <div class="grid gap-3 md:grid-cols-2">
-                    <div class="field">
-                        <label class="mb-1 block text-md">Caption</label>
-                        <Dropdown
-                            v-model="image.description"
-                            :options="descriptionOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Select caption"
-                            class="w-full"
-                            editable
-                        />
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
+                    <div class="shrink-0">
+                        <img
+                            :src="image.image_url"
+                            alt="Room image preview"
+                            class="h-32 w-32 rounded-md border border-[var(--admin-border)] object-cover"
+                        >
                     </div>
 
-                    <div class="field">
-                        <label class="mb-1 block text-md">Sort Order</label>
-                        <InputNumber v-model="image.sort_order" class="w-full" :min="0" />
-                    </div>
-
-                    <div class="field flex items-end">
-                        <div class="flex items-center gap-2">
-                            <RadioButton
-                                :input-id="`primary-persisted-${image.id}`"
-                                :value="image.id"
-                                :model-value="primaryKey"
-                                @update:model-value="setPrimary(image.id)"
+                    <div class="grid min-w-0 flex-1 gap-3 sm:grid-cols-2">
+                        <div class="field mb-0">
+                            <label class="mb-1 block text-md text-[var(--admin-text)]">Caption</label>
+                            <Dropdown
+                                v-model="image.description"
+                                :options="descriptionOptions"
+                                option-label="label"
+                                option-value="value"
+                                placeholder="Select caption"
+                                class="w-full"
+                                editable
                             />
-                            <label :for="`primary-persisted-${image.id}`" class="text-md">Primary image</label>
                         </div>
-                    </div>
 
-                    <div class="flex flex-wrap gap-2">
-                        <FileUpload
-                            mode="basic"
-                            accept="image/*"
-                            choose-label="Replace Image"
-                            class="w-auto"
-                            :auto="true"
-                            custom-upload
-                            @uploader="(event) => onReplaceImage(image.id, event)"
-                        />
-                        <Button
-                            type="button"
-                            label="Delete"
-                            icon="pi pi-trash"
-                            @click="$emit('delete-persisted', image.id)"
-                        />
+                        <div class="field mb-0">
+                            <label class="mb-1 block text-md text-[var(--admin-text)]">Sort Order</label>
+                            <InputNumber v-model="image.sort_order" class="w-full" :min="0" />
+                        </div>
+
+                        <div class="field mb-0 flex items-center">
+                            <div class="flex items-center gap-2">
+                                <RadioButton
+                                    :input-id="`primary-persisted-${image.id}`"
+                                    :value="image.id"
+                                    :model-value="primaryKey"
+                                    @update:model-value="setPrimary(image.id)"
+                                />
+                                <label
+                                    :for="`primary-persisted-${image.id}`"
+                                    class="whitespace-nowrap text-md text-[var(--admin-text)]"
+                                >
+                                    Primary image
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <FileUpload
+                                mode="basic"
+                                accept="image/*"
+                                choose-label="Replace Image"
+                                class="w-auto"
+                                :auto="true"
+                                custom-upload
+                                @uploader="(event) => onReplaceImage(image.id, event)"
+                            />
+                            <Button
+                                type="button"
+                                label="Delete"
+                                icon="pi pi-trash"
+                                @click="$emit('delete-persisted', image.id)"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,53 +98,62 @@
             <div
                 v-for="image in stagedImages"
                 :key="image.tempId"
-                class="grid gap-3 rounded-md border-2 border-dashed p-3 md:grid-cols-4 bg-[var(--admin-surface-solid)]"
+                class="rounded-md border border-dashed border-[var(--admin-border)] bg-[var(--admin-surface-solid)] p-4"
             >
-                <img
-                    :src="image.previewUrl"
-                    alt="Staged room image preview"
-                    class="h-56 w-56 rounded object-cover md:grid-cols-2"
-                >
-
-                <div class="grid gap-3 md:grid-cols-2">
-                    <div class="md:grid-cols-2">
-                        <label class="mb-1 block text-md">Caption</label>
-                        <Dropdown
-                            v-model="image.description"
-                            :options="descriptionOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Select caption"
-                            class="w-full"
-                            editable
-                        />
+                <div class="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
+                    <div class="shrink-0">
+                        <img
+                            :src="image.previewUrl"
+                            alt="Staged room image preview"
+                            class="h-32 w-32 rounded-md border border-[var(--admin-border)] object-cover"
+                        >
                     </div>
 
-                    <div class="field">
-                        <label class="mb-1 block text-md">Sort Order</label>
-                        <InputNumber v-model="image.sort_order" class="w-full" :min="0" />
-                    </div>
-
-                    <div class="field flex items-end">
-                        <div class="flex items-center gap-2">
-                            <RadioButton
-                                :input-id="`primary-staged-${image.tempId}`"
-                                :value="image.tempId"
-                                :model-value="primaryKey"
-                                @update:model-value="setPrimary(image.tempId)"
+                    <div class="grid min-w-0 flex-1 gap-3 sm:grid-cols-2">
+                        <div class="field mb-0">
+                            <label class="mb-1 block text-md text-[var(--admin-text)]">Caption</label>
+                            <Dropdown
+                                v-model="image.description"
+                                :options="descriptionOptions"
+                                option-label="label"
+                                option-value="value"
+                                placeholder="Select caption"
+                                class="w-full"
+                                editable
                             />
-                            <label :for="`primary-staged-${image.tempId}`" class="text-md">Primary image</label>
                         </div>
-                    </div>
 
-                    <div class="md:col-span-2 flex items-end">
-                        <Button
-                            type="button"
-                            label="Remove"
-                            icon="pi pi-times"
-                            class="p-button-outlined p-button-danger"
-                            @click="removeStaged(image.tempId)"
-                        />
+                        <div class="field mb-0">
+                            <label class="mb-1 block text-md text-[var(--admin-text)]">Sort Order</label>
+                            <InputNumber v-model="image.sort_order" class="w-full" :min="0" />
+                        </div>
+
+                        <div class="field mb-0 flex items-center">
+                            <div class="flex items-center gap-2">
+                                <RadioButton
+                                    :input-id="`primary-staged-${image.tempId}`"
+                                    :value="image.tempId"
+                                    :model-value="primaryKey"
+                                    @update:model-value="setPrimary(image.tempId)"
+                                />
+                                <label
+                                    :for="`primary-staged-${image.tempId}`"
+                                    class="whitespace-nowrap text-md text-[var(--admin-text)]"
+                                >
+                                    Primary image
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center">
+                            <Button
+                                type="button"
+                                label="Remove"
+                                icon="pi pi-times"
+                                class="p-button-outlined p-button-danger"
+                                @click="removeStaged(image.tempId)"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

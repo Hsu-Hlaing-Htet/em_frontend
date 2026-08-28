@@ -71,6 +71,7 @@ import Footer from './Footer.vue';
 import AppBreadcrumb from './Breadcrumb.vue';
 import menuList from './menu';
 import { useThemeStore } from '@/stores/themeStore';
+import { preventEnterFormSubmit } from '@/helpers/forms/preventEnterSubmit';
 
 export default {
     components: {
@@ -112,6 +113,10 @@ export default {
     },
     mounted() {
         useThemeStore().applyTheme();
+        document.addEventListener('keydown', this.onEnterKeydown, true);
+    },
+    beforeUnmount() {
+        document.removeEventListener('keydown', this.onEnterKeydown, true);
     },
     watch: {
         $route() {
@@ -123,6 +128,9 @@ export default {
         document.body.classList.toggle('body-overflow-hidden', this.mobileMenuActive);
     },
     methods: {
+        onEnterKeydown(event) {
+            preventEnterFormSubmit(event);
+        },
         onWrapperClick() {
             if (!this.menuClick) {
                 this.overlayMenuActive = false;

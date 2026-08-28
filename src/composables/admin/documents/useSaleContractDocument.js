@@ -1,5 +1,5 @@
 import { computed } from 'vue';
-import { formatCurrency, getStatusLabel } from '@/utils/formatter';
+import { formatCurrency } from '@/utils/formatter';
 import {
     documentField,
     estimateMonthlyPayment,

@@ -35,6 +35,23 @@ const routes = [
                 },
             },
             {
+                path: 'bulk-import',
+                name: 'bulkCreateUtility',
+                component: () => import('@/modules/admin/utilities/entry/BulkUtilityImport.vue'),
+                meta: {
+                    navKey: 'utilities',
+                    action: 'create',
+                    resource: 'utility',
+                    layout: 'default',
+                    title: 'Bulk Utility Import',
+                    breadcrumbs: [
+                        { title: 'Utility List', routeName: 'utilityList' },
+                        { title: 'Create Utility', routeName: 'newUtility' },
+                        { title: 'Bulk Import', routeName: 'bulkCreateUtility' },
+                    ],
+                },
+            },
+            {
                 path: 'approval',
                 name: 'utilityApprovalList',
                 component: () => import('@/modules/admin/utilities/approval/UtilityApprovalList.vue'),

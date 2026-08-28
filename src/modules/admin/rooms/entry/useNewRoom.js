@@ -10,6 +10,7 @@ import useRoomImages from './useRoomImages';
 import useRoomDimensions from '@/composables/admin/rooms/useRoomDimensions';
 import { buildRoomPayload } from '../roomForm';
 import { showApiErrorToast } from '@/utils/apiError';
+import { findDuplicateRoomNumberError } from '@/helpers/rooms/roomUniqueness';
 
 const ROOM_VALIDATION_RULES = [
     { field: 'building_id', type: 'select' },
@@ -105,6 +106,16 @@ export default function useNewRoom() {
         isLoading.value = true;
 
         try {
+            const duplicateRoomError = await findDuplicateRoomNumberError({
+                buildingId: state.building_id,
+                roomNumber: state.room_number,
+            });
+
+            if (duplicateRoomError) {
+                errors.record({ room_number: [duplicateRoomError] });
+                return;
+            }
+
             await store.add(buildRoomPayload(state));
             const response = store.getAddResponse;
 

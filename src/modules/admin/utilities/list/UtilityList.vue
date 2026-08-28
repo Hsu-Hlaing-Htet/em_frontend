@@ -35,10 +35,36 @@
                             :options="statusOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="All Statuses"
+                            placeholder="Status"
                             show-clear
                             class="w-52"
                         />
+                        <Dropdown
+                            v-model="roomFilter"
+                            :options="roomOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Room"
+                            show-clear
+                            filter
+                            class="w-44"
+                        />
+                        <div class="admin-filter-group admin-filter-group--dates">
+                            <Calendar
+                                v-model="billingMonthFrom"
+                                placeholder="From"
+                                date-format="dd/mm/yy"
+                                show-icon
+                                class="w-40"
+                            />
+                            <Calendar
+                                v-model="billingMonthTo"
+                                placeholder="To"
+                                date-format="dd/mm/yy"
+                                show-icon
+                                class="w-40"
+                            />
+                        </div>
 
                         <template #actions>
                             <router-link :to="{ name: 'newUtility' }">
@@ -59,9 +85,13 @@
                 <template #empty>No utility records found.</template>
                 <template #loading>Loading utilities. Please wait.</template>
 
-     
-    <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 120px" />
-    <Column field="room_number" header="Room" :sortable="true" style="min-width: 120px">
+                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 140px" />
+                <Column field="building_name" header="Building" :sortable="true" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ data.building_name || '—' }}
+                    </template>
+                </Column>
+                <Column field="room_number" header="Room" :sortable="true" style="min-width: 110px">
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showUtility', params: { id: data.id } }"
@@ -69,6 +99,11 @@
                         >
                             {{ data.room_number }}
                         </router-link>
+                    </template>
+                </Column>
+                <Column field="billing_month" header="Billing Month" :sortable="true" style="min-width: 150px">
+                    <template #body="{ data }">
+                        {{ formatBillingMonthLabel(data.billing_month) }}
                     </template>
                 </Column>
                 <Column field="total_amount" header="Total" :sortable="true" style="min-width: 110px" />
@@ -80,20 +115,6 @@
                 <Column field="created_by_name" header="Created By" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ data.created_by_name || '—' }}
-                    </template>
-                </Column>
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 160px" />
-                <Column header="Actions" :exportable="false" style="width: 150px">
-                    <template #body="{ data }">
-                        <router-link :to="{ name: 'editUtility', params: { id: data.id } }">
-                            <Button icon="pi pi-pencil" text severity="info" />
-                        </router-link>
-                        <Button
-                            icon="pi pi-trash"
-                            text
-                            severity="danger"
-                            @click="showConfirmDialog(data.id)"
-                        />
                     </template>
                 </Column>
             </DataTable>
@@ -108,12 +129,14 @@ import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
+import Calendar from 'primevue/calendar';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { UTILITY_STATUS_OPTIONS } from '@/constants/constant';
+import { formatBillingMonthLabel } from '@/helpers/documents/billingDocumentHelpers';
 import { useUtilityList } from './useUtilityList';
 
 export default defineComponent({
@@ -122,6 +145,7 @@ export default defineComponent({
         DataTable,
         Column,
         Dropdown,
+        Calendar,
         Button,
         Loading,
         AdminListFilters,
@@ -132,6 +156,7 @@ export default defineComponent({
         return {
             ...list,
             statusOptions: UTILITY_STATUS_OPTIONS,
+            formatBillingMonthLabel,
         };
     },
 });

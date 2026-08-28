@@ -2,25 +2,37 @@
     <Dialog
         v-model:visible="visible"
         modal
-        header="Cancel Contract"
+        header="Terminate Contract"
         class="w-full max-w-lg"
         :closable="!submitting"
         @update:visible="onVisibleChange"
     >
         <p class="mb-4">
-            Please provide a reason for cancelling this contract. This action cannot be undone.
+            Please provide the termination date and reason. This action cannot be undone.
         </p>
 
         <div class="field">
+            <label for="termination_date" class="mb-2 block text-md">
+                Termination Date <span class="">*</span>
+            </label>
+            <input
+                id="termination_date"
+                v-model="terminationDate"
+                type="date"
+                class="p-inputtext p-component w-full"
+            />
+        </div>
+
+        <div class="field">
             <label for="cancellation_reason" class="mb-2 block text-md">
-                Cancellation Reason <span class="">*</span>
+                Termination Reason <span class="">*</span>
             </label>
             <Textarea
                 id="cancellation_reason"
                 v-model="reason"
                 rows="4"
                 class="w-full textarea-outline"
-                placeholder="Enter cancellation reason..."
+                placeholder="Enter termination reason..."
             />
             <small v-if="error" class="p-error">{{ error }}</small>
         </div>
@@ -61,6 +73,7 @@ export default defineComponent({
     setup(props, { emit }) {
         const visible = ref(props.modelValue);
         const reason = ref('');
+        const terminationDate = ref(new Date().toISOString().slice(0, 10));
         const error = ref('');
         const submitting = ref(false);
 
@@ -69,6 +82,7 @@ export default defineComponent({
 
             if (value) {
                 reason.value = '';
+                terminationDate.value = new Date().toISOString().slice(0, 10);
                 error.value = '';
                 submitting.value = false;
             }
@@ -92,13 +106,22 @@ export default defineComponent({
 
         const confirm = () => {
             if (!reason.value.trim()) {
-                error.value = 'Cancellation reason is required.';
+                error.value = 'Termination reason is required.';
+
+                return;
+            }
+
+            if (!terminationDate.value) {
+                error.value = 'Termination date is required.';
 
                 return;
             }
 
             submitting.value = true;
-            emit('confirm', reason.value.trim());
+            emit('confirm', {
+                reason: reason.value.trim(),
+                termination_date: terminationDate.value,
+            });
             submitting.value = false;
             close();
         };
@@ -106,6 +129,7 @@ export default defineComponent({
         return {
             visible,
             reason,
+            terminationDate,
             error,
             submitting,
             close,

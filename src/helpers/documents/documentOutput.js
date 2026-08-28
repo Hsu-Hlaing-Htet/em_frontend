@@ -1,6 +1,9 @@
 import logoUrl from '@/assets/images/logo-dark.jpg';
 import logoDataUri from '@/assets/images/logo-dark.jpg?inline';
+import api from '@/libs/axios';
+import { endpoint } from '@/services/endpoint';
 import { downloadBlob } from '@/utils/downloadFile';
+import { downloadPdfResponse, PDF_DOWNLOAD_HEADERS } from '@/utils/downloadPdfResponse';
 import { escapeHtml } from './htmlUtils';
 import { renderDocumentPage } from './documentLayout';
 import { renderListDocumentBody } from './renderListDocument';
@@ -60,6 +63,34 @@ export function renderContractDocumentPage(document) {
         logoSrc: DOCUMENT_EXPORT_LOGO_SRC,
         footerHtml: renderContractSaleFooter({ contractNo }),
     });
+}
+
+function cleanContractPdfFilename(document, type) {
+    const label = type === 'rent' ? 'Rent' : 'Sale';
+    const prefix = type === 'rent' ? 'R' : 'S';
+    const contractNo = document?.header?.contractNo || `${prefix}-000000`;
+
+    return `Rosewood_Royale_${label}_Contract_${contractNo}.pdf`;
+}
+
+async function downloadPreviewPdf(html, filename) {
+    const response = await api.post(
+        endpoint.documentPreviewPdf,
+        { html, filename },
+        {
+            responseType: 'blob',
+            headers: PDF_DOWNLOAD_HEADERS,
+        },
+    );
+
+    return downloadPdfResponse(response, filename);
+}
+
+export function downloadContractDocumentPdf(document) {
+    return downloadPreviewPdf(
+        renderContractDocumentPage(document),
+        cleanContractPdfFilename(document, 'sale'),
+    );
 }
 
 export function renderListDocumentPage({
@@ -185,8 +216,8 @@ export function renderRentContractDocumentPage(document) {
     const contractNo = document?.header?.contractNo || 'rent-contract';
 
     return renderContractHtmlPage({
-        pageTitle: `Property Rent Agreement ${contractNo}`,
-        documentTitle: 'Property Rent Agreement',
+        pageTitle: `Rental/Lease Agreement ${contractNo}`,
+        documentTitle: 'Rental/Lease Agreement',
         contractNo,
         issueDate: document?.header?.issuedDate,
         leadHtml: renderRentContractDocumentLead(),
@@ -194,6 +225,13 @@ export function renderRentContractDocumentPage(document) {
         logoSrc: DOCUMENT_EXPORT_LOGO_SRC,
         footerHtml: renderContractRentFooter({ contractNo }),
     });
+}
+
+export function downloadRentContractDocumentPdf(document) {
+    return downloadPreviewPdf(
+        renderRentContractDocumentPage(document),
+        cleanContractPdfFilename(document, 'rent'),
+    );
 }
 
 export function printRentContractDocument(document) {

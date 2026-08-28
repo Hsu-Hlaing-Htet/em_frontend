@@ -10,12 +10,14 @@
                 <Button
                     icon="pi pi-envelope"
                     label="Send Email"
-                    @click="sendEmail"
+                    :loading="isSendingEmail"
+                    :disabled="isSendingEmail"
+                    @click="openSendEmailDialog"
                 />
                 <Button
                     v-if="canCancel"
                     icon="pi pi-ban"
-                    label="Cancel Contract"
+                    label="Terminate Contract"
                     severity="danger"
                     @click="openCancelDialog"
                 />
@@ -44,6 +46,15 @@
         v-model="showCancelDialog"
         @confirm="cancelContract"
     />
+
+    <SendContractEmailDialog
+        v-model="showSendEmailDialog"
+        :customer-name="state.customer_name"
+        :email="state.customer_email"
+        :contract-no="state.contract_no"
+        :submitting="isSendingEmail"
+        @confirm="sendEmail"
+    />
 </template>
 
 <script>
@@ -52,12 +63,13 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ContractPdfSheet from '@/components/admin/documents/ContractPdfSheet.vue';
 import CancelContractDialog from '@/components/admin/contracts/CancelContractDialog.vue';
+import SendContractEmailDialog from '@/components/admin/contracts/SendContractEmailDialog.vue';
 import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import useShowActiveSale from './useShowActiveSale';
 
 export default defineComponent({
     name: 'ShowActiveSale',
-    components: { Button, Loading, ContractPdfSheet, CancelContractDialog, DocumentDownloadActions },
+    components: { Button, Loading, ContractPdfSheet, CancelContractDialog, SendContractEmailDialog, DocumentDownloadActions },
     setup() {
         return useShowActiveSale();
     },

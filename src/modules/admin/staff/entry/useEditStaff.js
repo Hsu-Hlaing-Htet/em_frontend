@@ -9,6 +9,7 @@ import { GENDER_OPTIONS} from '@/constants/constant';
 import { useStaffStore } from '../store';
 import { formatDate, parseDate } from '@/utils/formatter';
 import { showApiErrorToast } from '@/utils/apiError';
+import { findDuplicateAccountEmailError } from '@/helpers/accounts/accountUniqueness';
 
 const STAFF_ROLE_NAMES = ['super_admin', 'admin'];
 
@@ -28,7 +29,7 @@ export default function useEditStaff() {
         role_id: null,
         name: '',
         email: '',
-        password: '',
+        original_email: '',
         phone: '',
         nrc: '',
         dob: null,
@@ -84,7 +85,7 @@ export default function useEditStaff() {
                     role_id: response.data.role_id,
                     name: response.data.name || '',
                     email: response.data.email || '',
-                    password: '',
+                    original_email: response.data.email || '',
                     phone: response.data.phone || '',
                     nrc: response.data.nrc || '',
                     dob: parseDate(response.data.dob),
@@ -140,10 +141,9 @@ export default function useEditStaff() {
         if (!applyValidation(errors, state, [
             { field: 'role_id', type: 'select' },
             { field: 'name', type: 'text' },
-            { field: 'email', type: 'email' },
-            { field: 'password', type: 'password', required: false },
+            { field: 'email', type: 'email', accountEmail: true, originalEmailField: 'original_email' },
             { field: 'phone', type: 'phone' },
-            { field: 'nrc', type: 'text' },
+            { field: 'nrc', type: 'nrc' },
             { field: 'dob', type: 'date' },
             { field: 'gender', type: 'select' },
             { field: 'address', type: 'text' },
@@ -154,14 +154,20 @@ export default function useEditStaff() {
         isLoading.value = true;
 
         try {
+            const duplicateEmailError = await findDuplicateAccountEmailError({
+                email: state.email,
+                ignoreUserId: state.id,
+            });
+
+            if (duplicateEmailError) {
+                errors.record({ email: [duplicateEmailError] });
+                return;
+            }
+
             const payload = {
                 ...state,
                 dob: formatDate(state.dob),
             };
-
-            if (!payload.password) {
-                delete payload.password;
-            }
 
             await store.update(payload);
             const response = store.getUpdateResponse;

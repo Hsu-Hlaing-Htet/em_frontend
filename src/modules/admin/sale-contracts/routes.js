@@ -56,7 +56,7 @@ const saleContractRoutes = [
             {
                 path: 'drafts/:id/contract',
                 name: 'saleContractDraftPdf',
-                component: () => import('@/modules/admin/sale-contracts/draft/ContractPdf.vue'),
+                redirect: (to) => ({ name: 'showSaleContractDraft', params: to.params }),
                 meta: {
                     navKey: 'sale-drafts',
                     parentNavKey: 'contracts',
@@ -74,14 +74,14 @@ const saleContractRoutes = [
             {
                 path: 'drafts/:id',
                 name: 'showSaleContractDraft',
-                component: () => import('@/modules/admin/sale-contracts/draft/ShowSaleDraft.vue'),
+                component: () => import('@/modules/admin/sale-contracts/draft/ContractPdf.vue'),
                 meta: {
                     navKey: 'sale-drafts',
                     parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'sale_contract',
                     layout: 'default',
-                    title: 'Sale Draft Detail',
+                    title: 'Sale Contract Draft',
                     breadcrumbs: [
                         { title: 'Sale Drafts', routeName: 'saleContractDraftList' },
                         { title: 'Detail', routeName: 'showSaleContractDraft' },

@@ -43,9 +43,6 @@ export default function useShowRentDraft() {
     const { document } = useContractDocument(state);
     const {
         downloadPdf,
-        exportPdf,
-        printContract,
-        sendEmail,
     } = useRentContractDocumentActions('draft', state, () => document.value);
     const fieldSections = computed(() => buildFieldSections(document.value));
     const contractStatus = computed(() => state.status || '');
@@ -55,16 +52,6 @@ export default function useShowRentDraft() {
             : null
     ));
     const backRoute = { name: 'rentContractDraftList' };
-    const contractPdfRoute = computed(() => (
-        state.id
-            ? { name: 'rentContractDraftPdf', params: { id: state.id } }
-            : null
-    ));
-    const pdfBackRoute = computed(() => (
-        state.id
-            ? { name: 'showRentContractDraft', params: { id: state.id } }
-            : backRoute
-    ));
 
     const fetchDraft = async () => {
         isLoading.value = true;
@@ -113,12 +100,7 @@ export default function useShowRentDraft() {
         document,
         fieldSections,
         editRoute,
-        contractPdfRoute,
-        pdfBackRoute,
         backRoute,
         downloadPdf,
-        exportPdf,
-        printContract,
-        sendEmail,
     };
 }

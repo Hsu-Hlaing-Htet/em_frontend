@@ -16,7 +16,7 @@ import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
-import { formatBillingMonth, formatOptionalUnitValue, formatUnitValue, recalcEntry } from '../utils/utilityFormHelpers';
+import { formatBillingMonth, formatOptionalUnitValue, formatUnitValue, formatUtilityDate, recalcEntry } from '../utils/utilityFormHelpers';
 
 let nextRowId = 1;
 
@@ -55,9 +55,36 @@ export default function useNewUtility() {
         building_id: null,
         room_id: null,
         billing_month: null,
+        reading_date: null,
     });
 
     bindErrorClearing(createState, errors);
+
+    const defaultReadingDateFromBillingMonth = (billingMonth) => {
+        if (!billingMonth) {
+            return null;
+        }
+
+        const date = billingMonth instanceof Date
+            ? new Date(billingMonth)
+            : new Date(`${formatBillingMonth(billingMonth)}T00:00:00`);
+
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
+        date.setMonth(date.getMonth() + 1, 1);
+        date.setHours(0, 0, 0, 0);
+
+        return date;
+    };
+
+    watch(
+        () => createState.billing_month,
+        (billingMonth) => {
+            createState.reading_date = defaultReadingDateFromBillingMonth(billingMonth);
+        },
+    );
 
     const selectedRoomLabel = computed(() => (
         roomOptions.value.find((room) => room.value === createState.room_id)?.label || ''
@@ -389,7 +416,11 @@ export default function useNewUtility() {
             let lastMessage = '';
 
             for (const batch of batches) {
-                await store.addBatch(batch);
+                await store.addBatch({
+                    ...batch,
+                    reading_date: formatUtilityDate(createState.reading_date)
+                        || formatUtilityDate(defaultReadingDateFromBillingMonth(createState.billing_month)),
+                });
                 lastMessage = store.getBatchAddResponse?.message || lastMessage;
             }
 
@@ -399,7 +430,7 @@ export default function useNewUtility() {
 
             await router.push({ name: 'utilityList' });
         } catch (error) {
-            if (error.status === 422) {
+            if (error.status === 422 && error.data?.data) {
                 errors.record(error.data.data);
             } else {
                 showApiErrorToast(error, 'Unable to save utility.');

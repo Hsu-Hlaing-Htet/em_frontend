@@ -19,11 +19,6 @@ const DRAFT_VALIDATION_RULES = [
         type: 'select',
         when: (values) => values.payment_type === 'installment',
     },
-    {
-        field: 'billing_day',
-        type: 'select',
-        when: (values) => values.payment_type === 'installment',
-    },
 ];
 
 export default function useNewRentDraft() {

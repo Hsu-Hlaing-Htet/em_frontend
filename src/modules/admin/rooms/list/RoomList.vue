@@ -38,7 +38,7 @@
                             :options="buildingOptions"
                             option-label="label"
                             option-value="value"
-                            :placeholder="$t('property.allBuildings')"
+                            :placeholder="$t('customer.building')"
                             class="w-52"
                         />
                         <Dropdown

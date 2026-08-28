@@ -20,49 +20,20 @@
                         <div v-for="error in errors.get('name')" :key="error">{{ error }}</div>
                     </small>
                 </div>
-
-                <div class="field">
-                    <label class="mb-2 block text-md">Email</label>
-                    <InputText v-model="state.email" type="email" class="w-full" />
-                    <small v-if="errors.has('email')" class="p-error">
-                        <div v-for="error in errors.get('email')" :key="error">{{ error }}</div>
-                    </small>
-                </div>
-
-                <div class="field">
-                    <label class="mb-2 block text-md">Password</label>
-                    <Password
-                        v-model="state.password"
-                        toggle-mask
-                        :feedback="false"
-                        class="w-full"
-                        input-class="w-full"
-                        placeholder="Leave blank to keep current password"
+<div class="field">
+                <GmailInput
+                    v-model="state.email"
+                        :original-email="state.original_email"
+                        :errors="errors"
                     />
-                    <small v-if="errors.has('password')" class="p-error">
-                        <div v-for="error in errors.get('password')" :key="error">{{ error }}</div>
-                    </small>
                 </div>
+                <div class="field"> <PhoneInput v-model="state.phone" :errors="errors" /></div>
 
-                <div class="field">
-                    <label class="mb-2 block text-md">Phone</label>
-                    <InputText v-model="state.phone" class="w-full" />
-                    <small v-if="errors.has('phone')" class="p-error">
-                        <div v-for="error in errors.get('phone')" :key="error">{{ error }}</div>
-                    </small>
-                </div>
-
-                <div class="field">
-                    <label class="mb-2 block text-md">NRC</label>
-                    <InputText v-model="state.nrc" class="w-full" />
-                    <small v-if="errors.has('nrc')" class="p-error">
-                        <div v-for="error in errors.get('nrc')" :key="error">{{ error }}</div>
-                    </small>
-                </div>
+                <div class="field"> <NrcInput v-model="state.nrc" :errors="errors" /></div>
 
                 <div class="field">
                     <label class="mb-2 block text-md">Date of Birth</label>
-                    <Calendar v-model="state.dob" date-format="yy-mm-dd" class="w-full" show-icon />
+                    <DateOfBirthSelect v-model="state.dob" />
                     <small v-if="errors.has('dob')" class="p-error">
                         <div v-for="error in errors.get('dob')" :key="error">{{ error }}</div>
                     </small>
@@ -131,10 +102,12 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import Calendar from 'primevue/calendar';
-import Password from 'primevue/password';
 import Button from 'primevue/button';
+import DateOfBirthSelect from '@/components/admin/DateOfBirthSelect.vue';
 import Loading from '@/components/global/Loading.vue';
+import NrcInput from '@/components/admin/NrcInput.vue';
+import PhoneInput from '@/components/admin/PhoneInput.vue';
+import GmailInput from '@/components/admin/GmailInput.vue';
 import useEditResident from './useEditResident';
 
 export default defineComponent({
@@ -144,10 +117,12 @@ export default defineComponent({
         Dropdown,
         InputText,
         Textarea,
-        Calendar,
-        Password,
         Button,
+        DateOfBirthSelect,
         Loading,
+        NrcInput,
+        PhoneInput,
+        GmailInput,
     },
     setup() {
         return useEditResident();

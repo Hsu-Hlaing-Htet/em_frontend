@@ -59,15 +59,15 @@
                         <div class="admin-filter-group admin-filter-group--dates">
                         <Calendar
                             v-model="paymentDateFrom"
-                            placeholder="Payment from"
-                            date-format="yy-mm-dd"
+                            placeholder="DD/MM/YYYY"
+                            date-format="dd/mm/yy"
                             show-icon
                             class="w-40"
                         />
                         <Calendar
                             v-model="paymentDateTo"
-                            placeholder="Payment to"
-                            date-format="yy-mm-dd"
+                            placeholder="DD/MM/YYYY"
+                            date-format="dd/mm/yy"
                             show-icon
                             class="w-40"
                         />

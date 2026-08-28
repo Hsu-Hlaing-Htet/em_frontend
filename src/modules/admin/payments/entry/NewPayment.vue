@@ -41,7 +41,14 @@
             </div>
             <div class="field">
                 <label for="payment_date" class="mb-2 block text-md">Payment Date</label>
-                <Calendar id="payment_date" v-model="state.payment_date" date-format="yy-mm-dd" class="w-full" />
+                <Calendar
+                    id="payment_date"
+                    v-model="state.payment_date"
+                    placeholder="DD/MM/YYYY"
+                    date-format="dd/mm/yy"
+                    class="w-full"
+                    show-icon
+                />
                 <small v-if="errors.has('payment_date')" class="p-error">
                     <div v-for="error in errors.get('payment_date')" :key="error">{{ error }}</div>
                 </small>

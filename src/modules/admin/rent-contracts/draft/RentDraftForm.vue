@@ -16,21 +16,18 @@
                         <div v-for="error in errors.get('user_id')" :key="error">{{ error }}</div>
                     </small>
                 </div>
-
                 <div class="field">
-                    <label class="mb-2 block text-md">NRC</label>
-                    <InputText v-model="state.customer_nrc" class="w-full" readonly />
+                    <NrcInput :model-value="state.customer_nrc" field-class="md:col-span-2" disabled />
                 </div>
 
                 <div class="field">
-                    <label class="mb-2 block text-md">Phone</label>
-                    <InputText v-model="state.customer_phone" class="w-full" readonly />
+                    <PhoneInput :model-value="state.customer_phone" disabled />
                 </div>
 
                 <div class="field">
-                    <label class="mb-2 block text-md">Email</label>
-                    <InputText v-model="state.customer_email" class="w-full" readonly />
+                    <GmailInput :model-value="state.customer_email" disabled />
                 </div>
+
 
                 <div class="field">
                     <label class="mb-2 block text-md">Building</label>
@@ -50,11 +47,13 @@
                 <div class="field">
                     <label class="mb-2 block text-md">Room</label>
                     <Dropdown
+                        :key="`rent-room-${state.building_id || 'none'}`"
                         v-model="state.room_id"
                         :options="roomOptions"
                         option-label="label"
                         option-value="value"
                         placeholder="Select room"
+                        empty-message="No available rooms for this building."
                         class="w-full"
                         :disabled="!state.building_id"
                     />
@@ -116,6 +115,7 @@
                         currency="MMK"
                         locale="en-MM"
                         :min="0"
+                        readonly
                     />
                     <small v-if="errors.has('contract_total')" class="p-error">
                         <div v-for="error in errors.get('contract_total')" :key="error">{{ error }}</div>
@@ -167,30 +167,14 @@
                     <Calendar
                         v-model="state.start_date"
                         class="w-full"
-                        date-format="yy-mm-dd"
+                        placeholder="DD/MM/YYYY"
+                        date-format="dd/mm/yy"
                         show-icon
                     />
                     <small v-if="errors.has('start_date')" class="p-error">
                         <div v-for="error in errors.get('start_date')" :key="error">{{ error }}</div>
                     </small>
                 </div>
-
-                <Transition name="draft-field">
-                    <div v-if="isInstallment" class="field">
-                        <label class="mb-2 block text-md">Billing Day</label>
-                        <Dropdown
-                            v-model="state.billing_day"
-                            :options="billingDayOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Select billing day"
-                            class="w-full"
-                        />
-                        <small v-if="errors.has('billing_day')" class="p-error">
-                            <div v-for="error in errors.get('billing_day')" :key="error">{{ error }}</div>
-                        </small>
-                    </div>
-                </Transition>
 
                 <div class="field md:col-span-2">
                     <label class="mb-2 block text-md">Remarks</label>
@@ -230,25 +214,29 @@
 <script>
 import { computed, defineComponent } from 'vue';
 import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Calendar from 'primevue/calendar';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
+import NrcInput from '@/components/admin/NrcInput.vue';
+import PhoneInput from '@/components/admin/PhoneInput.vue';
+import GmailInput from '@/components/admin/GmailInput.vue';
 import {
     estimateMonthlyPayment,
-    remainingAfterDeposit,
+    remainingContractBalance,
 } from '@/helpers/contracts/contractDocument';
 
 export default defineComponent({
     name: 'RentDraftForm',
     components: {
         Dropdown,
-        InputText,
         InputNumber,
         Calendar,
         Textarea,
         Button,
+        NrcInput,
+        PhoneInput,
+        GmailInput,
     },
     props: {
         state: {
@@ -275,10 +263,6 @@ export default defineComponent({
             type: Array,
             default: () => [],
         },
-        billingDayOptions: {
-            type: Array,
-            default: () => [],
-        },
         errors: {
             type: Object,
             default: () => ({
@@ -300,15 +284,21 @@ export default defineComponent({
         ));
 
         const remainingBalance = computed(() => (
-            remainingAfterDeposit(props.state.contract_total, props.state.deposit)
+            remainingContractBalance({
+                contractType: 'rent',
+                contractTotal: props.state.contract_total,
+                deposit: props.state.deposit,
+            })
         ));
 
         const estimatedMonthlyPayment = computed(() => (
             estimateMonthlyPayment({
+                contractType: 'rent',
                 paymentType: props.state.payment_type,
                 contractTotal: props.state.contract_total,
                 deposit: props.state.deposit,
                 durationMonths: props.state.duration_months,
+                roomPrice: props.state.room_price,
             })
         ));
 

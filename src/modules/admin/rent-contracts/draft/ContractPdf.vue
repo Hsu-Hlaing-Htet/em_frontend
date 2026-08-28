@@ -2,17 +2,22 @@
     <div v-if="!isLoading" class="">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
-                <DocumentDownloadActions
-                    @download-pdf="downloadPdf"
-                    @export-document="exportPdf"
-                    @print="printContract"
-                />
                 <Button
-                    icon="pi pi-envelope"
-                    label="Send Email"
-                    @click="sendEmail"
+                    label="Download"
+                    icon="pi pi-download"
+                    @click="downloadPdf"
                 />
-                <router-link :to="pdfBackRoute">
+                <router-link
+                    v-if="editRoute"
+                    :to="editRoute"
+                >
+                    <Button
+                        icon="pi pi-pencil"
+                        label="Edit"
+                        severity="secondary"
+                    />
+                </router-link>
+                <router-link :to="backRoute">
                     <Button label="Back" severity="secondary" />
                 </router-link>
             </div>
@@ -37,12 +42,11 @@ import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ContractPdfSheet from '@/components/admin/documents/ContractPdfSheet.vue';
-import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import useShowRentDraft from './useShowRentDraft';
 
 export default defineComponent({
     name: 'ContractPdf',
-    components: { Button, Loading, ContractPdfSheet, DocumentDownloadActions },
+    components: { Button, Loading, ContractPdfSheet },
     setup() {
         return useShowRentDraft();
     },

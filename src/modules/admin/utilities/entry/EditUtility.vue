@@ -57,12 +57,29 @@
                         id="billing_month"
                         v-model="state.billing_month"
                         view="month"
-                        date-format="yy-mm-dd"
+                        placeholder="DD/MM/YYYY"
+                        date-format="dd/mm/yy"
                         :disabled="!canEdit"
                         class="w-full"
+                        show-icon
                     />
                     <small v-if="errors.has('billing_month')" class="p-error">
                         <div v-for="error in errors.get('billing_month')" :key="error">{{ error }}</div>
+                    </small>
+                </div>
+                <div class="field">
+                    <label for="reading_date" class="mb-2 block text-md">Reading Date</label>
+                    <Calendar
+                        id="reading_date"
+                        v-model="state.reading_date"
+                        placeholder="DD/MM/YYYY"
+                        date-format="dd/mm/yy"
+                        :disabled="!canEdit"
+                        class="w-full"
+                        show-icon
+                    />
+                    <small v-if="errors.has('reading_date')" class="p-error">
+                        <div v-for="error in errors.get('reading_date')" :key="error">{{ error }}</div>
                     </small>
                 </div>
 

@@ -22,7 +22,8 @@
 [data-customer-layout] {
     --customer-portal-card-radius: 3px;
     --customer-portal-card-padding: 20px;
-    --customer-portal-transition: 0.18s ease;
+    --customer-portal-transition: 0.22s ease;
+    --customer-portal-lift: -3px;
 
     background: var(--admin-bg);
     color: var(--admin-text);
@@ -272,6 +273,18 @@
     border-color: var(--admin-border);
 }
 
+.p-dropdown {
+    max-width: 100%;
+}
+
+.p-dropdown-label,
+.p-select-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 
 .p-paginator {
     background: transparent !important;
@@ -312,6 +325,19 @@
     background: var(--admin-surface-solid) !important;
     border: 1px solid var(--admin-border) !important;
     color: var(--admin-text) !important;
+    width: max-content !important;
+    min-width: min(16rem, calc(100vw - 2rem)) !important;
+    max-width: min(34rem, calc(100vw - 2rem)) !important;
+}
+
+.p-dropdown-items-wrapper,
+.p-select-list-container {
+    max-width: 100%;
+}
+
+.p-dropdown-items,
+.p-select-list {
+    max-width: 100%;
 }
 
 /* option */
@@ -320,6 +346,20 @@
 .p-dropdown-item {
     background: transparent !important;
     color: var(--admin-text) !important;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+}
+
+.p-select-option-label,
+.p-dropdown-item-label {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* hover */

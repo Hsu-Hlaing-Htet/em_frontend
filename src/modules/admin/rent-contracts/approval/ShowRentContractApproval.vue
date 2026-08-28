@@ -8,24 +8,23 @@
                     @print="printContract"
                 />
                 <Button
-                    icon="pi pi-envelope"
-                    label="Send Email"
-                    @click="sendEmail"
-                />
-                <Button
+                    type="button"
                     icon="pi pi-check"
                     label="Approve"
                     severity="success"
+                    :loading="isApproving"
+                    :disabled="isApproving"
                     @click="approveContract"
                 />
                 <Button
+                    type="button"
                     icon="pi pi-times"
                     label="Reject"
                     severity="danger"
                     @click="openRejectDialog"
                 />
                 <router-link :to="backRoute">
-                    <Button label="Back" severity="secondary" />
+                    <Button type="button" label="Back" severity="secondary" />
                 </router-link>
             </div>
         </header>

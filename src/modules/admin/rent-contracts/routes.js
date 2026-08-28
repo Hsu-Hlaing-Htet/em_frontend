@@ -56,7 +56,7 @@ const rentContractRoutes = [
             {
                 path: 'drafts/:id/contract',
                 name: 'rentContractDraftPdf',
-                component: () => import('@/modules/admin/rent-contracts/draft/ContractPdf.vue'),
+                redirect: (to) => ({ name: 'showRentContractDraft', params: to.params }),
                 meta: {
                     navKey: 'rent-drafts',
                     parentNavKey: 'contracts',
@@ -74,14 +74,14 @@ const rentContractRoutes = [
             {
                 path: 'drafts/:id',
                 name: 'showRentContractDraft',
-                component: () => import('@/modules/admin/rent-contracts/draft/ShowRentDraft.vue'),
+                component: () => import('@/modules/admin/rent-contracts/draft/ContractPdf.vue'),
                 meta: {
                     navKey: 'rent-drafts',
                     parentNavKey: 'contracts',
                     action: 'view',
                     resource: 'rent_contract',
                     layout: 'default',
-                    title: 'Rent Draft Detail',
+                    title: 'Rent Contract Draft',
                     breadcrumbs: [
                         { title: 'Rent Drafts', routeName: 'rentContractDraftList' },
                         { title: 'Detail', routeName: 'showRentContractDraft' },

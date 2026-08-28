@@ -35,6 +35,10 @@ function normalizeMessage(message, field = '') {
     || text === VALIDATION_MESSAGES.date
     || text === VALIDATION_MESSAGES.file
     || text === VALIDATION_MESSAGES.emailInvalid
+    || text === VALIDATION_MESSAGES.emailRequired
+    || text === VALIDATION_MESSAGES.emailGmail
+    || text === VALIDATION_MESSAGES.emailUnique
+    || text === VALIDATION_MESSAGES.nrcInvalid
     || text === VALIDATION_MESSAGES.phoneInvalid
     || text === VALIDATION_MESSAGES.passwordMin
     || text === VALIDATION_MESSAGES.passwordMatch
@@ -57,11 +61,31 @@ function normalizeMessage(message, field = '') {
     return VALIDATION_MESSAGES.emailInvalid
   }
 
+  if (fieldName === 'email' && (lower.includes('gmail address') || text === VALIDATION_MESSAGES.emailGmail)) {
+    return VALIDATION_MESSAGES.emailGmail
+  }
+
   if (
     fieldName === 'email'
-    && (lower.includes('already been taken') || lower.includes('already registered') || lower.includes('already exists'))
+    && (lower.includes('already been taken') || lower.includes('already registered') || lower.includes('already exists') || lower.includes('already in use'))
   ) {
-    return 'This email is already registered.'
+    return VALIDATION_MESSAGES.emailUnique
+  }
+
+  if (
+    fieldName === 'username'
+    && (lower.includes('already been taken') || lower.includes('already registered') || lower.includes('already exists') || lower.includes('already in use'))
+  ) {
+    return 'This username is already in use.'
+  }
+
+  if (
+    fieldName === 'room_number'
+    && (lower.includes('already been taken') || lower.includes('already exists') || lower.includes('already in use'))
+  ) {
+    return text.includes('already exists in this building')
+      ? text
+      : 'Room number already exists in this building.'
   }
 
   if (

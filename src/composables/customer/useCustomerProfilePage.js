@@ -15,7 +15,7 @@ const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp
 
 const PROFILE_RULES = [
     { field: 'name', type: 'text' },
-    { field: 'email', type: 'email' },
+    { field: 'email', type: 'email', accountEmail: true, originalEmailField: 'original_email' },
     { field: 'phone', type: 'phone' },
 ];
 
@@ -34,6 +34,7 @@ export default function useCustomerProfilePage() {
     const state = reactive({
         name: '',
         email: '',
+        original_email: '',
         phone: '',
         nrc: '',
         dob: null,
@@ -69,6 +70,7 @@ export default function useCustomerProfilePage() {
                 Object.assign(state, {
                     name: data.name || '',
                     email: data.email || '',
+                    original_email: data.email || '',
                     phone: data.phone || '',
                     nrc: data.nrc || '',
                     dob: parseDate(data.dob),

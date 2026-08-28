@@ -4,44 +4,29 @@
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div class="field">
                     <label class="mb-2 block text-md">Customer Name</label>
-                    <Dropdown
-                        v-model="state.customer_id"
-                        :options="customerOptions"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Select Customer"
-                        class="w-full"
-                    />
+                    <Dropdown v-model="state.customer_id" :options="customerOptions" option-label="label"
+                        option-value="value" placeholder="Select Customer" class="w-full" />
                     <small v-if="errors.has('user_id')" class="p-error">
                         <div v-for="error in errors.get('user_id')" :key="error">{{ error }}</div>
                     </small>
                 </div>
-
                 <div class="field">
-                    <label class="mb-2 block text-md">NRC</label>
-                    <InputText v-model="state.customer_nrc" class="w-full" readonly />
+                    <NrcInput :model-value="state.customer_nrc" field-class="md:col-span-2" disabled />
                 </div>
 
                 <div class="field">
-                    <label class="mb-2 block text-md">Phone</label>
-                    <InputText v-model="state.customer_phone" class="w-full" readonly />
+                    <PhoneInput :model-value="state.customer_phone" disabled />
                 </div>
 
                 <div class="field">
-                    <label class="mb-2 block text-md">Email</label>
-                    <InputText v-model="state.customer_email" class="w-full" readonly />
+                    <GmailInput :model-value="state.customer_email" disabled />
                 </div>
+
 
                 <div class="field">
                     <label class="mb-2 block text-md">Building</label>
-                    <Dropdown
-                        v-model="state.building_id"
-                        :options="buildingOptions"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Select building"
-                        class="w-full"
-                    />
+                    <Dropdown v-model="state.building_id" :options="buildingOptions" option-label="label"
+                        option-value="value" placeholder="Select building" class="w-full" />
                     <small v-if="errors.has('building_id')" class="p-error">
                         <div v-for="error in errors.get('building_id')" :key="error">{{ error }}</div>
                     </small>
@@ -49,15 +34,10 @@
 
                 <div class="field">
                     <label class="mb-2 block text-md">Room</label>
-                    <Dropdown
-                        v-model="state.room_id"
-                        :options="roomOptions"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Select room"
-                        class="w-full"
-                        :disabled="!state.building_id"
-                    />
+                    <Dropdown :key="`sale-room-${state.building_id || 'none'}`" v-model="state.room_id"
+                        :options="roomOptions" option-label="label" option-value="value" placeholder="Select room"
+                        empty-message="No available rooms for this building." class="w-full"
+                        :disabled="!state.building_id" />
                     <small v-if="errors.has('room_id')" class="p-error">
                         <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
                     </small>
@@ -65,26 +45,14 @@
 
                 <div class="field">
                     <label class="mb-2 block text-md">Room Price</label>
-                    <InputNumber
-                        v-model="state.room_price"
-                        class="w-full"
-                        mode="currency"
-                        currency="MMK"
-                        locale="en-MM"
-                        readonly
-                    />
+                    <InputNumber v-model="state.room_price" class="w-full" mode="currency" currency="MMK" locale="en-MM"
+                        readonly />
                 </div>
 
                 <div class="field">
                     <label class="mb-2 block text-md">Payment Type</label>
-                    <Dropdown
-                        v-model="state.payment_type"
-                        :options="paymentTypeOptions"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Select payment type"
-                        class="w-full"
-                    />
+                    <Dropdown v-model="state.payment_type" :options="paymentTypeOptions" option-label="label"
+                        option-value="value" placeholder="Select payment type" class="w-full" />
                     <small v-if="errors.has('payment_type')" class="p-error">
                         <div v-for="error in errors.get('payment_type')" :key="error">{{ error }}</div>
                     </small>
@@ -93,14 +61,8 @@
                 <Transition name="draft-field">
                     <div v-if="isInstallment" class="field">
                         <label class="mb-2 block text-md">Duration Months</label>
-                        <Dropdown
-                            v-model="state.duration_months"
-                            :options="durationMonthOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Select duration"
-                            class="w-full"
-                        />
+                        <Dropdown v-model="state.duration_months" :options="durationMonthOptions" option-label="label"
+                            option-value="value" placeholder="Select duration" class="w-full" />
                         <small v-if="errors.has('duration_months')" class="p-error">
                             <div v-for="error in errors.get('duration_months')" :key="error">{{ error }}</div>
                         </small>
@@ -109,14 +71,8 @@
 
                 <div class="field">
                     <label class="mb-2 block text-md">Contract Total</label>
-                    <InputNumber
-                        v-model="state.contract_total"
-                        class="w-full"
-                        mode="currency"
-                        currency="MMK"
-                        locale="en-MM"
-                        :min="0"
-                    />
+                    <InputNumber v-model="state.contract_total" class="w-full" mode="currency" currency="MMK"
+                        locale="en-MM" :min="0" />
                     <small v-if="errors.has('contract_total')" class="p-error">
                         <div v-for="error in errors.get('contract_total')" :key="error">{{ error }}</div>
                     </small>
@@ -124,41 +80,23 @@
 
                 <div class="field">
                     <label class="mb-2 block text-md">Deposit</label>
-                    <InputNumber
-                        v-model="state.deposit"
-                        class="w-full"
-                        mode="currency"
-                        currency="MMK"
-                        locale="en-MM"
-                        readonly
-                    />
+                    <InputNumber v-model="state.deposit" class="w-full" mode="currency" currency="MMK" locale="en-MM"
+                        readonly />
                 </div>
 
                 <Transition name="draft-field">
                     <div v-if="showCalculatedPayments" class="field">
                         <label class="mb-2 block text-md">Remaining Balance</label>
-                        <InputNumber
-                            :model-value="remainingBalance"
-                            class="w-full"
-                            mode="currency"
-                            currency="MMK"
-                            locale="en-MM"
-                            readonly
-                        />
+                        <InputNumber :model-value="remainingBalance" class="w-full" mode="currency" currency="MMK"
+                            locale="en-MM" readonly />
                     </div>
                 </Transition>
 
                 <Transition name="draft-field">
                     <div v-if="showCalculatedPayments" class="field">
                         <label class="mb-2 block text-md">Estimated Monthly Payment</label>
-                        <InputNumber
-                            :model-value="estimatedMonthlyPayment"
-                            class="w-full"
-                            mode="currency"
-                            currency="MMK"
-                            locale="en-MM"
-                            readonly
-                        />
+                        <InputNumber :model-value="estimatedMonthlyPayment" class="w-full" mode="currency"
+                            currency="MMK" locale="en-MM" readonly />
                     </div>
                 </Transition>
 
@@ -167,7 +105,8 @@
                     <Calendar
                         v-model="state.start_date"
                         class="w-full"
-                        date-format="yy-mm-dd"
+                        placeholder="DD/MM/YYYY"
+                        date-format="dd/mm/yy"
                         show-icon
                     />
                     <small v-if="errors.has('start_date')" class="p-error">
@@ -175,31 +114,9 @@
                     </small>
                 </div>
 
-                <Transition name="draft-field">
-                    <div v-if="isInstallment" class="field">
-                        <label class="mb-2 block text-md">Billing Day</label>
-                        <Dropdown
-                            v-model="state.billing_day"
-                            :options="billingDayOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Select billing day"
-                            class="w-full"
-                        />
-                        <small v-if="errors.has('billing_day')" class="p-error">
-                            <div v-for="error in errors.get('billing_day')" :key="error">{{ error }}</div>
-                        </small>
-                    </div>
-                </Transition>
-
                 <div class="field md:col-span-2">
                     <label class="mb-2 block text-md">Remarks</label>
-                    <Textarea
-                        v-model="state.remarks"
-                        rows="4"
-                        class="w-full"
-                        placeholder="Optional remarks..."
-                    />
+                    <Textarea v-model="state.remarks" rows="4" class="w-full" placeholder="Optional remarks..." />
                     <small v-if="errors.has('remark')" class="p-error">
                         <div v-for="error in errors.get('remark')" :key="error">{{ error }}</div>
                     </small>
@@ -207,18 +124,9 @@
             </div>
             <div class="flex justify-end gap-2">
                 <router-link :to="cancelRoute" class="">
-                    <Button
-                        type="button"
-                        label="Cancel"
-                        severity="secondary"
-                        class=""
-                    />
+                    <Button type="button" label="Cancel" severity="secondary" class="" />
                 </router-link>
-                <Button
-                    type="submit"
-                    label="Save"
-                    class=""
-                />
+                <Button type="submit" label="Save" class="" />
             </div>
         </div>
 
@@ -230,11 +138,13 @@
 <script>
 import { computed, defineComponent } from 'vue';
 import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Calendar from 'primevue/calendar';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
+import NrcInput from '@/components/admin/NrcInput.vue';
+import PhoneInput from '@/components/admin/PhoneInput.vue';
+import GmailInput from '@/components/admin/GmailInput.vue';
 import {
     estimateMonthlyPayment,
     remainingAfterDeposit,
@@ -244,11 +154,13 @@ export default defineComponent({
     name: 'SaleDraftForm',
     components: {
         Dropdown,
-        InputText,
         InputNumber,
         Calendar,
         Textarea,
         Button,
+        NrcInput,
+        PhoneInput,
+        GmailInput,
     },
     props: {
         state: {
@@ -272,10 +184,6 @@ export default defineComponent({
             default: () => [],
         },
         durationMonthOptions: {
-            type: Array,
-            default: () => [],
-        },
-        billingDayOptions: {
             type: Array,
             default: () => [],
         },

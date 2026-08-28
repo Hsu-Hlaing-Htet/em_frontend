@@ -35,11 +35,38 @@
                             :options="statusOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="All Statuses"
+                            placeholder="Status"
                             show-clear
                             class="w-52"
                         />
-                                            <template #actions>
+                        <Dropdown
+                            v-model="roomFilter"
+                            :options="roomOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Room"
+                            show-clear
+                            filter
+                            class="w-44"
+                        />
+                        <div class="admin-filter-group admin-filter-group--dates">
+                            <Calendar
+                                v-model="billingMonthFrom"
+                                placeholder="From"
+                                date-format="dd/mm/yy"
+                                show-icon
+                                class="w-40"
+                            />
+                            <Calendar
+                                v-model="billingMonthTo"
+                                placeholder="To"
+                                date-format="dd/mm/yy"
+                                show-icon
+                                class="w-40"
+                            />
+                        </div>
+
+                        <template #actions>
                             <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"
@@ -55,8 +82,13 @@
                 <template #empty>No pending utilities found.</template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
-                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 120px" />
-                <Column field="room_number" header="Room" :sortable="true" style="min-width: 120px">
+                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 140px" />
+                <Column field="building_name" header="Building" :sortable="true" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ data.building_name || '—' }}
+                    </template>
+                </Column>
+                <Column field="room_number" header="Room" :sortable="true" style="min-width: 110px">
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showUtilityApproval', params: { id: data.id } }"
@@ -66,6 +98,11 @@
                         </router-link>
                     </template>
                 </Column>
+                <Column field="billing_month" header="Billing Month" :sortable="true" style="min-width: 150px">
+                    <template #body="{ data }">
+                        {{ formatBillingMonthLabel(data.billing_month) }}
+                    </template>
+                </Column>
                 <Column field="total_amount" header="Total" :sortable="true" style="min-width: 110px" />
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
@@ -73,7 +110,6 @@
                     </template>
                 </Column>
                 <Column field="created_by" header="Created By" :sortable="true" style="min-width: 120px" />
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 160px" />
                 <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions
@@ -95,12 +131,14 @@ import { useConfirm } from 'primevue/useconfirm';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
+import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
 import { UTILITY_STATUS_OPTIONS } from '@/constants/constant';
+import { formatBillingMonthLabel } from '@/helpers/documents/billingDocumentHelpers';
 import { useUtilityApprovalList } from './useUtilityApprovalList';
 
 export default defineComponent({
@@ -109,6 +147,7 @@ export default defineComponent({
         DataTable,
         Column,
         Dropdown,
+        Calendar,
         Loading,
         AdminListFilters,
         StatusBadge,
@@ -137,6 +176,7 @@ export default defineComponent({
             statusOptions: UTILITY_STATUS_OPTIONS,
             approveFromList,
             rejectFromList,
+            formatBillingMonthLabel,
         };
     },
 });

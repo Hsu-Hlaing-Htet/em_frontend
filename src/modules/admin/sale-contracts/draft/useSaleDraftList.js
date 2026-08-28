@@ -3,8 +3,8 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import EventBus from '@/libs/AppEventBus';
-import { formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
-import { filterContracts, normalizePaymentTypeFilter } from '@/helpers/contracts/contractFilters';
+import { formatCurrency, formatDate, getPaymentTypeLabel } from '@/utils/formatter';
+import { normalizePaymentTypeFilter } from '@/helpers/contracts/contractFilters';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useSaleContractDraftStore } from '../store';
 import { mapSaleDraftFromApi } from './mapSaleDraft';
@@ -71,20 +71,14 @@ export const useSaleDraftList = () => {
                 order: multisortConvert(lazyParams.value.multiSortMeta),
                 search: search.value,
                 payment_type: paymentType,
+                date_from: formatDate(dateFrom.value),
+                date_to: formatDate(dateTo.value),
             });
 
             const response = store.getAllResponse;
 
             if (response?.data) {
-                let items = (response.data.data || []).map(mapListItem);
-
-                items = filterContracts(items, {
-                    search: '',
-                    dateFrom: dateFrom.value,
-                    dateTo: dateTo.value,
-                });
-
-                contracts.value = items;
+                contracts.value = (response.data.data || []).map(mapListItem);
                 totalRecords.value = response.data.total;
             }
         } catch (error) {
@@ -135,11 +129,7 @@ export const useSaleDraftList = () => {
         });
     };
 
-    const applyExportFilters = (items) => filterContracts(items, {
-        search: '',
-        dateFrom: dateFrom.value,
-        dateTo: dateTo.value,
-    });
+    const applyExportFilters = (items) => items;
 
     const {
         isExporting,
@@ -159,6 +149,8 @@ export const useSaleDraftList = () => {
             order: multisortConvert(lazyParams.value.multiSortMeta),
             search: search.value,
             payment_type: normalizePaymentTypeFilter(selectedPaymentType.value),
+            date_from: formatDate(dateFrom.value),
+            date_to: formatDate(dateTo.value),
         }),
         fetchPage: async (params) => {
             await store.fetchAll(params);

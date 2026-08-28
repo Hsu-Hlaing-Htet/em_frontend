@@ -52,7 +52,7 @@
                 <Column field="name" header="Name" :sortable="true" style="min-width: 200px">
                     <template #body="{ data }">
                         <router-link :to="{ name: 'showRole', params: { id: data.id } }">
-                            {{ data.name }}
+                            {{ data.display_name }}
                         </router-link>
                     </template>
                 </Column>

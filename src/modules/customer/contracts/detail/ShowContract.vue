@@ -1,63 +1,30 @@
 <template>
     <div v-if="!isLoading">
-        <div class="customer-detail-actions mb-4">
-            <router-link :to="{ name: 'customerContractList' }">
-                <Button
-                    :label="$t('common.back')"
-                    icon="pi pi-arrow-left"
-                    class="btn-outline"
+        <header class="pdf-bar customer-contract-pdf-bar no-print">
+            <div class="pdf-actions">
+                <router-link :to="{ name: 'customerContractList' }">
+                    <Button
+                        :label="$t('common.back')"
+                        icon="pi pi-arrow-left"
+                        class="btn-outline"
+                    />
+                </router-link>
+                <DocumentDownloadActions
+                    @download-pdf="downloadPdf"
+                    @export-document="exportPdf"
+                    @print="printContract"
                 />
-            </router-link>
-            <Button
-                :label="$t('customer.downloadContract')"
-                icon="pi pi-download"
-                :loading="isDownloading"
-                @click="downloadPdf"
-            />
-        </div>
-
-        <div class="admin-panel p-4">
-            <div class="mb-4 flex items-center justify-between gap-3">
-                <div>
-                    <p class="m-0 text-sm text-[var(--admin-text-muted)]">{{ $t('customer.contract') }}</p>
-                    <h1 class="customer-page-heading m-0">{{ state.contract_number }}</h1>
-                </div>
-                <StatusBadge :value="state.status" />
             </div>
+        </header>
 
-            <div class="customer-detail-grid">
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">{{ $t('customer.type') }}</p>
-                    <p class="customer-detail-value capitalize">{{ state.type || '—' }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">{{ $t('customer.building') }}</p>
-                    <p class="customer-detail-value">{{ state.building_name || '—' }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">{{ $t('customer.room') }}</p>
-                    <p class="customer-detail-value">{{ state.room_number || '—' }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">{{ $t('customer.total') }}</p>
-                    <p class="customer-detail-value">{{ formatCurrency(state.contract_total) }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">{{ $t('customer.deposit') }}</p>
-                    <p class="customer-detail-value">{{ formatCurrency(state.deposit_amount) }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">{{ $t('customer.startDate') }}</p>
-                    <p class="customer-detail-value">{{ state.start_date || '—' }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">{{ $t('customer.endDate') }}</p>
-                    <p class="customer-detail-value">{{ state.end_date || '—' }}</p>
-                </div>
-                <div class="customer-detail-item">
-                    <p class="customer-detail-label">{{ $t('customer.paymentType') }}</p>
-                    <p class="customer-detail-value">{{ state.payment_type || '—' }}</p>
-                </div>
+        <div class="pdf-canvas customer-contract-pdf-canvas">
+            <div class="pdf-frame">
+                <ContractPdfSheet
+                    v-if="document"
+                    :variant="documentVariant"
+                    :document="document"
+                    show-approval-section
+                />
             </div>
         </div>
     </div>
@@ -68,19 +35,18 @@
 <script>
 import { defineComponent } from 'vue';
 import Button from 'primevue/button';
-import StatusBadge from '@/components/global/StatusBadge.vue';
 import Loading from '@/components/global/Loading.vue';
-import { formatCurrency } from '@/utils/formatter';
+import ContractPdfSheet from '@/components/admin/documents/ContractPdfSheet.vue';
+import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import useCustomerShowContract from '@/composables/customer/useCustomerShowContract';
 
 export default defineComponent({
     name: 'CustomerShowContract',
-    components: { Button, StatusBadge, Loading },
+    components: { Button, ContractPdfSheet, DocumentDownloadActions, Loading },
     setup() {
-        return {
-            ...useCustomerShowContract(),
-            formatCurrency,
-        };
+        return useCustomerShowContract();
     },
 });
 </script>
+
+<style src="@/assets/css/documents/contract-pdf-view.css"></style>

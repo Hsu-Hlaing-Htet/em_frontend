@@ -1,6 +1,7 @@
 <template>
     <div>
         <Button
+            type="button"
             label="Download"
             icon="pi pi-download"
             severity="secondary"

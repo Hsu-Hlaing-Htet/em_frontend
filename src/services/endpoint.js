@@ -61,4 +61,5 @@ export const endpoint = {
     receipts: 'receipts',
     maintenanceRequests: 'maintenance-requests',
     listExportPdf: 'list-exports/pdf',
+    documentPreviewPdf: 'document-preview/pdf',
 };

@@ -5,7 +5,6 @@ import EventBus from '@/libs/AppEventBus';
 import { formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
 import { filterContracts, normalizePaymentTypeFilter } from '@/helpers/contracts/contractFilters';
 import { showApiErrorToast } from '@/utils/apiError';
-import { generateInvoiceForContract } from '@/composables/admin/contracts/generateInvoiceForContract';
 import { useRentStore } from '../store';
 import { mapRentListItemFromApi } from '../mapRent';
 import { useContractListExport } from '@/composables/admin/contracts/useContractListExport';
@@ -19,6 +18,7 @@ export const useRentContractApprovalList = () => {
     const dateTo = ref(null);
     const totalRecords = ref(0);
     const isLoading = ref(false);
+    const approvingIds = ref(new Set());
     const contracts = ref([]);
     const lazyParams = ref({
         page: 0,
@@ -60,7 +60,7 @@ export const useRentContractApprovalList = () => {
 
                 items = filterContracts(items, {
                     search: '',
-                    status: 'draft',
+                    status: 'pending',
                     dateFrom: dateFrom.value,
                     dateTo: dateTo.value,
                     dateField: 'created_at',
@@ -105,7 +105,7 @@ export const useRentContractApprovalList = () => {
 
     const applyExportFilters = (items) => filterContracts(items, {
         search: '',
-        status: 'draft',
+        status: 'pending',
         dateFrom: dateFrom.value,
         dateTo: dateTo.value,
         dateField: 'created_at',
@@ -147,17 +147,16 @@ export const useRentContractApprovalList = () => {
     });
 
     const approveContract = async (contract) => {
+        if (approvingIds.value.has(contract.id)) {
+            return false;
+        }
+
+        approvingIds.value.add(contract.id);
+
         try {
             await store.approve({ id: contract.id });
 
             const response = store.getActionResponse;
-            const approvedContract = response?.data || { ...contract, type: 'rent' };
-
-            try {
-                await generateInvoiceForContract(approvedContract);
-            } catch (error) {
-                showApiErrorToast(error, 'Contract approved, but invoice generation failed.');
-            }
 
             EventBus.emit('show-toast', {
                 severity: 'success',
@@ -172,6 +171,8 @@ export const useRentContractApprovalList = () => {
             showApiErrorToast(error, 'Unable to approve rent contract.');
 
             return false;
+        } finally {
+            approvingIds.value.delete(contract.id);
         }
     };
 
@@ -187,7 +188,7 @@ export const useRentContractApprovalList = () => {
             EventBus.emit('show-toast', {
                 severity: 'warn',
                 summary: '',
-                detail: response?.message || `${contract.contract_no} has been rejected.`,
+                detail: response?.message || 'Rent contract rejected successfully.',
             });
 
             await loadingData();

@@ -35,7 +35,6 @@ export function mapSaleDraftFromApi(data) {
         duration_months: data.payment_type === 'full' ? null : data.duration_months,
         contract_total: toNumber(data.contract_total),
         start_date: data.start_date,
-        billing_day: data.payment_type === 'full' ? null : data.billing_day,
         remarks: data.remark || '',
         status: data.status ?? '',
         created_by: data.created_by_name || data.creator?.name || '',
@@ -72,7 +71,6 @@ export function mapSaleDraftToApi(state) {
 
     if (state.payment_type === 'installment') {
         payload.duration_months = state.duration_months;
-        payload.billing_day = state.billing_day;
     }
 
     return payload;

@@ -11,6 +11,7 @@ import useRoomImages from './useRoomImages';
 import useRoomDimensions from '@/composables/admin/rooms/useRoomDimensions';
 import { buildRoomPayload } from '../roomForm';
 import { showApiErrorToast } from '@/utils/apiError';
+import { findDuplicateRoomNumberError } from '@/helpers/rooms/roomUniqueness';
 
 const ROOM_VALIDATION_RULES = [
     { field: 'building_id', type: 'select' },
@@ -211,6 +212,17 @@ export default function useEditRoom() {
         isLoading.value = true;
 
         try {
+            const duplicateRoomError = await findDuplicateRoomNumberError({
+                buildingId: state.building_id,
+                roomNumber: state.room_number,
+                ignoreRoomId: state.id,
+            });
+
+            if (duplicateRoomError) {
+                errors.record({ room_number: [duplicateRoomError] });
+                return;
+            }
+
             await store.update(buildRoomPayload(state, { includeId: true }));
             const response = store.getUpdateResponse;
 

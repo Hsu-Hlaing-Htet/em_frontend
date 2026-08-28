@@ -7,6 +7,7 @@ import { showApiErrorToast } from '@/utils/apiError';
 import { GENDER_OPTIONS } from '@/constants/constant';
 import { useResidentStore } from '../store';
 import { formatDate } from '@/utils/formatter';
+import { findDuplicateAccountEmailError } from '@/helpers/accounts/accountUniqueness';
 
 export default function useNewResident() {
     const store = useResidentStore();
@@ -18,7 +19,6 @@ export default function useNewResident() {
     const state = reactive({
         name: '',
         email: '',
-        password: '',
         phone: '',
         nrc: '',
         dob: null,
@@ -39,10 +39,9 @@ export default function useNewResident() {
 
         if (!applyValidation(errors, state, [
             { field: 'name', type: 'text' },
-            { field: 'email', type: 'email' },
-            { field: 'password', type: 'password', required: true },
+            { field: 'email', type: 'email', accountEmail: true },
             { field: 'phone', type: 'phone' },
-            { field: 'nrc', type: 'text' },
+            { field: 'nrc', type: 'nrc' },
             { field: 'dob', type: 'date' },
             { field: 'gender', type: 'select' },
             { field: 'address', type: 'text' },
@@ -53,6 +52,15 @@ export default function useNewResident() {
         isLoading.value = true;
 
         try {
+            const duplicateEmailError = await findDuplicateAccountEmailError({
+                email: state.email,
+            });
+
+            if (duplicateEmailError) {
+                errors.record({ email: [duplicateEmailError] });
+                return;
+            }
+
             await store.add({
                 ...state,
                 dob: formatDate(state.dob),
@@ -65,7 +73,7 @@ export default function useNewResident() {
                 EventBus.emit('show-toast', {
                     severity: 'success',
                     summary: '',
-                    detail: response.message,
+                    detail: response.message || 'Resident created. A welcome email with a temporary password was sent.',
                 });
             }
         } catch (error) {

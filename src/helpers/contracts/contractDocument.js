@@ -10,7 +10,25 @@ export function remainingAfterDeposit(contractTotal, deposit) {
     return Math.max((contractTotal || 0) - (deposit || 0), 0);
 }
 
-export function estimateMonthlyPayment({ paymentType, contractTotal, deposit, durationMonths }) {
+export function calculateRentContractTotal(monthlyRent, durationMonths) {
+    const months = Number(durationMonths) || 1;
+
+    return (Number(monthlyRent) || 0) * months;
+}
+
+export function remainingContractBalance({ contractType, contractTotal, deposit }) {
+    if (contractType === 'rent') {
+        return Math.max(contractTotal || 0, 0);
+    }
+
+    return remainingAfterDeposit(contractTotal, deposit);
+}
+
+export function estimateMonthlyPayment({ paymentType, contractType, contractTotal, deposit, durationMonths, roomPrice }) {
+    if (contractType === 'rent') {
+        return Number(roomPrice) || 0;
+    }
+
     if (paymentType !== 'installment' || !durationMonths) {
         return 0;
     }

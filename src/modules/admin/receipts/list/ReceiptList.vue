@@ -54,15 +54,15 @@
                         <div class="admin-filter-group admin-filter-group--dates">
                         <Calendar
                             v-model="issuedFrom"
-                            placeholder="Issued from"
-                            date-format="yy-mm-dd"
+                            placeholder="DD/MM/YYYY"
+                            date-format="dd/mm/yy"
                             show-icon
                             class="w-40"
                         />
                         <Calendar
                             v-model="issuedTo"
-                            placeholder="Issued to"
-                            date-format="yy-mm-dd"
+                            placeholder="DD/MM/YYYY"
+                            date-format="dd/mm/yy"
                             show-icon
                             class="w-40"
                         />

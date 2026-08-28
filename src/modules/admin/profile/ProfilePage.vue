@@ -58,13 +58,11 @@
                 </small>
             </div>
 
-            <div class="field">
-                <label class="mb-2 block text-md">Email</label>
-                <InputText v-model="state.email" type="email" class="w-full" />
-                <small v-if="errors.has('email')" class="p-error">
-                    <div v-for="error in errors.get('email')" :key="error">{{ error }}</div>
-                </small>
-            </div>
+            <GmailInput
+                v-model="state.email"
+                :original-email="state.original_email"
+                :errors="errors"
+            />
 
             <div class="field">
                 <label class="mb-2 block text-md">Phone</label>
@@ -105,6 +103,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ChangePasswordDialog from '@/components/admin/ChangePasswordDialog.vue';
+import GmailInput from '@/components/admin/GmailInput.vue';
 import useProfilePage from './useProfilePage';
 
 export default defineComponent({
@@ -115,6 +114,7 @@ export default defineComponent({
         Button,
         Loading,
         ChangePasswordDialog,
+        GmailInput,
     },
     setup() {
         return useProfilePage();

@@ -14,7 +14,7 @@ import { showApiErrorToast } from '@/utils/apiError';
 import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
-import { emptyUtilityItem } from '../utils/utilityFormHelpers';
+import { emptyUtilityItem, formatBillingMonth, formatUtilityDate } from '../utils/utilityFormHelpers';
 
 export default function useEditUtility() {
     const store = useUtilityStore();
@@ -39,7 +39,9 @@ export default function useEditUtility() {
     const state = reactive({
         id: null,
         room_id: null,
+        contract_id: null,
         billing_month: null,
+        reading_date: null,
         total_amount: 0,
         status: 'draft',
     });
@@ -181,6 +183,7 @@ export default function useEditUtility() {
         const stateValid = applyValidation(errors, state, [
             { field: 'room_id', type: 'select' },
             { field: 'billing_month', type: 'date' },
+            { field: 'reading_date', type: 'date' },
         ]);
         const itemsValid = validateItems();
 
@@ -192,6 +195,8 @@ export default function useEditUtility() {
 
         const payload = {
             ...state,
+            billing_month: formatBillingMonth(state.billing_month),
+            reading_date: formatUtilityDate(state.reading_date),
             utility_items: items.value.map((item) => ({
                 id: item.id || undefined,
                 utility_type_id: item.utility_type_id,
@@ -211,7 +216,7 @@ export default function useEditUtility() {
                 EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
             }
         } catch (error) {
-            if (error.status === 422) {
+            if (error.status === 422 && error.data?.data) {
                 errors.record(error.data.data);
             } else {
                 showApiErrorToast(error, 'Unable to save utility.');

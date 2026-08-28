@@ -1,8 +1,14 @@
 <template>
     <div class="flex flex-col gap-5">
+        <div class="flex flex-wrap items-center justify-end gap-2 px-1">
+            <router-link :to="{ name: 'bulkCreateUtility' }">
+                <Button type="button" label="Bulk Create" icon="pi pi-upload" />
+            </router-link>
+        </div>
+
         <div class="admin-panel relative">
             <form @submit.prevent="handleSubmit">
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                     <!-- Building -->
                     <div class="field">
                         <label for="building_id" class="mb-2 block text-md">
@@ -38,9 +44,24 @@
                         </label>
 
                         <Calendar id="create_billing_month" v-model="createState.billing_month" view="month"
-                            date-format="yy-mm-dd" :disabled="!createState.room_id" class="w-full" />
+                            placeholder="DD/MM/YYYY" date-format="dd/mm/yy" :disabled="!createState.room_id"
+                            class="w-full" show-icon />
                         <small v-if="errors.has('billing_month')" class="p-error">
                             <div v-for="error in errors.get('billing_month')" :key="error">{{ error }}</div>
+                        </small>
+                    </div>
+
+                    <!-- Reading Date -->
+                    <div class="field">
+                        <label for="create_reading_date" class="mb-2 block text-md">
+                            Reading Date
+                        </label>
+
+                        <Calendar id="create_reading_date" v-model="createState.reading_date"
+                            placeholder="DD/MM/YYYY" date-format="dd/mm/yy" :disabled="!createState.billing_month"
+                            class="w-full" show-icon />
+                        <small v-if="errors.has('reading_date')" class="p-error">
+                            <div v-for="error in errors.get('reading_date')" :key="error">{{ error }}</div>
                         </small>
                     </div>
                 </div>

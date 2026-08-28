@@ -35,22 +35,30 @@
                             :options="paymentTypeOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="All Payment Plan Types"
+                            placeholder="Payment Plan"
                             show-clear
                             class="w-52"
+                        />
+                        <Dropdown
+                            v-model="selectedStatus"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Status"
+                            class="w-44"
                         />
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
                                 v-model="dateFrom"
-                                placeholder="From date"
-                                date-format="yy-mm-dd"
+                                placeholder="DD/MM/YYYY"
+                                date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                             <Calendar
                                 v-model="dateTo"
-                                placeholder="To date"
-                                date-format="yy-mm-dd"
+                                placeholder="DD/MM/YYYY"
+                                date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
@@ -134,7 +142,7 @@ import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
-import { PAYMENT_PLAN_TYPE_FILTER_OPTIONS } from '@/constants/constant';
+import { ACTIVE_SALE_STATUS_OPTIONS, PAYMENT_PLAN_TYPE_FILTER_OPTIONS } from '@/constants/constant';
 import { useActiveRentList } from './useActiveRentList';
 
 export default defineComponent({
@@ -156,6 +164,7 @@ export default defineComponent({
         return {
             ...list,
             paymentTypeOptions: PAYMENT_PLAN_TYPE_FILTER_OPTIONS,
+            statusOptions: ACTIVE_SALE_STATUS_OPTIONS,
         };
     },
 });

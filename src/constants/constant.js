@@ -170,11 +170,10 @@ export const SALE_CONTRACT_DRAFT_STATUS_OPTIONS = [
 ];
 
 export const ACTIVE_SALE_STATUS_OPTIONS = [
-    { label: 'All Status', value: null },
-    { label: 'Approved', value: 'approved' },
+    { label: 'All Statuses', value: null },
     { label: 'Active', value: 'active' },
     { label: 'Completed', value: 'completed' },
-    { label: 'Cancelled', value: 'cancelled' },
+    { label: 'Terminated', value: 'terminated' },
 ];
 
 export const PAYMENT_PLAN_OPTIONS = [

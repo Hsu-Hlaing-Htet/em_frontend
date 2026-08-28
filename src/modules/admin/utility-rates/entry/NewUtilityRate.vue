@@ -37,7 +37,8 @@
                 <Calendar
                     id="effective_date"
                     v-model="state.effective_date"
-                    date-format="yy-mm-dd"
+                    placeholder="DD/MM/YYYY"
+                    date-format="dd/mm/yy"
                     class="w-full"
                     show-icon
                 />

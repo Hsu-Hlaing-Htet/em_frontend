@@ -61,13 +61,12 @@
                     </small>
                 </div>
 
-                <div class="field">
-                    <label class="mb-2 block text-md">{{ $t('common.email') }}</label>
-                    <InputText v-model="state.email" type="email" class="w-full" />
-                    <small v-if="errors.has('email')" class="p-error">
-                        <div v-for="error in errors.get('email')" :key="error">{{ error }}</div>
-                    </small>
-                </div>
+                <GmailInput
+                    v-model="state.email"
+                    :original-email="state.original_email"
+                    :label="$t('common.email')"
+                    :errors="errors"
+                />
 
                 <div class="field">
                     <label class="mb-2 block text-md">{{ $t('common.phone') }}</label>
@@ -125,6 +124,7 @@ import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ChangePasswordDialog from '@/components/admin/ChangePasswordDialog.vue';
+import GmailInput from '@/components/admin/GmailInput.vue';
 import useCustomerProfilePage from '@/composables/customer/useCustomerProfilePage';
 
 const {

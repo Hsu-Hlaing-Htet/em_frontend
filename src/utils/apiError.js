@@ -20,8 +20,22 @@ function normalizeApiMessage(message, status) {
         return 'Please enter a valid email address.';
     }
 
-    if (lower.includes('email') && (lower.includes('already been taken') || lower.includes('already registered') || lower.includes('already exists'))) {
-        return 'This email is already registered.';
+    if (lower.includes('gmail address') || text === 'Please use a Gmail address.') {
+        return 'Please use a Gmail address.';
+    }
+
+    if (lower.includes('email') && (lower.includes('already been taken') || lower.includes('already registered') || lower.includes('already exists') || lower.includes('already in use'))) {
+        return 'This email is already in use.';
+    }
+
+    if (lower.includes('username') && (lower.includes('already been taken') || lower.includes('already registered') || lower.includes('already exists') || lower.includes('already in use'))) {
+        return 'This username is already in use.';
+    }
+
+    if (lower.includes('room') && (lower.includes('already been taken') || lower.includes('already exists'))) {
+        return text.includes('already exists in this building')
+            ? text
+            : 'Room number already exists in this building.';
     }
 
     if (

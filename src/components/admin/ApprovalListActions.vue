@@ -1,5 +1,6 @@
 <template>
     <Button
+        type="button"
         text
         icon="pi pi-check"
         severity="success"
@@ -8,6 +9,7 @@
     />
     <Button
         v-if="canReject"
+        type="button"
         text
         icon="pi pi-times"
         severity="danger"

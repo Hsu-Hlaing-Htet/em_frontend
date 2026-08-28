@@ -22,6 +22,16 @@ const service = {
         return result.data;
     },
 
+    previewBulkImport: async (params) => {
+        const result = await api.post(`${endpoint.utilities}/bulk-import/preview`, params);
+        return result.data;
+    },
+
+    confirmBulkImport: async (params) => {
+        const result = await api.post(`${endpoint.utilities}/bulk-import/confirm`, params);
+        return result.data;
+    },
+
     getFormData: async (params) => {
         const result = await api.get(`${endpoint.utilities}/form-data`, { params });
         return result.data;

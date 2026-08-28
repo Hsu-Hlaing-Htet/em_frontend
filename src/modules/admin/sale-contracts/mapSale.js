@@ -16,6 +16,8 @@ export function mapSaleFromApi(data) {
         submitted_at: data.submitted_at || mapped.created_at,
         approved_by: data.approved_by_name || data.approved_by || '',
         approved_at: data.approved_at || '',
+        termination_date: data.termination_date || '',
+        termination_reason: data.termination_reason || '',
     };
 }
 
@@ -71,6 +73,14 @@ export function buildSaleTimeline(mapped) {
             label: 'Approved',
             date: mapped.approved_at,
             actor: mapped.approved_by,
+        });
+    }
+
+    if (mapped.termination_date) {
+        timeline.push({
+            label: 'Terminated',
+            date: mapped.termination_date,
+            actor: mapped.termination_reason,
         });
     }
 

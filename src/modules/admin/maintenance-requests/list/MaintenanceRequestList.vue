@@ -35,7 +35,7 @@
                             :options="statusOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="All Statuses"
+                            placeholder="Status"
                             show-clear
                             class="w-52"
                         />

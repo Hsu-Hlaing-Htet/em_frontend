@@ -33,6 +33,7 @@ export const STATUS_DEFINITIONS = {
     inactive: { tone: STATUS_TONES.neutral, label: 'Inactive', icon: 'pi pi-pause' },
     completed: { tone: STATUS_TONES.accent, label: 'Completed', icon: 'pi pi-flag-fill' },
     cancelled: { tone: STATUS_TONES.neutral, label: 'Cancelled', icon: 'pi pi-times' },
+    terminated: { tone: STATUS_TONES.neutral, label: 'Terminated', icon: 'pi pi-times' },
     in_progress: { tone: STATUS_TONES.accent, label: 'In Progress', icon: 'pi pi-spin pi-spinner' },
 
     // Billing

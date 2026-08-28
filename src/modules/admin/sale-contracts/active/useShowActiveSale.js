@@ -4,9 +4,11 @@ import EventBus from '@/libs/AppEventBus';
 import { buildFieldSections } from '@/helpers/contracts/contractDocument';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useSaleStore } from '../store';
+import { saleService } from '../service';
 import { buildSaleTimeline, mapSaleFromApi } from '../mapSale';
 import { useContractDocument } from '@/composables/admin/documents/useSaleContractDocument';
 import { useSaleContractDocumentActions } from '@/composables/admin/contracts/contractDocumentActions';
+import { renderContractDocumentPage } from '@/helpers/documents/documentOutput';
 
 export default function useShowActiveSale() {
     const route = useRoute();
@@ -14,6 +16,8 @@ export default function useShowActiveSale() {
     const store = useSaleStore();
     const isLoading = ref(true);
     const showCancelDialog = ref(false);
+    const showSendEmailDialog = ref(false);
+    const isSendingEmail = ref(false);
 
     const state = reactive({
         id: null,
@@ -42,8 +46,8 @@ export default function useShowActiveSale() {
         submitted_at: '',
         created_by: '',
         created_at: '',
-        cancellation_reason: '',
-        cancelled_at: '',
+        termination_reason: '',
+        termination_date: '',
         timeline: [],
     });
 
@@ -55,12 +59,11 @@ export default function useShowActiveSale() {
         downloadPdf,
         exportPdf,
         printContract,
-        sendEmail,
     } = useSaleContractDocumentActions('approved', state, () => document.value);
 
     const fieldSections = computed(() => buildFieldSections(document.value));
     const contractStatus = computed(() => state.status || '');
-    const canCancel = computed(() => ['approved', 'active'].includes(state.status));
+    const canCancel = computed(() => state.status === 'active');
     const backRoute = { name: 'activeSaleList' };
 
     const fetchContract = async () => {
@@ -87,18 +90,53 @@ export default function useShowActiveSale() {
         showCancelDialog.value = true;
     };
 
-    const cancelContract = async (reason) => {
+    const openSendEmailDialog = () => {
+        showSendEmailDialog.value = true;
+    };
+
+    const cancelContract = async (payload) => {
         try {
-            await store.cancel({ id: state.id, reason });
+            await store.cancel({ id: state.id, ...payload });
             showCancelDialog.value = false;
             EventBus.emit('show-toast', {
                 severity: 'success',
                 summary: '',
-                detail: store.getActionResponse?.message || 'Sale contract cancelled successfully.',
+                detail: store.getActionResponse?.message || 'Sale contract terminated successfully.',
             });
             await router.push(backRoute);
         } catch (error) {
-            showApiErrorToast(error, 'Unable to cancel sale contract.');
+            showApiErrorToast(error, 'Unable to terminate sale contract.');
+        }
+    };
+
+    const sendEmail = async () => {
+        const currentDocument = document.value;
+
+        if (!state.id || !currentDocument || isSendingEmail.value) {
+            return;
+        }
+
+        isSendingEmail.value = true;
+
+        try {
+            const response = await saleService.sendDocumentEmail('approved', state.id, {
+                html: renderContractDocumentPage(currentDocument),
+            });
+
+            showSendEmailDialog.value = false;
+            EventBus.emit('show-toast', {
+                severity: 'success',
+                summary: '',
+                detail: response?.message || `Contract sent successfully to ${state.customer_email}.`,
+            });
+        } catch {
+            EventBus.emit('show-toast', {
+                severity: 'error',
+                summary: '',
+                detail: 'Unable to send the contract. Please try again.',
+            });
+        } finally {
+            isSendingEmail.value = false;
         }
     };
 
@@ -123,8 +161,11 @@ export default function useShowActiveSale() {
         fieldSections,
         canCancel,
         showCancelDialog,
+        showSendEmailDialog,
+        isSendingEmail,
         backRoute,
         openCancelDialog,
+        openSendEmailDialog,
         cancelContract,
         downloadPdf,
         exportPdf,

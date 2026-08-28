@@ -14,17 +14,17 @@ export function createContractDocumentActions({
     sendDocumentEmail,
 }) {
     const fallbackHtmlFilename = () => `${getContractNo() || fallbackName}.html`;
-    const fallbackPdfFilename = () => `${getContractNo() || fallbackName}.pdf`;
 
     const downloadPdf = async () => {
         const id = getContractId();
+        const document = getDocument();
 
-        if (!id) {
+        if (!id || !document) {
             return;
         }
 
         try {
-            await downloadDocument(scope, id, fallbackPdfFilename());
+            await downloadDocument(document);
 
             EventBus.emit('show-toast', {
                 severity: 'success',

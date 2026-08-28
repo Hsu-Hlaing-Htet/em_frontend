@@ -35,22 +35,22 @@
                             :options="paymentTypeOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="All Payment Plan Types"
+                            placeholder="Payment Plan"
                             show-clear
                             class="w-52"
                         />
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
                                 v-model="dateFrom"
-                                placeholder="From date"
-                                date-format="yy-mm-dd"
+                                placeholder="DD/MM/YYYY"
+                                date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                             <Calendar
                                 v-model="dateTo"
-                                placeholder="To date"
-                                date-format="yy-mm-dd"
+                                placeholder="DD/MM/YYYY"
+                                date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
@@ -96,20 +96,11 @@
                 </Column>
                 <Column field="created_by" header="Created By" :sortable="true" style="min-width: 130px" />
                 <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 130px" />
-                <Column header="Actions" :exportable="false" style="min-width: 180px">
+                <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
-                        <Button
-                        text
-                            icon="pi pi-check"
-                            severity="success"
-    
-                            @click="approveFromList(data)"
-                        />
-                        <Button
-                        text
-                            icon="pi pi-times"
-                            severity="danger"
-                            @click="rejectFromList(data)"
+                        <ApprovalListActions
+                            @approve="approveFromList(data)"
+                            @reject="rejectFromList(data)"
                         />
                     </template>
                 </Column>
@@ -132,8 +123,8 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
-import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
 import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
@@ -147,8 +138,8 @@ export default defineComponent({
         Column,
         Dropdown,
         Calendar,
-        Button,
         Loading,
+        ApprovalListActions,
         RejectContractDialog,
         ListExportActions,
         AdminListFilters,
@@ -182,6 +173,7 @@ export default defineComponent({
             if (rejected) {
                 selectedContract.value = null;
                 showRejectDialog.value = false;
+                router.push({ name: 'rentContractDraftList' });
             }
         };
 

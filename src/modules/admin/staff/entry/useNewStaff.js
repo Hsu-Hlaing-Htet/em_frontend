@@ -8,6 +8,7 @@ import { useRoleStore } from '@/modules/admin/roles/store';
 import { GENDER_OPTIONS } from '@/constants/constant';
 import { useStaffStore } from '../store';
 import { formatDate } from '@/utils/formatter';
+import { findDuplicateAccountEmailError } from '@/helpers/accounts/accountUniqueness';
 
 export default function useNewStaff() {
     const store = useStaffStore();
@@ -22,7 +23,6 @@ export default function useNewStaff() {
         role_id: null,
         name: '',
         email: '',
-        password: '',
         phone: '',
         nrc: '',
         dob: null,
@@ -64,10 +64,9 @@ export default function useNewStaff() {
         if (!applyValidation(errors, state, [
             { field: 'role_id', type: 'select' },
             { field: 'name', type: 'text' },
-            { field: 'email', type: 'email' },
-            { field: 'password', type: 'password', required: true },
+            { field: 'email', type: 'email', accountEmail: true },
             { field: 'phone', type: 'phone' },
-            { field: 'nrc', type: 'text' },
+            { field: 'nrc', type: 'nrc' },
             { field: 'dob', type: 'date' },
             { field: 'gender', type: 'select' },
             { field: 'address', type: 'text' },
@@ -78,6 +77,15 @@ export default function useNewStaff() {
         isLoading.value = true;
 
         try {
+            const duplicateEmailError = await findDuplicateAccountEmailError({
+                email: state.email,
+            });
+
+            if (duplicateEmailError) {
+                errors.record({ email: [duplicateEmailError] });
+                return;
+            }
+
             await store.add({
                 ...state,
                 dob: formatDate(state.dob),
@@ -90,7 +98,7 @@ export default function useNewStaff() {
                 EventBus.emit('show-toast', {
                     severity: 'success',
                     summary: '',
-                    detail: response.message,
+                    detail: response.message || 'Staff member created. A welcome email with a temporary password was sent.',
                 });
             }
         } catch (error) {

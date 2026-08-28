@@ -1,9 +1,19 @@
 import { watch } from 'vue';
+import { validateNrcValue } from '@/helpers/nrc/nrcFormat';
+import { validatePhoneValue } from '@/helpers/phone/phoneFormat';
+import { parseDate } from '@/utils/formatter';
 
 export const PASSWORD_MIN_LENGTH = 8;
 
+/** Reserved Super Admin login email — not used to determine roles. */
+export const SUPER_ADMIN_EMAIL = 'admin@rosewoodroyale.com';
+
 export const VALIDATION_MESSAGES = {
+    emailRequired: 'Email is required.',
     emailInvalid: 'Please enter a valid email address.',
+    emailGmail: 'Please use a Gmail address.',
+    emailUnique: 'This email is already in use.',
+    nrcInvalid: 'Please enter a valid NRC.',
     phoneInvalid: 'Please enter a valid phone number.',
     select: 'Please select an option.',
     date: 'Please select a date.',
@@ -176,20 +186,62 @@ export function isValidEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
 }
 
+export function normalizeEmail(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
+export function isReservedSuperAdminEmail(value) {
+    return normalizeEmail(value) === SUPER_ADMIN_EMAIL;
+}
+
+export function isGmailAddress(value) {
+    const email = normalizeEmail(value);
+
+    return email !== '' && email.endsWith('@gmail.com');
+}
+
+/**
+ * Account email policy (create/edit users): Gmail-only except reserved Super Admin email.
+ * Roles remain independent of email domain.
+ *
+ * @param {unknown} value
+ * @param {{ originalEmail?: string|null }} [options]
+ * @returns {string|null} Error message or null when valid
+ */
+export function validateUserAccountEmail(value, { originalEmail = null } = {}) {
+    if (isBlank(value)) {
+        return VALIDATION_MESSAGES.emailRequired;
+    }
+
+    if (!isValidEmail(value)) {
+        return VALIDATION_MESSAGES.emailInvalid;
+    }
+
+    const normalized = normalizeEmail(value);
+    const unchanged = originalEmail != null
+        && normalizeEmail(originalEmail) === normalized;
+
+    if (isReservedSuperAdminEmail(normalized)) {
+        if (unchanged) {
+            return null;
+        }
+
+        return VALIDATION_MESSAGES.emailGmail;
+    }
+
+    if (unchanged) {
+        return null;
+    }
+
+    if (!isGmailAddress(normalized)) {
+        return VALIDATION_MESSAGES.emailGmail;
+    }
+
+    return null;
+}
+
 export function isValidPhone(value) {
-    const trimmed = String(value || '').trim();
-
-    if (!trimmed) {
-        return false;
-    }
-
-    if (!/^[+]?[\d\s\-().]+$/.test(trimmed)) {
-        return false;
-    }
-
-    const digits = trimmed.replace(/\D/g, '');
-
-    return digits.length >= 7 && digits.length <= 15;
+    return validatePhoneValue(value) === null;
 }
 
 export function isValidDateValue(value) {
@@ -198,9 +250,9 @@ export function isValidDateValue(value) {
     }
 
     if (typeof value === 'string' && value.trim()) {
-        const parsed = new Date(value);
+        const parsed = parseDate(value);
 
-        return !Number.isNaN(parsed.getTime());
+        return parsed instanceof Date && !Number.isNaN(parsed.getTime());
     }
 
     return false;
@@ -301,6 +353,14 @@ function evaluateRule(values, rule) {
     }
 
     if (type === 'email') {
+        if (rule.accountEmail) {
+            const originalEmail = rule.originalEmailField
+                ? values[rule.originalEmailField]
+                : (rule.originalEmail ?? null);
+
+            return validateUserAccountEmail(value, { originalEmail });
+        }
+
         if (isBlank(value)) {
             return requiredMessage(field);
         }
@@ -308,12 +368,12 @@ function evaluateRule(values, rule) {
         return isValidEmail(value) ? null : VALIDATION_MESSAGES.emailInvalid;
     }
 
-    if (type === 'phone') {
-        if (isBlank(value)) {
-            return requiredMessage(field);
-        }
+    if (type === 'nrc') {
+        return validateNrcValue(value);
+    }
 
-        return isValidPhone(value) ? null : VALIDATION_MESSAGES.phoneInvalid;
+    if (type === 'phone') {
+        return validatePhoneValue(value);
     }
 
     if (type === 'number') {

@@ -1,18 +1,25 @@
 import { reactive, ref, computed, watch, onMounted, nextTick } from 'vue';
 import { service as residentService } from '@/modules/admin/residents/service';
 import { service as buildingService } from '@/modules/admin/buildings/service';
-import { service as roomService } from '@/modules/admin/rooms/service';
 import {
     PAYMENT_TYPE_OPTIONS,
     DURATION_MONTHS_OPTIONS,
-    BILLING_DAY_OPTIONS,
 } from '@/constants/constant';
 import { formatCurrency } from '@/utils/formatter';
 import {
     estimateMonthlyPayment,
     remainingAfterDeposit,
 } from '@/helpers/contracts/contractDocument';
+import {
+    fetchRoomsForBuilding,
+    mapDraftBuildingOptions,
+    mapDraftRoomOptions,
+    resolveEntityId,
+    sameEntityId,
+} from '@/helpers/contracts/draftBuildingRooms';
 import { mapSaleDraftFormFromApi } from './mapSaleDraft';
+
+const SALE_ROOM_TYPES = ['sale', 'both'];
 
 export default function useSaleDraftForm(initialState = null) {
     const submitted = ref(false);
@@ -35,24 +42,20 @@ export default function useSaleDraftForm(initialState = null) {
         duration_months: null,
         contract_total: 0,
         start_date: null,
-        billing_day: null,
         remarks: '',
     });
 
     const customerOptions = computed(() => customers.value.filter((customer) => customer.status === 'active').map((customer) => ({
         label: customer.name,
-        value: customer.id,
-    })));
+        value: resolveEntityId(customer.id),
+    })).filter((option) => option.value != null));
 
-    const buildingOptions = computed(() => buildings.value.filter((building) => building.status === 'active').map((building) => ({
-        label: building.building_name,
-        value: building.id,
-    })));
+    const buildingOptions = computed(() => mapDraftBuildingOptions(buildings.value));
 
-    const roomOptions = computed(() => rooms.value.filter((room) => room.status === 'available').map((room) => ({
-        label: room.room_number,
-        value: room.id,
-    })));
+    const roomOptions = computed(() => mapDraftRoomOptions(rooms.value, {
+        selectedRoomId: state.room_id,
+        allowedTypes: SALE_ROOM_TYPES,
+    }));
 
     const showInstallmentFields = computed(() => state.payment_type === 'installment');
 
@@ -78,7 +81,7 @@ export default function useSaleDraftForm(initialState = null) {
     });
 
     const applyCustomer = (customerId) => {
-        const customer = customers.value.find((item) => item.id === customerId);
+        const customer = customers.value.find((item) => sameEntityId(item.id, customerId));
 
         if (!customer) {
             state.customer_nrc = '';
@@ -94,7 +97,7 @@ export default function useSaleDraftForm(initialState = null) {
     };
 
     const applyRoom = (roomId, { preserveContractTotal = false } = {}) => {
-        const room = rooms.value.find((item) => item.id === roomId);
+        const room = rooms.value.find((item) => sameEntityId(item.id, roomId));
 
         if (!room) {
             state.room_price = 0;
@@ -128,20 +131,9 @@ export default function useSaleDraftForm(initialState = null) {
     };
 
     const fetchRooms = async (buildingId) => {
-        if (!buildingId) {
-            rooms.value = [];
-
-            return;
-        }
-
-        const response = await roomService.getAll({
-            building_id: buildingId,
-            per_page: 100,
+        rooms.value = await fetchRoomsForBuilding(buildingId, {
+            allowedTypes: SALE_ROOM_TYPES,
         });
-
-        rooms.value = (response?.data?.data || []).filter(
-            (room) => ['sale', 'both'].includes(room.type),
-        );
     };
 
     watch(() => state.customer_id, (customerId) => {
@@ -149,18 +141,32 @@ export default function useSaleDraftForm(initialState = null) {
             return;
         }
 
-        applyCustomer(customerId);
+        const normalizedCustomerId = resolveEntityId(customerId);
+
+        if (normalizedCustomerId !== customerId) {
+            state.customer_id = normalizedCustomerId;
+        }
+
+        applyCustomer(normalizedCustomerId);
     });
 
     watch(() => state.building_id, async (buildingId) => {
+        const normalizedBuildingId = resolveEntityId(buildingId);
+
+        if (normalizedBuildingId !== buildingId) {
+            state.building_id = normalizedBuildingId;
+
+            return;
+        }
+
         if (isHydrating.value) {
-            await fetchRooms(buildingId);
+            await fetchRooms(normalizedBuildingId);
 
             return;
         }
 
         state.room_id = null;
-        await fetchRooms(buildingId);
+        await fetchRooms(normalizedBuildingId);
         applyRoom(null);
     });
 
@@ -169,7 +175,15 @@ export default function useSaleDraftForm(initialState = null) {
             return;
         }
 
-        applyRoom(roomId);
+        const normalizedRoomId = resolveEntityId(roomId);
+
+        if (normalizedRoomId !== roomId) {
+            state.room_id = normalizedRoomId;
+
+            return;
+        }
+
+        applyRoom(normalizedRoomId);
     });
 
     watch(() => state.payment_type, (paymentType) => {
@@ -179,7 +193,6 @@ export default function useSaleDraftForm(initialState = null) {
 
         if (paymentType === 'full') {
             state.duration_months = null;
-            state.billing_day = null;
         }
     });
 
@@ -190,13 +203,17 @@ export default function useSaleDraftForm(initialState = null) {
 
         isHydrating.value = true;
 
-        const buildingId = data.building_id ?? data.room?.building_id ?? null;
+        const buildingId = resolveEntityId(
+            data.building_id ?? data.room?.building_id ?? data.building?.id ?? null,
+        );
 
         if (buildingId) {
             await fetchRooms(buildingId);
+        } else {
+            rooms.value = [];
         }
 
-        if (data.room && !rooms.value.some((room) => room.id === data.room.id)) {
+        if (data.room && !rooms.value.some((room) => sameEntityId(room.id, data.room.id))) {
             rooms.value = [...rooms.value, data.room];
         }
 
@@ -204,19 +221,18 @@ export default function useSaleDraftForm(initialState = null) {
 
         Object.assign(state, {
             id: mapped.id,
-            customer_id: mapped.customer_id,
+            customer_id: resolveEntityId(mapped.customer_id),
             customer_nrc: mapped.customer_nrc || '',
             customer_phone: mapped.customer_phone || '',
             customer_email: mapped.customer_email || '',
-            building_id: mapped.building_id,
-            room_id: mapped.room_id,
+            building_id: buildingId,
+            room_id: resolveEntityId(mapped.room_id),
             room_price: mapped.room_price,
             deposit: mapped.deposit,
             payment_type: mapped.payment_type,
             duration_months: mapped.payment_type === 'full' ? null : mapped.duration_months,
             contract_total: mapped.contract_total,
             start_date: mapped.start_date,
-            billing_day: mapped.payment_type === 'full' ? null : mapped.billing_day,
             remarks: mapped.remarks || '',
         });
 
@@ -240,7 +256,6 @@ export default function useSaleDraftForm(initialState = null) {
         roomOptions,
         paymentTypeOptions: PAYMENT_TYPE_OPTIONS,
         durationMonthOptions: DURATION_MONTHS_OPTIONS,
-        billingDayOptions: BILLING_DAY_OPTIONS,
         showInstallmentFields,
         showPaymentSummary,
         paymentSummary,

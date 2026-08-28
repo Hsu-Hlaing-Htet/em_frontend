@@ -59,12 +59,18 @@ function mapLoginFieldErrors(fieldErrors) {
     return mapped;
 }
 
-function resolveRedirectPath(route, role) {
+function resolveRedirectPath(route, user) {
+    if (user?.must_change_password) {
+        return { name: 'force-change-password' };
+    }
+
     const redirect = route.query.redirect;
 
-    if (typeof redirect === 'string' && redirect.startsWith('/')) {
+    if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('/change-password')) {
         return redirect;
     }
+
+    const role = user?.role;
 
     if (role === 'super_admin' || role === 'admin') {
         return '/admin/dashboard';
@@ -108,12 +114,14 @@ export function useLogin() {
 
         try {
             const response = await auth.login(form.email, form.password);
-            const redirectTo = resolveRedirectPath(route, response.user.role);
+            const redirectTo = resolveRedirectPath(route, response.user);
 
             toast.add({
                 severity: 'success',
                 summary: 'Welcome',
-                detail: 'Login successful.',
+                detail: response.user?.must_change_password
+                    ? 'Please create a new password to continue.'
+                    : 'Login successful.',
                 life: 2500,
             });
 

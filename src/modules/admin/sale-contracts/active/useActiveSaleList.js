@@ -13,6 +13,7 @@ export const useActiveSaleList = () => {
     const dt = ref();
     const search = ref('');
     const selectedPaymentType = ref(null);
+    const selectedStatus = ref(null);
     const dateFrom = ref(null);
     const dateTo = ref(null);
     const totalRecords = ref(0);
@@ -47,6 +48,7 @@ export const useActiveSaleList = () => {
                 order: multisortConvert(lazyParams.value.multiSortMeta),
                 search: search.value,
                 payment_type: paymentType,
+                status: selectedStatus.value || undefined,
             });
 
             const response = store.getAllResponse;
@@ -94,6 +96,7 @@ export const useActiveSaleList = () => {
         resetPagination();
         search.value = '';
         selectedPaymentType.value = null;
+        selectedStatus.value = null;
         dateFrom.value = null;
         dateTo.value = null;
         loadingData();
@@ -123,6 +126,7 @@ export const useActiveSaleList = () => {
             order: multisortConvert(lazyParams.value.multiSortMeta),
             search: search.value,
             payment_type: normalizePaymentTypeFilter(selectedPaymentType.value),
+            status: selectedStatus.value || undefined,
         }),
         fetchPage: async (params) => {
             await store.fetchApproved(params);
@@ -134,6 +138,7 @@ export const useActiveSaleList = () => {
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
             { label: 'Payment Plan', value: (typeof getPaymentTypeLabel === 'function' ? getPaymentTypeLabel(selectedPaymentType.value) : selectedPaymentType.value) || '' },
+            { label: 'Status', value: selectedStatus.value || '' },
             { label: 'From Date', value: dateFrom.value ? String(dateFrom.value).slice(0, 10) : '' },
             { label: 'To Date', value: dateTo.value ? String(dateTo.value).slice(0, 10) : '' },
         ],
@@ -151,7 +156,7 @@ export const useActiveSaleList = () => {
     });
 
     watch(
-        [search, selectedPaymentType, dateFrom, dateTo],
+        [search, selectedPaymentType, selectedStatus, dateFrom, dateTo],
         useDebounceFn(() => {
             resetPagination();
             loadingData();
@@ -162,6 +167,7 @@ export const useActiveSaleList = () => {
         dt,
         search,
         selectedPaymentType,
+        selectedStatus,
         dateFrom,
         dateTo,
         contracts,

@@ -29,7 +29,7 @@ const VARIANTS = {
         renderFooter: renderContractSaleFooter,
     },
     rent: {
-        documentTitle: 'Property Rent Agreement',
+        documentTitle: 'Rental/Lease Agreement',
         renderLead: renderRentContractDocumentLead,
         renderBody: renderRentContractDocumentBody,
         renderFooter: renderContractRentFooter,

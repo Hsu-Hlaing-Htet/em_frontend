@@ -101,6 +101,33 @@ router.beforeEach(async (to, from, next) => {
         });
     }
 
+    const mustChangePassword = Boolean(auth.user?.must_change_password);
+
+    if (
+        auth.isAuthenticated
+        && mustChangePassword
+        && !to.meta.allowPasswordChangeRequired
+        && to.name !== 'force-change-password'
+    ) {
+        return next({ name: 'force-change-password' });
+    }
+
+    if (
+        auth.isAuthenticated
+        && !mustChangePassword
+        && to.name === 'force-change-password'
+    ) {
+        if (adminRoles.includes(auth.role)) {
+            return next({ name: 'dashboard' });
+        }
+
+        if (auth.role === 'customer') {
+            return next({ name: 'customerDashboard' });
+        }
+
+        return next({ name: 'home' });
+    }
+
     if (
         auth.isAuthenticated
         && Array.isArray(to.meta.allowedRoles)
@@ -129,6 +156,10 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (to.meta.guestOnly && auth.isAuthenticated) {
+        if (mustChangePassword) {
+            return next({ name: 'force-change-password' });
+        }
+
         if (adminRoles.includes(auth.role)) {
             return next({ name: 'dashboard' });
         }

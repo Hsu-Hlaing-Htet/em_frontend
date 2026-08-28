@@ -3,7 +3,6 @@ import { useRouter, useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { buildFieldSections } from '@/helpers/contracts/contractDocument';
 import { showApiErrorToast } from '@/utils/apiError';
-import { generateInvoiceForContract } from '@/composables/admin/contracts/generateInvoiceForContract';
 import { useRentStore } from '../store';
 import { buildRentTimeline, mapRentFromApi } from '../mapRent';
 import { useContractDocument } from '@/composables/admin/documents/useRentContractDocument';
@@ -14,6 +13,7 @@ export default function useShowRentContractApproval() {
     const route = useRoute();
     const store = useRentStore();
     const isLoading = ref(true);
+    const isApproving = ref(false);
     const showRejectDialog = ref(false);
 
     const state = reactive({
@@ -49,7 +49,6 @@ export default function useShowRentContractApproval() {
         downloadPdf,
         exportPdf,
         printContract,
-        sendEmail,
     } = useRentContractDocumentActions('draft', state, () => document.value);
 
     const fieldSections = computed(() => buildFieldSections(document.value));
@@ -76,17 +75,16 @@ export default function useShowRentContractApproval() {
     };
 
     const approveContract = async () => {
+        if (isApproving.value) {
+            return;
+        }
+
+        isApproving.value = true;
+
         try {
             await store.approve({ id: state.id });
 
             const response = store.getActionResponse;
-            const approvedContract = response?.data || { ...state, id: state.id, type: 'rent' };
-
-            try {
-                await generateInvoiceForContract(approvedContract);
-            } catch (error) {
-                showApiErrorToast(error, 'Contract approved, but invoice generation failed.');
-            }
 
             EventBus.emit('show-toast', {
                 severity: 'success',
@@ -96,6 +94,8 @@ export default function useShowRentContractApproval() {
             router.push({ name: 'activeRentList' });
         } catch (error) {
             showApiErrorToast(error, 'Unable to approve rent contract.');
+        } finally {
+            isApproving.value = false;
         }
     };
 
@@ -115,9 +115,9 @@ export default function useShowRentContractApproval() {
             EventBus.emit('show-toast', {
                 severity: 'warn',
                 summary: '',
-                detail: response?.message || `${state.contract_no} has been rejected.`,
+                detail: response?.message || 'Rent contract rejected successfully.',
             });
-            router.push({ name: 'rentContractApprovalList' });
+            router.push({ name: 'rentContractDraftList' });
         } catch (error) {
             showApiErrorToast(error, 'Unable to reject rent contract.');
         }
@@ -138,6 +138,7 @@ export default function useShowRentContractApproval() {
 
     return {
         isLoading,
+        isApproving,
         document,
         fieldSections,
         showRejectDialog,
@@ -148,6 +149,5 @@ export default function useShowRentContractApproval() {
         downloadPdf,
         exportPdf,
         printContract,
-        sendEmail,
     };
 }

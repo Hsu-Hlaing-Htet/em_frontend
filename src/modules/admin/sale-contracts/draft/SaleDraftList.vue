@@ -42,15 +42,15 @@
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
                                 v-model="dateFrom"
-                                placeholder="From date"
-                                date-format="yy-mm-dd"
+                                placeholder="DD/MM/YYYY"
+                                date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                             <Calendar
                                 v-model="dateTo"
-                                placeholder="To date"
-                                date-format="yy-mm-dd"
+                                placeholder="DD/MM/YYYY"
+                                date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
@@ -104,19 +104,6 @@
                 </Column>
                 <Column field="created_by" header="Created By" :sortable="true" style="min-width: 130px" />
                 <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 120px" />
-                <Column header="Actions" :exportable="false" style="width: 120px">
-                    <template #body="{ data }">
-                        <router-link :to="{ name: 'editSaleContractDraft', params: { id: data.id } }">
-                            <Button icon="pi pi-pencil" text severity="info" />
-                        </router-link>
-                        <Button
-                            icon="pi pi-trash"
-                            text
-                            severity="danger"
-                            @click="showConfirmDialog(data.id, data.contract_no)"
-                        />
-                    </template>
-                </Column>
             </DataTable>
 
             <Loading v-if="isLoading" />

@@ -1,6 +1,5 @@
 <script setup>
 import PropertyCard from '@/components/public/PropertyCard.vue';
-import FloatingChat from '@/components/global/FloatingChat.vue';
 import { useRent } from '@/composables/public/useRent';
 
 const {

@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAppToast } from '@/composables/global/useAppToast';
 import PublicHeader from './PublicHeader.vue';
 import PublicFooter from './PublicFooter.vue';
+import FloatingChat from '@/components/global/FloatingChat.vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useAuthStore } from '@/modules/auth/store';
 
@@ -117,5 +118,6 @@ onBeforeUnmount(() => {
         </main>
 
         <PublicFooter :current-year="currentYear" />
+        <FloatingChat />
     </div>
 </template>

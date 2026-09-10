@@ -65,6 +65,7 @@
                 <span>{{ item.label }}</span>
             </router-link>
         </nav>
+        <FloatingChat />
     </div>
 </template>
 
@@ -78,6 +79,7 @@ import ThemeToggle from '@/components/global/ThemeToggle.vue';
 import LanguageSwitcher from '@/components/global/LanguageSwitcher.vue';
 import CustomerNotificationBell from '@/layouts/customer/CustomerNotificationBell.vue';
 import CustomerUserProfile from '@/layouts/customer/CustomerUserProfile.vue';
+import FloatingChat from '@/components/global/FloatingChat.vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useCustomerNotificationStore } from '@/modules/customer/notifications/store';
 import { service } from '@/modules/customer/service';

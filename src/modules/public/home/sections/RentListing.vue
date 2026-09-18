@@ -19,7 +19,7 @@ const {
                 <h2>Featured Rental Properties</h2>
 
                 <router-link
-                    to="/rent-properties"
+                    to="/rent"
                     class="inline-block py-2 px-6
                                 bg-rw-surface text-[var(--rw-primary-deep)]
                                 hover:-translate-y-1

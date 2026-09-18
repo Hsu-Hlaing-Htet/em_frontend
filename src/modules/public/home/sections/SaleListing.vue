@@ -19,7 +19,7 @@ const {
                 <h2>Featured Sale Properties</h2>
 
                 <router-link
-                    to="/sale-properties"
+                    to="/buy"
                     class="view-all-link"
                 >
                     View All Listings

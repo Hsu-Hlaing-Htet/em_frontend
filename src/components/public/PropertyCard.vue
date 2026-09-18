@@ -1,89 +1,54 @@
 <template>
-    <article
-        class="group h-full overflow-hidden rounded-lg border border-[#d6b8c1]/60 bg-rw-surface transition-all duration-300 hover:-translate-y-1 hover:border-[#552032]/35"
-    >
-        <div class="relative h-64 overflow-hidden md:h-72">
+    <article class="rw-property-card">
+        <router-link
+            :to="detailTo"
+            class="rw-property-card__media"
+        >
             <img
-                :src="property.featured_image || 'https://images.unsplash.com/photo-1560185007-cde436f6a4d0'"
-                :alt="property.property_name"
-                class="h-full w-full object-cover transition duration-500 group-hover:scale-105 group-hover:brightness-90"
+                :src="property.featured_image || placeholder"
+                :alt="property.property_name || 'Rosewood Royale residence'"
+                loading="lazy"
             >
+            <span class="rw-badge">{{ offerLabel }}</span>
+        </router-link>
 
-            <div class="absolute inset-0 flex items-end bg-gradient-to-t from-[#552032]/85 via-[#552032]/20 to-transparent p-5 opacity-0 transition duration-300 group-hover:opacity-100">
-                <div class="text-sm uppercase tracking-[0.16em] text-white">
-                    {{ property.property_name }}
-                </div>
-            </div>
-
-            <button
-                type="button"
-                aria-label="Previous image"
-                class="absolute left-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/70 bg-rw-surface/15 text-white opacity-0 backdrop-blur-sm transition duration-300 hover:bg-white hover:text-[#552032] group-hover:opacity-100"
-            >
-                <i class="fas fa-chevron-left text-sm" />
-            </button>
-
-            <button
-                type="button"
-                aria-label="Next image"
-                class="absolute right-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/70 bg-rw-surface/15 text-white opacity-0 backdrop-blur-sm transition duration-300 hover:bg-white hover:text-[#552032] group-hover:opacity-100"
-            >
-                <i class="fas fa-chevron-right text-sm" />
-            </button>
-
-            <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 opacity-0 transition duration-300 group-hover:opacity-100">
-                <span class="h-2 w-6 rounded-full bg-rw-surface" />
-                <span class="h-2 w-2 rounded-full bg-rw-surface/60" />
-                <span class="h-2 w-2 rounded-full bg-rw-surface/60" />
-            </div>
-
-            <span
-                class="absolute left-4 top-4 rounded-full border border-white/70 bg-rw-surface/95 px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#552032] shadow-sm"
-            >
-                {{ offerLabel }}
-            </span>
-        </div>
-
-        <div class="p-5">
-            <h3 class="m-0 line-clamp-2 text-xl leading-snug text-[#552032]">
-                {{ property.property_name }}
+        <div class="rw-property-card__body">
+            <h3>
+                <router-link :to="detailTo">
+                    {{ property.property_name || 'Rosewood Residence' }}
+                </router-link>
             </h3>
 
-            <p class="mt-3 mb-4 text-lg leading-none text-[#552032]">
-                {{ displayPrice }}
+            <p
+                v-if="locationLabel"
+                class="rw-property-card__location"
+            >
+                <i class="fas fa-location-dot" />
+                {{ locationLabel }}
             </p>
 
-            <div class="property-meta grid grid-cols-2 gap-3 py-4 text-sm text-rw-muted">
-                <span class="inline-flex items-center gap-2">
-                    <i class="fas fa-hashtag w-4 text-[#d6b8c1]" />
-                    {{ property.property_code }}
-                </span>
+            <p class="rw-property-card__price">{{ displayPrice }}</p>
 
-                <span class="inline-flex items-center gap-2">
-                    <i class="fas fa-location-dot w-4 text-[#d6b8c1]" />
-                    {{ property.township }}
-                </span>
-
-                <span class="inline-flex items-center gap-2">
-                    <i class="fas fa-bed w-4 text-[#d6b8c1]" />
-                    {{ property.bedrooms ?? '-' }} beds
-                </span>
-
-                <span class="inline-flex items-center gap-2">
-                    <i class="fas fa-ruler-combined w-4 text-[#d6b8c1]" />
-                    {{ areaDisplay }}
-                </span>
-            </div>
-
-            <div class="mt-5 flex items-center justify-between gap-3">
-                <button
-                    type="button"
-                    class="inline-flex items-center gap-2 rounded-t-xl rounded-bl-xl border border-[#552032] bg-[#552032] px-6 py-2.5 text-sm uppercase text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[#552032] hover:shadow-[0_12px_28px_rgba(85,32,50,0.16)] focus:bg-white focus:text-[#552032] focus:outline-none focus:ring-2 focus:ring-[#d6b8c1]"
+            <div
+                v-if="metaItems.length"
+                class="rw-property-card__meta"
+            >
+                <span
+                    v-for="item in metaItems"
+                    :key="item.label"
                 >
-                    Details
-                    <i class="fas fa-arrow-right text-xs" />
-                </button>
+                    <i :class="`fas ${item.icon}`" />
+                    {{ item.label }}
+                </span>
             </div>
+
+            <router-link
+                :to="detailTo"
+                class="rw-property-card__action"
+            >
+                View Property
+                <i class="fas fa-arrow-right" />
+            </router-link>
         </div>
     </article>
 </template>
@@ -91,7 +56,6 @@
 <script setup>
 import { computed } from 'vue';
 import { formatCurrency } from '@/utils/formatter';
-import { formatRoomDimensions } from '@/utils/roomDimensions';
 
 const props = defineProps({
     property: {
@@ -100,44 +64,190 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['compare']);
-
-const offerLabel = computed(() =>
-    props.property.purpose === 'rent'
-        ? 'FOR RENT'
-        : 'FOR SALE'
+const placeholder = 'data:image/svg+xml,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect fill="#202226" width="100%" height="100%"/><text x="50%" y="50%" fill="#777B82" font-family="sans-serif" font-size="22" text-anchor="middle" dy=".3em">Rosewood Royale</text></svg>`
 );
 
-const displayPrice = computed(() => {
+const offerLabel = computed(() =>
+    props.property.purpose === 'rent' ? 'For Rent' : 'For Sale'
+);
 
-    const value =
-        props.property.purpose === 'sale'
-            ? props.property.sale_price
-            : props.property.monthly_rent;
+const detailTo = computed(() => ({
+    name: 'property-detail',
+    params: { id: props.property.id },
+    query: props.property.purpose ? { purpose: props.property.purpose } : undefined,
+}));
+
+const locationLabel = computed(() => {
+    const parts = [props.property.township, props.property.city].filter(Boolean);
+    if (parts.length) {
+        return parts.join(', ');
+    }
+    return props.property.address || '';
+});
+
+const displayPrice = computed(() => {
+    const value = props.property.purpose === 'sale'
+        ? props.property.sale_price
+        : (props.property.monthly_rent ?? props.property.rent_price);
 
     if (!value) {
         return 'Contact for price';
     }
 
     const formatted = formatCurrency(Number(value));
-
-    return props.property.purpose === 'rent'
-        ? `${formatted} / month`
-        : formatted;
+    return props.property.purpose === 'rent' ? `${formatted} / month` : formatted;
 });
 
-const areaDisplay = computed(() => {
-    const dimensions = formatRoomDimensions(props.property.width_ft, props.property.length_ft);
+const metaItems = computed(() => {
+    const items = [];
 
-    if (dimensions) {
-        return `${dimensions} · ${props.property.area_sqft ?? '-'} sqft`;
+    if (props.property.area_sqft) {
+        items.push({
+            icon: 'fa-ruler-combined',
+            label: `${props.property.area_sqft} sqft`,
+        });
     }
 
-    return `${props.property.area_sqft ?? '-'} sqft`;
+    if (props.property.floor_number != null && props.property.floor_number !== '') {
+        items.push({
+            icon: 'fa-stairs',
+            label: `Floor ${props.property.floor_number}`,
+        });
+    }
+
+    return items;
 });
-
-function compare() {
-
-    emit('compare', props.property);
-}
 </script>
+
+<style scoped>
+.rw-property-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #17181b;
+    transition: transform 0.4s ease, border-color 0.4s ease;
+}
+
+.rw-property-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(143, 35, 56, 0.4);
+}
+
+.rw-property-card__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #202226;
+}
+
+.rw-property-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.rw-property-card:hover .rw-property-card__media img {
+    transform: scale(1.035);
+}
+
+.rw-property-card__media .rw-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+}
+
+.rw-property-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem 1.05rem 1.1rem;
+}
+
+.rw-property-card__body h3 {
+    margin: 0;
+    font-size: clamp(1.15rem, 1.5vw, 1.35rem);
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+.rw-property-card__body h3 a {
+    color: #f5f2ee;
+}
+
+.rw-property-card__location {
+    margin: 0;
+    color: #a9adb5;
+    font-size: 0.8rem;
+}
+
+.rw-property-card__location i {
+    margin-right: 0.3rem;
+    color: #8f2338;
+    font-size: 0.7rem;
+}
+
+.rw-property-card__price {
+    margin: 0.2rem 0 0;
+    color: #f5f2ee;
+    font-size: 1.02rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.rw-property-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem 0.85rem;
+    padding-top: 0.35rem;
+    color: #777b82;
+    font-size: 0.74rem;
+}
+
+.rw-property-card__meta i {
+    margin-right: 0.28rem;
+    color: #a9adb5;
+    font-size: 0.68rem;
+}
+
+.rw-property-card__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+    color: #f5f2ee;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.rw-property-card__action i {
+    transition: transform 0.35s ease;
+    font-size: 0.62rem;
+}
+
+.rw-property-card:hover .rw-property-card__action i {
+    transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rw-property-card,
+    .rw-property-card__media img,
+    .rw-property-card__action i {
+        transition: none;
+    }
+
+    .rw-property-card:hover {
+        transform: none;
+    }
+
+    .rw-property-card:hover .rw-property-card__media img {
+        transform: none;
+    }
+}
+</style>

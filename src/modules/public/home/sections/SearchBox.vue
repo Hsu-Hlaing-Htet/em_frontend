@@ -1,8 +1,6 @@
 <script setup>
 import { computed } from 'vue';
 import PropertyCard from '@/components/public/PropertyCard.vue';
-import PropertyCardSkeleton from '@/components/public/PropertyCardSkeleton.vue';
-import ProgressSpinner from 'primevue/progressspinner';
 import { useSearchBox } from '@/composables/public/useSearchBox';
 
 const {
@@ -12,9 +10,7 @@ const {
     loading,
     hasMoreResults,
     offerTypeOptions,
-    propertyTypeOptions,
     priceRangeOptions,
-    bedroomOptions,
     searchProperties,
     loadMoreProperties,
     clearSearch,
@@ -28,24 +24,12 @@ const activeFilters = computed(() => {
         filters.push({ key: 'offer_type', label: search.offer_type === 'sale' ? 'For Sale' : 'For Rent' });
     }
 
-    if (search.property_type) {
-        filters.push({ key: 'property_type', label: search.property_type });
-    }
-
     if (search.township) {
         filters.push({ key: 'township', label: search.township });
     }
 
     if (search.price_range) {
         filters.push({ key: 'price_range', label: 'Price filtered' });
-    }
-
-    if (search.bedrooms) {
-        filters.push({ key: 'bedrooms', label: `${search.bedrooms}+ beds` });
-    }
-
-    if (search.property_id) {
-        filters.push({ key: 'property_id', label: search.property_id });
     }
 
     return filters;
@@ -57,7 +41,7 @@ const activeFilters = computed(() => {
         <div class="container">
             <div class="search-card">
                 <div class="layout-columns">
-                    <div class="col-2 md:col-4 lg:col-2">
+                    <div class="col-4 md:col-4 lg:col-4">
                         <label>Offer Type</label>
                         <Dropdown
                             v-model="search.offer_type"
@@ -68,18 +52,7 @@ const activeFilters = computed(() => {
                         />
                     </div>
 
-                    <div class="col-2 md:col-4 lg:col-2">
-                        <label>Property Type</label>
-                        <Dropdown
-                            v-model="search.property_type"
-                            :options="propertyTypeOptions"
-                            option-label="label"
-                            option-value="value"
-                            style="width: 100%"
-                        />
-                    </div>
-
-                    <div class="col-2 md:col-4 lg:col-2">
+                    <div class="col-4 md:col-4 lg:col-4">
                         <label>Township</label>
                         <InputText
                             v-model="search.township"
@@ -87,33 +60,13 @@ const activeFilters = computed(() => {
                         />
                     </div>
 
-                    <div class="col-2 md:col-4 lg:col-2">
+                    <div class="col-4 md:col-4 lg:col-4">
                         <label>Price Range</label>
                         <Dropdown
                             v-model="search.price_range"
                             :options="priceRangeOptions"
                             option-label="label"
                             option-value="value"
-                            style="width: 100%"
-                        />
-                    </div>
-
-                    <div class="col-2 md:col-4 lg:col-2">
-                        <label>Bedrooms</label>
-                        <Dropdown
-                            v-model="search.bedrooms"
-                            :options="bedroomOptions"
-                            option-label="label"
-                            option-value="value"
-                            style="width: 100%"
-                        />
-                    </div>
-
-                    <div class="col-2 md:col-4 lg:col-2">
-                        <label>Property ID</label>
-                        <InputText
-                            v-model="search.property_id"
-                            placeholder="RR-S-0001"
                             style="width: 100%"
                         />
                     </div>
@@ -173,9 +126,7 @@ const activeFilters = computed(() => {
                     v-for="row in 3"
                     :key="`search-skeleton-${row}`"
                     class="col-4"
-                >
-                  
-                </div>
+                />
             </div>
 
             <div

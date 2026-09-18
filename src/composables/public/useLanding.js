@@ -17,6 +17,40 @@ import {
 } from '@/modules/public/service';
 import { formatCurrency } from '@/utils/formatter';
 
+function unwrapList(response) {
+    const body = response?.data;
+    if (Array.isArray(body?.data)) {
+        return body.data;
+    }
+    if (Array.isArray(body)) {
+        return body;
+    }
+    return [];
+}
+
+function unwrapMetaTotal(response) {
+    return Number(response?.data?.meta?.total ?? 0);
+}
+
+function mapMiniListing(property) {
+    const priceValue = property.purpose === 'rent'
+        ? (property.monthly_rent ?? property.rent_price)
+        : property.sale_price;
+
+    return {
+        id: property.id,
+        purpose: property.purpose,
+        title: property.property_name,
+        price: priceValue
+            ? (property.purpose === 'rent'
+                ? `${formatCurrency(Number(priceValue))} / month`
+                : formatCurrency(Number(priceValue)))
+            : 'Contact for price',
+        location: property.township || property.address || '',
+        image: property.featured_image,
+    };
+}
+
 export function useLanding() {
     const router = useRouter();
     const toast = useAppToast();
@@ -26,27 +60,19 @@ export function useLanding() {
     const featured = reactive({
         sale: [],
         rent: [],
-        houses: [],
-        condos: [],
     });
 
     const stats = reactive({
         total_properties: 0,
-        total_clients: 0,
-        years_of_service: 0,
         available: 0,
-        occupied: 0,
     });
 
     const latestListings = ref([]);
 
     const search = reactive({
         offer_type: null,
-        property_type: null,
         township: '',
         price_range: null,
-        bedrooms: null,
-        property_id: '',
     });
 
     const offerTypeOptions = [
@@ -55,27 +81,12 @@ export function useLanding() {
         { label: 'For Rent', value: 'rent' },
     ];
 
-    const propertyTypeOptions = [
-        { label: 'Any', value: null },
-        { label: 'Apartment', value: 'apartment' },
-        { label: 'Condo', value: 'condo' },
-        { label: 'House', value: 'house' },
-    ];
-
     const priceRangeOptions = [
         { label: 'Any', value: null },
         { label: `Under ${formatCurrency(1000)}`, value: { min: null, max: 1000 } },
         { label: `${formatCurrency(1000)} - ${formatCurrency(2000)}`, value: { min: 1000, max: 2000 } },
         { label: `${formatCurrency(2000)} - ${formatCurrency(5000)}`, value: { min: 2000, max: 5000 } },
         { label: `${formatCurrency(5000)}+`, value: { min: 5000, max: null } },
-    ];
-
-    const bedroomOptions = [
-        { label: 'Any', value: null },
-        { label: '1+', value: 1 },
-        { label: '2+', value: 2 },
-        { label: '3+', value: 3 },
-        { label: '4+', value: 4 },
     ];
 
     const serviceTiles = [
@@ -101,77 +112,9 @@ export function useLanding() {
         },
     ];
 
-    const propertyTypes = [
-        {
-            title: 'Condo',
-            image: 'https://images.unsplash.com/photo-1494526585095-c41746248156',
-        },
-        {
-            title: 'House',
-            image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be',
-        },
-        {
-            title: 'Commercial',
-            image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174',
-        },
-        {
-            title: 'Penthouse',
-            image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd',
-        },
-        {
-            title: 'Apartment',
-            image: 'https://images.unsplash.com/photo-1484154218962-a197022b5858',
-        },
-        {
-            title: 'Serviced Apartment',
-            image: 'https://images.unsplash.com/photo-1460317442991-0ec209397118',
-        },
-    ];
-
-    const latestCommercialSpace = computed(() => [
-        {
-            title: 'Downtown Office Suite',
-            price: `${formatCurrency(4500)} / month`,
-            location: 'Central Business District',
-            image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72',
-        },
-        {
-            title: 'Retail Corner Unit',
-            price: `${formatCurrency(3200)} / month`,
-            location: 'Sanchaung',
-            image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174',
-        },
-        {
-            title: 'Executive Business Floor',
-            price: `${formatCurrency(8900)} / month`,
-            location: 'Yankin',
-            image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2',
-        },
-    ]);
-
-    const latestHouses = computed(() => {
-        if (featured.houses.length) {
-            return featured.houses.slice(0, 3).map((property) => ({
-                title: property.property_name,
-                price: property.sale_price
-                    ? formatCurrency(Number(property.sale_price))
-                    : 'Contact for price',
-                location: property.township,
-                image: property.featured_image,
-            }));
-        }
-
-        return [];
-    });
-
-    const latestPenthouses = computed(() => [
-        {
-            title: 'Skyline Penthouse One',
-            price: `${formatCurrency(6800)} / month`,
-            location: 'Yankin',
-            image: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511',
-        },
-    ]);
+    const latestCommercialSpace = computed(() =>
+        latestListings.value.slice(0, 3).map(mapMiniListing)
+    );
 
     let revealObserver = null;
 
@@ -204,23 +147,32 @@ export function useLanding() {
         loading.value = true;
 
         try {
-            const [featuredRes, statsRes, latestRes] = await Promise.all([
+            const [featuredRes, statsRes, saleRes, rentRes] = await Promise.all([
                 getFeaturedProperties(),
                 getPropertyStats(),
-                getPublicProperties({ page: 1 }),
+                getPublicProperties({ purpose: 'sale', per_page: 6 }),
+                getPublicProperties({ purpose: 'rent', per_page: 6 }),
             ]);
 
-            Object.assign(featured, featuredRes.data);
-            Object.assign(stats, statsRes.data);
+            const featuredSale = unwrapList(featuredRes);
+            const saleListings = unwrapList(saleRes);
+            const rentListings = unwrapList(rentRes);
 
-            latestListings.value = latestRes.data.data || [];
+            featured.sale = featuredSale.length ? featuredSale : saleListings;
+            featured.rent = rentListings;
+
+            latestListings.value = [...featured.sale, ...featured.rent].slice(0, 6);
+
+            const statsPayload = statsRes?.data?.data ?? {};
+            const saleTotal = unwrapMetaTotal(saleRes);
+            const rentTotal = unwrapMetaTotal(rentRes);
+
+            stats.total_properties = Number(statsPayload.total ?? (saleTotal + rentTotal));
+            stats.available = Number(statsPayload.available ?? rentTotal);
         } catch (error) {
-            Object.assign(stats, {
-                total_properties: 48,
-                total_clients: 126,
-                years_of_service: 12,
-                available: 14,
-            });
+            featured.sale = [];
+            featured.rent = [];
+            latestListings.value = [];
 
             toast.add({
                 severity: 'warn',
@@ -238,36 +190,30 @@ export function useLanding() {
     function searchProperties() {
         const min = search.price_range?.min ?? undefined;
         const max = search.price_range?.max ?? undefined;
+        const purpose = search.offer_type || 'sale';
 
         router.push({
-            path: '/properties',
+            path: purpose === 'rent' ? '/rent' : '/buy',
             query: {
-                purpose: search.offer_type || undefined,
-                property_type: search.property_type || undefined,
+                purpose,
                 township: search.township || undefined,
                 budget_min: min,
                 budget_max: max,
-                bedrooms: search.bedrooms || undefined,
-                property_id: search.property_id || undefined,
-                q: search.property_id || undefined,
             },
         });
     }
 
     function clearSearch() {
         search.offer_type = null;
-        search.property_type = null;
         search.township = '';
         search.price_range = null;
-        search.bedrooms = null;
-        search.property_id = '';
     }
 
     function onCompare(property) {
         toast.add({
             severity: 'info',
             summary: 'Compare',
-            detail: `${property.property_name} added to compare list (demo).`,
+            detail: `${property.property_name} added to compare list.`,
             life: 2000,
         });
     }
@@ -291,16 +237,11 @@ export function useLanding() {
         search,
 
         offerTypeOptions,
-        propertyTypeOptions,
         priceRangeOptions,
-        bedroomOptions,
 
         serviceTiles,
-        propertyTypes,
 
         latestCommercialSpace,
-        latestHouses,
-        latestPenthouses,
 
         searchProperties,
         clearSearch,

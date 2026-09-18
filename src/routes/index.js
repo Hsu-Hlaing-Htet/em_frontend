@@ -47,19 +47,23 @@ const routes = [
 ];
 
 function scrollBehavior(to, from, savedPosition) {
+    const prefersReduced = typeof window !== 'undefined'
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const behavior = prefersReduced ? 'auto' : 'smooth';
+
     if (savedPosition) {
-        return savedPosition;
+        return { ...savedPosition, behavior };
     }
 
     if (to.hash) {
         return new Promise((resolve) => {
             window.setTimeout(() => {
-                resolve({ el: to.hash, top: 96, behavior: 'smooth' });
-            }, 340);
+                resolve({ el: to.hash, top: 96, behavior });
+            }, prefersReduced ? 0 : 280);
         });
     }
 
-    return { top: 0, behavior: 'smooth' };
+    return { top: 0, behavior };
 }
 
 const router = createRouter({

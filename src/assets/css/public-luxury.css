@@ -370,8 +370,15 @@
 }
 
 [data-public-layout] :focus-visible {
-    outline: 2px solid rgba(169, 43, 71, 0.75);
-    outline-offset: 2px;
+    outline: var(--rw-focus-outline, 2px solid var(--rw-focus-color, rgba(169, 43, 71, 0.75)));
+    outline-offset: var(--rw-focus-outline-offset, 2px);
+}
+
+[data-public-layout] a:focus:not(:focus-visible),
+[data-public-layout] button:focus:not(:focus-visible),
+[data-public-layout] [role='button']:focus:not(:focus-visible),
+[data-public-layout] .rw-btn:focus:not(:focus-visible) {
+    outline: none;
 }
 
 [data-public-layout] .rw-page-hero__media img {

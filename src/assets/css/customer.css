@@ -5,6 +5,8 @@
 }
 
 .customer-shell {
+    display: flex;
+    flex-direction: column;
     min-height: 100dvh;
     padding-bottom: 0;
 }
@@ -16,6 +18,7 @@
 }
 
 .customer-main {
+    flex: 1 1 auto;
     width: min(100%, 720px);
     margin: 0 auto;
 }
@@ -506,37 +509,7 @@
 }
 
 .customer-portal-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
     min-width: 0;
-    color: var(--admin-text);
-    text-decoration: none;
-}
-
-.customer-portal-brand-mark {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    overflow: hidden;
-    border-radius: 999px;
-}
-
-.customer-portal-brand-mark img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.customer-portal-brand-name {
-    display: block;
-    letter-spacing: 0.025em;
-    color: var(--admin-text-muted);
-    font-size: 0.875rem;
-    font-weight: 500;
 }
 
 .customer-portal-header-actions {
@@ -648,17 +621,6 @@
     font-size: 0.625rem;
     font-weight: 700;
     line-height: 1;
-}
-
-.customer-portal-footer {
-    padding: 1.5rem 1rem 1rem;
-    text-align: center;
-    color: var(--admin-text-muted);
-    font-size: 0.875rem;
-}
-
-.customer-portal-footer p {
-    margin: 0;
 }
 
 .customer-portal-home,
@@ -1309,10 +1271,16 @@ html[data-theme='light']
     }
 }
 
-/* Customer Portal: replace default bright blue focus outline */
+/* Customer Portal: keyboard focus uses shared tokens; mouse clicks leave no ring */
 .customer-shell :focus-visible {
-    outline: 2px solid var(--rw-focus-ring);
-    outline-offset: 2px;
+    outline: var(--rw-focus-outline, 2px solid var(--rw-focus-color, var(--rw-focus-ring)));
+    outline-offset: var(--rw-focus-outline-offset, 2px);
+}
+
+.customer-shell a:focus:not(:focus-visible),
+.customer-shell button:focus:not(:focus-visible),
+.customer-shell [role='button']:focus:not(:focus-visible) {
+    outline: none;
 }
 
 /* theme.css intentionally removes outline for the user-profile trigger;
@@ -1322,8 +1290,18 @@ html[data-theme='light']
     box-shadow: var(--rw-focus-shadow);
 }
 
+.customer-shell .customer-user-profile > button:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+
 /* Same idea for items inside the dropdown menu. */
 .customer-shell .customer-user-profile-menu li:focus-visible {
     outline: none;
     box-shadow: var(--rw-focus-shadow);
+}
+
+.customer-shell .customer-user-profile-menu li:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
 }

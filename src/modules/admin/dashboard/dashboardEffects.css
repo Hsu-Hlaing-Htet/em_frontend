@@ -64,23 +64,29 @@
 
 .page-fade-enter-active,
 .page-fade-leave-active {
-    transition: opacity 0.28s ease, transform 0.28s ease;
+    transition: opacity 200ms ease-out, transform 200ms ease-out;
 }
 
 .page-fade-enter-from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
 }
 
 .page-fade-leave-to {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-4px);
 }
 
 @media (prefers-reduced-motion: reduce) {
     .page-fade-enter-active,
     .page-fade-leave-active {
         transition: none;
+    }
+
+    .page-fade-enter-from,
+    .page-fade-leave-to {
+        opacity: 1;
+        transform: none;
     }
 
     .dashboard-hero-orb {

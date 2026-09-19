@@ -1,67 +1,24 @@
+<script setup>
+/**
+ * Shared developer credit line.
+ * Only "Hsu_Hlaing_Htet" is clickable.
+ */
+</script>
+
 <template>
-    <p :class="['developer-credit', `developer-credit--${variant}`]">
+    <p class="rosewood-footer__developer">
         Designed and Developed by
         <a
+            class="rosewood-footer__developer-link"
             href="https://github.com/Hsu-Hlaing-Htet"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Visit Hsu_Hlaing_Htet on GitHub"
+            aria-label="Visit Hsu_Hlaing_Htet on GitHub (opens in a new tab)"
         >
-            Hsu_Hlaing_Htet
+            Hsu_Hlaing_Htet<span
+                class="rosewood-footer__external-icon"
+                aria-hidden="true"
+            >↗</span>
         </a>
     </p>
 </template>
-
-<script setup>
-defineProps({
-    variant: {
-        type: String,
-        default: 'portal',
-        validator: (value) => ['portal', 'dark'].includes(value),
-    },
-});
-</script>
-
-<style scoped>
-.developer-credit {
-    margin: 0;
-    font-size: 0.78rem;
-    line-height: 1.45;
-    color: inherit;
-}
-
-.developer-credit a {
-    color: #a9adb5;
-    text-decoration: none;
-    transition: color 0.25s ease, text-decoration-color 0.25s ease;
-    text-underline-offset: 0.18em;
-}
-
-.developer-credit a:hover,
-.developer-credit a:focus-visible {
-    text-decoration: underline;
-    outline: none;
-}
-
-.developer-credit--dark {
-    color: #777b82;
-}
-
-.developer-credit--dark a:hover,
-.developer-credit--dark a:focus-visible {
-    color: #f5f2ee;
-}
-
-.developer-credit--portal {
-    color: var(--admin-text-muted, #777b82);
-}
-
-.developer-credit--portal a {
-    color: #a9adb5;
-}
-
-.developer-credit--portal a:hover,
-.developer-credit--portal a:focus-visible {
-    color: var(--rw-primary, #8f2338);
-}
-</style>

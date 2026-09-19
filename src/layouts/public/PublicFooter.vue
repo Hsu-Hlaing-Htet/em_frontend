@@ -1,5 +1,5 @@
 <script setup>
-import DeveloperCredit from '@/components/global/DeveloperCredit.vue';
+import GlobalFooter from '@/components/global/GlobalFooter.vue';
 import { PUBLIC_CONTACT, PUBLIC_SOCIAL_LINKS } from '@/config/publicSite';
 
 defineProps({
@@ -15,6 +15,8 @@ const explore = [
     { label: 'Services', to: '/services' },
     { label: 'About', to: '/about' },
     { label: 'Contact', to: '/contact' },
+    { label: 'Privacy', to: '/privacy' },
+    { label: 'Terms & Conditions', to: '/terms' },
 ];
 
 const properties = [
@@ -30,11 +32,6 @@ const contact = [
 ];
 
 const follow = PUBLIC_SOCIAL_LINKS;
-
-const legal = [
-    { label: 'Privacy', to: '/privacy' },
-    { label: 'Terms & Conditions', to: '/terms' },
-];
 </script>
 
 <template>
@@ -107,22 +104,11 @@ const legal = [
         </div>
 
         <div class="container rw-footer__bottom">
-            <div class="rw-footer__bottom-left">
-                <p>© {{ currentYear }} Rosewood Royale. All rights reserved.</p>
-                <nav
-                    class="rw-footer__legal"
-                    aria-label="Legal"
-                >
-                    <router-link
-                        v-for="item in legal"
-                        :key="item.to"
-                        :to="item.to"
-                    >
-                        {{ item.label }}
-                    </router-link>
-                </nav>
-            </div>
-            <DeveloperCredit variant="dark" />
+            <GlobalFooter
+                tag="div"
+                variant="on-dark"
+                :year="currentYear"
+            />
         </div>
     </footer>
 </template>
@@ -130,7 +116,7 @@ const legal = [
 <style scoped>
 .rw-footer {
     margin-top: 1.5rem;
-    padding: 3rem 0 1.15rem;
+    padding: 3rem 0 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     background: #0a0a0b;
 }
@@ -144,10 +130,12 @@ const legal = [
 
 .rw-footer__brand {
     margin: 0;
-    font-family: var(--rw-font-serif, 'Cormorant Garamond', serif);
+    font-family: var(--rosewood-brand-font, var(--rw-font-serif, 'Cormorant Garamond', serif));
     font-size: 1.7rem;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     color: #f5f2ee;
+    background: none;
 }
 
 .rw-footer__tagline {
@@ -205,44 +193,15 @@ const legal = [
 }
 
 .rw-footer__bottom {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.85rem 1.5rem;
-    padding-top: 1.1rem;
-    padding-bottom: 0.35rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    color: #777b82;
-    font-size: 0.78rem;
+    padding: 0;
 }
 
-.rw-footer__bottom-left {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1.25rem;
-}
-
-.rw-footer__bottom-left p {
+.rw-footer__bottom :deep(.rosewood-footer__inner) {
+    width: 100%;
+    max-width: none;
     margin: 0;
-}
-
-.rw-footer__legal {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.1rem;
-}
-
-.rw-footer__legal a {
-    color: #a9adb5;
-    transition: color 0.25s ease;
-}
-
-.rw-footer__legal a:hover,
-.rw-footer__legal a:focus-visible,
-.rw-footer__legal a.router-link-active {
-    color: #f5f2ee;
+    padding-inline: 0;
+    padding-bottom: 1.15rem;
 }
 
 @media (max-width: 960px) {
@@ -255,11 +214,6 @@ const legal = [
     .rw-footer__grid {
         grid-template-columns: 1fr;
         gap: 1.75rem;
-    }
-
-    .rw-footer__bottom {
-        flex-direction: column;
-        align-items: flex-start;
     }
 }
 </style>

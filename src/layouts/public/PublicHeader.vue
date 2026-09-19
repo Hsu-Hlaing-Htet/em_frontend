@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, onMounted, onBeforeUnmount, ref } from 'vue';
 import { useStickyNavbar } from '@/composables/public/useStickyNavbar';
+import RosewoodBrand from '@/components/global/RosewoodBrand.vue';
 
 const props = defineProps({
     currentRoute: {
@@ -152,14 +153,13 @@ onBeforeUnmount(() => {
         :class="{ 'is-scrolled': isScrolled }"
     >
         <div class="container rw-header__inner">
-            <router-link to="/" class="rw-brand" @click="emit('close-mobile-menu')">
-                <img
-                    src="@/assets/images/logo-white.jpg"
-                    alt="Rosewood Royale"
-                    class="rw-brand__logo"
-                >
-                <span class="rw-brand__name">Rosewood Royale</span>
-            </router-link>
+            <RosewoodBrand
+                to="/"
+                variant="on-dark"
+                size="md"
+                class="rw-header__brand"
+                @click="emit('close-mobile-menu')"
+            />
 
             <nav class="rw-nav" aria-label="Primary">
                 <template v-for="link in navLinks" :key="link.label">
@@ -245,7 +245,12 @@ onBeforeUnmount(() => {
                 />
                 <aside class="rw-drawer__panel">
                     <div class="rw-drawer__head">
-                        <span class="rw-brand__name">Rosewood Royale</span>
+                        <RosewoodBrand
+                            to="/"
+                            variant="on-dark"
+                            size="sm"
+                            @click="emit('close-mobile-menu')"
+                        />
                         <button
                             type="button"
                             class="rw-header__menu-btn"
@@ -313,28 +318,8 @@ onBeforeUnmount(() => {
     overflow: visible;
 }
 
-.rw-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.65rem;
+.rw-header__brand {
     justify-self: start;
-}
-
-.rw-brand__logo {
-    width: 30px;
-    height: 30px;
-    object-fit: cover;
-    border-radius: 6px;
-}
-
-/* Public chrome is dark — keep the elegant light-to-burgundy brand gradient */
-.rw-brand__name {
-    background-image: linear-gradient(
-        100deg,
-        #f5f2ee 0%,
-        #d9c3c7 45%,
-        #a92b47 100%
-    );
 }
 
 .rw-nav {

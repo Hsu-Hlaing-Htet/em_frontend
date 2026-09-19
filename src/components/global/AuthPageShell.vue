@@ -1,6 +1,7 @@
 <script setup>
 import ThemeToggle from '@/components/global/ThemeToggle.vue';
-import DevelopedByCredit from '@/components/global/DevelopedByCredit.vue';
+import GlobalFooter from '@/components/global/GlobalFooter.vue';
+import RosewoodBrand from '@/components/global/RosewoodBrand.vue';
 
 defineProps({
     title: {
@@ -19,7 +20,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="rw-auth-shell relative flex min-h-screen items-center justify-center px-4">
+    <div class="rw-auth-shell relative flex min-h-screen flex-col items-center justify-center px-4 pb-24 pt-8">
         <div
             v-if="showThemeToggle"
             class="absolute right-4 top-4"
@@ -29,15 +30,12 @@ defineProps({
 
         <section class="rw-auth-card w-full max-w-md rounded-md px-7 py-8">
             <div class="text-center">
-                <div
-                    class="mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-rw-surface shadow-[0_14px_35px_rgba(85,32,50,0.26)] ring-1 ring-[var(--rw-border)]"
-                >
-                    <img
-                        src="@/assets/images/logo-dark.jpg"
-                        alt="Rosewood Royale"
-                        class="h-full w-full object-cover"
-                    >
-                </div>
+                <RosewoodBrand
+                    variant="on-light"
+                    size="lg"
+                    stacked
+                    class="mx-auto"
+                />
 
                 <h2 class="mt-5 text-2xl font-semibold tracking-tight text-[var(--rw-primary-deep)]">
                     {{ title }}
@@ -63,8 +61,8 @@ defineProps({
             </div>
         </section>
 
-        <footer class="pointer-events-none absolute inset-x-0 bottom-4 text-center">
-            <DevelopedByCredit text-class="text-rw-muted" />
-        </footer>
+        <div class="pointer-events-auto absolute inset-x-0 bottom-0">
+            <GlobalFooter variant="portal" />
+        </div>
     </div>
 </template>

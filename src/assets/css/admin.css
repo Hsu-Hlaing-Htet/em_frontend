@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import './admin-motion.css';
 
 @theme {
     --color-rosewood: var(--rw-primary-deep);
@@ -9,14 +10,17 @@
 :root {
     font-size: 15px;
     --admin-topbar-height: 76px;
-    --admin-transition: 0.3s ease;
+    --admin-transition: 0.22s ease;
 }
 
 [data-admin-layout] {
     --sidebar-width: 280px;
+    --rosewood-admin-serif: var(--rosewood-brand-font, 'Cormorant Garamond', Georgia, serif);
 
     background: var(--admin-bg);
     color: var(--admin-text);
+    font-variant-numeric: tabular-nums lining-nums;
+    -webkit-font-smoothing: antialiased;
 }
 
 [data-customer-layout] {
@@ -51,12 +55,12 @@
 .admin-sidebar {
     background: var(--admin-sidebar-bg);
     border-right: 1px solid var(--admin-border);
+    box-shadow: none;
 }
-
 
 .admin-panel {
     padding: 20px;
-    border-radius: 3px;
+    border-radius: 6px;
     background: var(--admin-surface-solid);
     border: 1px solid var(--admin-border);
     box-shadow: var(--admin-shadow-soft);
@@ -95,8 +99,11 @@
     flex: 1 1 auto;
     min-width: 0;
     color: var(--admin-text);
-    font-size: 1rem;
+    font-family: var(--rosewood-admin-serif, var(--rosewood-brand-font, Georgia, serif));
+    font-size: 1.15rem;
     font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
 }
 
 .admin-list-toolbar__heading-actions,
@@ -237,10 +244,13 @@
     background: var(--rw-danger-hover-bg);
 }
 
-.admin-selection-delete:focus-visible {
-    outline: 2px solid var(--rw-focus-ring);
+.admin-selection-delete:focus:not(:focus-visible) {
+    outline: none;
+}
 
-    outline-offset: 2px;
+.admin-selection-delete:focus-visible {
+    outline: var(--rw-focus-outline, 2px solid var(--rw-focus-color, var(--rw-focus-ring)));
+    outline-offset: var(--rw-focus-outline-offset, 2px);
 }
 
 
@@ -258,6 +268,14 @@
     color: var(--admin-text);
     border-color: var(--admin-border);
     border-bottom: 1px solid var(--admin-border);
+}
+
+.p-datatable-thead > tr > th {
+    color: var(--admin-text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 .p-datatable .p-datatable-tbody > tr:hover {
@@ -555,6 +573,11 @@
     outline: none;
 }
 
+.admin-profile-photo-remove:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: var(--admin-shadow-soft);
+}
+
 .admin-profile-photo-remove:focus-visible {
     box-shadow: var(--rw-focus-shadow);
 }
@@ -581,4 +604,11 @@
     .no-print {
         display: none !important;
     }
+}
+
+[data-admin-layout] a:focus:not(:focus-visible),
+[data-admin-layout] button:focus:not(:focus-visible),
+[data-admin-layout] [role='button']:focus:not(:focus-visible),
+[data-admin-layout] .p-button:focus:not(:focus-visible) {
+    outline: none;
 }

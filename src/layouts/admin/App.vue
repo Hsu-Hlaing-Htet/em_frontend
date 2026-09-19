@@ -12,7 +12,7 @@
         <nav
             id="admin-navigation"
             :aria-label="$t('navigation.adminNavigation')"
-            class="admin-sidebar fixed inset-y-0 left-0 z-[1000] flex w-[var(--sidebar-width)] flex-col border-r border-[var(--admin-border)] shadow-2xl transition-all duration-300"
+            class="admin-sidebar fixed inset-y-0 left-0 z-[1000] flex w-[var(--sidebar-width)] flex-col border-r border-[var(--admin-border)] transition-all duration-300"
             @click.stop="onSidebarClick"
         >
             <MenuHeader
@@ -208,17 +208,17 @@ export default {
 
 :global(.page-fade-enter-active),
 :global(.page-fade-leave-active) {
-    transition: opacity 0.28s ease, transform 0.28s ease;
+    transition: opacity 200ms ease-out, transform 200ms ease-out;
 }
 
 :global(.page-fade-enter-from) {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
 }
 
 :global(.page-fade-leave-to) {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-4px);
 }
 
 :global(.page-transition-root) {
@@ -230,6 +230,12 @@ export default {
     :global(.page-fade-enter-active),
     :global(.page-fade-leave-active) {
         transition: none;
+    }
+
+    :global(.page-fade-enter-from),
+    :global(.page-fade-leave-to) {
+        opacity: 1;
+        transform: none;
     }
 }
 </style>

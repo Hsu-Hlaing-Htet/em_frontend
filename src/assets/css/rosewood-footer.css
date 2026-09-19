@@ -1,0 +1,109 @@
+/* Shared Rosewood Royale footer bar — Public / Customer / Admin */
+
+.rosewood-footer {
+    --rosewood-footer-text: var(--admin-text-muted, var(--rw-text-muted, #777b82));
+    --rosewood-footer-link: var(--rw-brand, var(--rw-primary, #8f2338));
+    --rosewood-footer-link-hover: var(--rw-brand-hover, var(--rw-primary-deep, #a92b47));
+    --rosewood-footer-border: var(--admin-border, var(--rw-border, rgba(255, 255, 255, 0.1)));
+    --rosewood-footer-bg: transparent;
+
+    width: 100%;
+    background: var(--rosewood-footer-bg);
+    color: var(--rosewood-footer-text);
+}
+
+.rosewood-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    width: min(100%, 80rem);
+    margin: 0 auto;
+    padding: 1.15rem 1.5rem;
+    border-top: 1px solid var(--rosewood-footer-border);
+}
+
+.rosewood-footer__legal,
+.rosewood-footer__developer {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--rosewood-footer-text);
+}
+
+.rosewood-footer__developer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    margin-left: 0.2rem;
+    color: var(--rosewood-footer-link);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.rosewood-footer__developer-link:hover {
+    color: var(--rosewood-footer-link-hover);
+}
+
+.rosewood-footer__developer-link:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.rosewood-footer__developer-link:focus-visible {
+    outline: var(--rw-focus-outline, 2px solid var(--rosewood-footer-link));
+    outline-offset: var(--rw-focus-outline-offset, 2px);
+    border-radius: 2px;
+}
+
+.rosewood-footer__external-icon {
+    font-size: 0.75em;
+    line-height: 1;
+    translate: 0 -0.05em;
+}
+
+/* Public dark marketing footer embeds this bar */
+.rosewood-footer--on-dark {
+    --rosewood-footer-text: #777b82;
+    --rosewood-footer-link: #c45a72;
+    --rosewood-footer-link-hover: #e08a9c;
+    --rosewood-footer-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Standalone portal footers (customer / admin) */
+.rosewood-footer--portal {
+    --rosewood-footer-bg: transparent;
+    margin-top: auto;
+}
+
+.rosewood-footer--portal .rosewood-footer__inner {
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 1.35rem 1.5rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .rosewood-footer--portal .rosewood-footer__inner {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+}
+
+@media (max-width: 640px) {
+    .rosewood-footer__inner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-inline: 1rem;
+    }
+
+    .rosewood-footer--portal .rosewood-footer__inner {
+        align-items: center;
+        text-align: center;
+    }
+}

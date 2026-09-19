@@ -92,6 +92,18 @@ const faqs = [
 
 bindErrorClearing(form, errors);
 
+function firstError(field) {
+    const value = errors.get(field);
+
+    if (Array.isArray(value)) {
+        return value.find(
+            (message) => typeof message === 'string' && message.trim().length > 0
+        ) || '';
+    }
+
+    return typeof value === 'string' ? value : '';
+}
+
 function toggleFaq(index) {
     openFaq.value = openFaq.value === index ? null : index;
 }
@@ -235,9 +247,9 @@ async function submit() {
                                 placeholder="Your full name"
                             >
                             <small
-                                v-if="errors.first('name')"
+                                v-if="firstError('name')"
                                 class="rw-error"
-                            >{{ errors.first('name') }}</small>
+                            >{{ firstError('name') }}</small>
                         </div>
 
                         <div class="rw-field">
@@ -251,9 +263,9 @@ async function submit() {
                                 placeholder="you@email.com"
                             >
                             <small
-                                v-if="errors.first('email')"
+                                v-if="firstError('email')"
                                 class="rw-error"
-                            >{{ errors.first('email') }}</small>
+                            >{{ firstError('email') }}</small>
                         </div>
 
                         <div class="rw-field">
@@ -267,9 +279,9 @@ async function submit() {
                                 placeholder="+95 …"
                             >
                             <small
-                                v-if="errors.first('phone')"
+                                v-if="firstError('phone')"
                                 class="rw-error"
-                            >{{ errors.first('phone') }}</small>
+                            >{{ firstError('phone') }}</small>
                         </div>
 
                         <div class="rw-field">
@@ -282,9 +294,9 @@ async function submit() {
                                 placeholder="How can we help?"
                             >
                             <small
-                                v-if="errors.first('subject')"
+                                v-if="firstError('subject')"
                                 class="rw-error"
-                            >{{ errors.first('subject') }}</small>
+                            >{{ firstError('subject') }}</small>
                         </div>
                     </div>
 
@@ -310,9 +322,9 @@ async function submit() {
                             </option>
                         </select>
                         <small
-                            v-if="errors.first('preferred_service')"
-                                class="rw-error"
-                            >{{ errors.first('preferred_service') }}</small>
+                            v-if="firstError('preferred_service')"
+                            class="rw-error"
+                        >{{ firstError('preferred_service') }}</small>
                     </div>
 
                     <div class="rw-field">
@@ -325,9 +337,9 @@ async function submit() {
                             placeholder="Tell us about the residence, location, or support you need."
                         />
                         <small
-                            v-if="errors.first('message')"
-                                class="rw-error"
-                            >{{ errors.first('message') }}</small>
+                            v-if="firstError('message')"
+                            class="rw-error"
+                        >{{ firstError('message') }}</small>
                     </div>
 
                     <button

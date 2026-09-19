@@ -1,0 +1,170 @@
+/**
+ * Rosewood Royale — shared interactive focus system
+ *
+ * Mouse click: no persistent outline/ring on chrome controls
+ * Keyboard (:focus-visible): clear, subtle burgundy indicator
+ * Form fields: keep active focus via border/shadow (see portal CSS)
+ */
+
+:root {
+    --rw-focus-color: var(--rw-primary, #80152f);
+    --rw-focus-outline-width: 2px;
+    --rw-focus-outline: var(--rw-focus-outline-width) solid var(--rw-focus-color);
+    --rw-focus-outline-offset: 2px;
+}
+
+/* Align legacy tokens with the shared focus color */
+html[data-theme='light'],
+html:not([data-theme]),
+html[data-theme='dark'] {
+    --rw-focus-outline-color: var(--rw-focus-color);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Mouse: suppress UA / library rings that stick after click                    */
+/* -------------------------------------------------------------------------- */
+
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+summary:focus:not(:focus-visible),
+[role='button']:focus:not(:focus-visible),
+[role='menuitem']:focus:not(:focus-visible),
+[role='tab']:focus:not(:focus-visible),
+[role='link']:focus:not(:focus-visible),
+[tabindex]:not([tabindex='-1']):focus:not(:focus-visible),
+.rosewood-brand:focus:not(:focus-visible),
+.rosewood-footer__developer-link:focus:not(:focus-visible),
+.p-button:focus:not(:focus-visible),
+.p-button.p-focus:not(:focus-visible),
+.p-link:focus:not(:focus-visible),
+.p-paginator-element:focus:not(:focus-visible),
+.p-paginator-page:focus:not(:focus-visible),
+.p-tabview-nav-link:focus:not(:focus-visible),
+.p-tabmenu-nav a:focus:not(:focus-visible),
+.p-menuitem-link:focus:not(:focus-visible),
+.p-panelmenu-header-action:focus:not(:focus-visible),
+.p-accordion-header-link:focus:not(:focus-visible),
+.p-accordion-header-action:focus:not(:focus-visible),
+.p-dialog-header-icon:focus:not(:focus-visible),
+.p-toast-icon-close:focus:not(:focus-visible),
+.p-chip-remove-icon:focus:not(:focus-visible),
+.theme-toggle:focus:not(:focus-visible),
+.menu-link:focus:not(:focus-visible),
+.rw-nav__link:focus:not(:focus-visible),
+.rw-nav__menu-link:focus:not(:focus-visible),
+.rw-btn:focus:not(:focus-visible),
+.rw-header__menu-btn:focus:not(:focus-visible),
+.rw-chat__trigger:focus:not(:focus-visible),
+.rw-chat__send:focus:not(:focus-visible),
+.rw-chat__minimize:focus:not(:focus-visible),
+.rw-chat__action:focus:not(:focus-visible) {
+    outline: none !important;
+}
+
+/* Clear PrimeVue / utility focus rings that use box-shadow on mouse focus */
+.p-button:focus:not(:focus-visible),
+.p-button.p-focus:not(:focus-visible),
+.p-link:focus:not(:focus-visible),
+.p-paginator-element:focus:not(:focus-visible),
+.p-tabview-nav-link:focus:not(:focus-visible),
+.p-menuitem-link:focus:not(:focus-visible),
+.theme-toggle:focus:not(:focus-visible),
+.theme-toggle--plain:focus:not(:focus-visible),
+.admin-user-profile > button:focus:not(:focus-visible),
+.customer-user-profile > button:focus:not(:focus-visible) {
+    box-shadow: none !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Keyboard: consistent accessible focus indicator                              */
+/* -------------------------------------------------------------------------- */
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[role='button']:focus-visible,
+[role='menuitem']:focus-visible,
+[role='tab']:focus-visible,
+[role='link']:focus-visible,
+.rosewood-brand:focus-visible,
+.rosewood-footer__developer-link:focus-visible,
+.p-button:focus-visible,
+.p-link:focus-visible,
+.p-paginator-element:focus-visible,
+.p-paginator-page:focus-visible,
+.p-tabview-nav-link:focus-visible,
+.p-tabmenu-nav a:focus-visible,
+.p-menuitem-link:focus-visible,
+.p-panelmenu-header-action:focus-visible,
+.p-accordion-header-link:focus-visible,
+.p-dialog-header-icon:focus-visible,
+.p-toast-icon-close:focus-visible,
+.theme-toggle:focus-visible,
+.menu-link:focus-visible,
+.rw-nav__link:focus-visible,
+.rw-nav__menu-link:focus-visible,
+.rw-btn:focus-visible,
+.rw-header__menu-btn:focus-visible {
+    outline: var(--rw-focus-outline);
+    outline-offset: var(--rw-focus-outline-offset);
+}
+
+/* Prefer outline-only for keyboard — avoid outline + glow double rings */
+.p-button:focus-visible,
+.p-link:focus-visible,
+.theme-toggle:focus-visible,
+.theme-toggle--plain:focus-visible {
+    box-shadow: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Form controls: visible active focus, no double outline                       */
+/* Portal CSS supplies burgundy border / soft glow; strip competing outlines.   */
+/* -------------------------------------------------------------------------- */
+
+input:not([type='button']):not([type='submit']):not([type='reset']):not([type='checkbox']):not([type='radio']):not([type='file']):not([type='image']):not([type='range']):not([type='color']):focus,
+textarea:focus,
+select:focus,
+.p-inputtext:enabled:focus,
+.p-inputnumber-input:enabled:focus,
+.p-textarea:enabled:focus,
+.p-password-input:enabled:focus,
+.rw-input:focus,
+.rw-field input:focus,
+.rw-field select:focus,
+.rw-field textarea:focus {
+    outline: none;
+}
+
+/* Checkbox / radio: keyboard-only ring on the visible box when possible */
+input[type='checkbox']:focus:not(:focus-visible),
+input[type='radio']:focus:not(:focus-visible) {
+    outline: none;
+}
+
+input[type='checkbox']:focus-visible,
+input[type='radio']:focus-visible {
+    outline: var(--rw-focus-outline);
+    outline-offset: var(--rw-focus-outline-offset);
+}
+
+/* PrimeVue dropdown / select trigger — keep open-state chrome, no mouse outline */
+.p-dropdown:focus:not(:focus-visible),
+.p-select:focus:not(:focus-visible),
+.p-dropdown.p-focus:not(:focus-visible),
+.p-select.p-focus:not(:focus-visible) {
+    outline: none;
+}
+
+.p-dropdown:focus-visible,
+.p-select:focus-visible {
+    outline: var(--rw-focus-outline);
+    outline-offset: var(--rw-focus-outline-offset);
+}
+
+/* Skip link remains always visible when focused (a11y) */
+.skip-link:focus,
+.skip-link:focus-visible {
+    outline: var(--rw-focus-outline);
+    outline-offset: var(--rw-focus-outline-offset);
+}

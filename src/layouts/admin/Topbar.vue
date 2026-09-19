@@ -13,8 +13,6 @@
             <i class="pi pi-bars" />
         </button>
 
-        <div class="text-base font-bold text-rosewood lg:hidden">Rosewood Royale</div>
-
         <ul class="language-switcher-host ml-auto flex list-none items-center gap-2.5 p-0">
             <li>
                 <ThemeToggle plain />

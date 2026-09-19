@@ -1,24 +1,13 @@
 <template>
     <div class="border-b border-[var(--admin-border)] px-3 pb-4 pt-5">
         <div class="flex items-center justify-between gap-2">
-            <router-link
+            <RosewoodBrand
                 :to="{ name: 'dashboard' }"
-                class="flex min-w-0 items-center gap-3.5 text-[var(--admin-text)] no-underline"
-            >
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full">
-                    <img
-                        src="@/assets/images/logo-dark.jpg"
-                        alt="Rosewood Royale"
-                        class="h-full w-full object-cover"
-                    >
-                </div>
-                <div
-                    class="min-w-0 transition-all duration-300"
-                    :class="sidebarCollapsed ? 'pointer-events-none w-0 overflow-hidden opacity-0' : ''"
-                >
-                    <span class="block text-[var(--admin-text-muted)] font-medium tracking-wide">Rosewood Royale</span>
-                </div>
-            </router-link>
+                variant="on-light"
+                :size="sidebarCollapsed ? 'compact' : 'md'"
+                :show-name="!sidebarCollapsed"
+                class="min-w-0"
+            />
 
             <button
                 v-if="!mobileMenuActive"
@@ -36,8 +25,12 @@
 
 <script>
 import { inject } from 'vue';
+import RosewoodBrand from '@/components/global/RosewoodBrand.vue';
 
 export default {
+    components: {
+        RosewoodBrand,
+    },
     props: {
         menuActive: Boolean,
         mobileMenuActive: Boolean,

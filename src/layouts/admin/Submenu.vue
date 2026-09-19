@@ -545,7 +545,9 @@ export default {
 .layout-submenu-wrapper-enter-active,
 .layout-submenu-wrapper-leave-active {
     overflow: hidden;
-    transition: all 0.25s ease;
+    transition:
+        opacity 200ms ease-out,
+        max-height 220ms ease-out;
 }
 
 .layout-submenu-wrapper-enter-from,
@@ -558,6 +560,13 @@ export default {
 .layout-submenu-wrapper-leave-from {
     opacity: 1;
     max-height: 500px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .layout-submenu-wrapper-enter-active,
+    .layout-submenu-wrapper-leave-active {
+        transition: none;
+    }
 }
 </style>
 

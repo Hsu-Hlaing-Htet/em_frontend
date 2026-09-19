@@ -1,0 +1,141 @@
+/* Shared Rosewood Royale brand lockup — used by all portals */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap');
+
+:root {
+    --rosewood-brand-font: 'Cormorant Garamond', 'EB Garamond', Georgia, 'Times New Roman', serif;
+    --rosewood-brand-gap: 12px;
+    --rosewood-brand-logo-size: 48px;
+    --rosewood-brand-name-size: 1.35rem;
+    --rosewood-brand-name-weight: 600;
+    --rosewood-brand-name-tracking: 0.02em;
+    --rosewood-brand-name-color: var(--rw-brand, #8f2338);
+}
+
+.rosewood-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rosewood-brand-gap);
+    min-width: 0;
+    max-width: 100%;
+    text-decoration: none;
+    color: inherit;
+    line-height: 1;
+}
+
+.rosewood-brand:hover,
+.rosewood-brand:focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+.rosewood-brand:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.rosewood-brand:focus-visible {
+    outline: var(--rw-focus-outline, 2px solid var(--rw-brand, #8f2338));
+    outline-offset: var(--rw-focus-outline-offset, 2px);
+}
+
+.rosewood-brand__logo {
+    display: block;
+    flex-shrink: 0;
+    width: var(--rosewood-brand-logo-size);
+    height: var(--rosewood-brand-logo-size);
+    object-fit: contain;
+    object-position: center;
+    border-radius: 8px;
+}
+
+.rosewood-brand__name {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    background-image: none;
+    font-family: var(--rosewood-brand-font);
+    font-size: var(--rosewood-brand-name-size);
+    font-weight: var(--rosewood-brand-name-weight);
+    font-style: normal;
+    letter-spacing: var(--rosewood-brand-name-tracking);
+    line-height: 1.15;
+    color: var(--rosewood-brand-name-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+}
+
+/* Dark chrome (public header) — same burgundy wordmark as portals; white logo for contrast */
+.rosewood-brand--on-dark {
+    --rosewood-brand-name-color: var(--rw-brand, #8f2338);
+}
+
+/* Light chrome (admin / customer / auth) — brand burgundy wordmark */
+.rosewood-brand--on-light {
+    --rosewood-brand-name-color: var(--rw-brand, #8f2338);
+}
+
+.rosewood-brand--sm {
+    --rosewood-brand-gap: 10px;
+    --rosewood-brand-logo-size: 40px;
+    --rosewood-brand-name-size: 1.15rem;
+}
+
+.rosewood-brand--md {
+    --rosewood-brand-gap: 12px;
+    --rosewood-brand-logo-size: 48px;
+    --rosewood-brand-name-size: 1.35rem;
+}
+
+.rosewood-brand--lg {
+    --rosewood-brand-gap: 14px;
+    --rosewood-brand-logo-size: 54px;
+    --rosewood-brand-name-size: 1.5rem;
+}
+
+.rosewood-brand--compact {
+    --rosewood-brand-gap: 10px;
+    --rosewood-brand-logo-size: 36px;
+    --rosewood-brand-name-size: 1.05rem;
+}
+
+/* Auth / centered lockups: logo above name */
+.rosewood-brand--stacked {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.85rem;
+}
+
+.rosewood-brand--stacked .rosewood-brand__name {
+    white-space: nowrap;
+}
+
+.rosewood-brand--name-hidden .rosewood-brand__name {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .rosewood-brand--md {
+        --rosewood-brand-logo-size: 44px;
+        --rosewood-brand-name-size: 1.25rem;
+        --rosewood-brand-gap: 11px;
+    }
+}
+
+@media (max-width: 640px) {
+    .rosewood-brand--md {
+        --rosewood-brand-logo-size: 40px;
+        --rosewood-brand-name-size: 1.1rem;
+        --rosewood-brand-gap: 10px;
+    }
+
+    .rosewood-brand--lg {
+        --rosewood-brand-logo-size: 48px;
+        --rosewood-brand-name-size: 1.3rem;
+    }
+}

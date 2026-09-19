@@ -1,0 +1,143 @@
+/**
+ * Admin Portal — subtle enter/exit motion only.
+ * Does NOT alter hover, button, or interactive chrome styles.
+ */
+
+/* —— Route page transition (used by Admin App.vue Transition name="page-fade") —— */
+[data-admin-layout] .page-fade-enter-active,
+[data-admin-layout] .page-fade-leave-active {
+    transition:
+        opacity 200ms ease-out,
+        transform 200ms ease-out;
+}
+
+[data-admin-layout] .page-fade-enter-from {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+[data-admin-layout] .page-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+
+[data-admin-layout] .page-transition-root {
+    display: block;
+    width: 100%;
+}
+
+/* —— Panels / cards: soft fade-up on page content —— */
+@keyframes admin-surface-enter {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+[data-admin-layout] .page-transition-root > .admin-panel,
+[data-admin-layout] .page-transition-root > .dashboard-panel,
+[data-admin-layout] .page-transition-root > .relative > .admin-panel,
+[data-admin-layout] .page-transition-root .admin-panel {
+    animation: admin-surface-enter 220ms ease-out both;
+}
+
+/* Tiny stagger for sibling panels (caps delay; keeps large tables snappy) */
+[data-admin-layout] .page-transition-root .admin-panel:nth-of-type(1) {
+    animation-delay: 0ms;
+}
+
+[data-admin-layout] .page-transition-root .admin-panel:nth-of-type(2) {
+    animation-delay: 35ms;
+}
+
+[data-admin-layout] .page-transition-root .admin-panel:nth-of-type(3) {
+    animation-delay: 70ms;
+}
+
+[data-admin-layout] .page-transition-root .admin-panel:nth-of-type(4) {
+    animation-delay: 100ms;
+}
+
+[data-admin-layout] .page-transition-root .admin-panel:nth-of-type(n + 5) {
+    animation-delay: 120ms;
+}
+
+/* —— Dialogs: soft opacity + translate (PrimeVue enter classes) —— */
+.p-dialog-enter-active,
+.p-dialog-leave-active,
+.p-component-overlay-enter-active,
+.p-component-overlay-leave-active {
+    transition: opacity 180ms ease-out !important;
+}
+
+.p-dialog-enter-from,
+.p-dialog-leave-to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+}
+
+.p-dialog-enter-active .p-dialog,
+.p-dialog-enter-active.p-dialog,
+.p-dialog.p-dialog-enter-active {
+    transition:
+        opacity 190ms ease-out,
+        transform 190ms ease-out !important;
+}
+
+/* —— Connected overlays (dropdowns / menus) —— */
+.p-connected-overlay-enter-from,
+.p-connected-overlay-leave-to {
+    opacity: 0;
+    transform: translateY(4px);
+}
+
+.p-connected-overlay-enter-active,
+.p-connected-overlay-leave-active {
+    transition:
+        opacity 160ms ease-out,
+        transform 160ms ease-out;
+}
+
+/* —— Mobile sidebar mask (Admin App.vue layout-mask) —— */
+[data-admin-layout] .layout-mask-enter-active,
+[data-admin-layout] .layout-mask-leave-active {
+    transition: opacity 200ms ease-out;
+}
+
+/* —— Reduced motion —— */
+@media (prefers-reduced-motion: reduce) {
+    [data-admin-layout] .page-fade-enter-active,
+    [data-admin-layout] .page-fade-leave-active,
+    [data-admin-layout] .layout-mask-enter-active,
+    [data-admin-layout] .layout-mask-leave-active,
+    .p-dialog-enter-active,
+    .p-dialog-leave-active,
+    .p-component-overlay-enter-active,
+    .p-component-overlay-leave-active,
+    .p-connected-overlay-enter-active,
+    .p-connected-overlay-leave-active {
+        transition: none !important;
+    }
+
+    [data-admin-layout] .page-fade-enter-from,
+    [data-admin-layout] .page-fade-leave-to,
+    .p-dialog-enter-from,
+    .p-dialog-leave-to,
+    .p-connected-overlay-enter-from,
+    .p-connected-overlay-leave-to {
+        opacity: 1;
+        transform: none;
+    }
+
+    [data-admin-layout] .page-transition-root .admin-panel,
+    [data-admin-layout] .page-transition-root > .admin-panel,
+    [data-admin-layout] .page-transition-root > .dashboard-panel,
+    [data-admin-layout] .page-transition-root > .relative > .admin-panel {
+        animation: none !important;
+    }
+}

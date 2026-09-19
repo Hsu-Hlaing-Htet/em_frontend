@@ -337,7 +337,7 @@ function onQuickAction(action) {
 onMounted(() => {
     document.addEventListener('keydown', onEscape);
 
-    const footer = document.querySelector('[data-public-footer], .customer-portal-footer');
+    const footer = document.querySelector('[data-rosewood-footer], [data-public-footer]');
     if (footer && typeof IntersectionObserver !== 'undefined') {
         footerObserver = new IntersectionObserver(
             ([entry]) => {
@@ -564,7 +564,7 @@ onBeforeUnmount(() => {
 }
 
 .rw-chat.is-near-footer {
-    --chat-bottom: 120px;
+    --chat-bottom: 140px;
 }
 
 .rw-chat__trigger {
@@ -1022,7 +1022,7 @@ onBeforeUnmount(() => {
     }
 
     .rw-chat.is-near-footer {
-        --chat-bottom: 110px;
+        --chat-bottom: 130px;
     }
 
     .rw-chat__trigger {
@@ -1046,7 +1046,7 @@ onBeforeUnmount(() => {
     }
 
     .rw-chat.is-near-footer {
-        --chat-bottom: 100px;
+        --chat-bottom: 128px;
     }
 
     .rw-chat__trigger {

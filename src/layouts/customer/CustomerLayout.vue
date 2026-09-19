@@ -6,18 +6,12 @@
     >
         <header class="customer-portal-header language-switcher-surface">
             <div class="customer-portal-header-inner">
-                <router-link
+                <RosewoodBrand
                     :to="{ name: 'customerDashboard' }"
+                    variant="on-light"
+                    size="md"
                     class="customer-portal-brand"
-                >
-                    <span class="customer-portal-brand-mark">
-                        <img
-                            src="@/assets/images/logo-dark.jpg"
-                            alt="Rosewood Royale"
-                        >
-                    </span>
-                    <span class="customer-portal-brand-name">Rosewood Royale</span>
-                </router-link>
+                />
 
                 <ul class="customer-portal-header-actions language-switcher-host">
                     <li>
@@ -41,9 +35,7 @@
             <router-view />
         </main>
 
-        <footer class="customer-portal-footer">
-            <p>&copy; {{ currentYear }} Rosewood Royale. All rights reserved.</p>
-        </footer>
+        <GlobalFooter variant="portal" />
 
         <nav class="customer-mobile-nav" :aria-label="$t('navigation.mobileNavigation')">
             <router-link
@@ -76,6 +68,8 @@ import { useI18n } from 'vue-i18n';
 import AppBreadcrumb from '@/layouts/admin/Breadcrumb.vue';
 import ThemeToggle from '@/components/global/ThemeToggle.vue';
 import LanguageSwitcher from '@/components/global/LanguageSwitcher.vue';
+import RosewoodBrand from '@/components/global/RosewoodBrand.vue';
+import GlobalFooter from '@/components/global/GlobalFooter.vue';
 import CustomerNotificationBell from '@/layouts/customer/CustomerNotificationBell.vue';
 import CustomerUserProfile from '@/layouts/customer/CustomerUserProfile.vue';
 import { useThemeStore } from '@/stores/themeStore';
@@ -90,7 +84,6 @@ const { mode: themeMode } = storeToRefs(themeStore);
 const notificationStore = useCustomerNotificationStore();
 const unreadCount = computed(() => notificationStore.unreadCount);
 const profileAvatar = ref('');
-const currentYear = new Date().getFullYear();
 
 const mobileNavItems = computed(() => [
     { label: t('common.home'), to: '/customer/dashboard', icon: 'pi pi-home' },

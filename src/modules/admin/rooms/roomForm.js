@@ -21,7 +21,6 @@ export function buildRoomPayload(state, { includeId = false } = {}) {
         sale_price: Number(state.sale_price) || 0,
         rent_price: Number(state.rent_price) || 0,
         rent_deposit_price: Number(state.rent_deposit_price) || 0,
-        booking_deposit_price: Number(state.booking_deposit_price) || 0,
     };
 
     if (includeId) {

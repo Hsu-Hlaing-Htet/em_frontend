@@ -16,31 +16,31 @@ export const STATUS_TONES = {
 export const STATUS_DEFINITIONS = {
     // Room / property
     available: { tone: STATUS_TONES.success, label: 'Available', icon: 'pi pi-check-circle' },
-    reserved: { tone: STATUS_TONES.warning, label: 'Reserved', icon: 'pi pi-bookmark' },
     occupied: { tone: STATUS_TONES.info, label: 'Occupied', icon: 'pi pi-home' },
     sold: { tone: STATUS_TONES.accent, label: 'Sold', icon: 'pi pi-tag' },
-    maintenance: { tone: STATUS_TONES.neutral, label: 'Maintenance', icon: 'pi pi-wrench' },
+    // Operational
+    inactive: { tone: STATUS_TONES.neutral, label: 'Inactive', icon: 'pi pi-pause' },
 
     // Workflow / approval
     draft: { tone: STATUS_TONES.info, label: 'Draft', icon: 'pi pi-file' },
     pending: { tone: STATUS_TONES.warning, label: 'Pending', icon: 'pi pi-hourglass' },
     pending_approval: { tone: STATUS_TONES.warning, label: 'Pending Approval', icon: 'pi pi-hourglass' },
     approved: { tone: STATUS_TONES.success, label: 'Approved', icon: 'pi pi-verified' },
+    accepted: { tone: STATUS_TONES.info, label: 'Accepted', icon: 'pi pi-check' },
     rejected: { tone: STATUS_TONES.danger, label: 'Rejected', icon: 'pi pi-ban' },
 
     // Contract / lifecycle
     active: { tone: STATUS_TONES.success, label: 'Active', icon: 'pi pi-check' },
-    inactive: { tone: STATUS_TONES.neutral, label: 'Inactive', icon: 'pi pi-pause' },
-    completed: { tone: STATUS_TONES.accent, label: 'Completed', icon: 'pi pi-flag-fill' },
-    cancelled: { tone: STATUS_TONES.neutral, label: 'Cancelled', icon: 'pi pi-times' },
-    terminated: { tone: STATUS_TONES.neutral, label: 'Terminated', icon: 'pi pi-times' },
+    completed: { tone: STATUS_TONES.success, label: 'Completed', icon: 'pi pi-flag-fill' },
+    cancelled: { tone: STATUS_TONES.danger, label: 'Cancelled', icon: 'pi pi-times' },
+    terminated: { tone: STATUS_TONES.danger, label: 'Terminated', icon: 'pi pi-times' },
     in_progress: { tone: STATUS_TONES.accent, label: 'In Progress', icon: 'pi pi-spin pi-spinner' },
 
     // Billing
     issued: { tone: STATUS_TONES.info, label: 'Issued', icon: 'pi pi-send' },
-    partial: { tone: STATUS_TONES.warning, label: 'Partial', icon: 'pi pi-minus-circle' },
+    partial: { tone: STATUS_TONES.info, label: 'Issued', icon: 'pi pi-send' },
     paid: { tone: STATUS_TONES.success, label: 'Paid', icon: 'pi pi-check' },
-    unpaid: { tone: STATUS_TONES.danger, label: 'Unpaid', icon: 'pi pi-times-circle' },
+    unpaid: { tone: STATUS_TONES.info, label: 'Issued', icon: 'pi pi-send' },
     overdue: { tone: STATUS_TONES.danger, label: 'Overdue', icon: 'pi pi-exclamation-triangle' },
 };
 

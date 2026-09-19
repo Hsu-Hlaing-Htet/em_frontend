@@ -8,6 +8,29 @@ function cloneRows(rows) {
     return Array.isArray(rows) ? rows.map((row) => ({ ...row })) : [];
 }
 
+function formatListDate(value) {
+    if (!value) {
+        return '—';
+    }
+
+    const normalized = String(value).includes('T')
+        ? value
+        : String(value).replace(' ', 'T');
+    const date = new Date(normalized);
+
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return date.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
 export default function useCustomerMaintenanceRequestList() {
     const store = useCustomerMaintenanceRequestStore();
     const router = useRouter();
@@ -27,7 +50,7 @@ export default function useCustomerMaintenanceRequestList() {
         { label: t('common.pending'), value: 'pending' },
         { label: t('common.inProgress'), value: 'in_progress' },
         { label: t('common.completed'), value: 'completed' },
-        { label: t('common.rejected'), value: 'rejected' },
+        { label: t('common.cancelled'), value: 'cancelled' },
     ]);
 
     const hasMore = () => requests.value.length < totalRecords.value;
@@ -47,7 +70,13 @@ export default function useCustomerMaintenanceRequestList() {
                 status: status.value || undefined,
             });
             const response = store.getAllResponse;
-            const nextRows = cloneRows(response?.data?.data);
+            const nextRows = cloneRows(response?.data?.data)
+                .map((row) => ({
+                    ...row,
+                    status: row.customer_status
+                        || (row.status === 'accepted' ? 'pending' : (row.status === 'rejected' ? 'cancelled' : row.status)),
+                    created_date: formatListDate(row.created_at),
+                }));
             requests.value = append ? [...requests.value, ...nextRows] : nextRows;
             totalRecords.value = response?.data?.total || 0;
         } catch (error) {

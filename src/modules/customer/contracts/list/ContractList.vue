@@ -1,9 +1,9 @@
 <template>
     <div class="customer-portal-page">
-        <header class="customer-list-page-header">
-            <h1 class="customer-page-heading">{{ $t('customer.contracts') }}</h1>
-            <p class="customer-page-lead">{{ $t('customer.contractsLead') }}</p>
-        </header>
+        <CustomerPageHeader
+            :title="$t('customer.contracts')"
+            :subtitle="$t('customer.contractsLead')"
+        />
 
         <Loading v-if="isLoading" />
 
@@ -18,18 +18,12 @@
                     <span class="customer-record-label">{{ $t('customer.contract') }}</span>
                     <strong>{{ contract.contract_number || '—' }}</strong>
                     <small>{{ contract.type || '—' }}</small>
-                </span>
-                <span class="customer-record-cell">
-                    <span class="customer-record-label">{{ $t('customer.building') }} / {{ $t('customer.room') }}</span>
-                    <strong>{{ contract.building_name || '—' }}</strong>
                     <small>{{ $t('customer.room') }} {{ contract.room_number || '—' }}</small>
                 </span>
-                <span class="customer-record-cell customer-record-amount">
-                    <span class="customer-record-label">{{ $t('customer.total') }}</span>
+                <span class="customer-record-cell customer-record-meta">
+                    <span class="customer-record-label">{{ $t('customer.total') }} (MMK)</span>
                     <strong>{{ formatCurrency(Number(contract.contract_total || 0)) }}</strong>
-                </span>
-                <span class="customer-record-status">
-                    <span class="customer-record-label">{{ $t('customer.status') }}</span>
+                    <small>{{ contract.building_name || '—' }}</small>
                     <StatusBadge :value="contract.status" />
                 </span>
             </router-link>
@@ -58,8 +52,9 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
+import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerContractList from '@/composables/customer/useCustomerContractList';
-import { formatCurrency } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
 
 export default defineComponent({
     name: 'CustomerContractList',
@@ -68,6 +63,7 @@ export default defineComponent({
         Loading,
         StatusBadge,
         CustomerEmptyState,
+        CustomerPageHeader,
     },
     setup() {
         return { ...useCustomerContractList(), formatCurrency };

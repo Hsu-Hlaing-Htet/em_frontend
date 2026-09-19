@@ -10,6 +10,7 @@ export const formatUtilitySummaryNote = ({
     createdAtLabel,
     createdByName,
     approvedByName,
+    status,
 }) => {
     const parts = [];
 
@@ -25,8 +26,10 @@ export const formatUtilitySummaryNote = ({
         parts.push(`by ${createdByName}`);
     }
 
-    if (approvedByName) {
+    if (status === 'approved' && approvedByName) {
         parts.push(`approved by ${approvedByName}`);
+    } else if (status === 'rejected' && approvedByName) {
+        parts.push(`rejected by ${approvedByName}`);
     }
 
     if (!parts.length) {

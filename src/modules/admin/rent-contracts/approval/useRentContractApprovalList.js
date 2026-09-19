@@ -2,16 +2,18 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import EventBus from '@/libs/AppEventBus';
-import { formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
 import { filterContracts, normalizePaymentTypeFilter } from '@/helpers/contracts/contractFilters';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useRentStore } from '../store';
 import { mapRentListItemFromApi } from '../mapRent';
 import { useContractListExport } from '@/composables/admin/contracts/useContractListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { RENT_EXPORT_COLUMNS_BY_LIST } from '@/helpers/contracts/exportColumns';
 
 export const useRentContractApprovalList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showRentContractApproval');
     const search = ref('');
     const selectedPaymentType = ref(null);
     const dateFrom = ref(null);
@@ -161,7 +163,7 @@ export const useRentContractApprovalList = () => {
             EventBus.emit('show-toast', {
                 severity: 'success',
                 summary: '',
-                detail: response?.message || `${contract.contract_no} approved and moved to Active Rents.`,
+                detail: response?.message || `${contract.contract_no} approved and moved to Rent Contracts.`,
             });
 
             await loadingData();
@@ -231,6 +233,7 @@ export const useRentContractApprovalList = () => {
         isLoading,
         onPage,
         onSort,
+        onRowClick,
         resetSearch,
         approveContract,
         rejectContract,

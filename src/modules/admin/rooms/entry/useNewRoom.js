@@ -22,7 +22,6 @@ const ROOM_VALIDATION_RULES = [
     { field: 'sale_price', type: 'number', min: 0 },
     { field: 'rent_price', type: 'number', min: 0 },
     { field: 'rent_deposit_price', type: 'number', min: 0 },
-    { field: 'booking_deposit_price', type: 'number', min: 0 },
     {
         field: 'width_ft',
         type: 'number',
@@ -70,7 +69,6 @@ export default function useNewRoom() {
         sale_price: 0,
         rent_price: 0,
         rent_deposit_price: 0,
-        booking_deposit_price: 0,
     });
 
     bindErrorClearing(state, errors);
@@ -164,7 +162,7 @@ export default function useNewRoom() {
         state,
         buildingOptions,
         typeOptions: ROOM_TYPE_OPTIONS,
-        statusOptions: ROOM_STATUS_OPTIONS.filter((option) => option.value !== 'inactive'),
+        statusOptions: ROOM_STATUS_OPTIONS,
         stagedImages,
         persistedImages,
         addStagedFiles,

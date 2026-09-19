@@ -19,14 +19,17 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
                         title="All Utilities"
                         :search="search"
-                        search-placeholder="Search room, billing month..."
+                        search-placeholder="Search room, customer, building, utility type, billing month..."
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
@@ -40,11 +43,11 @@
                             class="w-52"
                         />
                         <Dropdown
-                            v-model="roomFilter"
-                            :options="roomOptions"
+                            v-model="buildingFilter"
+                            :options="buildingOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="Room"
+                            placeholder="Building"
                             show-clear
                             filter
                             class="w-44"
@@ -82,7 +85,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No utility records found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-bolt"
+                        title="No utility records found"
+                        message="No utility records match your search or filters."
+                    />
+                </template>
                 <template #loading>Loading utilities. Please wait.</template>
 
                 <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 140px" />
@@ -106,7 +115,11 @@
                         {{ formatBillingMonthLabel(data.billing_month) }}
                     </template>
                 </Column>
-                <Column field="total_amount" header="Total" :sortable="true" style="min-width: 110px" />
+                <Column field="total_amount" header="Total (MMK)" :sortable="true" style="min-width: 110px">
+                    <template #body="{ data }">
+                        {{ formatCurrencyAmount(data.total_amount) }}
+                    </template>
+                </Column>
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         <StatusBadge :value="data.status" />
@@ -128,7 +141,7 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
@@ -137,11 +150,14 @@ import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { UTILITY_STATUS_OPTIONS } from '@/constants/constant';
 import { formatBillingMonthLabel } from '@/helpers/documents/billingDocumentHelpers';
+import { formatCurrencyAmount } from '@/utils/formatter';
 import { useUtilityList } from './useUtilityList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'UtilityList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Dropdown,
@@ -157,6 +173,7 @@ export default defineComponent({
             ...list,
             statusOptions: UTILITY_STATUS_OPTIONS,
             formatBillingMonthLabel,
+            formatCurrencyAmount,
         };
     },
 });

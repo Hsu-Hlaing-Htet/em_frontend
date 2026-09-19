@@ -59,9 +59,15 @@ const service = {
         return result.data;
     },
 
+    getPayment: async (params) => {
+        const result = await api.get(`${endpoint.customerPayments}/${params.id}`);
+        return result.data;
+    },
+
     submitPayment: async (params) => {
         const formData = new FormData();
         formData.append('invoice_id', params.invoice_id);
+        formData.append('amount', params.amount);
         formData.append('payment_method_id', params.payment_method_id);
         formData.append('payment_date', params.payment_date);
 
@@ -122,6 +128,11 @@ const service = {
         return result.data;
     },
 
+    getMaintenanceCategories: async () => {
+        const result = await api.get(endpoint.customerMaintenanceCategories);
+        return result.data;
+    },
+
     getMaintenanceRequests: async (params) => {
         const result = await api.get(endpoint.customerMaintenanceRequests, { params });
         return result.data;
@@ -133,7 +144,25 @@ const service = {
     },
 
     createMaintenanceRequest: async (params) => {
-        const result = await api.post(endpoint.customerMaintenanceRequests, params);
+        const formData = new FormData();
+        formData.append('room_id', params.room_id);
+        formData.append('title', params.title);
+        formData.append('maintenance_category_id', params.maintenance_category_id);
+        formData.append('priority', params.priority);
+        formData.append('description', params.description || '');
+
+        if (params.photo) {
+            formData.append('photo', params.photo);
+        }
+
+        const result = await api.post(endpoint.customerMaintenanceRequests, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        return result.data;
+    },
+
+    askRentQuestion: async (params) => {
+        const result = await api.post(endpoint.customerAiRentAsk, params);
         return result.data;
     },
 };

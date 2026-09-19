@@ -42,5 +42,22 @@ export function formatPropertyUnit(item) {
 }
 
 export function resolvePaymentListStatus(item) {
-    return item?.display_status || item?.status || 'pending';
+    const raw = String(item?.status || item?.display_status || '').toLowerCase();
+
+    if (raw === 'approved' || raw === 'paid') {
+        return 'paid';
+    }
+
+    if (raw === 'rejected') {
+        return 'rejected';
+    }
+
+    if (raw === 'pending') {
+        return 'pending';
+    }
+
+    // Never surface invoice statuses (e.g. overdue) on payment rows.
+    return raw === 'overdue' || raw === 'partial' || raw === 'issued'
+        ? 'paid'
+        : (raw || 'pending');
 }

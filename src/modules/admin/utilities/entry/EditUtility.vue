@@ -2,33 +2,64 @@
     <div class="flex flex-col gap-5">
         <div class="flex flex-wrap items-center justify-between gap-3 px-1">
             <WorkflowActionBar
-                :can-submit="canSubmit()"
-                :can-approve="canApprove()"
-                :can-reject="canReject()"
+                v-if="!isApprovalView"
+                :can-submit="canSubmit() || canResubmit()"
+                :submit-label="submitLabel"
                 :submitting="workflowLoading.submit"
-                :approving="workflowLoading.approve"
-                :rejecting="workflowLoading.reject"
                 @submit="runWorkflow('submit')"
-                @approve="runWorkflow('approve')"
-                @reject="runWorkflow('reject')"
             />
-            <div class="flex items-center gap-2">
+            <div class="ml-auto flex flex-wrap items-center gap-2">
                 <router-link
                     v-if="documentRoute"
                     :to="documentRoute"
                 >
                     <Button
                         icon="pi pi-file"
-                        label="View Document"
+                        label="View"
                         severity="secondary"
                     />
                 </router-link>
-                <StatusBadge v-if="state.status" :value="state.status" />
+                <Button
+                    v-if="isApprovalView && canApprove()"
+                    type="button"
+                    icon="pi pi-check"
+                    label="Approve"
+                    severity="success"
+                    :loading="workflowLoading.approve"
+                    :disabled="workflowLoading.approve || workflowLoading.reject"
+                    @click="showApproveDialog = true"
+                />
+                <Button
+                    v-if="isApprovalView && canReject()"
+                    type="button"
+                    icon="pi pi-times"
+                    label="Reject"
+                    severity="danger"
+                    outlined
+                    :loading="workflowLoading.reject"
+                    :disabled="workflowLoading.approve || workflowLoading.reject"
+                    @click="showRejectDialog = true"
+                />
+                <StatusBadge v-if="state.status && !isApprovalView" :value="state.status" />
                 <router-link v-if="isApprovalView" :to="backRoute">
                     <Button type="button" label="Back" severity="secondary" />
                 </router-link>
             </div>
         </div>
+
+        <ApproveRecordDialog
+            v-model="showApproveDialog"
+            entity="utility"
+            :submitting="workflowLoading.approve"
+            @confirm="runWorkflow('approve')"
+        />
+        <RejectContractDialog
+            v-model="showRejectDialog"
+            entity="utility"
+            :submitting="workflowLoading.reject"
+            :close-on-confirm="false"
+            @confirm="runWorkflow('reject', { rejection_reason: $event })"
+        />
 
         <div class="admin-panel relative">
             <form
@@ -128,15 +159,18 @@
                                     v-model="data.current_reading"
                                     :disabled="!canEdit"
                                     class="w-full"
-                                    :min="0"
+                                    :invalid="Boolean(data.currentReadingError)"
                                     @update:model-value="recalcItem(data)"
                                 />
+                                <small v-if="data.currentReadingError" class="p-error mt-1 block">
+                                    {{ data.currentReadingError }}
+                                </small>
                             </template>
                         </Column>
                         <Column header="Usage" style="min-width: 90px">
                             <template #body="{ data }">{{ data.usage }}</template>
                         </Column>
-                        <Column header="Unit Price" style="min-width: 110px">
+                        <Column header="Unit Price (MMK)" style="min-width: 110px">
                             <template #body="{ data }">
                                 <InputNumber
                                     v-model="data.unit_price"
@@ -147,8 +181,8 @@
                                 />
                             </template>
                         </Column>
-                        <Column header="Amount" style="min-width: 100px">
-                            <template #body="{ data }">{{ data.amount }}</template>
+                        <Column header="Amount (MMK)" style="min-width: 100px">
+                            <template #body="{ data }">{{ formatCurrencyAmount(data.amount) }}</template>
                         </Column>
                         <Column v-if="canEdit" header="" style="width: 60px">
                             <template #body="{ index }">
@@ -178,7 +212,7 @@
                 </div>
 
                 <div v-if="canEdit" class="flex justify-end gap-2 md:col-span-2">
-                    <Button type="submit" label="Save" />
+                    <Button type="submit" label="Save" :disabled="isSaving || !canSave" />
                     <router-link :to="backRoute">
                         <Button type="button" label="Cancel" severity="secondary" />
                     </router-link>
@@ -194,13 +228,16 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import WorkflowActionBar from '@/components/admin/WorkflowActionBar.vue';
+import ApproveRecordDialog from '@/components/admin/ApproveRecordDialog.vue';
+import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
+import { formatCurrencyAmount } from '@/utils/formatter';
 import useEditUtility from './useEditUtility';
 
 export default defineComponent({
@@ -215,9 +252,14 @@ export default defineComponent({
         Loading,
         StatusBadge,
         WorkflowActionBar,
+        ApproveRecordDialog,
+        RejectContractDialog,
     },
     setup() {
-        return useEditUtility();
+        return {
+            ...useEditUtility(),
+            formatCurrencyAmount,
+        };
     },
 });
 </script>

@@ -16,7 +16,7 @@ const routes = [
             title: 'New Maintenance Request',
             breadcrumbs: [
                 { title: 'Maintenance', routeName: 'customerMaintenanceRequestList' },
-                { title: 'New Request', routeName: 'customerNewMaintenanceRequest' },
+                { title: 'Create', routeName: 'customerNewMaintenanceRequest' },
             ],
         },
     },

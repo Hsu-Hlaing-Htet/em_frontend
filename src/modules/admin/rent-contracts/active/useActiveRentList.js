@@ -1,16 +1,18 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
 import { filterContracts, normalizePaymentTypeFilter } from '@/helpers/contracts/contractFilters';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useRentStore } from '../store';
 import { mapRentListItemFromApi } from '../mapRent';
 import { useContractListExport } from '@/composables/admin/contracts/useContractListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { RENT_EXPORT_COLUMNS_BY_LIST } from '@/helpers/contracts/exportColumns';
 
 export const useActiveRentList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showActiveRent');
     const search = ref('');
     const selectedPaymentType = ref(null);
     const selectedStatus = ref(null);
@@ -118,8 +120,8 @@ export const useActiveRentList = () => {
     } = useContractListExport({
         exportColumnsByList: RENT_EXPORT_COLUMNS_BY_LIST,
         listType: 'active',
-        title: 'Active Rents',
-        filenameBase: 'active-rents',
+        title: 'Rent Contracts',
+        filenameBase: 'rent-contracts',
         emptyMessage: 'No active rents available to export.',
         getVisibleRows: () => contracts.value,
         getFetchParams: () => ({
@@ -176,6 +178,7 @@ export const useActiveRentList = () => {
         isLoading,
         onPage,
         onSort,
+        onRowClick,
         resetSearch,
         isExporting,
         canExport,

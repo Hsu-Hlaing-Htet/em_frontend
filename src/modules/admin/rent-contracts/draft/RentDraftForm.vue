@@ -1,66 +1,70 @@
 <template>
-    <form class="draft-form" @submit.prevent="$emit('submit')">
-        <div class="admin-panel draft-form__body mx-auto max-w-6xl">
+    <form class="draft-form" :class="{ 'draft-form--embedded': embedded }" @submit.prevent="$emit('submit')">
+        <div :class="embedded ? 'draft-form__body' : 'admin-panel draft-form__body mx-auto max-w-6xl'">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div class="field">
                     <label class="mb-2 block text-md">Customer Name</label>
                     <Dropdown
                         v-model="state.customer_id"
-                        :options="customerOptions"
+                        :options="safeCustomerOptions"
                         option-label="label"
                         option-value="value"
                         placeholder="Select Customer"
+                        filter
+                        filter-placeholder="Search customer"
                         class="w-full"
+                        empty-message="No customers found."
                     />
                     <small v-if="errors.has('user_id')" class="p-error">
                         <div v-for="error in errors.get('user_id')" :key="error">{{ error }}</div>
                     </small>
                 </div>
                 <div class="field">
-                    <NrcInput :model-value="state.customer_nrc" field-class="md:col-span-2" disabled />
+                    <NrcInput v-model="state.customer_nrc" field-class="md:col-span-2" />
                 </div>
 
                 <div class="field">
-                    <PhoneInput :model-value="state.customer_phone" disabled />
+                    <PhoneInput v-model="state.customer_phone" />
                 </div>
 
                 <div class="field">
-                    <GmailInput :model-value="state.customer_email" disabled />
+                    <EmailInput v-model="state.customer_email" />
                 </div>
 
+                <template v-if="!lockProperty">
+                    <div class="field">
+                        <label class="mb-2 block text-md">Building</label>
+                        <Dropdown
+                            v-model="state.building_id"
+                            :options="buildingOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Select building"
+                            class="w-full"
+                        />
+                        <small v-if="errors.has('building_id')" class="p-error">
+                            <div v-for="error in errors.get('building_id')" :key="error">{{ error }}</div>
+                        </small>
+                    </div>
 
-                <div class="field">
-                    <label class="mb-2 block text-md">Building</label>
-                    <Dropdown
-                        v-model="state.building_id"
-                        :options="buildingOptions"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Select building"
-                        class="w-full"
-                    />
-                    <small v-if="errors.has('building_id')" class="p-error">
-                        <div v-for="error in errors.get('building_id')" :key="error">{{ error }}</div>
-                    </small>
-                </div>
-
-                <div class="field">
-                    <label class="mb-2 block text-md">Room</label>
-                    <Dropdown
-                        :key="`rent-room-${state.building_id || 'none'}`"
-                        v-model="state.room_id"
-                        :options="roomOptions"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Select room"
-                        empty-message="No available rooms for this building."
-                        class="w-full"
-                        :disabled="!state.building_id"
-                    />
-                    <small v-if="errors.has('room_id')" class="p-error">
-                        <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
-                    </small>
-                </div>
+                    <div class="field">
+                        <label class="mb-2 block text-md">Room</label>
+                        <Dropdown
+                            :key="`rent-room-${state.building_id || 'none'}`"
+                            v-model="state.room_id"
+                            :options="roomOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Select room"
+                            empty-message="No available rooms for this building."
+                            class="w-full"
+                            :disabled="!state.building_id"
+                        />
+                        <small v-if="errors.has('room_id')" class="p-error">
+                            <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
+                        </small>
+                    </div>
+                </template>
 
                 <div class="field">
                     <label class="mb-2 block text-md">Room Price</label>
@@ -70,7 +74,7 @@
                         mode="currency"
                         currency="MMK"
                         locale="en-MM"
-                        readonly
+                        :min="0"
                     />
                 </div>
 
@@ -115,7 +119,6 @@
                         currency="MMK"
                         locale="en-MM"
                         :min="0"
-                        readonly
                     />
                     <small v-if="errors.has('contract_total')" class="p-error">
                         <div v-for="error in errors.get('contract_total')" :key="error">{{ error }}</div>
@@ -130,7 +133,7 @@
                         mode="currency"
                         currency="MMK"
                         locale="en-MM"
-                        readonly
+                        :min="0"
                     />
                 </div>
 
@@ -189,38 +192,33 @@
                     </small>
                 </div>
             </div>
-            <div class="flex justify-end gap-2">
-                <router-link :to="cancelRoute" class="">
+            <div class="mt-4 flex justify-end gap-2">
+                <router-link :to="cancelRoute">
                     <Button
                         type="button"
                         label="Cancel"
                         severity="secondary"
-                        class=""
                     />
                 </router-link>
                 <Button
                     type="submit"
-                    label="Save"
-                    class=""
+                    :label="submitLabel"
                 />
             </div>
         </div>
-
-
-
     </form>
 </template>
 
 <script>
 import { computed, defineComponent } from 'vue';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import InputNumber from 'primevue/inputnumber';
 import Calendar from 'primevue/calendar';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import NrcInput from '@/components/admin/NrcInput.vue';
 import PhoneInput from '@/components/admin/PhoneInput.vue';
-import GmailInput from '@/components/admin/GmailInput.vue';
+import EmailInput from '@/components/admin/EmailInput.vue';
 import {
     estimateMonthlyPayment,
     remainingContractBalance,
@@ -236,7 +234,7 @@ export default defineComponent({
         Button,
         NrcInput,
         PhoneInput,
-        GmailInput,
+        EmailInput,
     },
     props: {
         state: {
@@ -274,9 +272,25 @@ export default defineComponent({
             type: Object,
             required: true,
         },
+        lockProperty: {
+            type: Boolean,
+            default: false,
+        },
+        embedded: {
+            type: Boolean,
+            default: false,
+        },
+        submitLabel: {
+            type: String,
+            default: 'Save',
+        },
     },
     emits: ['submit'],
     setup(props) {
+        const safeCustomerOptions = computed(() => (
+            Array.isArray(props.customerOptions) ? props.customerOptions : []
+        ));
+
         const isInstallment = computed(() => props.state.payment_type === 'installment');
 
         const showCalculatedPayments = computed(() => (
@@ -303,6 +317,7 @@ export default defineComponent({
         ));
 
         return {
+            safeCustomerOptions,
             isInstallment,
             showCalculatedPayments,
             remainingBalance,

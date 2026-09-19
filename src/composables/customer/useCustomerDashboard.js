@@ -107,6 +107,15 @@ export default function useCustomerDashboard() {
             to: { name: 'customerMaintenanceRequestList' },
             action: t('customer.viewRequestsAction'),
         },
+        {
+            key: 'assistant',
+            title: t('customer.rentAssistant'),
+            description: t('customer.quickActionRentAssistant'),
+            icon: 'pi pi-comments',
+            tone: 'tone-gold',
+            to: { name: 'customerDashboard', query: { openAssistant: '1' } },
+            action: t('customer.openRentAssistantAction'),
+        },
     ]);
 
     const formatMoney = (value) => formatCurrency(Number(value || 0));

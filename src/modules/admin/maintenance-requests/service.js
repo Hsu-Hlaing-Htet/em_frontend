@@ -35,14 +35,29 @@ const service = {
         return result.data;
     },
 
+    accept: async (params) => {
+        const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/accept`);
+        return result.data;
+    },
+
     start: async (params) => {
         const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/start`);
+        return result.data;
+    },
+
+    assign: async (params) => {
+        const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/assign`, {
+            assigned_staff: params.assigned_staff,
+            visit_date: params.visit_date,
+        });
         return result.data;
     },
 
     complete: async (params) => {
         const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/complete`, {
             resolution_note: params.resolution_note,
+            maintenance_fee_amount: params.maintenance_fee_amount,
+            charge_description: params.charge_description,
         });
         return result.data;
     },
@@ -50,6 +65,13 @@ const service = {
     reject: async (params) => {
         const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/reject`, {
             rejection_reason: params.rejection_reason,
+        });
+        return result.data;
+    },
+
+    cancel: async (params) => {
+        const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/cancel`, {
+            cancellation_reason: params.cancellation_reason,
         });
         return result.data;
     },

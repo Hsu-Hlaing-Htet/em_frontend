@@ -1,13 +1,13 @@
-import { ref, watch, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { omitEmptyParams, toQueryDate } from '@/helpers/lists/listQuery';
 import {
     formatPropertyUnit,
     resolvePaymentListStatus,
 } from '@/helpers/payments/paymentListHelpers';
-import { useBuildingRoomFilterOptions } from '@/composables/admin/useBuildingRoomFilterOptions';
 import { useEntityApprovalList } from '@/composables/global/useEntityApprovalList';
 import { useListExport } from '@/composables/admin/useListExport';
-import { PAYMENT_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
+import { PAYMENT_APPROVAL_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
+import { PAYMENT_TYPE_FILTER_OPTIONS } from '@/constants/constant';
 import { service as paymentMethodService } from '@/modules/admin/payment-methods/service';
 import { usePaymentStore } from '../store';
 
@@ -15,6 +15,8 @@ const mapPaymentRow = (item) => ({
     ...item,
     property_unit: item.property_unit || formatPropertyUnit(item),
     display_status: resolvePaymentListStatus(item),
+    // Submitted/frozen payment amount from payments.amount — never invent from live invoice balance.
+    amount: item.amount == null || item.amount === '' ? null : Number(item.amount),
     paid_amount: item.paid_amount ?? item.amount,
     balance: item.balance ?? 0,
     payment_method_name: item.payment_method_name || '',
@@ -24,24 +26,15 @@ const mapPaymentRow = (item) => ({
 });
 
 export const usePaymentApprovalList = () => {
-    const buildingId = ref(null);
-    const roomId = ref(null);
+    const paymentType = ref(null);
     const paymentMethodId = ref(null);
     const paymentDateFrom = ref(null);
     const paymentDateTo = ref(null);
     const paymentMethodOptions = ref([]);
     const store = usePaymentStore();
 
-    const {
-        buildingOptions,
-        roomOptions,
-        loadBuildings,
-        loadRooms,
-    } = useBuildingRoomFilterOptions(buildingId);
-
     const buildFilterParams = () => ({
-        building_id: buildingId.value || undefined,
-        room_id: roomId.value || undefined,
+        payment_type: paymentType.value || undefined,
         payment_method_id: paymentMethodId.value || undefined,
         payment_date_from: toQueryDate(paymentDateFrom.value),
         payment_date_to: toQueryDate(paymentDateTo.value),
@@ -51,6 +44,7 @@ export const usePaymentApprovalList = () => {
         store,
         pendingStatus: 'pending',
         rejectMethod: 'reject',
+        detailRouteName: 'showPaymentApproval',
         autoLoad: false,
         getItemLabel: (item) => item.invoice_number || `#${item.id}`,
         loadErrorMessage: 'Unable to load pending payment approvals.',
@@ -58,22 +52,21 @@ export const usePaymentApprovalList = () => {
         rejectErrorMessage: 'Unable to reject payment.',
         buildApproveSuccessMessage: (item, response) => response?.message
             || `${item.invoice_number || `#${item.id}`} approved. A draft receipt has been created for review.`,
+        buildRejectSuccessMessage: (item, response) => response?.message
+            || `${item.invoice_number || `#${item.id}`} has been rejected.`,
         buildFilterParams,
         mapItems: (rows) => rows.map(mapPaymentRow),
         getWatchSources: () => [
-            buildingId,
-            roomId,
+            paymentType,
             paymentMethodId,
             paymentDateFrom,
             paymentDateTo,
         ],
         resetFilters: () => {
-            buildingId.value = null;
-            roomId.value = null;
+            paymentType.value = null;
             paymentMethodId.value = null;
             paymentDateFrom.value = null;
             paymentDateTo.value = null;
-            roomOptions.value = [];
         },
     });
 
@@ -87,7 +80,7 @@ export const usePaymentApprovalList = () => {
     } = useListExport({
         title: 'Payment Approvals',
         filenameBase: 'payment-approvals',
-        columns: PAYMENT_EXPORT_COLUMNS,
+        columns: PAYMENT_APPROVAL_EXPORT_COLUMNS,
         emptyMessage: 'No payment approvals available to export.',
         getFetchParams: () => omitEmptyParams({
             search: list.search.value?.trim() || undefined,
@@ -102,12 +95,10 @@ export const usePaymentApprovalList = () => {
         mapItem: mapPaymentRow,
         getFilterSummary: () => [
             { label: 'Search', value: list.search.value || '' },
-            { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
-            { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
+            { label: 'Payment Type', value: PAYMENT_TYPE_FILTER_OPTIONS.find((o) => o.value === paymentType.value)?.label || '' },
             { label: 'Payment Method', value: paymentMethodOptions.value.find((o) => o.value === paymentMethodId.value)?.label || '' },
-            { label: 'Payment From', value: toQueryDate(paymentDateFrom.value) || '' },
-            { label: 'Payment To', value: toQueryDate(paymentDateTo.value) || '' },
-            { label: 'Status', value: 'pending' },
+            { label: 'From Date', value: toQueryDate(paymentDateFrom.value) || '' },
+            { label: 'To Date', value: toQueryDate(paymentDateTo.value) || '' },
         ],
         hasData: computed(() => list.totalRecords.value > 0),
     });
@@ -120,27 +111,18 @@ export const usePaymentApprovalList = () => {
         }));
     };
 
-    watch(buildingId, async (nextBuildingId, previousBuildingId) => {
-        if (nextBuildingId !== previousBuildingId) {
-            roomId.value = null;
-            await loadRooms(nextBuildingId);
-        }
-    });
-
     onMounted(async () => {
-        await Promise.all([loadBuildings(), loadPaymentMethods()]);
+        await loadPaymentMethods();
         await list.loadingData();
     });
 
     return {
         ...list,
-        buildingId,
-        roomId,
+        paymentType,
         paymentMethodId,
         paymentDateFrom,
         paymentDateTo,
-        buildingOptions,
-        roomOptions,
+        paymentTypeOptions: PAYMENT_TYPE_FILTER_OPTIONS.filter((option) => option.value !== null),
         paymentMethodOptions,
         isExporting,
         canExport,

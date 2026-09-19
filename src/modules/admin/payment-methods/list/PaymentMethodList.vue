@@ -56,7 +56,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No payment methods found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-credit-card"
+                        title="No payment methods found"
+                        message="Create a payment method or adjust your search."
+                    />
+                </template>
                 <template #loading>Loading payment methods. Please wait.</template>
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 200px" />
@@ -104,7 +110,7 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
@@ -113,10 +119,12 @@ import StatusBadge from '@/components/global/StatusBadge.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import { PAYMENT_METHOD_STATUS_OPTIONS } from '@/constants/constant';
 import { usePaymentMethodList } from './usePaymentMethodList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'PaymentMethodList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Dropdown,

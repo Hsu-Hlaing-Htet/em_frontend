@@ -7,7 +7,7 @@ import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { changePassword } from '@/modules/auth/service';
 import { useAuthStore } from '@/modules/auth/store';
 
-export function useChangePassword() {
+export function useChangePassword(options = {}) {
     const router = useRouter();
     const toast = useAppToast();
     const authStore = useAuthStore();
@@ -56,7 +56,40 @@ export function useChangePassword() {
         loading.value = true;
 
         try {
+            const shouldKeepCustomerSession = authStore.user?.role === 'customer'
+                && authStore.user?.temporary_password_active;
+
             await changePassword({ ...form });
+
+            if (options.keepSession) {
+                await authStore.refreshUser();
+                resetForm();
+
+                toast.add({
+                    severity: 'success',
+                    summary: 'Password updated',
+                    detail: options.successMessage || 'Password changed successfully.',
+                    life: 3500,
+                });
+
+                options.onSuccess?.();
+
+                return;
+            }
+
+            if (shouldKeepCustomerSession) {
+                await authStore.refreshUser();
+                resetForm();
+
+                toast.add({
+                    severity: 'success',
+                    summary: 'Password updated',
+                    detail: 'Your password has been changed successfully.',
+                    life: 3500,
+                });
+
+                return;
+            }
 
             authStore.clearSession();
 

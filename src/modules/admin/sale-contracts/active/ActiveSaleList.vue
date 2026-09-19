@@ -19,12 +19,15 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
-                        title="Active Sales"
+                        title="Sale Contracts"
                         :search="search"
                         search-placeholder="Search contract, customer, room..."
                         @update:search="search = $event"
@@ -78,7 +81,13 @@
 
              
 
-                <template #empty>No active sales found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-building"
+                        title="No active sales found"
+                        message="No active sale contracts match your current filters."
+                    />
+                </template>
                 <template #loading>Loading active sales. Please wait.</template>
 
                 <Column field="contract_no" header="Contract No" :sortable="true" style="min-width: 160px">
@@ -93,17 +102,17 @@
                 </Column>
                 <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 140px" />
                 <Column field="room_number" header="Room" :sortable="true" style="min-width: 100px" />
-                <Column field="contract_total" header="Contract Total" :sortable="true" style="min-width: 130px">
+                <Column field="contract_total" header="Contract Total (MMK)" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.contract_total) }}
                     </template>
                 </Column>
-                <Column field="paid_amount" header="Paid Amount" :sortable="true" style="min-width: 130px">
+                <Column field="paid_amount" header="Paid Amount (MMK)" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.paid_amount) }}
                     </template>
                 </Column>
-                <Column field="remaining_amount" header="Remaining Amount" :sortable="true" style="min-width: 140px">
+                <Column field="remaining_amount" header="Remaining Amount (MMK)" :sortable="true" style="min-width: 140px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.remaining_amount) }}
                     </template>
@@ -116,7 +125,7 @@
                 <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px">
                     <template #body="{ data }">
                         <div class="flex flex-col gap-1">
-                            <span>{{ data.created_at || '—' }}</span>
+                            <span>{{ formatDate(data.created_at) || '—' }}</span>
                             <span class="text-sm text-[var(--admin-text-muted)]">
                                 {{ getPaymentTypeLabel(data.payment_type) }}
                             </span>
@@ -134,7 +143,7 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
@@ -142,11 +151,14 @@ import StatusBadge from '@/components/global/StatusBadge.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import { ACTIVE_SALE_STATUS_OPTIONS, PAYMENT_PLAN_TYPE_FILTER_OPTIONS } from '@/constants/constant';
+import { formatDate } from '@/utils/formatter';
 import { useActiveSaleList } from './useActiveSaleList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'ActiveSaleList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Dropdown,
@@ -162,6 +174,7 @@ export default defineComponent({
 
         return {
             ...list,
+            formatDate,
             paymentTypeOptions: PAYMENT_PLAN_TYPE_FILTER_OPTIONS,
             statusOptions: ACTIVE_SALE_STATUS_OPTIONS,
         };

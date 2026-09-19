@@ -46,7 +46,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No roles found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-shield"
+                        title="No roles found"
+                        message="Create a role or adjust your search."
+                    />
+                </template>
                 <template #loading>Loading roles. Please wait.</template>
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 200px">
@@ -57,7 +63,11 @@
                     </template>
                 </Column>
 
-                <Column field="created_at" header="Created" :sortable="true" style="min-width: 180px" />
+                <Column field="created_at" header="Created" :sortable="true" style="min-width: 180px">
+                    <template #body="{ data }">
+                        {{ formatDate(data.created_at) || '—' }}
+                    </template>
+                </Column>
                 <Column field="action" header="Action" style="min-width: 180px">
                     <template #body="{ data }">
                         <router-link :to="{ name: 'editRole', params: { id: data.id } }">
@@ -91,11 +101,14 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import { formatDate } from '@/utils/formatter';
 import { useRoleList } from './useRoleList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'RoleList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Button,
@@ -104,7 +117,10 @@ export default defineComponent({
         AdminListFilters,
     },
     setup() {
-        return useRoleList();
+        return {
+            ...useRoleList(),
+            formatDate,
+        };
     },
 });
 </script>

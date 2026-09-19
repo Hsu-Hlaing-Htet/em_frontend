@@ -38,7 +38,7 @@
 
 <script>
 import { computed, reactive, watch } from 'vue';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import InputText from 'primevue/inputtext';
 import { DEFAULT_PHONE_COUNTRY_CODE, PHONE_COUNTRY_OPTIONS } from '@/constants/phoneData';
 import {

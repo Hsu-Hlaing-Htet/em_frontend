@@ -4,6 +4,7 @@ import { downloadCsv, downloadXlsx } from '@/utils/export';
 import { downloadPdfResponse, PDF_DOWNLOAD_HEADERS } from '@/utils/downloadPdfResponse';
 import { printListDocument } from '@/helpers/documents/documentOutput';
 import { fetchAllListItems } from '@/helpers/lists/fetchAllListItems';
+import { formatDate } from '@/utils/formatter';
 import api from '@/libs/axios';
 import { endpoint } from '@/services/endpoint';
 
@@ -27,7 +28,12 @@ function serializeRows(rows, columns) {
         const out = {};
 
         columns.forEach((column) => {
-            const value = column.format ? column.format(row) : (row[column.field] ?? '');
+            let value = column.format ? column.format(row) : (row[column.field] ?? '');
+
+            if (!column.format && column.type === 'date' && value) {
+                value = formatDate(value) || value;
+            }
+
             out[column.field] = value == null ? '' : String(value);
         });
 

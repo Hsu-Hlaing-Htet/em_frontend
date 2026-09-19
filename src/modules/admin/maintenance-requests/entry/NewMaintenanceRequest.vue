@@ -39,17 +39,17 @@
                 </small>
             </div>
             <div class="field">
-                <label for="category" class="mb-2 block text-md">Category</label>
+                <label for="maintenance_category_id" class="mb-2 block text-md">Category</label>
                 <Dropdown
-                    id="category"
-                    v-model="state.category"
+                    id="maintenance_category_id"
+                    v-model="state.maintenance_category_id"
                     :options="categoryOptions"
                     option-label="label"
                     option-value="value"
                     class="w-full"
                 />
-                <small v-if="errors.has('category')" class="p-error">
-                    <div v-for="error in errors.get('category')" :key="error">{{ error }}</div>
+                <small v-if="errors.has('maintenance_category_id')" class="p-error">
+                    <div v-for="error in errors.get('maintenance_category_id')" :key="error">{{ error }}</div>
                 </small>
             </div>
             <div class="field">
@@ -87,7 +87,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';

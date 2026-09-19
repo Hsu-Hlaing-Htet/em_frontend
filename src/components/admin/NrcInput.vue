@@ -62,7 +62,7 @@
 
 <script>
 import { computed, reactive, watch } from 'vue';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import InputText from 'primevue/inputtext';
 import {
     NRC_NUMBER_LENGTH,

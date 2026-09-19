@@ -1,9 +1,9 @@
 <template>
     <div class="customer-portal-page">
-        <header class="customer-list-page-header">
-            <h1 class="customer-page-heading">{{ $t('customer.payments') }}</h1>
-            <p class="customer-page-lead">{{ $t('customer.paymentsLead') }}</p>
-        </header>
+        <CustomerPageHeader
+            :title="$t('customer.payments')"
+            :subtitle="$t('customer.paymentsLead')"
+        />
 
         <CustomerSearchBar
             v-model:search="search"
@@ -24,24 +24,13 @@
                 @click="openPayment(payment)"
             >
                 <span class="customer-record-cell customer-record-primary">
-                    <span class="customer-record-label">{{ $t('customer.invoice') }} / {{ $t('customer.reference') }}</span>
                     <strong>{{ payment.invoice_number || $t('customer.invoicePayment') }}</strong>
-                    <small>{{ payment.note || payment.reference_number || '—' }}</small>
-                </span>
-
-                <span class="customer-record-cell customer-record-amount">
-                    <span class="customer-record-label">{{ $t('customer.amount') }}</span>
-                    <strong>{{ formatCurrency(Number(payment.amount || 0)) }}</strong>
-                </span>
-
-                <span class="customer-record-cell">
-                    <span class="customer-record-label">{{ $t('customer.paymentDate') }} / {{ $t('customer.method') }}</span>
-                    <strong>{{ payment.payment_date || '—' }}</strong>
+                    <small>{{ $t('customer.paymentAmount') }} (MMK) {{ formatCurrency(Number(payment.amount || 0)) }}</small>
                     <small>{{ payment.payment_method_name || $t('customer.methodPending') }}</small>
                 </span>
 
-                <span class="customer-record-status">
-                    <span class="customer-record-label">{{ $t('customer.status') }}</span>
+                <span class="customer-record-cell customer-record-meta">
+                    <strong>{{ payment.payment_date || '—' }}</strong>
                     <StatusBadge :value="payment.status" />
                 </span>
             </button>
@@ -71,8 +60,9 @@ import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import CustomerSearchBar from '@/components/customer/CustomerSearchBar.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
+import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerPaymentList from '@/composables/customer/useCustomerPaymentList';
-import { formatCurrency } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
 
 export default defineComponent({
     name: 'CustomerPaymentList',
@@ -82,6 +72,7 @@ export default defineComponent({
         StatusBadge,
         CustomerSearchBar,
         CustomerEmptyState,
+        CustomerPageHeader,
     },
     setup() {
         return {

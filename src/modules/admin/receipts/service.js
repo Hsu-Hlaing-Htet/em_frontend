@@ -27,7 +27,9 @@ const service = {
     },
 
     reject: async (params) => {
-        const result = await api.post(`${endpoint.receipts}/${params.id}/reject`);
+        const result = await api.post(`${endpoint.receipts}/${params.id}/reject`, {
+            rejection_reason: params.rejection_reason,
+        });
         return result.data;
     },
 

@@ -4,10 +4,12 @@ import { useDebounceFn } from '@/utils/debounce';
 import { useStaffStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { STAFF_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useStaffList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showStaff');
     const search = ref('');
     const totalRecords = ref(0);
     const isLoading = ref(false);
@@ -126,6 +128,7 @@ export const useStaffList = () => {
         search,
         onSort,
         onPage,
+        onRowClick,
         resetSearch,
         showConfirmDialog,
         isExporting,

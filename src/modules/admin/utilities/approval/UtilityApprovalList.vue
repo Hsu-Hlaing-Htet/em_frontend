@@ -19,32 +19,26 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
                         title="Utility Approvals"
                         :search="search"
-                        search-placeholder="Search room, billing month..."
+                        search-placeholder="Search room, customer, building, utility type, billing month..."
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
                         <Dropdown
-                            v-model="statusFilter"
-                            :options="statusOptions"
+                            v-model="buildingFilter"
+                            :options="buildingOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="Status"
-                            show-clear
-                            class="w-52"
-                        />
-                        <Dropdown
-                            v-model="roomFilter"
-                            :options="roomOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Room"
+                            placeholder="Building"
                             show-clear
                             filter
                             class="w-44"
@@ -52,14 +46,14 @@
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
                                 v-model="billingMonthFrom"
-                                placeholder="From"
+                                placeholder="From Date"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                             <Calendar
                                 v-model="billingMonthTo"
-                                placeholder="To"
+                                placeholder="To Date"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
@@ -79,7 +73,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No pending utilities found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-check-circle"
+                        title="No pending utilities"
+                        message="There are no utility records waiting for approval."
+                    />
+                </template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
                 <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 140px" />
@@ -103,10 +103,9 @@
                         {{ formatBillingMonthLabel(data.billing_month) }}
                     </template>
                 </Column>
-                <Column field="total_amount" header="Total" :sortable="true" style="min-width: 110px" />
-                <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
+                <Column field="total_amount" header="Total (MMK)" :sortable="true" style="min-width: 110px">
                     <template #body="{ data }">
-                        <StatusBadge :value="data.status" />
+                        {{ formatCurrencyAmount(data.total_amount) }}
                     </template>
                 </Column>
                 <Column field="created_by" header="Created By" :sortable="true" style="min-width: 120px" />
@@ -122,61 +121,83 @@
 
             <Loading v-if="isLoading" />
         </div>
+
+        <RejectContractDialog
+            v-model="showRejectDialog"
+            entity="utility"
+            :close-on-confirm="false"
+            @confirm="onRejectConfirm"
+        />
     </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
-import { useConfirm } from 'primevue/useconfirm';
+import { defineComponent, ref } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
-import StatusBadge from '@/components/global/StatusBadge.vue';
 import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
-import { UTILITY_STATUS_OPTIONS } from '@/constants/constant';
+import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
 import { formatBillingMonthLabel } from '@/helpers/documents/billingDocumentHelpers';
+import { formatCurrencyAmount } from '@/utils/formatter';
 import { useUtilityApprovalList } from './useUtilityApprovalList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'UtilityApprovalList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Dropdown,
         Calendar,
         Loading,
         AdminListFilters,
-        StatusBadge,
-        ApprovalListActions, ListExportActions },
+        ApprovalListActions,
+        RejectContractDialog,
+        ListExportActions,
+    },
     setup() {
-        const confirm = useConfirm();
         const list = useUtilityApprovalList();
+        const showRejectDialog = ref(false);
+        const selectedItem = ref(null);
 
         const approveFromList = (item) => {
             list.approveItem(item);
         };
 
         const rejectFromList = (item) => {
-            confirm.require({
-                message: 'Are you sure you want to reject this utility record?',
-                header: 'Please confirm',
-                icon: 'pi pi-exclamation-triangle',
-                acceptLabel: 'Yes, reject',
-                rejectLabel: 'Cancel',
-                accept: () => list.rejectItem(item),
+            selectedItem.value = item;
+            showRejectDialog.value = true;
+        };
+
+        const onRejectConfirm = async (reason) => {
+            if (!selectedItem.value) {
+                return;
+            }
+
+            const rejected = await list.rejectItem(selectedItem.value, {
+                rejection_reason: reason,
             });
+
+            if (rejected) {
+                selectedItem.value = null;
+                showRejectDialog.value = false;
+            }
         };
 
         return {
             ...list,
-            statusOptions: UTILITY_STATUS_OPTIONS,
+            showRejectDialog,
             approveFromList,
             rejectFromList,
+            onRejectConfirm,
             formatBillingMonthLabel,
+            formatCurrencyAmount,
         };
     },
 });

@@ -1,21 +1,25 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
+import { omitEmptyParams, toQueryDate } from '@/helpers/lists/listQuery';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { MAINTENANCE_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 import { useMaintenanceRequestStore } from '../store';
 
 export const useMaintenanceRequestList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showMaintenanceRequest');
     const search = ref('');
+    const priorityFilter = ref(null);
     const statusFilter = ref(null);
+    const createdFrom = ref(null);
+    const createdTo = ref(null);
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const maintenanceRequests = ref([]);
     const lazyParams = ref({});
     const store = useMaintenanceRequestStore();
-    const { confirmDelete } = useDeleteConfirm();
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -31,12 +35,17 @@ export const useMaintenanceRequestList = () => {
         };
     };
 
-    const showConfirmDialog = (id) => {
-        confirmDelete('Are you sure you want to delete this maintenance request?', async () => {
-            await store.delete({ id });
-            await loadingData();
-        });
-    };
+    const buildFetchParams = (extra = {}) => omitEmptyParams({
+        page: lazyParams.value.page + 1,
+        per_page: lazyParams.value.rows,
+        order: multisortConvert(lazyParams.value.multiSortMeta),
+        search: search.value,
+        priority: priorityFilter.value || undefined,
+        status: statusFilter.value || undefined,
+        created_from: toQueryDate(createdFrom.value),
+        created_to: toQueryDate(createdTo.value),
+        ...extra,
+    });
 
     const onPage = (event) => {
         lazyParams.value = event;
@@ -54,13 +63,7 @@ export const useMaintenanceRequestList = () => {
     const loadingData = async () => {
         isLoading.value = true;
 
-        await store.fetchAll({
-            page: lazyParams.value.page + 1,
-            per_page: lazyParams.value.rows,
-            order: multisortConvert(lazyParams.value.multiSortMeta),
-            search: search.value,
-            status: statusFilter.value || undefined,
-        });
+        await store.fetchAll(buildFetchParams());
 
         const response = store.getAllResponse;
 
@@ -81,18 +84,20 @@ export const useMaintenanceRequestList = () => {
     const resetSearch = () => {
         resetPagination();
         search.value = '';
+        priorityFilter.value = null;
         statusFilter.value = null;
+        createdFrom.value = null;
+        createdTo.value = null;
         loadingData();
     };
 
     watch(
-        [search, statusFilter],
+        [search, priorityFilter, statusFilter, createdFrom, createdTo],
         useDebounceFn(() => {
             resetPagination();
             loadingData();
         }, 500),
     );
-
 
     const {
         isExporting,
@@ -106,19 +111,26 @@ export const useMaintenanceRequestList = () => {
         filenameBase: 'maintenance-requests',
         columns: MAINTENANCE_EXPORT_COLUMNS,
         emptyMessage: 'No maintenance requests available to export.',
-        getFetchParams: () => ({
-            order: multisortConvert(lazyParams.value.multiSortMeta),
-            search: search.value,
-            status: statusFilter.value || undefined,
-        }),
+        getFetchParams: () => buildFetchParams({ page: undefined, per_page: undefined }),
         fetchPage: async (params) => {
             await store.fetchAll(params);
             return store.getAllResponse;
         },
-        mapItem: (item) => ({ title: item.title, room_number: item.room_number || item.room?.room_number || '', user_name: item.user_name || item.user?.name || '', status: item.status, created_at: item.created_at }),
+        mapItem: (item) => ({
+            user_name: item.user_name || item.user?.name || '',
+            title: item.title,
+            room_number: item.room_number || item.room?.room_number || '',
+            category: item.category || '',
+            priority: item.priority || '',
+            status: item.status,
+            created_at: item.created_at,
+        }),
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
+            { label: 'Priority', value: priorityFilter.value || '' },
             { label: 'Status', value: statusFilter.value || '' },
+            { label: 'From Date', value: toQueryDate(createdFrom.value) || '' },
+            { label: 'To Date', value: toQueryDate(createdTo.value) || '' },
         ],
         hasData: computed(() => totalRecords.value > 0),
     });
@@ -130,11 +142,14 @@ export const useMaintenanceRequestList = () => {
         lazyParams,
         dt,
         search,
+        priorityFilter,
         statusFilter,
+        createdFrom,
+        createdTo,
         onSort,
         onPage,
+        onRowClick,
         resetSearch,
-        showConfirmDialog,
         isExporting,
         canExport,
         downloadList,

@@ -29,7 +29,7 @@ onUnmounted(() => {
         subtitle="Please enter your login details."
         :show-theme-toggle="false"
     >
-        <form class="space-y-4" novalidate @submit.prevent="submit">
+        <form class="login-form space-y-4" novalidate @submit.prevent="submit">
             <div>
                 <label class="mb-2 block text-sm font-semibold text-[var(--rw-primary-deep)]">
                     Email
@@ -61,7 +61,7 @@ onUnmounted(() => {
                     </router-link>
                 </div>
 
-                <div class="rw-input-shell flex items-center rounded-xl px-4 py-3">
+                <div class="rw-input-shell login-password-shell flex items-center rounded-xl px-4 py-3">
                     <input
                         v-model="form.password"
                         :type="showPassword ? 'text' : 'password'"
@@ -72,7 +72,7 @@ onUnmounted(() => {
 
                     <button
                         type="button"
-                        class="text-rw-muted"
+                        class="login-eye-button text-rw-muted"
                         @click="showPassword = !showPassword"
                     >
                         <i
@@ -109,3 +109,38 @@ onUnmounted(() => {
         </form>
     </AuthPageShell>
 </template>
+
+<style scoped>
+.login-form input,
+.login-eye-button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.login-form input:focus,
+.login-form input:focus-visible,
+.login-eye-button:focus,
+.login-eye-button:focus-visible {
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.login-form input.rw-input-shell:focus,
+.login-form input.rw-input-shell:focus-visible,
+.login-form .login-password-shell:focus-within {
+    background: var(--rw-surface-solid) !important;
+    border-color: var(--rw-primary-deep) !important;
+    box-shadow: var(--rw-focus-shadow) !important;
+    outline: none !important;
+}
+
+.login-eye-button {
+    background: transparent;
+    border: 0;
+    color: var(--rw-text-muted);
+}
+
+.login-eye-button:focus-visible {
+    color: var(--rw-primary-deep);
+}
+</style>

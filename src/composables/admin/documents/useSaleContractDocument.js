@@ -80,7 +80,7 @@ export function useContractDocument(state, options = {}) {
             documentField('Building', state.building_name),
             documentField('Room / Unit', state.room_number),
             documentField('Sale Price', formatCurrency(state.room_price)),
-            documentField('Booking Deposit', formatCurrency(state.deposit)),
+            documentField('Deposit', formatCurrency(state.deposit)),
         ],
         contract: [
             documentField('Contract Number', state.contract_no),
@@ -120,13 +120,16 @@ export function useContractDocument(state, options = {}) {
             approvedBy: showApproval ? state.approved_by : '',
             approvedAt: showApproval ? state.approved_at : '',
         },
-        approval: showApproval ? [
+            approval: showApproval ? [
             documentField('Prepared By', state.created_by),
             documentField('Created Date', state.created_at),
             documentField('Approved By', state.approved_by),
-            ...(state.status === 'cancelled' ? [
-                documentField('Cancellation Reason', state.cancellation_reason),
-                documentField('Cancelled Date', state.cancelled_at),
+            ...(state.status === 'rejected' ? [
+                documentField('Rejection Reason', state.rejection_reason || state.remarks || '—'),
+            ] : []),
+            ...(state.status === 'cancelled' || state.status === 'terminated' ? [
+                documentField('Termination Reason', state.termination_reason || state.cancellation_reason),
+                documentField('Terminated Date', state.termination_date || state.cancelled_at),
             ] : []),
         ] : [
             documentField('Prepared By', state.created_by),

@@ -29,7 +29,7 @@
 
 <script>
 import { computed, defineComponent, ref, watch } from 'vue';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import { parseDate } from '@/utils/formatter';
 
 const MONTHS = [

@@ -88,6 +88,26 @@ const routes = [
                 },
             },
             {
+                path: 'approval/:id/document',
+                name: 'utilityApprovalDocument',
+                component: () => import('@/modules/admin/utilities/detail/UtilityDocument.vue'),
+                meta: {
+                    navKey: 'approval-utilities',
+                    parentNavKey: 'approvals',
+                    action: 'view',
+                    resource: 'utility_approval',
+                    layout: 'default',
+                    approvalContext: true,
+                    title: 'Utility Approval Preview',
+                    breadcrumbs: [
+                        { title: 'Utility List', routeName: 'utilityList' },
+                        { title: 'Approvals', routeName: 'utilityApprovalList' },
+                        { title: 'Detail', routeName: 'showUtilityApproval' },
+                        { title: 'Preview', routeName: 'utilityApprovalDocument' },
+                    ],
+                },
+            },
+            {
                 path: ':id/document',
                 name: 'utilityDocument',
                 component: () => import('@/modules/admin/utilities/detail/UtilityDocument.vue'),

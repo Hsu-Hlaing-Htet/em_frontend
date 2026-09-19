@@ -1,16 +1,18 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
 import { filterContracts, normalizePaymentTypeFilter } from '@/helpers/contracts/contractFilters';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useSaleStore } from '../store';
 import { mapSaleListItemFromApi } from '../mapSale';
 import { useContractListExport } from '@/composables/admin/contracts/useContractListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { SALE_EXPORT_COLUMNS_BY_LIST } from '@/helpers/contracts/exportColumns';
 
 export const useActiveSaleList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showActiveSale');
     const search = ref('');
     const selectedPaymentType = ref(null);
     const selectedStatus = ref(null);
@@ -118,8 +120,8 @@ export const useActiveSaleList = () => {
     } = useContractListExport({
         exportColumnsByList: SALE_EXPORT_COLUMNS_BY_LIST,
         listType: 'active',
-        title: 'Active Sales',
-        filenameBase: 'active-sales',
+        title: 'Sale Contracts',
+        filenameBase: 'sale-contracts',
         emptyMessage: 'No active sales available to export.',
         getVisibleRows: () => contracts.value,
         getFetchParams: () => ({
@@ -176,6 +178,7 @@ export const useActiveSaleList = () => {
         isLoading,
         onPage,
         onSort,
+        onRowClick,
         resetSearch,
         isExporting,
         canExport,

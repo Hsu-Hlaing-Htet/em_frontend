@@ -4,10 +4,12 @@ import { useDebounceFn } from '@/utils/debounce';
 import { useResidentStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { RESIDENT_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useResidentList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showResident');
     const search = ref('');
     const totalRecords = ref(0);
     const isLoading = ref(false);
@@ -129,6 +131,7 @@ export const useResidentList = () => {
         search,
         onSort,
         onPage,
+        onRowClick,
         resetSearch,
         showLifecycleDialog,
         isExporting,

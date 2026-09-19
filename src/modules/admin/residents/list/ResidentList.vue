@@ -19,8 +19,11 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
@@ -46,7 +49,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No residents found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-users"
+                        title="No residents found"
+                        message="Add a resident or clear filters to see matches."
+                    />
+                </template>
                 <template #loading>Loading residents. Please wait.</template>
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 180px">
@@ -68,7 +77,11 @@
                         <StatusBadge :value="data.status" />
                     </template>
                 </Column>
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px" />
+                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px">
+                    <template #body="{ data }">
+                        {{ formatDate(data.created_at) || '—' }}
+                    </template>
+                </Column>
                 <Column
                     header="Actions"
                     :exportable="false"
@@ -108,13 +121,19 @@ import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
+import { formatDate } from '@/utils/formatter';
 import { useResidentList } from './useResidentList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'ResidentList',
-    components: { DataTable, Column, Button, Loading, ListExportActions, AdminListFilters, StatusBadge },
+    components: {
+        AdminEmptyState, DataTable, Column, Button, Loading, ListExportActions, AdminListFilters, StatusBadge },
     setup() {
-        return useResidentList();
+        return {
+            ...useResidentList(),
+            formatDate,
+        };
     },
 });
 </script>

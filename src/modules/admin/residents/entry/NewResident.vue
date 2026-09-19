@@ -12,7 +12,7 @@
                     </small>
                 </div>
 
-                <GmailInput v-model="state.email" :errors="errors" />
+                <EmailInput v-model="state.email" :errors="errors" />
 
                 <PhoneInput v-model="state.phone" :errors="errors" />
 
@@ -64,14 +64,14 @@
 
 <script>
 import { defineComponent } from 'vue';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import DateOfBirthSelect from '@/components/admin/DateOfBirthSelect.vue';
 import NrcInput from '@/components/admin/NrcInput.vue';
 import PhoneInput from '@/components/admin/PhoneInput.vue';
-import GmailInput from '@/components/admin/GmailInput.vue';
+import EmailInput from '@/components/admin/EmailInput.vue';
 import Loading from '@/components/global/Loading.vue';
 import useNewResident from './useNewResident';
 
@@ -86,7 +86,7 @@ export default defineComponent({
         Loading,
         NrcInput,
         PhoneInput,
-        GmailInput,
+        EmailInput,
     },
     setup() {
         return useNewResident();

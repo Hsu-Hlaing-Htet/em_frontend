@@ -19,8 +19,11 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
@@ -42,14 +45,14 @@
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
                                 v-model="dateFrom"
-                                placeholder="DD/MM/YYYY"
+                                placeholder="From Date"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                             <Calendar
                                 v-model="dateTo"
-                                placeholder="DD/MM/YYYY"
+                                placeholder="To Date"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
@@ -68,7 +71,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No pending sale contracts found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-check-circle"
+                        title="No pending sale contracts"
+                        message="There are no sale contracts waiting for approval."
+                    />
+                </template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
                 <Column field="contract_no" header="Contract No" :sortable="true" style="min-width: 160px">
@@ -83,7 +92,7 @@
                 </Column>
                 <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 140px" />
                 <Column field="room_number" header="Room" :sortable="true" style="min-width: 100px" />
-                <Column field="contract_total" header="Contract Total" :sortable="true" style="min-width: 140px">
+                <Column field="contract_total" header="Contract Total (MMK)" :sortable="true" style="min-width: 140px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.contract_total) }}
                     </template>
@@ -94,7 +103,11 @@
                     </template>
                 </Column>
                 <Column field="created_by" header="Created By" :sortable="true" style="min-width: 130px" />
-                <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 130px" />
+                <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 130px">
+                    <template #body="{ data }">
+                        {{ formatDate(data.created_at) || '—' }}
+                    </template>
+                </Column>
                 <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions
@@ -110,6 +123,8 @@
 
         <RejectContractDialog
             v-model="showRejectDialog"
+            entity="sale contract"
+            :close-on-confirm="false"
             @confirm="onRejectConfirm"
         />
     </div>
@@ -120,7 +135,7 @@ import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
 import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
@@ -128,11 +143,14 @@ import RejectContractDialog from '@/components/admin/contracts/RejectContractDia
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import { PAYMENT_PLAN_TYPE_FILTER_OPTIONS } from '@/constants/constant';
+import { formatDate } from '@/utils/formatter';
 import { useSaleContractApprovalList } from './useSaleContractApprovalList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'SaleContractApprovalList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Dropdown,
@@ -172,12 +190,13 @@ export default defineComponent({
             if (rejected) {
                 selectedContract.value = null;
                 showRejectDialog.value = false;
-                router.push({ name: 'saleContractDraftList' });
+                router.push({ name: 'activeSaleList' });
             }
         };
 
         return {
             ...list,
+            formatDate,
             paymentTypeOptions: PAYMENT_PLAN_TYPE_FILTER_OPTIONS,
             showRejectDialog,
             approveFromList,

@@ -38,7 +38,7 @@ const routes = [
             {
                 path: 'approval/:id',
                 name: 'showReceiptApproval',
-                component: () => import('@/modules/admin/receipts/detail/ShowReceipt.vue'),
+                component: () => import('@/modules/admin/receipts/detail/ReceiptDocument.vue'),
                 meta: {
                     navKey: 'approval-receipts',
                     parentNavKey: 'approvals',
@@ -46,11 +46,11 @@ const routes = [
                     resource: 'receipt_approval',
                     layout: 'default',
                     approvalContext: true,
-                    title: 'Receipt Approval Detail',
+                    title: 'Receipt Approval',
                     breadcrumbs: [
                         { title: 'Receipt List', routeName: 'receiptList' },
                         { title: 'Approvals', routeName: 'receiptApprovalList' },
-                        { title: 'Detail', routeName: 'showReceiptApproval' },
+                        { title: 'Document', routeName: 'showReceiptApproval' },
                     ],
                 },
             },
@@ -66,7 +66,6 @@ const routes = [
                     title: 'Receipt Document',
                     breadcrumbs: [
                         { title: 'Receipt List', routeName: 'receiptList' },
-                        { title: 'Show Receipt', routeName: 'showReceipt' },
                         { title: 'Document', routeName: 'receiptDocument' },
                     ],
                 },
@@ -74,16 +73,16 @@ const routes = [
             {
                 path: ':id',
                 name: 'showReceipt',
-                component: () => import('@/modules/admin/receipts/detail/ShowReceipt.vue'),
+                component: () => import('@/modules/admin/receipts/detail/ReceiptDocument.vue'),
                 meta: {
                     navKey: 'receipts',
                     action: 'view',
                     resource: 'receipt',
                     layout: 'default',
-                    title: 'Show Receipt',
+                    title: 'Receipt Document',
                     breadcrumbs: [
                         { title: 'Receipt List', routeName: 'receiptList' },
-                        { title: 'Show Receipt', routeName: 'showReceipt' },
+                        { title: 'Document', routeName: 'showReceipt' },
                     ],
                 },
             },

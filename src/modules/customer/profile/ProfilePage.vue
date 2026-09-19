@@ -1,13 +1,11 @@
 <template>
-    <div v-if="!isLoading" class="customer-portal-page">
-        <header class="customer-portal-page-header">
-            <div>
-                <h1 class="customer-portal-page-title">{{ $t('customer.account') }}</h1>
-                <p class="customer-portal-page-lead">{{ $t('customer.accountLead') }}</p>
-            </div>
-        </header>
+    <div class="customer-portal-page">
+        <CustomerPageHeader
+            :title="$t('customer.account')"
+            :subtitle="$t('customer.accountLead')"
+        />
 
-        <div class="admin-panel relative mx-auto w-full">
+        <div v-if="!isLoading" class="admin-panel relative mx-auto w-full">
             <form
                 class="grid grid-cols-1 gap-4 md:grid-cols-2"
                 @submit.prevent="handleSubmit"
@@ -61,7 +59,7 @@
                     </small>
                 </div>
 
-                <GmailInput
+                <EmailInput
                     v-model="state.email"
                     :original-email="state.original_email"
                     :label="$t('common.email')"
@@ -124,7 +122,8 @@ import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ChangePasswordDialog from '@/components/admin/ChangePasswordDialog.vue';
-import GmailInput from '@/components/admin/GmailInput.vue';
+import EmailInput from '@/components/admin/EmailInput.vue';
+import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerProfilePage from '@/composables/customer/useCustomerProfilePage';
 
 const {

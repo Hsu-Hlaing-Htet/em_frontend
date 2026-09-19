@@ -19,55 +19,46 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
                         title="All Receipts"
                         :search="search"
-                        search-placeholder="Search receipt #, payment ref, invoice #, or customer..."
+                        search-placeholder="Search receipt no, invoice no, customer, or room..."
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
-                        <div class="admin-filter-group">
                         <Dropdown
-                            v-model="buildingId"
-                            :options="buildingOptions"
+                            v-model="paymentMethodId"
+                            :options="paymentMethodOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="Building"
+                            placeholder="Payment Method"
                             show-clear
                             class="w-44"
                         />
-                        <Dropdown
-                            v-model="roomId"
-                            :options="roomOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Room"
-                            :disabled="!buildingId"
-                            show-clear
-                            class="w-36"
-                        />
-                        </div>
                         <div class="admin-filter-group admin-filter-group--dates">
                         <Calendar
                             v-model="issuedFrom"
-                            placeholder="DD/MM/YYYY"
+                            placeholder="From Date"
                             date-format="dd/mm/yy"
                             show-icon
                             class="w-40"
                         />
                         <Calendar
                             v-model="issuedTo"
-                            placeholder="DD/MM/YYYY"
+                            placeholder="To Date"
                             date-format="dd/mm/yy"
                             show-icon
                             class="w-40"
                         />
                         </div>
-                                            <template #actions>
+                        <template #actions>
                             <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"
@@ -80,49 +71,34 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No receipts found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-receipt"
+                        title="No receipts found"
+                        message="No receipts match your search or filters."
+                    />
+                </template>
                 <template #loading>Loading receipts. Please wait.</template>
 
-                <Column field="receipt_number" header="Receipt #" :sortable="true" style="min-width: 160px">
+                <Column field="receipt_number" header="Receipt #" :sortable="true" style="min-width: 170px">
                     <template #body="{ data }">
                         <router-link
-                            :to="{ name: 'showReceipt', params: { id: data.id } }"
+                            :to="{ name: 'receiptDocument', params: { id: data.id } }"
                             class="font-medium text-[var(--admin-primary)] hover:underline"
                         >
                             {{ data.receipt_number }}
                         </router-link>
                     </template>
                 </Column>
-                <Column field="customer_name" header="Customer Name" style="min-width: 150px" />
-                <Column field="property_unit" header="Property/Unit" style="min-width: 170px" />
-                <Column header="Invoice Amount" style="min-width: 130px">
-                    <template #body="{ data }">
-                        {{ formatCurrency(data.invoice_amount) }}
-                    </template>
-                </Column>
-                <Column header="Paid Amount" style="min-width: 130px">
+                <Column field="customer_name" header="Customer Name" style="min-width: 180px" />
+                <Column field="invoice_number" header="Invoice No." style="min-width: 140px" />
+                <Column header="Amount Received (MMK)" style="min-width: 160px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.paid_amount ?? data.amount) }}
                     </template>
                 </Column>
-                <Column header="Balance" style="min-width: 120px">
-                    <template #body="{ data }">
-                        {{ formatCurrency(data.balance) }}
-                    </template>
-                </Column>
-                <Column header="Payment Type" style="min-width: 110px">
-                    <template #body="{ data }">
-                        {{ formatPaymentTypeLabel(data.payment_type) }}
-                    </template>
-                </Column>
-
-                <Column field="payment_date" header="Payment Date" style="min-width: 120px" />
-                <Column field="payment_method_name" header="Payment Method" style="min-width: 130px" />
-                <Column header="Status" style="min-width: 110px">
-                    <template #body="{ data }">
-                        <StatusBadge :value="data.display_status || data.status" />
-                    </template>
-                </Column>
+                <Column field="payment_date" header="Payment Date" style="min-width: 135px" />
+                <Column field="payment_method_name" header="Payment Method" style="min-width: 150px" />
             </DataTable>
 
             <Loading v-if="isLoading" />
@@ -134,33 +110,33 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
-import StatusBadge from '@/components/global/StatusBadge.vue';
-import { formatCurrency } from '@/utils/formatter';
-import { formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
+import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
 import { useReceiptList } from './useReceiptList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'ReceiptList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Dropdown,
         Calendar,
         Loading,
         AdminListFilters,
-        StatusBadge, ListExportActions },
+        ListExportActions,
+    },
     setup() {
         const list = useReceiptList();
 
         return {
             ...list,
             formatCurrency,
-            formatPaymentTypeLabel,
         };
     },
 });

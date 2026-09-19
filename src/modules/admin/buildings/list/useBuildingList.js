@@ -1,13 +1,15 @@
-import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { useBuildingStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { BUILDING_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 
 export const useBuildingList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showBuilding');
     const search = ref('');
     const totalRecords = ref(0);
     const isLoading = ref(false);
@@ -173,6 +175,7 @@ export const useBuildingList = () => {
         search,
         onSort,
         onPage,
+        onRowClick,
         resetSearch,
         showConfirmDialog,
         showArchiveDialog,

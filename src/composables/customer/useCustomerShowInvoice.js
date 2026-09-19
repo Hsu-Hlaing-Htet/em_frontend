@@ -1,10 +1,9 @@
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { formatDate, formatCurrency } from '@/utils/formatter';
-import { formatBillingDocumentDate, compactBillingValues } from '@/helpers/billing/billingDetailHelpers';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useCustomerInvoiceStore } from '@/modules/customer/invoices/store';
 import { useCustomerPaymentStore } from '@/modules/customer/payments/store';
@@ -14,12 +13,14 @@ export default function useCustomerShowInvoice() {
     const store = useCustomerInvoiceStore();
     const paymentStore = useCustomerPaymentStore();
     const route = useRoute();
+    const router = useRouter();
     const isLoading = ref(true);
     const isSaving = ref(false);
     const isDownloading = ref(false);
     const errors = new Errors();
     const paymentMethods = ref([]);
     const proofFile = ref(null);
+    const proofPreviewUrl = ref('');
 
     const invoiceItems = ref([]);
     const invoicePayments = ref([]);
@@ -30,16 +31,29 @@ export default function useCustomerShowInvoice() {
         type: '',
         issued_date: '',
         due_date: '',
+        billing_period: '',
         total_amount: 0,
+        amount_due: 0,
+        late_fee: 0,
+        overdue_days: 0,
         paid_amount: 0,
+        remaining_balance: null,
+        has_pending_payment: false,
+        pending_payment_id: null,
         status: '',
         building_name: '',
         room_number: '',
+        customer_name: '',
+        customer_email: '',
+        customer_phone: '',
+        items: [],
     });
 
     const paymentForm = reactive({
+        amount: null,
         payment_method_id: null,
         payment_date: new Date(),
+        reference_number: '',
         note: '',
     });
 
@@ -52,27 +66,45 @@ export default function useCustomerShowInvoice() {
     });
 
     const remainingAmount = computed(() => {
-        return Math.max(Number(state.total_amount || 0) - Number(state.paid_amount || 0), 0);
-    });
-
-    const customerLines = computed(() => compactBillingValues([
-        state.building_name,
-        state.room_number,
-        state.due_date,
-    ]));
-
-    const detailDate = computed(() => formatBillingDocumentDate(state.issued_date));
-
-    const invoiceSummaryNote = computed(() => {
-        if (!canPay.value) {
-            return '';
+        if (state.remaining_balance !== null && state.remaining_balance !== undefined) {
+            return Math.max(Number(state.remaining_balance || 0), 0);
         }
 
-        return `Remaining balance ${formatCurrency(remainingAmount.value)}.`;
+        const due = Number(state.amount_due || 0)
+            || (Number(state.total_amount || 0) + Number(state.late_fee || 0));
+
+        return Math.max(due - Number(state.paid_amount || 0), 0);
     });
 
     const canPay = computed(() => {
-        return ['issued', 'partial', 'overdue', 'unpaid'].includes(state.status) && remainingAmount.value > 0;
+        return ['issued', 'overdue'].includes(String(state.status || '').toLowerCase())
+            && remainingAmount.value > 0
+            && !state.has_pending_payment;
+    });
+
+    const formattedAmountDue = computed(() => formatCurrency(remainingAmount.value));
+    const hasPendingPayment = computed(() => Boolean(state.has_pending_payment));
+    const invoiceDocumentRoute = computed(() => (
+        state.id ? { name: 'customerInvoiceDocument', params: { id: state.id } } : { name: 'customerInvoiceList' }
+    ));
+    const latestRejectedPayment = computed(() => normalizeList(invoicePayments.value)
+        .filter((payment) => String(payment.status || '').toLowerCase() === 'rejected')
+        .sort((a, b) => Number(b.id || 0) - Number(a.id || 0))[0] || null);
+    const rejectionReason = computed(() => latestRejectedPayment.value?.rejection_reason || '');
+    const paymentUnavailableMessage = computed(() => {
+        if (hasPendingPayment.value) {
+            return 'A payment for this invoice is already pending review.';
+        }
+
+        if (String(state.status || '').toLowerCase() === 'paid') {
+            return 'This invoice has already been paid.';
+        }
+
+        if (!canPay.value) {
+            return 'This invoice is not open for payment.';
+        }
+
+        return '';
     });
 
     onMounted(async () => {
@@ -85,7 +117,12 @@ export default function useCustomerShowInvoice() {
         }
     });
 
+    watch(() => route.hash, () => {
+        scrollToPaymentFormIfRequested();
+    });
+
     onBeforeUnmount(() => {
+        clearProofFile();
         store.$reset();
         store.$dispose();
     });
@@ -116,21 +153,36 @@ export default function useCustomerShowInvoice() {
                     type: data.type || '',
                     issued_date: data.issued_date || '',
                     due_date: data.due_date || '',
+                    billing_period: data.billing_period || '',
                     total_amount: data.total_amount ?? 0,
+                    amount_due: data.amount_due ?? data.remaining_balance ?? data.total_amount ?? 0,
+                    late_fee: data.late_fee ?? 0,
+                    overdue_days: data.overdue_days ?? 0,
                     paid_amount: data.paid_amount ?? 0,
+                    remaining_balance: data.remaining_balance ?? null,
+                    has_pending_payment: Boolean(data.has_pending_payment),
+                    pending_payment_id: data.pending_payment_id ?? null,
                     status: data.status || '',
                     building_name: data.building_name || '',
                     room_number: data.room_number || '',
+                    customer_name: data.customer_name || '',
+                    customer_email: data.customer_email || '',
+                    customer_phone: data.customer_phone || '',
                 });
+
+                paymentForm.amount = remainingAmount.value || null;
+
                 // Backend InvoiceResource field is `items` (may be wrapped as { data: [] }).
                 const rawItems = data.items ?? data.invoice_items ?? data.invoiceItems;
                 invoiceItems.value = normalizeList(rawItems).map((item) => ({ ...item }));
                 invoicePayments.value = normalizeList(data.payments).map((payment) => ({ ...payment }));
+                state.items = invoiceItems.value;
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load invoice.');
         } finally {
             isLoading.value = false;
+            await scrollToPaymentFormIfRequested();
         }
     }
 
@@ -138,14 +190,21 @@ export default function useCustomerShowInvoice() {
         errors.clear();
 
         if (!applyValidation(errors, {
+            amount: paymentForm.amount,
             payment_method_id: paymentForm.payment_method_id,
             payment_date: paymentForm.payment_date,
             proof: proofFile.value,
         }, [
+            { field: 'amount', type: 'number', gt: 0 },
             { field: 'payment_method_id', type: 'select' },
             { field: 'payment_date', type: 'date' },
             { field: 'proof', type: 'file' },
         ])) {
+            return;
+        }
+
+        if (Math.abs(Number(paymentForm.amount) - remainingAmount.value) > 0.009) {
+            errors.record({ amount: ['Payment amount must equal the full current amount due.'] });
             return;
         }
 
@@ -154,13 +213,16 @@ export default function useCustomerShowInvoice() {
         try {
             await paymentStore.submitPayment({
                 invoice_id: state.id,
+                amount: paymentForm.amount,
                 payment_method_id: paymentForm.payment_method_id,
                 payment_date: formatDate(paymentForm.payment_date),
-                note: paymentForm.note,
+                note: buildPaymentNote(),
                 proof: proofFile.value,
             });
 
             const response = paymentStore.getSubmitResponse;
+
+            await router.push({ name: 'customerPaymentList' });
 
             EventBus.emit('show-toast', {
                 severity: 'success',
@@ -168,8 +230,7 @@ export default function useCustomerShowInvoice() {
                 detail: response?.message || 'Payment submitted successfully.',
             });
 
-            proofFile.value = null;
-            await loadInvoice();
+            clearProofFile();
         } catch (error) {
             if (error.status === 422) {
                 errors.record(error.data.data);
@@ -198,9 +259,54 @@ export default function useCustomerShowInvoice() {
         }
     }
 
+    async function goToPaymentForm() {
+        await router.replace({ hash: '#make-payment' });
+        await scrollToPaymentFormIfRequested();
+    }
+
     const onProofSelected = (event) => {
-        proofFile.value = event.files?.[0] || null;
+        const file = event.files?.[0] || null;
+        clearProofFile();
+
+        if (!file) {
+            return;
+        }
+
+        if (!['image/jpeg', 'image/png'].includes(file.type)) {
+            errors.record({ proof: ['Please upload a JPG, JPEG, or PNG image.'] });
+            return;
+        }
+
+        if (file.size > 5120 * 1024) {
+            errors.record({ proof: ['Payment proof must not be larger than 5 MB.'] });
+            return;
+        }
+
+        proofFile.value = file;
+        proofPreviewUrl.value = URL.createObjectURL(file);
     };
+
+    const clearProofFile = () => {
+        if (proofPreviewUrl.value) {
+            URL.revokeObjectURL(proofPreviewUrl.value);
+        }
+
+        proofFile.value = null;
+        proofPreviewUrl.value = '';
+    };
+
+    const buildPaymentNote = () => [
+        paymentForm.note || '',
+    ].filter(Boolean).join('\n');
+
+    async function scrollToPaymentFormIfRequested() {
+        if (route.hash !== '#make-payment') {
+            return;
+        }
+
+        await nextTick();
+        document.getElementById('make-payment')?.scrollIntoView({ block: 'start' });
+    }
 
     function normalizeList(value) {
         if (Array.isArray(value)) {
@@ -224,13 +330,19 @@ export default function useCustomerShowInvoice() {
         invoicePayments,
         paymentForm,
         paymentMethods,
+        proofFile,
+        proofPreviewUrl,
         remainingAmount,
+        formattedAmountDue,
         canPay,
-        customerLines,
-        detailDate,
-        invoiceSummaryNote,
+        hasPendingPayment,
+        invoiceDocumentRoute,
+        rejectionReason,
+        paymentUnavailableMessage,
         submitPayment,
         downloadPdf,
+        goToPaymentForm,
         onProofSelected,
+        clearProofFile,
     };
 }

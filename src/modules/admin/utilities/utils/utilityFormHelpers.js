@@ -1,3 +1,32 @@
+export const CURRENT_UNIT_VALIDATION = {
+    negative: 'Current unit cannot be negative.',
+    lessThanPrevious: 'Current unit cannot be less than the previous unit.',
+};
+
+export const getCurrentReadingError = (currentReading, previousReading) => {
+    if (currentReading === null || currentReading === undefined || currentReading === '') {
+        return null;
+    }
+
+    const current = Number(currentReading);
+
+    if (!Number.isFinite(current)) {
+        return null;
+    }
+
+    if (current < 0) {
+        return CURRENT_UNIT_VALIDATION.negative;
+    }
+
+    const previous = Number(previousReading ?? 0);
+
+    if (Number.isFinite(previous) && current < previous) {
+        return CURRENT_UNIT_VALIDATION.lessThanPrevious;
+    }
+
+    return null;
+};
+
 export const formatBillingMonth = (value) => {
     if (!value) {
         return null;
@@ -62,4 +91,5 @@ export const emptyUtilityItem = () => ({
     unit_price: null,
     amount: 0,
     rowError: '',
+    currentReadingError: '',
 });

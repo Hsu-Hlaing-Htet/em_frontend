@@ -13,46 +13,70 @@
         <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
             <div class="field">
                 <label class="mb-2 block text-md" for="current_password">Current Password</label>
-                <Password
-                    input-id="current_password"
-                    v-model="form.current_password"
-                    toggle-mask
-                    :feedback="false"
-                    class="w-full"
-                    input-class="w-full"
-                    placeholder="Enter your current password"
-                    :disabled="loading"
-                />
+                <div class="admin-password-field">
+                    <input
+                        id="current_password"
+                        v-model="form.current_password"
+                        :type="showCurrentPassword ? 'text' : 'password'"
+                        class="p-inputtext p-component w-full admin-password-field__input"
+                        placeholder="Enter your current password"
+                        :disabled="loading"
+                    >
+                    <button
+                        type="button"
+                        class="admin-password-field__toggle"
+                        :disabled="loading"
+                        @click="showCurrentPassword = !showCurrentPassword"
+                    >
+                        <i :class="showCurrentPassword ? 'fas fa-eye' : 'fas fa-eye-slash'" />
+                    </button>
+                </div>
                 <FieldErrors :errors="errors" field="current_password" />
             </div>
 
             <div class="field">
                 <label class="mb-2 block text-md" for="new_password">New Password</label>
-                <Password
-                    input-id="new_password"
-                    v-model="form.password"
-                    toggle-mask
-                    :feedback="false"
-                    class="w-full"
-                    input-class="w-full"
-                    placeholder="Enter a new password"
-                    :disabled="loading"
-                />
+                <div class="admin-password-field">
+                    <input
+                        id="new_password"
+                        v-model="form.password"
+                        :type="showPassword ? 'text' : 'password'"
+                        class="p-inputtext p-component w-full admin-password-field__input"
+                        placeholder="Enter a new password"
+                        :disabled="loading"
+                    >
+                    <button
+                        type="button"
+                        class="admin-password-field__toggle"
+                        :disabled="loading"
+                        @click="showPassword = !showPassword"
+                    >
+                        <i :class="showPassword ? 'fas fa-eye' : 'fas fa-eye-slash'" />
+                    </button>
+                </div>
                 <FieldErrors :errors="errors" field="password" />
             </div>
 
             <div class="field">
                 <label class="mb-2 block text-md" for="password_confirmation">Confirm New Password</label>
-                <Password
-                    input-id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    toggle-mask
-                    :feedback="false"
-                    class="w-full"
-                    input-class="w-full"
-                    placeholder="Confirm your new password"
-                    :disabled="loading"
-                />
+                <div class="admin-password-field">
+                    <input
+                        id="password_confirmation"
+                        v-model="form.password_confirmation"
+                        :type="showConfirmPassword ? 'text' : 'password'"
+                        class="p-inputtext p-component w-full admin-password-field__input"
+                        placeholder="Confirm your new password"
+                        :disabled="loading"
+                    >
+                    <button
+                        type="button"
+                        class="admin-password-field__toggle"
+                        :disabled="loading"
+                        @click="showConfirmPassword = !showConfirmPassword"
+                    >
+                        <i :class="showConfirmPassword ? 'fas fa-eye' : 'fas fa-eye-slash'" />
+                    </button>
+                </div>
                 <FieldErrors :errors="errors" field="password_confirmation" />
             </div>
         </form>
@@ -80,13 +104,12 @@
 import { defineComponent, ref, watch } from 'vue';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
-import Password from 'primevue/password';
 import FieldErrors from '@/components/global/FieldErrors.vue';
 import { useChangePassword } from '@/composables/global/useChangePassword';
 
 export default defineComponent({
     name: 'ChangePasswordDialog',
-    components: { Dialog, Button, Password, FieldErrors },
+    components: { Dialog, Button, FieldErrors },
     props: {
         modelValue: {
             type: Boolean,
@@ -100,9 +123,19 @@ export default defineComponent({
             form,
             errors,
             loading,
+            showCurrentPassword,
+            showPassword,
+            showConfirmPassword,
             resetForm,
             submit,
-        } = useChangePassword();
+        } = useChangePassword({
+            keepSession: true,
+            successMessage: 'Password changed successfully.',
+            onSuccess: () => {
+                visible.value = false;
+                emit('update:modelValue', false);
+            },
+        });
 
         watch(() => props.modelValue, (value) => {
             visible.value = value;
@@ -138,6 +171,9 @@ export default defineComponent({
             form,
             errors,
             loading,
+            showCurrentPassword,
+            showPassword,
+            showConfirmPassword,
             close,
             onVisibleChange,
             submit,
@@ -145,3 +181,39 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.admin-password-field {
+    position: relative;
+}
+
+.admin-password-field__input {
+    padding-right: 2.75rem;
+}
+
+.admin-password-field__toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 0;
+    background: transparent;
+    color: var(--admin-text-muted);
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.admin-password-field__toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.admin-password-field__toggle:focus,
+.admin-password-field__toggle:focus-visible {
+    outline: none;
+}
+</style>

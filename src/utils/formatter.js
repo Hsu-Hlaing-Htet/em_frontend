@@ -1,6 +1,7 @@
 const CURRENCY_LOCALE = 'en-MM';
 const CURRENCY_CODE = 'MMK';
 const BACKEND_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+const BACKEND_DATE_PREFIX_PATTERN = /^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/;
 const DISPLAY_DATE_PATTERN = /^(\d{2})\/(\d{2})\/(\d{4})$/;
 
 function isRealDate(year, month, day) {
@@ -21,7 +22,8 @@ function parseDateParts(value) {
     }
 
     const trimmed = value.trim();
-    const backendMatch = trimmed.match(BACKEND_DATE_PATTERN);
+    // Accept pure dates and datetimes (`2026-05-03 14:30:00`, ISO with T) — date only.
+    const backendMatch = trimmed.match(BACKEND_DATE_PREFIX_PATTERN);
 
     if (backendMatch) {
         const year = Number(backendMatch[1]);
@@ -102,6 +104,16 @@ export function formatCurrency(value) {
     return new Intl.NumberFormat(CURRENCY_LOCALE, {
         style: 'currency',
         currency: CURRENCY_CODE,
+        maximumFractionDigits: 0,
+    }).format(value);
+}
+
+export function formatCurrencyAmount(value) {
+    if (value === null || value === undefined) {
+        return '-';
+    }
+
+    return new Intl.NumberFormat(CURRENCY_LOCALE, {
         maximumFractionDigits: 0,
     }).format(value);
 }

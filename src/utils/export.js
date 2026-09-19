@@ -1,8 +1,17 @@
 import * as XLSX from 'xlsx';
 import { downloadBlob, downloadTextFile } from './downloadFile';
+import { formatDate } from './formatter';
 
 function formatExportValue(row, column) {
-    const value = column.format ? column.format(row) : (row[column.field] ?? '');
+    if (column.format) {
+        return column.format(row) ?? '';
+    }
+
+    const value = row[column.field] ?? '';
+
+    if (column.type === 'date' && value) {
+        return formatDate(value) || String(value);
+    }
 
     return value ?? '';
 }
@@ -15,7 +24,7 @@ function cellType(column, value) {
     }
 
     if (column.type === 'date' && value) {
-        return String(value);
+        return formatDate(value) || String(value);
     }
 
     return value == null ? '' : value;

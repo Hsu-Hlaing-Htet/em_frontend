@@ -3,17 +3,19 @@ import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { UTILITY_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 import { toQueryDate } from '@/helpers/lists/listQuery';
-import { service as roomService } from '@/modules/admin/rooms/service';
+import { service as buildingService } from '@/modules/admin/buildings/service';
 import { useUtilityStore } from '../store';
 
 export const useUtilityList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showUtility');
     const search = ref('');
     const statusFilter = ref(null);
-    const roomFilter = ref(null);
-    const roomOptions = ref([]);
+    const buildingFilter = ref(null);
+    const buildingOptions = ref([]);
     const billingMonthFrom = ref(null);
     const billingMonthTo = ref(null);
     const totalRecords = ref(0);
@@ -57,19 +59,21 @@ export const useUtilityList = () => {
         loadingData();
     };
 
+    const buildFetchParams = () => ({
+        page: lazyParams.value.page + 1,
+        per_page: lazyParams.value.rows,
+        order: multisortConvert(lazyParams.value.multiSortMeta),
+        search: search.value?.trim() || undefined,
+        status: statusFilter.value || undefined,
+        building_id: buildingFilter.value || undefined,
+        billing_month_from: toQueryDate(billingMonthFrom.value),
+        billing_month_to: toQueryDate(billingMonthTo.value),
+    });
+
     const loadingData = async () => {
         isLoading.value = true;
 
-        await store.fetchAll({
-            page: lazyParams.value.page + 1,
-            per_page: lazyParams.value.rows,
-            order: multisortConvert(lazyParams.value.multiSortMeta),
-            search: search.value,
-            status: statusFilter.value || undefined,
-            room_id: roomFilter.value || undefined,
-            billing_month_from: toQueryDate(billingMonthFrom.value),
-            billing_month_to: toQueryDate(billingMonthTo.value),
-        });
+        await store.fetchAll(buildFetchParams());
 
         const response = store.getAllResponse;
 
@@ -82,20 +86,18 @@ export const useUtilityList = () => {
         isLoading.value = false;
     };
 
-    const loadRoomOptions = async () => {
-        const response = await roomService.getAll({ per_page: 500 });
+    const loadBuildingOptions = async () => {
+        const response = await buildingService.getAll({ per_page: 100 });
 
-        roomOptions.value = (response?.data?.data || []).map((room) => ({
-            label: room.building_name
-                ? `${room.building_name} - ${room.room_number}`
-                : room.room_number,
-            value: room.id,
+        buildingOptions.value = (response?.data?.data || []).map((building) => ({
+            label: building.building_name,
+            value: building.id,
         }));
     };
 
     onMounted(() => {
         resetPagination();
-        loadRoomOptions();
+        loadBuildingOptions();
         loadingData();
     });
 
@@ -103,20 +105,19 @@ export const useUtilityList = () => {
         resetPagination();
         search.value = '';
         statusFilter.value = null;
-        roomFilter.value = null;
+        buildingFilter.value = null;
         billingMonthFrom.value = null;
         billingMonthTo.value = null;
         loadingData();
     };
 
     watch(
-        [search, statusFilter, roomFilter, billingMonthFrom, billingMonthTo],
+        [search, statusFilter, buildingFilter, billingMonthFrom, billingMonthTo],
         useDebounceFn(() => {
             resetPagination();
             loadingData();
         }, 500),
     );
-
 
     const {
         isExporting,
@@ -132,9 +133,9 @@ export const useUtilityList = () => {
         emptyMessage: 'No utilities available to export.',
         getFetchParams: () => ({
             order: multisortConvert(lazyParams.value.multiSortMeta),
-            search: search.value,
+            search: search.value?.trim() || undefined,
             status: statusFilter.value || undefined,
-            room_id: roomFilter.value || undefined,
+            building_id: buildingFilter.value || undefined,
             billing_month_from: toQueryDate(billingMonthFrom.value),
             billing_month_to: toQueryDate(billingMonthTo.value),
         }),
@@ -153,7 +154,7 @@ export const useUtilityList = () => {
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
             { label: 'Status', value: statusFilter.value || '' },
-            { label: 'Room', value: roomOptions.value.find((o) => o.value === roomFilter.value)?.label || '' },
+            { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingFilter.value)?.label || '' },
             { label: 'Billing Month From', value: toQueryDate(billingMonthFrom.value) || '' },
             { label: 'Billing Month To', value: toQueryDate(billingMonthTo.value) || '' },
         ],
@@ -168,12 +169,13 @@ export const useUtilityList = () => {
         dt,
         search,
         statusFilter,
-        roomFilter,
-        roomOptions,
+        buildingFilter,
+        buildingOptions,
         billingMonthFrom,
         billingMonthTo,
         onSort,
         onPage,
+        onRowClick,
         resetSearch,
         showConfirmDialog,
         isExporting,

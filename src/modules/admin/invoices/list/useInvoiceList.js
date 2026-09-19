@@ -12,10 +12,14 @@ import {
     readQueryString,
     toQueryDate,
 } from '@/helpers/lists/listQuery';
-import { useBuildingRoomFilterOptions } from '@/composables/admin/useBuildingRoomFilterOptions';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { INVOICE_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
+import { service as buildingService } from '@/modules/admin/buildings/service';
 import { useInvoiceStore } from '../store';
+
+const DATE_TYPE_ISSUED = 'issued';
+const DATE_TYPE_DUE = 'due';
 
 const mapInvoiceRow = (item) => ({
     ...item,
@@ -30,14 +34,14 @@ export const useInvoiceList = () => {
     const route = useRoute();
     const router = useRouter();
     const dt = ref();
+    const { onRowClick } = useClickableListRow('invoiceDocument');
     const search = ref('');
     const paymentStatusFilter = ref(null);
     const buildingId = ref(null);
-    const roomId = ref(null);
-    const issuedFrom = ref(null);
-    const issuedTo = ref(null);
-    const dueFrom = ref(null);
-    const dueTo = ref(null);
+    const buildingOptions = ref([]);
+    const dateType = ref(DATE_TYPE_ISSUED);
+    const dateFrom = ref(null);
+    const dateTo = ref(null);
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const invoices = ref([]);
@@ -45,12 +49,15 @@ export const useInvoiceList = () => {
     const isHydratingFromUrl = ref(true);
     const isWritingQuery = ref(false);
     const store = useInvoiceStore();
-    const {
-        buildingOptions,
-        roomOptions,
-        loadBuildings,
-        loadRooms,
-    } = useBuildingRoomFilterOptions(buildingId);
+
+    const loadBuildings = async () => {
+        const response = await buildingService.getAll({ per_page: 100 });
+
+        buildingOptions.value = (response?.data?.data || []).map((building) => ({
+            label: building.building_name,
+            value: building.id,
+        }));
+    };
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -66,26 +73,50 @@ export const useInvoiceList = () => {
         };
     };
 
+    const buildDateFilterParams = () => {
+        const from = toQueryDate(dateFrom.value);
+        const to = toQueryDate(dateTo.value);
+
+        if (dateType.value === DATE_TYPE_DUE) {
+            return {
+                due_from: from,
+                due_to: to,
+            };
+        }
+
+        return {
+            issued_from: from,
+            issued_to: to,
+        };
+    };
+
     const buildFilterQuery = () => omitEmptyParams({
         search: search.value?.trim() || undefined,
         payment_status: paymentStatusFilter.value || undefined,
         building_id: buildingId.value || undefined,
-        room_id: roomId.value || undefined,
-        issued_from: toQueryDate(issuedFrom.value),
-        issued_to: toQueryDate(issuedTo.value),
-        due_from: toQueryDate(dueFrom.value),
-        due_to: toQueryDate(dueTo.value),
+        date_type: dateType.value || undefined,
+        ...buildDateFilterParams(),
     });
 
     const applyQueryToFilters = (query) => {
         search.value = readQueryString(query, 'search', '');
-        paymentStatusFilter.value = readQueryString(query, 'payment_status', '') || null;
+        const statusFromQuery = readQueryString(query, 'payment_status', '') || null;
+        paymentStatusFilter.value = statusFromQuery === 'unpaid' ? 'issued' : statusFromQuery;
         buildingId.value = readQueryNumber(query, 'building_id');
-        roomId.value = readQueryNumber(query, 'room_id');
-        issuedFrom.value = readQueryDate(query, 'issued_from', parseDate);
-        issuedTo.value = readQueryDate(query, 'issued_to', parseDate);
-        dueFrom.value = readQueryDate(query, 'due_from', parseDate);
-        dueTo.value = readQueryDate(query, 'due_to', parseDate);
+
+        const queryDateType = readQueryString(query, 'date_type', '');
+        const hasDueDates = Boolean(query.due_from || query.due_to);
+        const hasIssuedDates = Boolean(query.issued_from || query.issued_to);
+
+        if (queryDateType === DATE_TYPE_DUE || (!queryDateType && hasDueDates && !hasIssuedDates)) {
+            dateType.value = DATE_TYPE_DUE;
+            dateFrom.value = readQueryDate(query, 'due_from', parseDate);
+            dateTo.value = readQueryDate(query, 'due_to', parseDate);
+        } else {
+            dateType.value = DATE_TYPE_ISSUED;
+            dateFrom.value = readQueryDate(query, 'issued_from', parseDate);
+            dateTo.value = readQueryDate(query, 'issued_to', parseDate);
+        }
     };
 
     const syncFiltersToUrl = async () => {
@@ -125,11 +156,10 @@ export const useInvoiceList = () => {
             per_page: lazyParams.value.rows,
             order: multisortConvert(lazyParams.value.multiSortMeta) || undefined,
             ...buildFilterQuery(),
-            issued_from: toQueryDate(issuedFrom.value),
-            issued_to: toQueryDate(issuedTo.value),
-            due_from: toQueryDate(dueFrom.value),
-            due_to: toQueryDate(dueTo.value),
         });
+
+        // date_type is UI-only; API still uses issued_*/due_* params
+        delete params.date_type;
 
         await store.fetchAll(params);
 
@@ -158,29 +188,16 @@ export const useInvoiceList = () => {
         search.value = '';
         paymentStatusFilter.value = null;
         buildingId.value = null;
-        roomId.value = null;
-        issuedFrom.value = null;
-        issuedTo.value = null;
-        dueFrom.value = null;
-        dueTo.value = null;
-        roomOptions.value = [];
+        dateType.value = DATE_TYPE_ISSUED;
+        dateFrom.value = null;
+        dateTo.value = null;
         resetPagination();
         await syncFiltersToUrl();
         await loadingData();
     };
 
-    watch(buildingId, (nextBuildingId, previousBuildingId) => {
-        if (isHydratingFromUrl.value) {
-            return;
-        }
-
-        if (nextBuildingId !== previousBuildingId) {
-            roomId.value = null;
-        }
-    });
-
     watch(
-        [search, paymentStatusFilter, buildingId, roomId, issuedFrom, issuedTo, dueFrom, dueTo],
+        [search, paymentStatusFilter, buildingId, dateType, dateFrom, dateTo],
         () => {
             reloadFromFilters();
         },
@@ -192,7 +209,6 @@ export const useInvoiceList = () => {
         }
 
         applyQueryToFilters(query);
-        await loadRooms(buildingId.value);
         resetPagination();
         await loadingData();
     });
@@ -201,11 +217,9 @@ export const useInvoiceList = () => {
         resetPagination();
         applyQueryToFilters(route.query);
         await loadBuildings();
-        await loadRooms(buildingId.value);
         isHydratingFromUrl.value = false;
         await loadingData();
     });
-
 
     const {
         isExporting,
@@ -219,10 +233,16 @@ export const useInvoiceList = () => {
         filenameBase: 'invoices',
         columns: INVOICE_EXPORT_COLUMNS,
         emptyMessage: 'No invoices available to export.',
-        getFetchParams: () => ({
-            order: multisortConvert(lazyParams.value.multiSortMeta) || undefined,
-            ...buildFilterQuery(),
-        }),
+        getFetchParams: () => {
+            const params = {
+                order: multisortConvert(lazyParams.value.multiSortMeta) || undefined,
+                ...buildFilterQuery(),
+            };
+
+            delete params.date_type;
+
+            return params;
+        },
         fetchPage: async (params) => {
             await store.fetchAll(omitEmptyParams(params));
             return store.getAllResponse;
@@ -232,11 +252,9 @@ export const useInvoiceList = () => {
             { label: 'Search', value: search.value || '' },
             { label: 'Payment Status', value: paymentStatusFilter.value || '' },
             { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
-            { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
-            { label: 'Issued From', value: toQueryDate(issuedFrom.value) || '' },
-            { label: 'Issued To', value: toQueryDate(issuedTo.value) || '' },
-            { label: 'Due From', value: toQueryDate(dueFrom.value) || '' },
-            { label: 'Due To', value: toQueryDate(dueTo.value) || '' },
+            { label: 'Date Type', value: dateType.value === DATE_TYPE_DUE ? 'Due Date' : 'Issue Date' },
+            { label: 'From', value: toQueryDate(dateFrom.value) || '' },
+            { label: 'To', value: toQueryDate(dateTo.value) || '' },
         ],
         hasData: computed(() => totalRecords.value > 0),
     });
@@ -250,15 +268,13 @@ export const useInvoiceList = () => {
         search,
         paymentStatusFilter,
         buildingId,
-        roomId,
-        issuedFrom,
-        issuedTo,
-        dueFrom,
-        dueTo,
+        dateType,
+        dateFrom,
+        dateTo,
         buildingOptions,
-        roomOptions,
         onSort,
         onPage,
+        onRowClick,
         resetSearch,
         formatDate,
         isExporting,

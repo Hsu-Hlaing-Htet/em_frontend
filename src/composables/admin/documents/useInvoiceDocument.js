@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import { formatCurrency as formatAppCurrency } from '@/helpers/documents/billingDocumentHelpers';
 import { COMPANY_INFO } from '@/helpers/documents/companyInfo';
+import { getStatusLabel } from '@/utils/formatter';
 import {
     formatBillingPeriod,
     mapInvoiceLineItemRow,
@@ -82,6 +83,7 @@ export function useInvoiceDocument(state) {
                 issue_date: issueDate,
                 due_date: dueDate,
                 billing_period: formatBillingPeriod(state),
+                status: getStatusLabel(state.status || state.payment_status || state.display_status),
                 amount_due: amountDue,
             },
             items: (state.items || []).map((item) => {
@@ -103,6 +105,7 @@ export function useInvoiceDocument(state) {
             }),
             totals: {
                 subtotal: formatInvoiceCurrency(state.total_amount),
+                overdue_days: Number(state.overdue_days || 0),
                 late_fee: formatInvoiceCurrency(lateFeeAmount.value),
                 amount_due: amountDue,
             },

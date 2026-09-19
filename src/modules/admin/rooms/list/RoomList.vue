@@ -1,15 +1,13 @@
 <template>
     <div class="flex flex-col gap-5">
-        <div class="admin-panel relative">
+        <div class="admin-panel relative room-list-panel">
             <DataTable
                 ref="dt"
+                class="room-list-table admin-clickable-rows"
                 data-key="id"
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :current-page-report-template="$t('common.showingEntries')"
-                responsive-layout="scroll"
                 sort-mode="multiple"
-                scroll-height="50vh"
-                :scrollable="true"
                 :lazy="true"
                 :paginator="true"
                 :value="rooms"
@@ -21,8 +19,10 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
@@ -93,51 +93,66 @@
                         </template>
                     </AdminListFilters>
                 </template>
-                <template #empty>{{ $t('property.noRooms') }}</template>
+
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-th-large"
+                        :title="$t('property.noRooms')"
+                        message="Create a room or adjust your search and filters."
+                    />
+                </template>
                 <template #loading>{{ $t('property.loadingRooms') }}</template>
 
-                <Column selection-mode="multiple" header-style="width: 3rem" />
-                <Column field="building_name" :header="$t('customer.building')" :sortable="true" style="min-width: 70px" />
-                <Column field="room_number" :header="$t('property.roomNumber')" :sortable="true" style="min-width: 70px" class="hover:underline">
+                <Column selection-mode="multiple" header-style="width: 3rem" style="width: 3rem" />
+
+                <Column field="room_number" header="Room No" :sortable="true">
                     <template #body="{ data }">
-                        <router-link :to="{ name: 'showRoom', params: { id: data.id } }">
+                        <router-link
+                            :to="{ name: 'showRoom', params: { id: data.id } }"
+                            class="font-medium text-[var(--admin-primary)] hover:underline"
+                        >
                             {{ data.room_number }}
                         </router-link>
                     </template>
                 </Column>
-                <Column field="floor_number" :header="$t('property.floor')" :sortable="true" style="min-width: 70px" />
-                <Column field="area_sqft" header="Area (sqft)" :sortable="true" style="min-width: 70px" />
-                <Column field="type" :header="$t('property.roomType')" :sortable="true" style="min-width: 70px" />
-                <Column field="status" :header="$t('common.status')" :sortable="true" style="min-width: 70px">
+
+                <Column field="building_name" header="Building" :sortable="true">
+                    <template #body="{ data }">
+                        {{ data.building_name || data.building?.building_name || '—' }}
+                    </template>
+                </Column>
+
+                <Column field="floor_number" header="Floor" :sortable="true">
+                    <template #body="{ data }">
+                        {{ data.floor_number }}
+                    </template>
+                </Column>
+
+                <Column field="area_sqft" header="Area (sqft)" :sortable="true">
+                    <template #body="{ data }">
+                        {{ data.area_sqft }}
+                    </template>
+                </Column>
+
+                <Column field="type" header="Room Type" :sortable="true">
+                    <template #body="{ data }">
+                        {{ formatRoomType(data.type) }}
+                    </template>
+                </Column>
+
+                <Column field="status" header="Status" :sortable="true">
                     <template #body="{ data }">
                         <StatusBadge :value="data.status" />
                     </template>
                 </Column>
-                <Column field="sale_price" :header="$t('property.salePrice') + ' (MMK)'" :sortable="true" style="min-width: 120px">
+
+                <Column header="Price (MMK)">
                     <template #body="{ data }">
-                        {{ formatCurrency(data.sale_price) }}
+                        {{ formatRoomListPrice(data) }}
                     </template>
                 </Column>
-                <Column field="rent_price" :header="$t('property.rentPrice') + ' (MMK)'" :sortable="true" style="min-width: 120px">
-                    <template #body="{ data }">
-                        {{ formatCurrency(data.rent_price) }}
-                    </template>
-                </Column>
-                <Column field="rent_deposit_price" header="Rent Deposit (MMK)" :sortable="true" style="min-width: 140px">
-                    <template #body="{ data }">
-                        {{ formatCurrency(data.rent_deposit_price) }}
-                    </template>
-                </Column>
-                <Column field="booking_deposit_price" header="Booking Deposit (MMK)" :sortable="true" style="min-width: 160px">
-                    <template #body="{ data }">
-                        {{ formatCurrency(data.booking_deposit_price) }}
-                    </template>
-                </Column>
-                <Column
-                    :header="$t('common.actions')"
-                    :exportable="false"
-                    style="width: 150px"
-                >
+
+                <Column header="Actions" :exportable="false" style="width: 7rem">
                     <template #body="{ data }">
                         <router-link :to="{ name: 'editRoom', params: { id: data.id } }">
                             <Button
@@ -152,7 +167,7 @@
                             icon="pi pi-trash"
                             text
                             severity="danger"
-                            @click="showConfirmDialog(data.id,data.room_number)"
+                            @click="showConfirmDialog(data.id, data.room_number)"
                         />
                         <Button
                             v-else
@@ -175,19 +190,53 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useRoomList } from './useRoomList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'RoomList',
-    components: { DataTable, Column, Dropdown, Button, Loading, StatusBadge, ListExportActions, AdminListFilters },
+    components: {
+        AdminEmptyState,
+        DataTable,
+        Column,
+        Dropdown,
+        Button,
+        Loading,
+        StatusBadge,
+        ListExportActions,
+        AdminListFilters,
+    },
     setup() {
         return useRoomList();
     },
 });
 </script>
+
+<style scoped>
+.room-list-panel {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+:deep(.room-list-table .p-datatable-wrapper) {
+    overflow-x: auto;
+}
+
+:deep(.room-list-table .p-datatable-table) {
+    width: 100%;
+    table-layout: auto;
+}
+
+:deep(.room-list-table .p-datatable-thead > tr > th),
+:deep(.room-list-table .p-datatable-tbody > tr > td) {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+</style>

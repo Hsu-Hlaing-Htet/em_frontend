@@ -1,5 +1,5 @@
 export const STATUS_FILTER_OPTIONS = {
-    properties: ['all', 'available', 'reserved', 'occupied', 'sold', 'maintenance'],
+    properties: ['all', 'available', 'occupied', 'sold'],
     customers: ['all', 'active', 'inactive'],
     clients: ['all', 'active', 'inactive'],
     agents: ['all', 'active', 'inactive'],

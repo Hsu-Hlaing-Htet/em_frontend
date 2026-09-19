@@ -29,6 +29,10 @@ import {
 } from './renderBillingDocument';
 import { renderInvoiceDocumentHtmlPage } from './renderInvoiceDocument';
 import { renderReceiptDocumentHtmlPage } from './renderReceiptDocument';
+import {
+    downloadSaleContractDocx,
+    downloadRentContractDocx,
+} from './contractDocxExport';
 
 function createBillingDocumentHandlers(renderPage) {
     return {
@@ -202,12 +206,12 @@ export function printContractDocument(document) {
     return printDocumentHtml(renderContractDocumentPage(document));
 }
 
-export function exportContractDocument(document, filename) {
-    const html = renderContractDocumentPage(document);
+export function viewContractDocument(document) {
+    return exportDocumentHtml(renderContractDocumentPage(document));
+}
 
-    if (!exportDocumentHtml(html)) {
-        downloadDocumentHtml(html, filename);
-    }
+export function exportContractDocument(document) {
+    downloadSaleContractDocx(document);
 
     return true;
 }
@@ -238,12 +242,12 @@ export function printRentContractDocument(document) {
     return printDocumentHtml(renderRentContractDocumentPage(document));
 }
 
-export function exportRentContractDocument(document, filename) {
-    const html = renderRentContractDocumentPage(document);
+export function viewRentContractDocument(document) {
+    return exportDocumentHtml(renderRentContractDocumentPage(document));
+}
 
-    if (!exportDocumentHtml(html)) {
-        downloadDocumentHtml(html, filename);
-    }
+export function exportRentContractDocument(document) {
+    downloadRentContractDocx(document);
 
     return true;
 }
@@ -263,12 +267,20 @@ export function printInvoiceDocument(document) {
     return invoiceDocumentHandlers.print(document);
 }
 
+export function viewInvoiceDocument(document) {
+    return exportDocumentHtml(renderInvoiceDocumentPage(document));
+}
+
 export function exportInvoiceDocument(document, filename) {
     return invoiceDocumentHandlers.export(document, filename);
 }
 
 export function printReceiptDocument(document) {
     return receiptDocumentHandlers.print(document);
+}
+
+export function viewReceiptDocument(document) {
+    return exportDocumentHtml(renderReceiptDocumentPage(document));
 }
 
 export function exportReceiptDocument(document, filename) {
@@ -286,6 +298,15 @@ export function renderUtilityDocumentPage(document) {
         bodyHtml: renderUtilityDocumentBody(document),
         logoSrc: DOCUMENT_EXPORT_LOGO_SRC,
     });
+}
+
+export function downloadUtilityDocumentPdf(document) {
+    const referenceNo = document?.header?.referenceNo || 'utility-bill';
+
+    return downloadPreviewPdf(
+        renderUtilityDocumentPage(document),
+        `${referenceNo}.pdf`,
+    );
 }
 
 export function renderPaymentDocumentPage(document) {
@@ -306,6 +327,10 @@ const paymentDocumentHandlers = createBillingDocumentHandlers(renderPaymentDocum
 
 export function printUtilityDocument(document) {
     return utilityDocumentHandlers.print(document);
+}
+
+export function viewUtilityDocument(document) {
+    return exportDocumentHtml(renderUtilityDocumentPage(document));
 }
 
 export function exportUtilityDocument(document, filename) {

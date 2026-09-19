@@ -38,7 +38,11 @@ const routes = [
             {
                 path: 'approval/:id',
                 name: 'showInvoiceApproval',
-                component: () => import('@/modules/admin/invoices/detail/ShowInvoice.vue'),
+                redirect: (to) => ({
+                    name: 'invoiceApprovalDocument',
+                    params: { id: to.params.id },
+                    query: to.query,
+                }),
                 meta: {
                     navKey: 'approval-invoices',
                     parentNavKey: 'approvals',
@@ -55,6 +59,25 @@ const routes = [
                 },
             },
             {
+                path: 'approval/:id/document',
+                name: 'invoiceApprovalDocument',
+                component: () => import('@/modules/admin/invoices/detail/InvoiceDocument.vue'),
+                meta: {
+                    navKey: 'approval-invoices',
+                    parentNavKey: 'approvals',
+                    action: 'view',
+                    resource: 'invoice_approval',
+                    layout: 'default',
+                    approvalContext: true,
+                    title: 'Invoice Approval Document',
+                    breadcrumbs: [
+                        { title: 'Invoice List', routeName: 'invoiceList' },
+                        { title: 'Approvals', routeName: 'invoiceApprovalList' },
+                        { title: 'Document', routeName: 'invoiceApprovalDocument' },
+                    ],
+                },
+            },
+            {
                 path: ':id/document',
                 name: 'invoiceDocument',
                 component: () => import('@/modules/admin/invoices/detail/InvoiceDocument.vue'),
@@ -66,7 +89,6 @@ const routes = [
                     title: 'Invoice Document',
                     breadcrumbs: [
                         { title: 'Invoice List', routeName: 'invoiceList' },
-                        { title: 'Show Invoice', routeName: 'showInvoice' },
                         { title: 'Document', routeName: 'invoiceDocument' },
                     ],
                 },
@@ -74,7 +96,11 @@ const routes = [
             {
                 path: ':id',
                 name: 'showInvoice',
-                component: () => import('@/modules/admin/invoices/detail/ShowInvoice.vue'),
+                redirect: (to) => ({
+                    name: 'invoiceDocument',
+                    params: { id: to.params.id },
+                    query: to.query,
+                }),
                 meta: {
                     navKey: 'invoices',
                     action: 'view',

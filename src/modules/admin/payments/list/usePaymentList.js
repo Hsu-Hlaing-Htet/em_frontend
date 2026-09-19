@@ -14,9 +14,13 @@ import {
     readQueryString,
     toQueryDate,
 } from '@/helpers/lists/listQuery';
-import { useBuildingRoomFilterOptions } from '@/composables/admin/useBuildingRoomFilterOptions';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { PAYMENT_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
+import {
+    PAYMENT_LIST_STATUS_OPTIONS,
+    PAYMENT_TYPE_FILTER_OPTIONS,
+} from '@/constants/constant';
 import { service as paymentMethodService } from '@/modules/admin/payment-methods/service';
 import { usePaymentStore } from '../store';
 
@@ -24,10 +28,11 @@ export const usePaymentList = () => {
     const route = useRoute();
     const router = useRouter();
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showPayment');
     const search = ref('');
-    const buildingId = ref(null);
-    const roomId = ref(null);
+    const paymentType = ref(null);
     const paymentMethodId = ref(null);
+    const status = ref(null);
     const paymentDateFrom = ref(null);
     const paymentDateTo = ref(null);
     const paymentMethodOptions = ref([]);
@@ -38,12 +43,6 @@ export const usePaymentList = () => {
     const isHydratingFromUrl = ref(true);
     const isWritingQuery = ref(false);
     const store = usePaymentStore();
-    const {
-        buildingOptions,
-        roomOptions,
-        loadBuildings,
-        loadRooms,
-    } = useBuildingRoomFilterOptions(buildingId);
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -72,18 +71,18 @@ export const usePaymentList = () => {
 
     const buildFilterQuery = () => omitEmptyParams({
         search: search.value?.trim() || undefined,
-        building_id: buildingId.value || undefined,
-        room_id: roomId.value || undefined,
+        payment_type: paymentType.value || undefined,
         payment_method_id: paymentMethodId.value || undefined,
+        status: status.value || undefined,
         payment_date_from: toQueryDate(paymentDateFrom.value),
         payment_date_to: toQueryDate(paymentDateTo.value),
     });
 
     const applyQueryToFilters = (query) => {
         search.value = readQueryString(query, 'search', '');
-        buildingId.value = readQueryNumber(query, 'building_id');
-        roomId.value = readQueryNumber(query, 'room_id');
+        paymentType.value = readQueryString(query, 'payment_type', null);
         paymentMethodId.value = readQueryNumber(query, 'payment_method_id');
+        status.value = readQueryString(query, 'status', null);
         paymentDateFrom.value = readQueryDate(query, 'payment_date_from', parseDate);
         paymentDateTo.value = readQueryDate(query, 'payment_date_to', parseDate);
     };
@@ -150,33 +149,22 @@ export const usePaymentList = () => {
 
     const resetSearch = async () => {
         search.value = '';
-        buildingId.value = null;
-        roomId.value = null;
+        paymentType.value = null;
         paymentMethodId.value = null;
+        status.value = null;
         paymentDateFrom.value = null;
         paymentDateTo.value = null;
-        roomOptions.value = [];
         resetPagination();
         await syncFiltersToUrl();
         await loadingData();
     };
 
-    watch(buildingId, (nextBuildingId, previousBuildingId) => {
-        if (isHydratingFromUrl.value) {
-            return;
-        }
-
-        if (nextBuildingId !== previousBuildingId) {
-            roomId.value = null;
-        }
-    });
-
     watch(
         [
             search,
-            buildingId,
-            roomId,
+            paymentType,
             paymentMethodId,
+            status,
             paymentDateFrom,
             paymentDateTo,
         ],
@@ -191,7 +179,6 @@ export const usePaymentList = () => {
         }
 
         applyQueryToFilters(query);
-        await loadRooms(buildingId.value);
         resetPagination();
         await loadingData();
     });
@@ -199,12 +186,10 @@ export const usePaymentList = () => {
     onMounted(async () => {
         resetPagination();
         applyQueryToFilters(route.query);
-        await Promise.all([loadBuildings(), loadPaymentMethods()]);
-        await loadRooms(buildingId.value);
+        await loadPaymentMethods();
         isHydratingFromUrl.value = false;
         await loadingData();
     });
-
 
     const {
         isExporting,
@@ -228,11 +213,11 @@ export const usePaymentList = () => {
         mapItem: mapPaymentRow,
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
-            { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
-            { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
+            { label: 'Payment Type', value: PAYMENT_TYPE_FILTER_OPTIONS.find((o) => o.value === paymentType.value)?.label || '' },
             { label: 'Payment Method', value: paymentMethodOptions.value.find((o) => o.value === paymentMethodId.value)?.label || '' },
-            { label: 'Payment From', value: toQueryDate(paymentDateFrom.value) || '' },
-            { label: 'Payment To', value: toQueryDate(paymentDateTo.value) || '' },
+            { label: 'Status', value: PAYMENT_LIST_STATUS_OPTIONS.find((o) => o.value === status.value)?.label || '' },
+            { label: 'From Date', value: toQueryDate(paymentDateFrom.value) || '' },
+            { label: 'To Date', value: toQueryDate(paymentDateTo.value) || '' },
         ],
         hasData: computed(() => totalRecords.value > 0),
     });
@@ -244,15 +229,16 @@ export const usePaymentList = () => {
         lazyParams,
         dt,
         search,
-        buildingId,
-        roomId,
+        paymentType,
         paymentMethodId,
+        status,
         paymentDateFrom,
         paymentDateTo,
-        buildingOptions,
-        roomOptions,
+        paymentTypeOptions: PAYMENT_TYPE_FILTER_OPTIONS.filter((option) => option.value !== null),
         paymentMethodOptions,
+        statusOptions: PAYMENT_LIST_STATUS_OPTIONS,
         onPage,
+        onRowClick,
         resetSearch,
         isExporting,
         canExport,

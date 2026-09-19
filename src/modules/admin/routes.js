@@ -9,6 +9,7 @@ import roomRoutes from './rooms/routes';
 import utilityTypeRoutes from './utility-types/routes';
 import utilityRateRoutes from './utility-rates/routes';
 import chargeTypeRoutes from './charge-types/routes';
+import maintenanceCategoryRoutes from './maintenance-categories/routes';
 import paymentPlanRoutes from './payment-plans/routes';
 import lateFeeRoutes from './late-fees/routes';
 import paymentMethodRoutes from './payment-methods/routes';
@@ -41,6 +42,7 @@ export const adminRoutes = [
             ...utilityTypeRoutes,
             ...utilityRateRoutes,
             ...chargeTypeRoutes,
+            ...maintenanceCategoryRoutes,
             ...paymentPlanRoutes,
             ...lateFeeRoutes,
             ...paymentMethodRoutes,

@@ -36,7 +36,7 @@ function normalizeMessage(message, field = '') {
     || text === VALIDATION_MESSAGES.file
     || text === VALIDATION_MESSAGES.emailInvalid
     || text === VALIDATION_MESSAGES.emailRequired
-    || text === VALIDATION_MESSAGES.emailGmail
+    || text === VALIDATION_MESSAGES.emailReserved
     || text === VALIDATION_MESSAGES.emailUnique
     || text === VALIDATION_MESSAGES.nrcInvalid
     || text === VALIDATION_MESSAGES.phoneInvalid
@@ -61,8 +61,8 @@ function normalizeMessage(message, field = '') {
     return VALIDATION_MESSAGES.emailInvalid
   }
 
-  if (fieldName === 'email' && (lower.includes('gmail address') || text === VALIDATION_MESSAGES.emailGmail)) {
-    return VALIDATION_MESSAGES.emailGmail
+  if (fieldName === 'email' && (lower.includes('reserved') || text === VALIDATION_MESSAGES.emailReserved)) {
+    return VALIDATION_MESSAGES.emailReserved
   }
 
   if (
@@ -159,29 +159,44 @@ export class Errors {
    * @param {string} field
    */
   has(field) {
-    return field in this.errors
+    const messages = this.errors[field]
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return false
+    }
+
+    return messages.some((message) => typeof message === 'string' && message.trim().length > 0)
   }
 
   /**
    * Determine if we have any errors.
    */
   any() {
-    return Object.keys(this.errors).length > 0
+    return Object.keys(this.errors).some((field) => this.has(field))
   }
 
   /**
-   * Retrieve the error message for a field.
+   * Retrieve the error messages for a field as an array of strings.
    *
    * @param {string} field
    */
   get(field) {
     const messages = this.errors[field]
 
-    if (!messages) {
+    if (!Array.isArray(messages)) {
       return []
     }
 
-    return [...messages]
+    return messages.filter((message) => typeof message === 'string' && message.trim().length > 0)
+  }
+
+  /**
+   * First non-empty error string for a field, or empty string.
+   *
+   * @param {string} field
+   */
+  first(field) {
+    return this.get(field)[0] || ''
   }
 
   /**

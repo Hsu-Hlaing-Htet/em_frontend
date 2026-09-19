@@ -774,6 +774,25 @@ body {
     color: #3a3a3a;
 }
 
+.contract-doc-approved-copy-note {
+    margin: -0.75rem 0 2rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--pdf-line);
+    font-size: 10pt;
+    line-height: 1.6;
+    color: #3a3a3a;
+}
+
+.contract-doc-approved-copy-note p {
+    margin: 0;
+}
+
+.contract-doc-approved-copy-title {
+    margin-bottom: 0.35rem !important;
+    font-weight: 600;
+    color: var(--pdf-ink);
+}
+
 .contract-doc-body {
     margin-top: 0.5rem;
 }
@@ -940,6 +959,13 @@ body {
     letter-spacing: 0.18em;
 }
 
+.contract-doc-signature-note {
+    margin: 0.85rem 0 0;
+    font-size: 9pt;
+    line-height: 1.6;
+    color: #3a3a3a;
+}
+
 .contract-doc-foot {
     margin-top: 2rem;
     padding-top: 0.5rem;
@@ -1040,6 +1066,7 @@ body {
 
     #pdf-print.contract-doc-sheet .contract-doc-preamble,
     #pdf-print.contract-doc-sheet .contract-doc-witness,
+    #pdf-print.contract-doc-sheet .contract-doc-signature-note,
     #pdf-print.contract-doc-sheet .contract-doc-covenants li {
         orphans: 3;
         widows: 3;

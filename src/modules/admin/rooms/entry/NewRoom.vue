@@ -113,18 +113,6 @@
                     </small>
                 </div>
 
-                <div class="field">
-                    <label class="mb-2 block text-md">Booking Deposit (MMK)</label>
-                    <InputNumber
-                        v-model="state.booking_deposit_price"
-                        class="w-full"
-                        v-bind="currencyInputProps"
-                    />
-                    <small v-if="errors.has('booking_deposit_price')" class="p-error">
-                        <div v-for="error in errors.get('booking_deposit_price')" :key="error">{{ error }}</div>
-                    </small>
-                </div>
-
                 <RoomImageManager
                     :staged-images="stagedImages"
                     :persisted-images="persistedImages"
@@ -152,7 +140,7 @@ import { defineComponent } from 'vue';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import RoomImageManager from './RoomImageManager.vue';

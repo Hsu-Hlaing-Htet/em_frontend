@@ -1,21 +1,23 @@
 <template>
     <div
         v-if="showBreadcrumb"
-        class="align-items-center hidden lg:flex"
+        class="align-items-center"
+        :class="isCustomerPortal ? 'customer-breadcrumb' : 'hidden lg:flex'"
     >
 
         <Breadcrumb v-if="breadcumbs.length > 0" :home="home" :model="breadcumbs">
             <template #item="{ item }">
                 <router-link
-                    :to="{ name: item.routeName }"
+                    :to="resolveTo(item)"
                     custom
                     v-slot="{ href, navigate, isActive, isExactActive }"
                 >
                     <a
                         :href="href"
                         @click="navigate"
-                        class="text-breadcrumb text-base cursor-auto"
+                        class="text-breadcrumb cursor-auto"
                         :class="{
+                            'text-base': !isCustomerPortal,
                             'breadcrumb-link-active': !isActive || !isExactActive,
                         }"
                     >{{ resolveTitle(item) }}</a>
@@ -70,7 +72,29 @@ export default defineComponent({
             return item?.title || '';
         };
 
-        return { breadcumbs, home, showBreadcrumb, resolveTitle };
+        const resolveTo = (item) => {
+            if (item?.to) {
+                return item.to;
+            }
+
+            const params = { ...(item?.params || {}) };
+
+            if (item?.routeName === 'showRoom' && route.params?.id && !params.id) {
+                params.id = route.params.id;
+            }
+
+            if (item?.routeName === 'invoiceDocument' && route.query?.invoice_id && !params.id) {
+                params.id = route.query.invoice_id;
+            }
+
+            return {
+                name: item.routeName,
+                params,
+                query: item?.query || {},
+            };
+        };
+
+        return { breadcumbs, home, showBreadcrumb, resolveTitle, resolveTo, isCustomerPortal };
     },
 });
 </script>

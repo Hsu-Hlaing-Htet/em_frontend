@@ -60,7 +60,7 @@ function mapLoginFieldErrors(fieldErrors) {
 }
 
 function resolveRedirectPath(route, user) {
-    if (user?.must_change_password) {
+    if (user?.must_change_password && !user?.temporary_password_active) {
         return { name: 'force-change-password' };
     }
 
@@ -119,9 +119,11 @@ export function useLogin() {
             toast.add({
                 severity: 'success',
                 summary: 'Welcome',
-                detail: response.user?.must_change_password
-                    ? 'Please create a new password to continue.'
-                    : 'Login successful.',
+                detail: response.user?.temporary_password_active
+                    ? 'Please change your temporary password within 7 days.'
+                    : response.user?.must_change_password
+                        ? 'Please create a new password to continue.'
+                        : 'Login successful.',
                 life: 2500,
             });
 

@@ -2,16 +2,18 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import EventBus from '@/libs/AppEventBus';
-import { formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency, getPaymentTypeLabel } from '@/utils/formatter';
 import { filterContracts, normalizePaymentTypeFilter } from '@/helpers/contracts/contractFilters';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useSaleStore } from '../store';
 import { mapSaleListItemFromApi } from '../mapSale';
 import { useContractListExport } from '@/composables/admin/contracts/useContractListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { SALE_EXPORT_COLUMNS_BY_LIST } from '@/helpers/contracts/exportColumns';
 
 export const useSaleContractApprovalList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showSaleContractApproval');
     const search = ref('');
     const selectedPaymentType = ref(null);
     const dateFrom = ref(null);
@@ -161,7 +163,7 @@ export const useSaleContractApprovalList = () => {
             EventBus.emit('show-toast', {
                 severity: 'success',
                 summary: '',
-                detail: response?.message || `${contract.contract_no} approved and moved to Active Sales.`,
+                detail: response?.message || `${contract.contract_no} approved and moved to Sale Contracts.`,
             });
 
             await loadingData();
@@ -231,6 +233,7 @@ export const useSaleContractApprovalList = () => {
         isLoading,
         onPage,
         onSort,
+        onRowClick,
         resetSearch,
         approveContract,
         rejectContract,

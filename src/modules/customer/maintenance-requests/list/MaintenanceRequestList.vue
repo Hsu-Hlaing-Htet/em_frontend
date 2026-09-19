@@ -1,14 +1,15 @@
 <template>
     <div class="customer-portal-page">
-        <header class="customer-list-page-header customer-list-page-header--actions">
-            <div>
-                <h1 class="customer-page-heading">{{ $t('customer.maintenance') }}</h1>
-                <p class="customer-page-lead">{{ $t('customer.maintenanceLead') }}</p>
-            </div>
-            <router-link :to="{ name: 'customerNewMaintenanceRequest' }">
-                <Button :label="$t('customer.newRequest')" icon="pi pi-plus" size="small" />
-            </router-link>
-        </header>
+        <CustomerPageHeader
+            :title="$t('customer.maintenance')"
+            :subtitle="$t('customer.maintenanceLead')"
+        >
+            <template #actions>
+                <router-link :to="{ name: 'customerNewMaintenanceRequest' }">
+                    <Button :label="$t('customer.newRequest')" icon="pi pi-plus" size="small" />
+                </router-link>
+            </template>
+        </CustomerPageHeader>
 
         <CustomerSearchBar
             v-model:search="search"
@@ -28,21 +29,10 @@
                 class="customer-record-row customer-maintenance-row"
             >
                 <span class="customer-record-cell customer-record-primary">
-                    <span class="customer-record-label">{{ $t('customer.maintenanceRequest') }} #{{ request.id }}</span>
                     <strong>{{ request.title }}</strong>
-                    <small>{{ request.category || 'general' }}</small>
                 </span>
-                <span class="customer-record-cell">
-                    <span class="customer-record-label">{{ $t('customer.building') }} / {{ $t('customer.room') }}</span>
-                    <strong>{{ request.building_name || '—' }}</strong>
-                    <small>{{ $t('customer.room') }} {{ request.room_number || '—' }}</small>
-                </span>
-                <span class="customer-record-cell">
-                    <span class="customer-record-label">{{ $t('customer.priority') }}</span>
-                    <strong>{{ request.priority || 'medium' }}</strong>
-                </span>
-                <span class="customer-record-status">
-                    <span class="customer-record-label">{{ $t('customer.status') }}</span>
+                <span class="customer-record-cell customer-record-meta">
+                    <time>{{ formatDate(request.created_date || request.created_at) || '—' }}</time>
                     <StatusBadge :value="request.status" />
                 </span>
             </router-link>
@@ -72,7 +62,9 @@ import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import CustomerSearchBar from '@/components/customer/CustomerSearchBar.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
+import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerMaintenanceRequestList from '@/composables/customer/useCustomerMaintenanceRequestList';
+import { formatDate } from '@/utils/formatter';
 
 export default defineComponent({
     name: 'CustomerMaintenanceRequestList',
@@ -82,9 +74,13 @@ export default defineComponent({
         StatusBadge,
         CustomerSearchBar,
         CustomerEmptyState,
+        CustomerPageHeader,
     },
     setup() {
-        return useCustomerMaintenanceRequestList();
+        return {
+            ...useCustomerMaintenanceRequestList(),
+            formatDate,
+        };
     },
 });
 </script>

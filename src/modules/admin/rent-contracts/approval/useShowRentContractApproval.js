@@ -14,6 +14,8 @@ export default function useShowRentContractApproval() {
     const store = useRentStore();
     const isLoading = ref(true);
     const isApproving = ref(false);
+    const isRejecting = ref(false);
+    const showApproveDialog = ref(false);
     const showRejectDialog = ref(false);
 
     const state = reactive({
@@ -49,9 +51,11 @@ export default function useShowRentContractApproval() {
         downloadPdf,
         exportPdf,
         printContract,
+        viewContract,
     } = useRentContractDocumentActions('draft', state, () => document.value);
 
     const fieldSections = computed(() => buildFieldSections(document.value));
+    const canReview = computed(() => state.status === 'pending');
     const backRoute = { name: 'rentContractApprovalList' };
 
     const fetchContract = async () => {
@@ -75,7 +79,7 @@ export default function useShowRentContractApproval() {
     };
 
     const approveContract = async () => {
-        if (isApproving.value) {
+        if (!canReview.value || isApproving.value || isRejecting.value) {
             return;
         }
 
@@ -89,8 +93,9 @@ export default function useShowRentContractApproval() {
             EventBus.emit('show-toast', {
                 severity: 'success',
                 summary: '',
-                detail: response?.message || `${state.contract_no} approved and moved to Active Rents.`,
+                detail: response?.message || `${state.contract_no} approved and moved to Rent Contracts.`,
             });
+            showApproveDialog.value = false;
             router.push({ name: 'activeRentList' });
         } catch (error) {
             showApiErrorToast(error, 'Unable to approve rent contract.');
@@ -100,10 +105,18 @@ export default function useShowRentContractApproval() {
     };
 
     const openRejectDialog = () => {
-        showRejectDialog.value = true;
+        if (canReview.value && !isApproving.value && !isRejecting.value) {
+            showRejectDialog.value = true;
+        }
     };
 
     const rejectContract = async (reason) => {
+        if (!canReview.value || isRejecting.value || !reason?.trim()) {
+            return;
+        }
+
+        isRejecting.value = true;
+
         try {
             await store.reject({
                 id: state.id,
@@ -117,9 +130,12 @@ export default function useShowRentContractApproval() {
                 summary: '',
                 detail: response?.message || 'Rent contract rejected successfully.',
             });
-            router.push({ name: 'rentContractDraftList' });
+            showRejectDialog.value = false;
+            router.push({ name: 'activeRentList' });
         } catch (error) {
             showApiErrorToast(error, 'Unable to reject rent contract.');
+        } finally {
+            isRejecting.value = false;
         }
     };
 
@@ -139,15 +155,19 @@ export default function useShowRentContractApproval() {
     return {
         isLoading,
         isApproving,
+        isRejecting,
+        showApproveDialog,
         document,
         fieldSections,
         showRejectDialog,
         backRoute,
+        canReview,
         approveContract,
         openRejectDialog,
         rejectContract,
         downloadPdf,
         exportPdf,
         printContract,
+        viewContract,
     };
 }

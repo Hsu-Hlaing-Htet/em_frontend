@@ -21,8 +21,11 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
@@ -69,7 +72,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>{{ $t('property.noBuildings') }}</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-building"
+                        :title="$t('property.noBuildings')"
+                        message="Create a building or clear filters to see results."
+                    />
+                </template>
                 <template #loading>{{ $t('property.loadingBuildings') }}</template>
 
                 <Column selection-mode="multiple" header-style="width: 3rem" />
@@ -95,7 +104,11 @@
                         <StatusBadge :value="data.status" />
                     </template>
                 </Column>
-                <Column field="created_at" :header="$t('common.createdAt')" :sortable="true" style="min-width: 180px" />
+                <Column field="created_at" :header="$t('common.createdAt')" :sortable="true" style="min-width: 180px">
+                    <template #body="{ data }">
+                        {{ formatDate(data.created_at) || '—' }}
+                    </template>
+                </Column>
                 <Column
                                 :header="$t('common.actions')"
                                 :exportable="false"
@@ -142,13 +155,19 @@ import Button from 'primevue/button';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
+import { formatDate } from '@/utils/formatter';
 import { useBuildingList } from './useBuildingList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'BuildingList',
-    components: { DataTable, Column, Button, ListExportActions, AdminListFilters, StatusBadge },
+    components: {
+        AdminEmptyState, DataTable, Column, Button, ListExportActions, AdminListFilters, StatusBadge },
     setup() {
-        return useBuildingList();
+        return {
+            ...useBuildingList(),
+            formatDate,
+        };
     },
 });
 </script>

@@ -18,7 +18,6 @@ const mapInvoiceRow = (item) => ({
 });
 
 export const useInvoiceApprovalList = () => {
-    const paymentStatusFilter = ref(null);
     const buildingId = ref(null);
     const roomId = ref(null);
     const issuedFrom = ref(null);
@@ -48,13 +47,17 @@ export const useInvoiceApprovalList = () => {
         store,
         pendingStatus: 'draft',
         approveMethod: 'issue',
-        rejectMethod: null,
+        rejectMethod: 'delete',
+        detailRouteName: 'invoiceApprovalDocument',
         autoLoad: false,
         getItemLabel: (item) => item.invoice_number || `#${item.id}`,
         loadErrorMessage: 'Unable to load pending invoice approvals.',
         approveErrorMessage: 'Unable to approve invoice.',
+        rejectErrorMessage: 'Unable to reject invoice.',
         buildApproveSuccessMessage: (item, response) => response?.message
             || `${item.invoice_number || `#${item.id}`} issued and sent to customer.`,
+        buildRejectSuccessMessage: (item, response) => response?.message
+            || `${item.invoice_number || `#${item.id}`} has been rejected.`,
         buildFilterParams,
         mapItems: (rows) => rows.map(mapInvoiceRow),
         getWatchSources: () => [
@@ -64,10 +67,8 @@ export const useInvoiceApprovalList = () => {
             issuedTo,
             dueFrom,
             dueTo,
-            paymentStatusFilter,
         ],
         resetFilters: () => {
-            paymentStatusFilter.value = null;
             buildingId.value = null;
             roomId.value = null;
             issuedFrom.value = null;
@@ -106,11 +107,10 @@ export const useInvoiceApprovalList = () => {
             { label: 'Search', value: list.search.value || '' },
             { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
             { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
-            { label: 'Issued From', value: toQueryDate(issuedFrom.value) || '' },
-            { label: 'Issued To', value: toQueryDate(issuedTo.value) || '' },
+            { label: 'From Date', value: toQueryDate(issuedFrom.value) || '' },
+            { label: 'To Date', value: toQueryDate(issuedTo.value) || '' },
             { label: 'Due From', value: toQueryDate(dueFrom.value) || '' },
             { label: 'Due To', value: toQueryDate(dueTo.value) || '' },
-            { label: 'Status', value: 'draft' },
         ],
         hasData: computed(() => list.totalRecords.value > 0),
     });
@@ -129,7 +129,6 @@ export const useInvoiceApprovalList = () => {
 
     return {
         ...list,
-        paymentStatusFilter,
         buildingId,
         roomId,
         issuedFrom,

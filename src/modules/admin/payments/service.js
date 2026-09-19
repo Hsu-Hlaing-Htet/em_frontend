@@ -16,6 +16,11 @@ const service = {
         return result.data;
     },
 
+    record: async (params) => {
+        const result = await api.post(endpoint.paymentRecord, params);
+        return result.data;
+    },
+
     getOne: async (params) => {
         try {
             const result = await api.get(`${endpoint.payments}/${params.id}`);

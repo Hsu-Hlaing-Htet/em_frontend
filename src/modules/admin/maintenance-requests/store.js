@@ -61,12 +61,24 @@ export const useMaintenanceRequestStore = defineStore('useMaintenanceRequestStor
             const response = await service.start(params);
             this.actionResponse = response;
         },
+        async accept(params) {
+            const response = await service.accept(params);
+            this.actionResponse = response;
+        },
+        async assign(params) {
+            const response = await service.assign(params);
+            this.actionResponse = response;
+        },
         async complete(params) {
             const response = await service.complete(params);
             this.actionResponse = response;
         },
         async reject(params) {
             const response = await service.reject(params);
+            this.actionResponse = response;
+        },
+        async cancel(params) {
+            const response = await service.cancel(params);
             this.actionResponse = response;
         },
     },

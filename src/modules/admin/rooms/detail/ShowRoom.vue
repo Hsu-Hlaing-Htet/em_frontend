@@ -4,6 +4,11 @@
                 <router-link :to="{ name: 'roomList' }">
                     <Button label="Back" />
                 </router-link>
+                <Button
+                    v-if="canCreateContract"
+                    label="Contract"
+                    @click="goCreateContract"
+                />
                 <router-link v-if="state.id" :to="{ name: 'editRoom', params: { id: state.id } }">
                     <Button
                 icon="pi pi-pencil"
@@ -170,16 +175,6 @@
 
     <p class="text-sm text-[var(--admin-text)]">
         {{ formatCurrency(state.rent_deposit_price) }}
-    </p>
-</div>
-
-<div class="p-2">
-    <p class="mb-2 text-sm uppercase tracking-wider text-[var(--admin-text-muted)]">
-        Booking Deposit (MMK)
-    </p>
-
-    <p class="text-sm text-[var(--admin-text)]">
-        {{ formatCurrency(state.booking_deposit_price) }}
     </p>
 </div>
 

@@ -44,5 +44,6 @@ export function normalizeToastOptions({
         detail: message,
         life: resolvedLife,
         closable: true,
+        styleClass: 'rw-glass-toast',
     };
 }

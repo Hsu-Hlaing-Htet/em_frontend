@@ -3,7 +3,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
 import { parseDate } from '@/utils/formatter';
-import { formatPropertyUnit } from '@/helpers/payments/paymentListHelpers';
 import {
     omitEmptyParams,
     queriesEqual,
@@ -12,33 +11,31 @@ import {
     readQueryString,
     toQueryDate,
 } from '@/helpers/lists/listQuery';
-import { useBuildingRoomFilterOptions } from '@/composables/admin/useBuildingRoomFilterOptions';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { RECEIPT_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
+import { service as paymentMethodService } from '@/modules/admin/payment-methods/service';
 import { useReceiptStore } from '../store';
 
 const mapReceiptRow = (item) => ({
     ...item,
     customer_name: item.customer_name || '',
-    property_unit: item.property_unit || formatPropertyUnit(item),
-    invoice_amount: item.invoice_amount ?? 0,
+    invoice_number: item.invoice_number || '',
     paid_amount: item.paid_amount ?? item.payment_amount ?? item.amount ?? 0,
-    balance: item.balance ?? 0,
-    payment_type: item.payment_type || '',
     payment_date: item.payment_date || '',
     payment_method_name: item.payment_method_name || '',
-    display_status: item.display_status || item.status || '',
 });
 
 export const useReceiptList = () => {
     const route = useRoute();
     const router = useRouter();
     const dt = ref();
+    const { onRowClick } = useClickableListRow('receiptDocument');
     const search = ref('');
-    const buildingId = ref(null);
-    const roomId = ref(null);
+    const paymentMethodId = ref(null);
     const issuedFrom = ref(null);
     const issuedTo = ref(null);
+    const paymentMethodOptions = ref([]);
     const statusFilter = ref('issued');
     const deliveryStatusFilter = ref('sent');
     const totalRecords = ref(0);
@@ -48,12 +45,6 @@ export const useReceiptList = () => {
     const isHydratingFromUrl = ref(true);
     const isWritingQuery = ref(false);
     const store = useReceiptStore();
-    const {
-        buildingOptions,
-        roomOptions,
-        loadBuildings,
-        loadRooms,
-    } = useBuildingRoomFilterOptions(buildingId);
 
     onBeforeUnmount(() => {
         store.$reset();
@@ -71,8 +62,7 @@ export const useReceiptList = () => {
 
     const buildFilterQuery = () => omitEmptyParams({
         search: search.value?.trim() || undefined,
-        building_id: buildingId.value || undefined,
-        room_id: roomId.value || undefined,
+        payment_method_id: paymentMethodId.value || undefined,
         issued_from: toQueryDate(issuedFrom.value),
         issued_to: toQueryDate(issuedTo.value),
         status: statusFilter.value || undefined,
@@ -81,8 +71,7 @@ export const useReceiptList = () => {
 
     const applyQueryToFilters = (query) => {
         search.value = readQueryString(query, 'search', '');
-        buildingId.value = readQueryNumber(query, 'building_id');
-        roomId.value = readQueryNumber(query, 'room_id');
+        paymentMethodId.value = readQueryNumber(query, 'payment_method_id');
         issuedFrom.value = readQueryDate(query, 'issued_from', parseDate);
         issuedTo.value = readQueryDate(query, 'issued_to', parseDate);
         statusFilter.value = readQueryString(query, 'status', '') || 'issued';
@@ -139,6 +128,14 @@ export const useReceiptList = () => {
         isLoading.value = false;
     };
 
+    const loadPaymentMethods = async () => {
+        const response = await paymentMethodService.getAll({ per_page: 100, status: 'active' });
+        paymentMethodOptions.value = (response?.data?.data || []).map((method) => ({
+            label: method.name,
+            value: method.id,
+        }));
+    };
+
     const reloadFromFilters = useDebounceFn(async () => {
         if (isHydratingFromUrl.value) {
             return;
@@ -151,30 +148,18 @@ export const useReceiptList = () => {
 
     const resetSearch = async () => {
         search.value = '';
-        buildingId.value = null;
-        roomId.value = null;
+        paymentMethodId.value = null;
         issuedFrom.value = null;
         issuedTo.value = null;
         statusFilter.value = 'issued';
         deliveryStatusFilter.value = 'sent';
-        roomOptions.value = [];
         resetPagination();
         await syncFiltersToUrl();
         await loadingData();
     };
 
-    watch(buildingId, (nextBuildingId, previousBuildingId) => {
-        if (isHydratingFromUrl.value) {
-            return;
-        }
-
-        if (nextBuildingId !== previousBuildingId) {
-            roomId.value = null;
-        }
-    });
-
     watch(
-        [search, buildingId, roomId, issuedFrom, issuedTo, statusFilter, deliveryStatusFilter],
+        [search, paymentMethodId, issuedFrom, issuedTo, statusFilter, deliveryStatusFilter],
         () => {
             reloadFromFilters();
         },
@@ -186,7 +171,6 @@ export const useReceiptList = () => {
         }
 
         applyQueryToFilters(query);
-        await loadRooms(buildingId.value);
         resetPagination();
         await loadingData();
     });
@@ -194,12 +178,10 @@ export const useReceiptList = () => {
     onMounted(async () => {
         resetPagination();
         applyQueryToFilters(route.query);
-        await loadBuildings();
-        await loadRooms(buildingId.value);
         isHydratingFromUrl.value = false;
+        await loadPaymentMethods();
         await loadingData();
     });
-
 
     const {
         isExporting,
@@ -224,11 +206,9 @@ export const useReceiptList = () => {
         mapItem: mapReceiptRow,
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
-            { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
-            { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
-            { label: 'Issued From', value: toQueryDate(issuedFrom.value) || '' },
-            { label: 'Issued To', value: toQueryDate(issuedTo.value) || '' },
-            { label: 'Status', value: statusFilter.value || '' },
+            { label: 'Payment Method', value: paymentMethodOptions.value.find((o) => o.value === paymentMethodId.value)?.label || '' },
+            { label: 'From Date', value: toQueryDate(issuedFrom.value) || '' },
+            { label: 'To Date', value: toQueryDate(issuedTo.value) || '' },
         ],
         hasData: computed(() => totalRecords.value > 0),
     });
@@ -240,16 +220,13 @@ export const useReceiptList = () => {
         lazyParams,
         dt,
         search,
-        buildingId,
-        roomId,
+        paymentMethodId,
+        paymentMethodOptions,
         issuedFrom,
         issuedTo,
-        statusFilter,
-        deliveryStatusFilter,
-        buildingOptions,
-        roomOptions,
         onSort,
         onPage,
+        onRowClick,
         resetSearch,
         isExporting,
         canExport,

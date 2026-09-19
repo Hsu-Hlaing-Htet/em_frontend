@@ -1,5 +1,84 @@
 <template>
-    <div class="min-h-full">
+    <div v-if="isApprovalView" class="min-h-full px-4 pb-8">
+        <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <h1 class="m-0 text-xl font-semibold">{{ pageTitle }}</h1>
+                <p class="mt-1 mb-0 text-sm text-[var(--admin-text-muted)]">{{ pageSubtitle }}</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <router-link
+                    v-if="documentRoute"
+                    :to="documentRoute"
+                >
+                    <Button label="View" icon="pi pi-eye" severity="secondary" />
+                </router-link>
+                <Button
+                    v-if="canApprove()"
+                    label="Approve"
+                    icon="pi pi-check"
+                    severity="success"
+                    :loading="workflowLoading.approve"
+                    :disabled="workflowLoading.approve || workflowLoading.reject"
+                    @click="showApproveDialog = true"
+                />
+                <Button
+                    v-if="canReject()"
+                    label="Reject"
+                    icon="pi pi-times"
+                    severity="danger"
+                    outlined
+                    :loading="workflowLoading.reject"
+                    :disabled="workflowLoading.approve || workflowLoading.reject"
+                    @click="showRejectDialog = true"
+                />
+                <router-link :to="backRoute">
+                    <Button label="Back" severity="secondary" />
+                </router-link>
+            </div>
+        </div>
+
+        <div v-if="!isLoading" class="mx-auto max-w-6xl">
+            <section class="admin-panel p-5">
+                <BillingDetailCustomerSection
+                    :name="state.customer_name"
+                    :lines="customerLines"
+                    :date="formattedCreatedAt"
+                />
+
+                <BillingDetailTable
+                    :columns="utilityReadingColumns"
+                    :rows="utilityRows"
+                    empty-message="No utility readings recorded."
+                    :total-value="formatCurrency(state.total_amount)"
+                />
+
+                <p
+                    v-if="utilitySummaryNote"
+                    :class="billingDetailTableClasses.summary"
+                >
+                    {{ utilitySummaryNote }}
+                </p>
+            </section>
+        </div>
+
+        <ApproveRecordDialog
+            v-model="showApproveDialog"
+            entity="utility"
+            :submitting="workflowLoading.approve"
+            @confirm="runWorkflow('approve')"
+        />
+        <RejectContractDialog
+            v-model="showRejectDialog"
+            entity="utility"
+            :submitting="workflowLoading.reject"
+            :close-on-confirm="false"
+            @confirm="runWorkflow('reject', { rejection_reason: $event })"
+        />
+
+        <Loading v-if="isLoading" />
+    </div>
+
+    <div v-else class="min-h-full">
         <div class="mb-10 flex flex-wrap items-end justify-end gap-2">
             <router-link
                 v-if="canEdit && editRoute"
@@ -7,7 +86,7 @@
             >
                 <Button
                     icon="pi pi-pencil"
-                    label="Edit Utility"
+                    label="Edit"
                     severity="secondary"
                 />
             </router-link>
@@ -21,6 +100,12 @@
                     severity="secondary"
                 />
             </router-link>
+            <Button
+                v-if="canSendUtility"
+                icon="pi pi-envelope"
+                label="Send"
+                @click="sendEmail"
+            />
             <router-link :to="backRoute">
                 <Button label="Back" />
             </router-link>
@@ -60,6 +145,8 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import BillingDetailCustomerSection from '@/components/billing/BillingDetailCustomerSection.vue';
 import BillingDetailTable from '@/components/billing/BillingDetailTable.vue';
+import ApproveRecordDialog from '@/components/admin/ApproveRecordDialog.vue';
+import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
 import { billingDetailTableClasses } from '@/helpers/billing/billingDetailHelpers';
 import { utilityReadingColumns } from '@/helpers/billing/billingDetailColumns';
 import useShowUtility from './useShowUtility';
@@ -71,6 +158,8 @@ export default defineComponent({
         Loading,
         BillingDetailCustomerSection,
         BillingDetailTable,
+        ApproveRecordDialog,
+        RejectContractDialog,
     },
     setup() {
         const utility = useShowUtility();

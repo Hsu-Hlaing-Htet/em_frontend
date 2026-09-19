@@ -2,38 +2,48 @@
     <Dialog
         v-model:visible="visible"
         modal
-        :header="header"
+        :header="resolvedHeader"
         class="w-full max-w-lg"
         :closable="!submitting"
+        :close-on-escape="!submitting"
         @update:visible="onVisibleChange"
     >
-        <p class="mb-4">
+        <p v-if="description" class="mb-4">
             {{ description }}
         </p>
 
         <div class="field">
+            <label for="rejection_reason" class="mb-2 block text-sm font-medium">
+                Rejection Reason *
+            </label>
             <Textarea
-                id="reject_remark"
+                id="rejection_reason"
                 v-model="remark"
                 rows="4"
                 class="w-full"
-                placeholder="Enter rejection remark..."
+                :invalid="Boolean(error)"
+                aria-required="true"
+                :aria-invalid="Boolean(error)"
+                placeholder="Enter rejection reason"
             />
             <small v-if="error" class="p-error">{{ error }}</small>
         </div>
 
         <template #footer>
             <Button
-                label="Close"
+                type="button"
+                label="Cancel"
                 severity="secondary"
                 text
                 :disabled="submitting"
                 @click="close"
             />
             <Button
+                type="button"
                 label="Reject"
                 severity="danger"
                 :loading="submitting"
+                :disabled="submitting"
                 @click="confirm"
             />
         </template>
@@ -41,7 +51,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
@@ -56,11 +66,23 @@ export default defineComponent({
         },
         header: {
             type: String,
-            default: 'Reject Contract',
+            default: '',
+        },
+        entity: {
+            type: String,
+            default: 'contract',
         },
         description: {
             type: String,
-            default: 'Please provide a remark explaining why this contract is being rejected.',
+            default: '',
+        },
+        submitting: {
+            type: Boolean,
+            default: false,
+        },
+        closeOnConfirm: {
+            type: Boolean,
+            default: true,
         },
     },
     emits: ['update:modelValue', 'confirm'],
@@ -68,7 +90,7 @@ export default defineComponent({
         const visible = ref(props.modelValue);
         const remark = ref('');
         const error = ref('');
-        const submitting = ref(false);
+        const resolvedHeader = computed(() => props.header || `Reject this ${props.entity}?`);
 
         watch(() => props.modelValue, (value) => {
             visible.value = value;
@@ -76,7 +98,6 @@ export default defineComponent({
             if (value) {
                 remark.value = '';
                 error.value = '';
-                submitting.value = false;
             }
         });
 
@@ -87,7 +108,9 @@ export default defineComponent({
         });
 
         const close = () => {
-            emit('update:modelValue', false);
+            if (!props.submitting) {
+                emit('update:modelValue', false);
+            }
         };
 
         const onVisibleChange = (value) => {
@@ -97,23 +120,28 @@ export default defineComponent({
         };
 
         const confirm = () => {
+            if (props.submitting) {
+                return;
+            }
+
             if (!remark.value.trim()) {
-                error.value = 'Remark is required.';
+                error.value = 'Rejection Reason is required.';
 
                 return;
             }
 
-            submitting.value = true;
             emit('confirm', remark.value.trim());
-            submitting.value = false;
-            close();
+
+            if (props.closeOnConfirm) {
+                close();
+            }
         };
 
         return {
             visible,
+            resolvedHeader,
             remark,
             error,
-            submitting,
             close,
             onVisibleChange,
             confirm,

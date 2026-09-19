@@ -1,15 +1,38 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useInvoiceStore } from '../store';
 import { useInvoiceDocument } from '@/composables/admin/documents/useInvoiceDocument';
 import { useInvoiceDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
 import { service } from '../service';
 
-export default function useInvoiceDocumentPage() {
+function normalizeList(value) {
+    if (Array.isArray(value)) {
+        return value;
+    }
+
+    if (value && Array.isArray(value.data)) {
+        return value.data;
+    }
+
+    return [];
+}
+
+function roundMoney(value) {
+    return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+}
+
+export default function useInvoiceDocumentPage(options = {}) {
     const route = useRoute();
-    const store = useInvoiceStore();
+    const router = useRouter();
+    const store = options.store || useInvoiceStore();
+    const documentService = options.service || service;
     const isLoading = ref(true);
+    const isApproving = ref(false);
+    const isRejecting = ref(false);
+    const showApproveDialog = ref(false);
+    const showRejectDialog = ref(false);
 
     const state = reactive({
         id: null,
@@ -20,9 +43,13 @@ export default function useInvoiceDocumentPage() {
         due_date: '',
         billing_period: '',
         late_fee: '',
+        amount_due: '',
+        overdue_days: 0,
         total_amount: '',
         paid_amount: 0,
         remaining_balance: 0,
+        has_pending_payment: false,
+        payment_status: '',
         notes: '',
         status: '',
         items: [],
@@ -44,14 +71,78 @@ export default function useInvoiceDocumentPage() {
         downloadPdf,
         exportPdf,
         printPdf,
+        viewPdf,
         sendEmail,
-    } = useInvoiceDocumentActions(state, () => document.value, service);
+    } = useInvoiceDocumentActions(state, () => document.value, documentService);
 
-    const backRoute = computed(() => (
-        route.meta.approvalContext
-            ? { name: 'showInvoiceApproval', params: { id: state.id } }
-            : { name: 'showInvoice', params: { id: state.id } }
+    const backRoute = computed(() => {
+        if (typeof options.resolveBackRoute === 'function') {
+            return options.resolveBackRoute(state, route);
+        }
+
+        return route.meta.approvalContext
+            ? { name: 'invoiceApprovalList' }
+            : { name: 'invoiceList' };
+    });
+
+    const isApprovalView = computed(() => route.meta.approvalContext === true);
+    const normalizedStatus = computed(() => String(state.status || '').toLowerCase());
+    const normalizedPaymentStatus = computed(() => String(state.payment_status || '').toLowerCase());
+    const canApproveInvoice = computed(() => (
+        isApprovalView.value && ['draft', 'pending_approval'].includes(normalizedStatus.value)
     ));
+    const canRejectInvoice = computed(() => canApproveInvoice.value);
+    const canDownloadInvoice = computed(() => !isApprovalView.value);
+    const canSendInvoice = computed(() => (
+        !isApprovalView.value && ['issued', 'overdue'].includes(normalizedStatus.value)
+    ));
+
+    // Outstanding balance for Pay eligibility (issued + overdue both payable).
+    const outstandingBalance = computed(() => {
+        const remaining = Number(state.remaining_balance);
+        if (Number.isFinite(remaining) && remaining > 0) {
+            return remaining;
+        }
+
+        const due = Number(state.amount_due);
+        const paid = Number(state.paid_amount || 0);
+        if (Number.isFinite(due) && due - paid > 0.009) {
+            return roundMoney(due - paid);
+        }
+
+        const computedDue = Number(state.total_amount || 0) + Number(state.late_fee || 0);
+        if (Number.isFinite(computedDue) && computedDue - paid > 0.009) {
+            return roundMoney(computedDue - paid);
+        }
+
+        return 0;
+    });
+
+    // Pay for Issued/Overdue unpaid invoices with balance > 0.
+    // Hide for Paid invoices or when a Pending payment already exists.
+    const canRecordPayment = computed(() => {
+        const status = normalizedStatus.value;
+        const paymentStatus = normalizedPaymentStatus.value;
+        const isIssuedOrOverdue = ['issued', 'overdue'].includes(status)
+            || ['issued', 'overdue'].includes(paymentStatus);
+
+        return !isApprovalView.value
+            && isIssuedOrOverdue
+            && outstandingBalance.value > 0
+            && !state.has_pending_payment
+            && !['paid', 'draft', 'cancelled'].includes(status);
+    });
+
+    const goRecordPayment = () => {
+        if (!canRecordPayment.value || !state.id) {
+            return;
+        }
+
+        router.push({
+            name: 'newPayment',
+            query: { invoice_id: String(state.id) },
+        });
+    };
 
     const loadInvoice = async () => {
         isLoading.value = true;
@@ -62,13 +153,77 @@ export default function useInvoiceDocumentPage() {
 
             if (response?.data) {
                 Object.assign(state, response.data, {
-                    items: response.data.items || [],
+                    items: normalizeList(response.data.items || response.data.invoice_items || response.data.invoiceItems),
                 });
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load invoice document.');
         } finally {
             isLoading.value = false;
+        }
+    };
+
+    const approveInvoice = async () => {
+        if (!canApproveInvoice.value || isApproving.value) {
+            return;
+        }
+
+        isApproving.value = true;
+
+        try {
+            await store.issue({ id: state.id });
+            const response = store.getActionResponse;
+
+            if (response?.data) {
+                Object.assign(state, response.data, {
+                    items: normalizeList(response.data.items || response.data.invoice_items || response.data.invoiceItems),
+                });
+            }
+
+            EventBus.emit('show-toast', {
+                severity: 'success',
+                summary: '',
+                detail: response?.message || 'Invoice issued successfully.',
+            });
+
+            showApproveDialog.value = false;
+
+            await router.push({ name: 'invoiceList' });
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to approve invoice.');
+        } finally {
+            isApproving.value = false;
+        }
+    };
+
+    const openRejectDialog = () => {
+        if (canRejectInvoice.value) {
+            showRejectDialog.value = true;
+        }
+    };
+
+    const rejectInvoice = async (reason) => {
+        if (!canRejectInvoice.value || isRejecting.value) {
+            return;
+        }
+
+        isRejecting.value = true;
+
+        try {
+            await store.delete({ id: state.id, rejection_reason: reason });
+            EventBus.emit('show-toast', {
+                severity: 'warn',
+                summary: '',
+                detail: 'Invoice rejected successfully.',
+            });
+
+            showRejectDialog.value = false;
+
+            await router.push({ name: 'invoiceApprovalList' });
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to reject invoice.');
+        } finally {
+            isRejecting.value = false;
         }
     };
 
@@ -87,11 +242,27 @@ export default function useInvoiceDocumentPage() {
 
     return {
         isLoading,
+        isApprovalView,
+        isApproving,
+        isRejecting,
+        showApproveDialog,
+        showRejectDialog,
+        state,
         document,
         backRoute,
+        canApproveInvoice,
+        canRejectInvoice,
+        canDownloadInvoice,
+        canSendInvoice,
+        canRecordPayment,
+        goRecordPayment,
+        approveInvoice,
+        openRejectDialog,
+        rejectInvoice,
         downloadPdf,
         exportPdf,
         printPdf,
+        viewPdf,
         printContract: printPdf,
         sendEmail,
     };

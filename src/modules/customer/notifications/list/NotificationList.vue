@@ -1,15 +1,15 @@
 <template>
     <div class="customer-portal-page">
-        <header class="customer-portal-page-header">
-            <div>
-                <h1 class="customer-portal-page-title">{{ $t('customer.notifications') }}</h1>
-                <p class="customer-portal-page-lead">{{ $t('customer.notificationsLead') }}</p>
-            </div>
-
-            <p v-if="unreadCount" class="customer-portal-unread-summary">
-                {{ $t('customer.unreadNotifications', { count: unreadCount }) }}
-            </p>
-        </header>
+        <CustomerPageHeader
+            :title="$t('customer.notifications')"
+            :subtitle="$t('customer.notificationsLead')"
+        >
+            <template v-if="unreadCount" #actions>
+                <p class="customer-portal-unread-summary m-0">
+                    {{ $t('customer.unreadNotifications', { count: unreadCount }) }}
+                </p>
+            </template>
+        </CustomerPageHeader>
 
         <div v-if="filterOptions.length > 1" class="customer-portal-filter-row">
             <button
@@ -32,26 +32,33 @@
                 v-for="item in filteredNotifications"
                 :key="item.id || `${item.type}-${item.resource_id}-${item.created_at}`"
                 type="button"
-                class="customer-portal-notification-feed-item"
+                class="customer-record-row customer-portal-notification-feed-item customer-notification-row"
                 :class="{ 'is-unread': isNotificationUnread(item) }"
                 @click="openNotification(item)"
             >
-                <span class="customer-portal-icon-badge customer-portal-icon-badge--round" :class="notificationTone(item.type)">
-                    <i :class="notificationIcon(item.type)" aria-hidden="true" />
+                <span class="customer-record-cell customer-record-primary customer-notification-primary">
+                    <span class="customer-portal-icon-badge customer-portal-icon-badge--round" :class="notificationTone(item.type)">
+                        <i :class="notificationIcon(item.type)" aria-hidden="true" />
+                    </span>
+
+                    <span class="customer-portal-notification-feed-copy">
+                        <span class="customer-portal-notification-type-badge">{{ item.type }}</span>
+                        <strong>{{ item.title }}</strong>
+                        <small>{{ item.message }}</small>
+                    </span>
                 </span>
 
-                <span class="customer-portal-notification-feed-copy">
-                    <span class="customer-portal-notification-type-badge">{{ item.type }}</span>
-                    <strong>{{ item.title }}</strong>
-                    <small>{{ item.message }}</small>
+                <span class="customer-record-cell customer-record-meta customer-notification-meta">
                     <time>{{ formatDisplayDateTime(item.created_at) }}</time>
+                    <span class="customer-notification-read-state">
+                        {{ isNotificationUnread(item) ? 'Unread' : 'Read' }}
+                    </span>
+                    <span
+                        v-if="isNotificationUnread(item)"
+                        class="customer-portal-unread-dot"
+                        aria-hidden="true"
+                    />
                 </span>
-
-                <span
-                    v-if="isNotificationUnread(item)"
-                    class="customer-portal-unread-dot"
-                    aria-hidden="true"
-                />
             </button>
         </div>
 
@@ -67,6 +74,7 @@
 <script setup>
 import Loading from '@/components/global/Loading.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
+import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerNotificationList from '@/composables/customer/useCustomerNotificationList';
 
 const {

@@ -1,5 +1,5 @@
 import { reactive, ref, onMounted, onBeforeUnmount, watch, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useRoomStore } from '../store';
 import { formatCurrency } from '@/utils/formatter';
 import { showApiErrorToast } from '@/utils/apiError';
@@ -7,6 +7,7 @@ import { showApiErrorToast } from '@/utils/apiError';
 export default function useShowRoom() {
     const store = useRoomStore();
     const route = useRoute();
+    const router = useRouter();
     const isLoading = ref(true);
     const selectedImageId = ref(null);
 
@@ -25,7 +26,6 @@ export default function useShowRoom() {
         sale_price: '',
         rent_price: '',
         rent_deposit_price: '',
-        booking_deposit_price: '',
         created_at: '',
         updated_at: '',
     });
@@ -49,6 +49,26 @@ export default function useShowRoom() {
         selectedImageId.value = imageId;
     };
 
+    const canCreateContract = computed(() => {
+        const status = String(state.status || '').toLowerCase();
+        const type = String(state.type || '').toLowerCase();
+
+        return Boolean(state.id)
+            && status === 'available'
+            && ['sale', 'rent', 'both'].includes(type);
+    });
+
+    const goCreateContract = () => {
+        if (!canCreateContract.value) {
+            return;
+        }
+
+        router.push({
+            name: 'createRoomContract',
+            params: { id: state.id },
+        });
+    };
+
     watch(() => route.params.id, (newId) => {
         if (newId) {
             fetchRoom();
@@ -61,7 +81,6 @@ export default function useShowRoom() {
 
     onBeforeUnmount(() => {
         store.$reset();
-        store.$dispose();
     });
 
     const fetchRoom = async () => {
@@ -93,6 +112,8 @@ export default function useShowRoom() {
         roomImages,
         coverImage,
         selectCoverImage,
+        canCreateContract,
+        goCreateContract,
         formatCurrency,
     };
 }

@@ -36,6 +36,15 @@ const service = {
         return result.data;
     },
 
+    delete: async (params) => {
+        const result = await api.delete(`${endpoint.invoices}/${params.id}`, {
+            data: {
+                rejection_reason: params.rejection_reason,
+            },
+        });
+        return result.data;
+    },
+
     downloadDocument: async (params) => {
         const response = await api.get(`${endpoint.invoices}/${params.id}/document/download`, {
             responseType: 'blob',

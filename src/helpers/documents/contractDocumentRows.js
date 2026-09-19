@@ -116,7 +116,7 @@ export function buildFinancialRows(document, variant = {}) {
         || property.some((item) => item.label === 'Rent Price');
 
     const priceLabel = isRent ? 'Rent Price' : 'Sale Price';
-    const depositLabel = isRent ? 'Security Deposit' : 'Booking Deposit';
+    const depositLabel = isRent ? 'Security Deposit' : 'Deposit';
 
     const priceValue = findFieldValue(property, priceLabel);
     const depositValue = findFieldValue(property, depositLabel);

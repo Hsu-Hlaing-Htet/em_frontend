@@ -1,27 +1,72 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
-import { formatPropertyUnit, formatPaymentMethodTypeLabel, formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
-import {
-    buildPaymentCustomerInfo,
-    buildPaymentSummaryNote,
-} from '@/helpers/documents/renderPaymentDocument';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
+import { mapInvoiceLineItemRow } from '@/helpers/invoices/invoiceDetailHelpers';
 import { formatCurrency, formatDate } from '@/utils/formatter';
 import { showApiErrorToast } from '@/utils/apiError';
+import { service as invoiceService } from '@/modules/admin/invoices/service';
 import { usePaymentStore } from '../store';
+
+function normalizeRows(value) {
+    if (Array.isArray(value)) {
+        return value;
+    }
+
+    if (value && Array.isArray(value.data)) {
+        return value.data;
+    }
+
+    return [];
+}
+
+function roundMoney(value) {
+    return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+}
+
+function normalizePaymentDetail(data = {}) {
+    const invoice = data.invoice || {};
+    const contract = invoice.contract || data.contract || {};
+    const customer = contract.user || data.customer || data.user || {};
+    const profile = customer.profile || data.profile || {};
+    const room = contract.room || data.room || {};
+    const building = room.building || data.building || {};
+
+    return {
+        ...data,
+        invoice_id: data.invoice_id ?? invoice.id ?? null,
+        invoice_number: data.invoice_number ?? invoice.invoice_number ?? '',
+        invoice_type: data.invoice_type ?? invoice.type ?? '',
+        // Submitted/frozen payment amount (payments.amount), not live invoice balance.
+        amount: data.amount == null || data.amount === '' ? null : Number(data.amount),
+        amount_received: data.amount_received == null || data.amount_received === ''
+            ? null
+            : Number(data.amount_received),
+        refund_amount: data.refund_amount == null || data.refund_amount === ''
+            ? null
+            : Number(data.refund_amount),
+        status: data.status ?? data.payment_status ?? '',
+        display_status: data.display_status ?? invoice.status ?? data.status ?? '',
+        customer_name: data.customer_name ?? customer.name ?? '',
+        customer_email: data.customer_email ?? customer.email ?? '',
+        customer_phone: data.customer_phone ?? profile.phone ?? customer.phone ?? '',
+        building_name: data.building_name ?? building.building_name ?? room.building_name ?? '',
+        room_number: data.room_number ?? room.room_number ?? '',
+        created_at: data.created_at ?? data.submitted_at ?? '',
+    };
+}
 
 export default function useShowPayment() {
     const store = usePaymentStore();
     const route = useRoute();
     const router = useRouter();
     const isLoading = ref(true);
-    const isUploading = ref(false);
     const workflowLoading = ref({ approve: false, reject: false });
     const proofPreview = ref('');
     const showProofPreview = ref(false);
+    const showApproveDialog = ref(false);
     const showRejectDialog = ref(false);
-    const paidAmountInput = ref(null);
+    const adminRemark = ref('');
     const isApprovalView = computed(() => route.meta.approvalContext === true);
     const backRoute = computed(() => (
         isApprovalView.value
@@ -37,6 +82,8 @@ export default function useShowPayment() {
         payment_method_type: '',
         payment_type: '',
         amount: null,
+        amount_received: null,
+        refund_amount: null,
         invoice_amount: 0,
         paid_amount: 0,
         balance: 0,
@@ -55,14 +102,23 @@ export default function useShowPayment() {
         room_number: '',
         customer_name: '',
         customer_phone: '',
-        customer_nrc: '',
-        property_unit: '',
         display_status: '',
         reference_number: '',
         created_at: '',
         receipt_id: null,
         receipt_number: '',
         receipt_status: '',
+    });
+
+    const invoiceSummary = reactive({
+        id: null,
+        invoice_number: '',
+        total_amount: 0,
+        late_fee: 0,
+        amount_due: 0,
+        paid_amount: 0,
+        remaining_balance: 0,
+        items: [],
     });
 
     watch(() => route.params.id, (newId) => {
@@ -80,6 +136,36 @@ export default function useShowPayment() {
         store.$dispose();
     });
 
+    const loadInvoiceSummary = async (invoiceId) => {
+        Object.assign(invoiceSummary, {
+            id: null,
+            invoice_number: '',
+            total_amount: 0,
+            late_fee: 0,
+            amount_due: 0,
+            paid_amount: 0,
+            remaining_balance: 0,
+            items: [],
+        });
+
+        if (!invoiceId) {
+            return;
+        }
+
+        try {
+            const response = await invoiceService.getOne({ id: invoiceId });
+
+            if (response?.data) {
+                Object.assign(invoiceSummary, {
+                    ...response.data,
+                    items: normalizeRows(response.data.items),
+                });
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load invoice summary.');
+        }
+    };
+
     const fetchPayment = async () => {
         isLoading.value = true;
 
@@ -88,106 +174,95 @@ export default function useShowPayment() {
             const response = store.getOneResponse;
 
             if (response?.data) {
-                Object.assign(state, response.data);
-                proofPreview.value = response.data.proof_image_url || '';
-                paidAmountInput.value = response.data.amount == null
-                    ? null
-                    : Number(response.data.amount);
+                const payment = normalizePaymentDetail(response.data);
+
+                Object.assign(state, payment);
+                proofPreview.value = payment.proof_image_url || '';
+                adminRemark.value = '';
+                await loadInvoiceSummary(payment.invoice_id);
             }
         } finally {
             isLoading.value = false;
         }
     };
 
-    const canEditPaidAmount = computed(() => (
+    const canReviewPayment = computed(() => (
         isApprovalView.value && state.status === 'pending'
     ));
 
     const remainingAfterPaidAmount = computed(() => {
         const currentBalance = Number(state.balance || 0);
-        const paid = Number(paidAmountInput.value || 0);
+        const paid = Number(state.amount || 0);
 
         return Math.max(roundMoney(currentBalance - paid), 0);
     });
 
     const displayRemainingBalance = computed(() => {
-        if (canEditPaidAmount.value) {
+        if (canReviewPayment.value) {
             return remainingAfterPaidAmount.value;
         }
 
-        return Number(state.balance || 0);
-    });
-
-    const formattedEnteredPaidAmount = computed(() => {
-        if (state.amount == null || state.amount === '') {
-            return '—';
-        }
-
-        return formatCurrency(state.amount);
+        return Number(
+            invoiceSummary.remaining_balance ?? state.balance ?? 0,
+        );
     });
 
     const paidAmountError = computed(() => {
-        if (!canEditPaidAmount.value) {
+        if (!canReviewPayment.value) {
             return '';
         }
 
-        if (paidAmountInput.value == null || paidAmountInput.value === '') {
+        if (state.amount == null || state.amount === '') {
             return 'Paid Amount is required.';
         }
 
-        const paid = Number(paidAmountInput.value);
+        const paid = Number(state.amount);
         const balance = Number(state.balance || 0);
 
         if (!Number.isFinite(paid) || paid <= 0) {
             return 'Paid Amount must be greater than zero.';
         }
 
-        if (roundMoney(paid) > roundMoney(balance)) {
-            return 'Paid Amount cannot exceed the current balance.';
+        if (Math.abs(roundMoney(paid) - roundMoney(balance)) > 0.009) {
+            return 'Paid Amount must match the current balance.';
         }
 
         return '';
     });
 
     const isPaidAmountValid = computed(() => !paidAmountError.value
-        && paidAmountInput.value != null
-        && Number(paidAmountInput.value) > 0);
-
-    const onProofSelect = async (event) => {
-        const file = event.files?.[0];
-        if (!file) {
-            return;
-        }
-
-        isUploading.value = true;
-
-        try {
-            await store.uploadProof({ id: state.id, file });
-            const response = store.getActionResponse;
-
-            if (response?.data) {
-                Object.assign(state, response.data);
-                proofPreview.value = response.data.proof_image_url || '';
-                EventBus.emit('show-toast', {
-                    severity: 'success',
-                    summary: '',
-                    detail: response.message,
-                });
-            }
-        } finally {
-            isUploading.value = false;
-        }
-    };
-
-    const openRejectDialog = () => {
-        showRejectDialog.value = true;
-    };
+        && state.amount != null
+        && Number(state.amount) > 0);
 
     const confirmReject = async (reason) => {
         await runWorkflow('reject', { rejection_reason: reason });
     };
 
+    const handleReject = async () => {
+        const reason = adminRemark.value.trim();
+
+        if (!reason) {
+            EventBus.emit('show-toast', {
+                severity: 'warn',
+                summary: '',
+                detail: 'Reject requires a reason.',
+            });
+
+            return;
+        }
+
+        await confirmReject(reason);
+    };
+
     const runWorkflow = async (action, payload = {}) => {
+        if (workflowLoading.value.approve || workflowLoading.value.reject) {
+            return;
+        }
+
+        if ((action === 'approve' && !canApprove()) || (action === 'reject' && !canReject())) {
+            return;
+        }
+
         if (action === 'approve' && !isPaidAmountValid.value) {
             EventBus.emit('show-toast', {
                 severity: 'warn',
@@ -204,7 +279,7 @@ export default function useShowPayment() {
             if (action === 'approve') {
                 await store.approve({
                     id: state.id,
-                    amount: Number(paidAmountInput.value),
+                    amount: Number(state.amount),
                 });
             } else {
                 await store.reject({
@@ -216,12 +291,15 @@ export default function useShowPayment() {
             const response = store.getActionResponse;
 
             if (response) {
-                Object.assign(state, response.data || {});
+                Object.assign(state, normalizePaymentDetail(response.data || {}));
                 EventBus.emit('show-toast', {
                     severity: action === 'reject' ? 'warn' : 'success',
                     summary: '',
                     detail: response.message,
                 });
+
+                showApproveDialog.value = false;
+                showRejectDialog.value = false;
 
                 if (isApprovalView.value) {
                     await router.push(
@@ -241,69 +319,146 @@ export default function useShowPayment() {
         }
     };
 
-    const canShowApprove = () => canEditPaidAmount.value;
-    const canApprove = () => canEditPaidAmount.value && isPaidAmountValid.value;
-    const canReject = () => canEditPaidAmount.value;
+    const canShowApprove = () => canReviewPayment.value;
+    const canApprove = () => canReviewPayment.value && isPaidAmountValid.value;
+    const canReject = () => canReviewPayment.value;
 
-    const receiptRoute = computed(() => (
-        state.receipt_id ? { name: 'showReceipt', params: { id: state.receipt_id } } : null
+    const paymentId = computed(() => (
+        state.id ? `PAY-${String(state.id).padStart(5, '0')}` : '—'
+    ));
+    const paymentStatus = computed(() => state.status || state.display_status);
+    const formattedCreatedAt = computed(() => (
+        formatBillingDocumentDate(state.created_at || state.submitted_at) || '—'
+    ));
+    const formattedPaymentDate = computed(() => formatDate(state.payment_date) || '—');
+    const formattedVerifiedDate = computed(() => (
+        formatBillingDocumentDate(state.approved_at) || formatDate(state.approved_at) || '—'
     ));
 
-    const propertyUnit = computed(() => formatPropertyUnit(state));
-    const paymentStatus = computed(() => state.display_status || state.status);
-    const formattedCreatedAt = computed(() => formatBillingDocumentDate(state.created_at));
-    const customerLines = computed(() => buildPaymentCustomerInfo(state).lines);
-    const paymentSummaryNote = computed(() => buildPaymentSummaryNote(state));
-    const paymentTableRows = computed(() => [{
-        invoice_number: state.invoice_number || '—',
-        invoice_amount: formatCurrency(state.invoice_amount),
-        paid_amount: formatCurrency(state.paid_amount),
-        balance: formatCurrency(state.balance),
-        entered_paid_amount: null,
-        remaining_balance: null,
-        payment_type: formatPaymentTypeLabel(state.payment_type),
-        payment_method_type: formatPaymentMethodTypeLabel(state.payment_method_type),
-        payment_date: formatDate(state.payment_date) || '—',
-        payment_method_name: state.payment_method_name || '—',
-    }]);
+    const invoiceRows = computed(() => normalizeRows(invoiceSummary.items)
+        .map((item) => mapInvoiceLineItemRow(item, formatCurrency)));
+
+    const lateFeeAmount = computed(() => Number(invoiceSummary.late_fee || 0));
+    const showLateFee = computed(() => lateFeeAmount.value > 0);
+    const subTotalDisplay = computed(() => formatCurrency(Number(invoiceSummary.total_amount || 0)));
+    const lateFeeDisplay = computed(() => formatCurrency(lateFeeAmount.value));
+    const totalDisplay = computed(() => {
+        // Frozen amount due on the payment submission takes priority for approval/detail.
+        if (state.amount != null && state.amount !== '') {
+            return formatCurrency(Number(state.amount));
+        }
+
+        const total = Number(invoiceSummary.amount_due);
+
+        if (Number.isFinite(total) && total > 0) {
+            return formatCurrency(total);
+        }
+
+        return formatCurrency(
+            Number(invoiceSummary.total_amount || 0) + lateFeeAmount.value,
+        );
+    });
+    const receivedDisplay = computed(() => {
+        const received = state.amount_received != null && state.amount_received !== ''
+            ? Number(state.amount_received)
+            : Number(state.amount);
+
+        if (!Number.isFinite(received) || (state.amount == null && state.amount_received == null)) {
+            return '—';
+        }
+
+        return formatCurrency(received);
+    });
+    const refundDisplay = computed(() => {
+        if (state.refund_amount != null && state.refund_amount !== '') {
+            return formatCurrency(Number(state.refund_amount));
+        }
+
+        const received = state.amount_received != null ? Number(state.amount_received) : null;
+        const due = state.amount != null ? Number(state.amount) : null;
+
+        if (received == null || due == null || !Number.isFinite(received) || !Number.isFinite(due)) {
+            return formatCurrency(0);
+        }
+
+        return formatCurrency(Math.max(roundMoney(received - due), 0));
+    });
+    const showChange = computed(() => {
+        if (state.refund_amount != null && state.refund_amount !== '') {
+            return Number(state.refund_amount) > 0;
+        }
+
+        const received = state.amount_received != null ? Number(state.amount_received) : null;
+        const due = state.amount != null ? Number(state.amount) : null;
+
+        if (received == null || due == null || !Number.isFinite(received) || !Number.isFinite(due)) {
+            return false;
+        }
+
+        return roundMoney(received - due) > 0;
+    });
+    const balanceDisplay = computed(() => formatCurrency(displayRemainingBalance.value));
+
+    const adminRemarkDisplay = computed(() => {
+        const rejection = String(state.rejection_reason || '').trim();
+
+        if (rejection) {
+            return rejection;
+        }
+
+        const note = String(state.note || '').trim();
+
+        return note || '—';
+    });
+
+    const pageTitle = computed(() => (
+        isApprovalView.value ? 'Payment Approval Details' : 'Payment Details'
+    ));
+    const pageSubtitle = computed(() => (
+        isApprovalView.value
+            ? 'Review submitted payment information and verify the payment'
+            : 'View payment information and related invoice summary'
+    ));
 
     return {
         isApprovalView,
         backRoute,
-        receiptRoute,
         isLoading,
-        isUploading,
         state,
+        invoiceSummary,
         proofPreview,
         showProofPreview,
+        showApproveDialog,
         showRejectDialog,
-        paidAmountInput,
-        paidAmountError,
-        canEditPaidAmount,
-        remainingAfterPaidAmount,
-        displayRemainingBalance,
-        formattedEnteredPaidAmount,
+        adminRemark,
         workflowLoading,
-        propertyUnit,
+        paymentId,
         paymentStatus,
         formattedCreatedAt,
-        customerLines,
-        paymentSummaryNote,
-        paymentTableRows,
+        formattedPaymentDate,
+        formattedVerifiedDate,
+        invoiceRows,
+        showLateFee,
+        subTotalDisplay,
+        lateFeeDisplay,
+        totalDisplay,
+        receivedDisplay,
+        refundDisplay,
+        showChange,
+        balanceDisplay,
+        adminRemarkDisplay,
+        pageTitle,
+        pageSubtitle,
+        canReviewPayment,
         invoiceRoute: computed(() => (
             state.invoice_id ? { name: 'showInvoice', params: { id: state.invoice_id } } : null
         )),
         formatCurrency,
-        onProofSelect,
-        openRejectDialog,
+        handleReject,
         confirmReject,
         runWorkflow,
         canShowApprove,
         canApprove,
         canReject,
     };
-}
-
-function roundMoney(value) {
-    return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
 }

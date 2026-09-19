@@ -58,7 +58,7 @@
                 </small>
             </div>
 
-            <GmailInput
+            <EmailInput
                 v-model="state.email"
                 :original-email="state.original_email"
                 :errors="errors"
@@ -103,7 +103,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ChangePasswordDialog from '@/components/admin/ChangePasswordDialog.vue';
-import GmailInput from '@/components/admin/GmailInput.vue';
+import EmailInput from '@/components/admin/EmailInput.vue';
 import useProfilePage from './useProfilePage';
 
 export default defineComponent({
@@ -114,7 +114,7 @@ export default defineComponent({
         Button,
         Loading,
         ChangePasswordDialog,
-        GmailInput,
+        EmailInput,
     },
     setup() {
         return useProfilePage();

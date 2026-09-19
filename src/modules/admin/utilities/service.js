@@ -72,7 +72,9 @@ const service = {
     },
 
     reject: async (params) => {
-        const result = await api.post(`${endpoint.utilities}/${params.id}/reject`);
+        const result = await api.post(`${endpoint.utilities}/${params.id}/reject`, {
+            rejection_reason: params.rejection_reason,
+        });
         return result.data;
     },
 

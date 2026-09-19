@@ -1,13 +1,16 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
+import { showApiErrorToast } from '@/utils/apiError';
 import { formatCurrency } from '@/utils/formatter';
 import { formatBillingMonthLabel } from '@/helpers/documents/billingDocumentHelpers';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { formatUnitValue } from '../utils/utilityFormHelpers';
 import { formatUtilitySummaryNote } from '../utils/utilityDetailHelpers';
 import { buildUtilityCustomerLines } from '@/composables/admin/documents/useUtilityDocument';
+import { useUtilityDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
 import { useUtilityStore } from '../store';
+import { service } from '../service';
 
 export default function useShowUtility() {
     const store = useUtilityStore();
@@ -15,6 +18,8 @@ export default function useShowUtility() {
     const router = useRouter();
     const isLoading = ref(true);
     const workflowLoading = ref({ submit: false, approve: false, reject: false });
+    const showApproveDialog = ref(false);
+    const showRejectDialog = ref(false);
 
     const isApprovalView = computed(() => route.meta.approvalContext === true);
     const backRoute = computed(() => (
@@ -40,6 +45,13 @@ export default function useShowUtility() {
         approved_by_name: '',
         created_at: '',
     });
+
+    const { sendEmail } = useUtilityDocumentActions(state, () => state, service);
+    const canSendUtility = computed(() => (
+        !isApprovalView.value
+        && Boolean(state.id)
+        && String(state.status || '').toLowerCase() === 'approved'
+    ));
 
     const loadUtility = async () => {
         isLoading.value = true;
@@ -71,18 +83,34 @@ export default function useShowUtility() {
         store.$dispose();
     });
 
-    const runWorkflow = async (action) => {
+    const runWorkflow = async (action, payload = {}) => {
+        const isReviewAction = action === 'approve' || action === 'reject';
+
+        if (
+            workflowLoading.value.approve
+            || workflowLoading.value.reject
+            || workflowLoading.value[action]
+        ) {
+            return;
+        }
+
+        if (isApprovalView.value && isReviewAction && state.status !== 'pending') {
+            return;
+        }
+
         workflowLoading.value[action] = true;
 
         try {
-            await store[action]({ id: state.id });
+            await store[action]({ id: state.id, ...payload });
             const response = store.getActionResponse;
 
             if (response) {
-                Object.assign(state, response.data, {
-                    items: response.data.items || state.items,
-                });
                 EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
+
+                if (isReviewAction) {
+                    showApproveDialog.value = false;
+                    showRejectDialog.value = false;
+                }
 
                 if (isApprovalView.value) {
                     if (action === 'approve') {
@@ -90,26 +118,37 @@ export default function useShowUtility() {
                     } else if (action === 'reject') {
                         await router.push({ name: 'utilityApprovalList' });
                     }
+
+                    return;
                 }
+
+                Object.assign(state, response.data, {
+                    items: response.data.items || state.items,
+                });
             }
+        } catch (error) {
+            showApiErrorToast(error, `Unable to ${action} utility.`);
         } finally {
             workflowLoading.value[action] = false;
         }
     };
 
-    const canEdit = computed(() => !isApprovalView.value && state.status === 'draft');
+    const canEdit = computed(() => !isApprovalView.value && state.status === 'rejected');
     const canSubmit = () => !isApprovalView.value && state.status === 'draft';
-    const canApprove = () => state.status === 'pending';
-    const canReject = () => isApprovalView.value
-        ? state.status === 'pending'
-        : ['draft', 'pending'].includes(state.status);
+    const canApprove = () => isApprovalView.value && state.status === 'pending';
+    const canReject = () => isApprovalView.value && state.status === 'pending';
 
     const editRoute = computed(() => (
         state.id ? { name: 'editUtility', params: { id: state.id } } : null
     ));
 
     const documentRoute = computed(() => (
-        state.id ? { name: 'utilityDocument', params: { id: state.id } } : null
+        state.id
+            ? {
+                name: isApprovalView.value ? 'utilityApprovalDocument' : 'utilityDocument',
+                params: { id: state.id },
+            }
+            : null
     ));
 
     const formattedBillingMonth = computed(() => formatBillingMonthLabel(state.billing_month));
@@ -119,8 +158,18 @@ export default function useShowUtility() {
         createdAtLabel: formattedCreatedAt.value,
         createdByName: state.created_by_name,
         approvedByName: state.approved_by_name,
+        status: state.status,
     }));
     const customerLines = computed(() => buildUtilityCustomerLines(state));
+
+    const pageTitle = computed(() => (
+        isApprovalView.value ? 'Utility Approval Details' : 'Utility Details'
+    ));
+    const pageSubtitle = computed(() => (
+        isApprovalView.value
+            ? 'Review submitted utility readings and verify the bill'
+            : 'View utility reading information and billing summary'
+    ));
 
     return {
         isApprovalView,
@@ -130,11 +179,17 @@ export default function useShowUtility() {
         isLoading,
         state,
         workflowLoading,
+        showApproveDialog,
+        showRejectDialog,
         runWorkflow,
         canEdit,
         canSubmit,
         canApprove,
         canReject,
+        canSendUtility,
+        sendEmail,
+        pageTitle,
+        pageSubtitle,
         formattedBillingMonth,
         formattedCreatedAt,
         utilitySummaryNote,

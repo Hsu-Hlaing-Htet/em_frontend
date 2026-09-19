@@ -81,8 +81,8 @@ export default function useCustomerPaymentList() {
     };
 
     const openPayment = (payment) => {
-        if (payment.invoice_id) {
-            router.push({ name: 'customerShowInvoice', params: { id: payment.invoice_id } });
+        if (payment.id) {
+            router.push({ name: 'customerShowPayment', params: { id: payment.id } });
         }
     };
 

@@ -19,8 +19,11 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
@@ -46,7 +49,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No staff found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-id-card"
+                        title="No staff found"
+                        message="Add a staff member or adjust your search."
+                    />
+                </template>
                 <template #loading>Loading staff. Please wait.</template>
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 160px">
@@ -63,7 +72,11 @@
                 <Column field="phone" header="Phone" :sortable="true" style="min-width: 160px" />
                 <Column field="nrc" header="NRC" :sortable="true" style="min-width: 100px" />
                 <Column field="gender" header="Gender" :sortable="true" style="min-width: 90px" />
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px" />
+                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px">
+                    <template #body="{ data }">
+                        {{ formatDate(data.created_at) || '—' }}
+                    </template>
+                </Column>
                 <Column
                     header="Actions"
                     :exportable="false"
@@ -100,13 +113,19 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import { formatDate } from '@/utils/formatter';
 import { useStaffList } from './useStaffList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'StaffList',
-    components: { DataTable, Column, Button, Loading, ListExportActions, AdminListFilters },
+    components: {
+        AdminEmptyState, DataTable, Column, Button, Loading, ListExportActions, AdminListFilters },
     setup() {
-        return useStaffList();
+        return {
+            ...useStaffList(),
+            formatDate,
+        };
     },
 });
 </script>

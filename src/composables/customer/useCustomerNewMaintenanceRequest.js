@@ -4,10 +4,7 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import {
-    MAINTENANCE_CATEGORY_OPTIONS,
-    MAINTENANCE_PRIORITY_OPTIONS,
-} from '@/constants/constant';
+import { MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
 import { useCustomerMaintenanceRequestStore } from '@/modules/customer/maintenance-requests/store';
 
 export default function useCustomerNewMaintenanceRequest() {
@@ -17,11 +14,14 @@ export default function useCustomerNewMaintenanceRequest() {
     const isSaving = ref(false);
     const errors = new Errors();
     const roomOptions = ref([]);
+    const categoryOptions = ref([]);
+    const photoFile = ref(null);
+    const photoPreviewUrl = ref('');
 
     const state = reactive({
         room_id: null,
         title: '',
-        category: null,
+        maintenance_category_id: null,
         priority: null,
         description: '',
     });
@@ -32,31 +32,61 @@ export default function useCustomerNewMaintenanceRequest() {
         isLoading.value = true;
 
         try {
-            await store.fetchRooms();
+            await Promise.all([
+                store.fetchRooms(),
+                store.fetchCategories(),
+            ]);
             const rooms = store.getRoomsResponse?.data || [];
             roomOptions.value = rooms.map((room) => ({
                 label: room.label || `${room.building_name || ''} · ${room.room_number}`.trim(),
                 value: room.id,
             }));
+            const categories = store.getCategoriesResponse?.data || [];
+            categoryOptions.value = categories.map((category) => ({
+                label: category.name,
+                value: category.id,
+            }));
         } catch (error) {
-            showApiErrorToast(error, 'Unable to load rooms for maintenance requests.');
+            showApiErrorToast(error, 'Unable to load maintenance request options.');
         } finally {
             isLoading.value = false;
         }
     });
 
     onBeforeUnmount(() => {
+        clearPhoto();
         store.$reset();
         store.$dispose();
     });
+
+    const onPhotoSelect = (event) => {
+        const file = event.files?.[0] || null;
+        clearPhoto();
+
+        if (!file) {
+            return;
+        }
+
+        photoFile.value = file;
+        photoPreviewUrl.value = URL.createObjectURL(file);
+    };
+
+    const clearPhoto = () => {
+        if (photoPreviewUrl.value) {
+            URL.revokeObjectURL(photoPreviewUrl.value);
+        }
+
+        photoFile.value = null;
+        photoPreviewUrl.value = '';
+    };
 
     const handleSubmit = async () => {
         errors.clear();
 
         if (!applyValidation(errors, state, [
-            { field: 'room_id', type: 'select' },
             { field: 'title', type: 'text' },
-            { field: 'category', type: 'select' },
+            { field: 'maintenance_category_id', type: 'select' },
+            { field: 'room_id', type: 'select' },
             { field: 'priority', type: 'select' },
             { field: 'description', type: 'text' },
         ])) {
@@ -66,7 +96,10 @@ export default function useCustomerNewMaintenanceRequest() {
         isSaving.value = true;
 
         try {
-            await store.create({ ...state });
+            await store.create({
+                ...state,
+                photo: photoFile.value || undefined,
+            });
             const response = store.getCreateResponse;
 
             if (response?.data?.id) {
@@ -97,8 +130,11 @@ export default function useCustomerNewMaintenanceRequest() {
         errors,
         state,
         roomOptions,
-        categoryOptions: MAINTENANCE_CATEGORY_OPTIONS,
+        photoPreviewUrl,
+        categoryOptions,
         priorityOptions: MAINTENANCE_PRIORITY_OPTIONS,
+        onPhotoSelect,
+        clearPhoto,
         handleSubmit,
     };
 }

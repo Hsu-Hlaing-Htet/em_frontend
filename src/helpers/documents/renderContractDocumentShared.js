@@ -92,6 +92,7 @@ export function renderContractDocumentBody(document, variant) {
             <div class="contract-doc-signatures">
                 ${renderSignatureLines(document.signatures)}
             </div>
+            <p class="contract-doc-signature-note">Signatures are completed manually on the printed copy.</p>
         `)}
     `;
 }

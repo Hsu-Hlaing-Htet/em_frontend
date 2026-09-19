@@ -2,25 +2,32 @@
     <div v-if="!isLoading" class="">
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
-                <DocumentDownloadActions
-                    @download-pdf="downloadPdf"
-                    @export-document="exportPdf"
-                    @print="printContract"
+                <Button
+                    v-if="document"
+                    type="button"
+                    icon="pi pi-eye"
+                    label="View"
+                    severity="secondary"
+                    @click="viewContract"
                 />
                 <Button
+                    v-if="canReview"
                     type="button"
                     icon="pi pi-check"
                     label="Approve"
                     severity="success"
                     :loading="isApproving"
-                    :disabled="isApproving"
-                    @click="approveContract"
+                    :disabled="isApproving || isRejecting"
+                    @click="showApproveDialog = true"
                 />
                 <Button
+                    v-if="canReview"
                     type="button"
                     icon="pi pi-times"
                     label="Reject"
                     severity="danger"
+                    :loading="isRejecting"
+                    :disabled="isApproving || isRejecting"
                     @click="openRejectDialog"
                 />
                 <router-link :to="backRoute">
@@ -43,8 +50,18 @@
 
     <Loading v-if="isLoading" />
 
+    <ApproveRecordDialog
+        v-model="showApproveDialog"
+        entity="rent contract"
+        :submitting="isApproving"
+        @confirm="approveContract"
+    />
+
     <RejectContractDialog
         v-model="showRejectDialog"
+        entity="rent contract"
+        :submitting="isRejecting"
+        :close-on-confirm="false"
         @confirm="rejectContract"
     />
 </template>
@@ -54,13 +71,13 @@ import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ContractPdfSheet from '@/components/admin/documents/ContractPdfSheet.vue';
+import ApproveRecordDialog from '@/components/admin/ApproveRecordDialog.vue';
 import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
-import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import useShowRentContractApproval from './useShowRentContractApproval';
 
 export default defineComponent({
     name: 'ShowRentContractApproval',
-    components: { Button, Loading, ContractPdfSheet, RejectContractDialog, DocumentDownloadActions },
+    components: { Button, Loading, ContractPdfSheet, ApproveRecordDialog, RejectContractDialog },
     setup() {
         return useShowRentContractApproval();
     },

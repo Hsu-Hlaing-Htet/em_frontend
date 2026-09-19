@@ -21,6 +21,28 @@ import { mapSaleDraftFormFromApi } from './mapSaleDraft';
 
 const SALE_ROOM_TYPES = ['sale', 'both'];
 
+function normalizeCustomerList(payload) {
+    if (Array.isArray(payload)) {
+        return payload;
+    }
+
+    if (Array.isArray(payload?.data?.data)) {
+        return payload.data.data;
+    }
+
+    if (Array.isArray(payload?.data)) {
+        return payload.data;
+    }
+
+    return [];
+}
+
+function isActiveCustomer(customer) {
+    const status = String(customer?.status || 'active').toLowerCase();
+
+    return status === 'active';
+}
+
 export default function useSaleDraftForm(initialState = null) {
     const submitted = ref(false);
     const isHydrating = ref(false);
@@ -45,10 +67,17 @@ export default function useSaleDraftForm(initialState = null) {
         remarks: '',
     });
 
-    const customerOptions = computed(() => customers.value.filter((customer) => customer.status === 'active').map((customer) => ({
-        label: customer.name,
-        value: resolveEntityId(customer.id),
-    })).filter((option) => option.value != null));
+    const customerOptions = computed(() => {
+        const rows = Array.isArray(customers.value) ? customers.value : [];
+
+        return rows
+            .filter((customer) => isActiveCustomer(customer))
+            .map((customer) => ({
+                label: customer.name,
+                value: resolveEntityId(customer.id),
+            }))
+            .filter((option) => option.value != null && option.label);
+    });
 
     const buildingOptions = computed(() => mapDraftBuildingOptions(buildings.value));
 
@@ -81,7 +110,8 @@ export default function useSaleDraftForm(initialState = null) {
     });
 
     const applyCustomer = (customerId) => {
-        const customer = customers.value.find((item) => sameEntityId(item.id, customerId));
+        const rows = Array.isArray(customers.value) ? customers.value : [];
+        const customer = rows.find((item) => sameEntityId(item.id, customerId));
 
         if (!customer) {
             state.customer_nrc = '';
@@ -91,8 +121,8 @@ export default function useSaleDraftForm(initialState = null) {
             return;
         }
 
-        state.customer_nrc = customer.nrc || '';
-        state.customer_phone = customer.phone || '';
+        state.customer_nrc = customer.nrc || customer.profile?.nrc || '';
+        state.customer_phone = customer.phone || customer.profile?.phone || '';
         state.customer_email = customer.email || '';
     };
 
@@ -111,7 +141,7 @@ export default function useSaleDraftForm(initialState = null) {
         }
 
         state.room_price = Number(room.sale_price) || 0;
-        state.deposit = Number(room.booking_deposit_price) || 0;
+        state.deposit = Number(state.deposit) || 0;
 
         if (!preserveContractTotal) {
             state.contract_total = Number(room.sale_price) || 0;
@@ -119,9 +149,9 @@ export default function useSaleDraftForm(initialState = null) {
     };
 
     const fetchCustomers = async () => {
-        const response = await residentService.getAll({ per_page: 100 });
+        const response = await residentService.getAll({ per_page: 100, status: 'active' });
 
-        customers.value = response?.data?.data || [];
+        customers.value = normalizeCustomerList(response);
     };
 
     const fetchBuildings = async () => {
@@ -203,41 +233,44 @@ export default function useSaleDraftForm(initialState = null) {
 
         isHydrating.value = true;
 
-        const buildingId = resolveEntityId(
-            data.building_id ?? data.room?.building_id ?? data.building?.id ?? null,
-        );
+        try {
+            const buildingId = resolveEntityId(
+                data.building_id ?? data.room?.building_id ?? data.building?.id ?? null,
+            );
 
-        if (buildingId) {
-            await fetchRooms(buildingId);
-        } else {
-            rooms.value = [];
+            if (buildingId) {
+                await fetchRooms(buildingId);
+            } else {
+                rooms.value = [];
+            }
+
+            if (data.room && !rooms.value.some((room) => sameEntityId(room.id, data.room.id))) {
+                rooms.value = [...rooms.value, data.room];
+            }
+
+            const mapped = mapSaleDraftFormFromApi(data) || data;
+
+            Object.assign(state, {
+                id: mapped.id,
+                customer_id: resolveEntityId(mapped.customer_id),
+                customer_nrc: mapped.customer_nrc || '',
+                customer_phone: mapped.customer_phone || '',
+                customer_email: mapped.customer_email || '',
+                building_id: buildingId,
+                room_id: resolveEntityId(mapped.room_id),
+                room_price: mapped.room_price,
+                deposit: mapped.deposit,
+                payment_type: mapped.payment_type,
+                duration_months: mapped.payment_type === 'full' ? null : mapped.duration_months,
+                contract_total: mapped.contract_total,
+                start_date: mapped.start_date,
+                remarks: mapped.remarks || '',
+            });
+
+            await nextTick();
+        } finally {
+            isHydrating.value = false;
         }
-
-        if (data.room && !rooms.value.some((room) => sameEntityId(room.id, data.room.id))) {
-            rooms.value = [...rooms.value, data.room];
-        }
-
-        const mapped = mapSaleDraftFormFromApi(data) || data;
-
-        Object.assign(state, {
-            id: mapped.id,
-            customer_id: resolveEntityId(mapped.customer_id),
-            customer_nrc: mapped.customer_nrc || '',
-            customer_phone: mapped.customer_phone || '',
-            customer_email: mapped.customer_email || '',
-            building_id: buildingId,
-            room_id: resolveEntityId(mapped.room_id),
-            room_price: mapped.room_price,
-            deposit: mapped.deposit,
-            payment_type: mapped.payment_type,
-            duration_months: mapped.payment_type === 'full' ? null : mapped.duration_months,
-            contract_total: mapped.contract_total,
-            start_date: mapped.start_date,
-            remarks: mapped.remarks || '',
-        });
-
-        await nextTick();
-        isHydrating.value = false;
     };
 
     onMounted(async () => {

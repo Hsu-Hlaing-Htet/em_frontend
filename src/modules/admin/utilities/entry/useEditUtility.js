@@ -14,7 +14,7 @@ import { showApiErrorToast } from '@/utils/apiError';
 import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
-import { emptyUtilityItem, formatBillingMonth, formatUtilityDate } from '../utils/utilityFormHelpers';
+import { emptyUtilityItem, formatBillingMonth, formatUtilityDate, getCurrentReadingError } from '../utils/utilityFormHelpers';
 
 export default function useEditUtility() {
     const store = useUtilityStore();
@@ -28,6 +28,8 @@ export default function useEditUtility() {
     const roomOptions = ref([]);
     const utilityTypeOptions = ref([]);
     const workflowLoading = ref({ submit: false, approve: false, reject: false });
+    const showApproveDialog = ref(false);
+    const showRejectDialog = ref(false);
 
     const isApprovalView = computed(() => route.meta.approvalContext === true);
     const backRoute = computed(() => (
@@ -95,12 +97,17 @@ export default function useEditUtility() {
         if (response?.data) {
             Object.assign(state, response.data);
             items.value = (response.data.items || []).length
-                ? response.data.items.map((item) => ({ ...item, rowError: '' }))
+                ? response.data.items.map((item) => ({
+                    ...item,
+                    rowError: '',
+                    currentReadingError: getCurrentReadingError(item.current_reading, item.previous_reading) ?? '',
+                }))
                 : [emptyUtilityItem()];
         }
     };
 
     const recalcItem = (item) => {
+        item.currentReadingError = getCurrentReadingError(item.current_reading, item.previous_reading) ?? '';
         const usage = Math.max(0, Number(item.current_reading) - Number(item.previous_reading));
         item.usage = usage;
         item.amount = Number((usage * Number(item.unit_price)).toFixed(2));
@@ -121,12 +128,19 @@ export default function useEditUtility() {
         items.value.reduce((sum, item) => sum + Number(item.amount || 0), 0)
     ));
 
+    const hasItemValidationErrors = computed(() => (
+        items.value.some((item) => Boolean(item.currentReadingError) || Boolean(item.rowError))
+    ));
+
+    const canSave = computed(() => canEdit.value && !hasItemValidationErrors.value);
+
     const validateItems = () => {
         let valid = true;
         const fieldErrors = {};
 
         items.value.forEach((item) => {
             item.rowError = '';
+            item.currentReadingError = '';
         });
 
         if (!items.value.length) {
@@ -142,19 +156,20 @@ export default function useEditUtility() {
                 return;
             }
 
-            if (!isValidNumber(item.previous_reading, { min: 0 })
-                || !isValidNumber(item.current_reading, { min: 0 })) {
-                item.rowError = requiredMessage('current_reading');
+            const currentReadingError = getCurrentReadingError(item.current_reading, item.previous_reading);
+
+            if (currentReadingError) {
+                item.currentReadingError = currentReadingError;
                 fieldErrors.utility_items = [
-                    fieldErrors.utility_items?.[0]
-                    || 'Each item needs valid readings and unit price.',
+                    fieldErrors.utility_items?.[0] || currentReadingError,
                 ];
                 valid = false;
                 return;
             }
 
-            if (Number(item.current_reading) < Number(item.previous_reading)) {
-                item.rowError = 'Current reading must be greater than or equal to previous reading.';
+            if (!isValidNumber(item.previous_reading, { min: 0 })
+                || !isValidNumber(item.current_reading, { min: 0 })) {
+                item.rowError = requiredMessage('current_reading');
                 fieldErrors.utility_items = [
                     fieldErrors.utility_items?.[0]
                     || 'Each item needs valid readings and unit price.',
@@ -226,16 +241,33 @@ export default function useEditUtility() {
         }
     };
 
-    const runWorkflow = async (action) => {
+    const runWorkflow = async (action, payload = {}) => {
+        const isReviewAction = ['approve', 'reject'].includes(action);
+
+        if (
+            (isReviewAction && state.status !== 'pending')
+            || workflowLoading.value.approve
+            || workflowLoading.value.reject
+            || workflowLoading.value[action]
+        ) {
+            return;
+        }
+
         workflowLoading.value[action] = true;
+        const isResubmit = action === 'submit' && state.status === 'rejected';
 
         try {
-            await store[action]({ id: state.id });
+            await store[action]({ id: state.id, ...payload });
             const response = store.getActionResponse;
 
             if (response) {
                 Object.assign(state, response.data);
                 EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
+
+                if (isReviewAction) {
+                    showApproveDialog.value = false;
+                    showRejectDialog.value = false;
+                }
 
                 if (isApprovalView.value) {
                     if (action === 'approve') {
@@ -243,6 +275,8 @@ export default function useEditUtility() {
                     } else if (action === 'reject') {
                         await router.push({ name: 'utilityApprovalList' });
                     }
+                } else if (isResubmit) {
+                    await router.push({ name: 'utilityList' });
                 }
             }
         } catch (error) {
@@ -252,8 +286,10 @@ export default function useEditUtility() {
         }
     };
 
-    const canEdit = computed(() => !isApprovalView.value && (!state.status || state.status === 'draft'));
+    const canEdit = computed(() => !isApprovalView.value && ['draft', 'rejected'].includes(state.status));
     const canSubmit = () => !isApprovalView.value && state.status === 'draft';
+    const canResubmit = () => !isApprovalView.value && state.status === 'rejected';
+    const submitLabel = computed(() => (state.status === 'rejected' ? 'Resubmit' : 'Submit'));
     const canApprove = () => state.status === 'pending';
     const canReject = () => isApprovalView.value
         ? state.status === 'pending'
@@ -282,9 +318,14 @@ export default function useEditUtility() {
         recalcItem,
         handleSubmit,
         workflowLoading,
+        showApproveDialog,
+        showRejectDialog,
         runWorkflow,
         canEdit,
+        canSave,
         canSubmit,
+        canResubmit,
+        submitLabel,
         canApprove,
         canReject,
     };

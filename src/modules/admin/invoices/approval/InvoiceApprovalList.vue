@@ -3,14 +3,14 @@
         <div class="admin-panel invoice-approval-panel relative">
             <DataTable
                 ref="dt"
-                class="invoice-approval-table"
+                class="invoice-approval-table admin-clickable-rows"
                 data-key="id"
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
                 responsive-layout="scroll"
                 sort-mode="multiple"
                 scroll-height="50vh"
-                table-style="min-width: 1360px"
+                table-style="min-width: 1210px"
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
@@ -21,8 +21,10 @@
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
+                row-hover
                 @page="onPage($event)"
                 @sort="onSort($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
@@ -56,14 +58,14 @@
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
                                 v-model="issuedFrom"
-                                placeholder="DD/MM/YYYY"
+                                placeholder="From Date"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                             <Calendar
                                 v-model="issuedTo"
-                                placeholder="DD/MM/YYYY"
+                                placeholder="To Date"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
@@ -72,28 +74,19 @@
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
                                 v-model="dueFrom"
-                                placeholder="DD/MM/YYYY"
+                                placeholder="Due From"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                             <Calendar
                                 v-model="dueTo"
-                                placeholder="DD/MM/YYYY"
+                                placeholder="Due To"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                         </div>
-                        <Dropdown
-                            v-model="paymentStatusFilter"
-                            :options="statusOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Payment Status"
-                            show-clear
-                            class="w-44"
-                        />
                         <template #actions>
                             <ListExportActions
                                 :loading="isExporting"
@@ -107,7 +100,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No pending invoices found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-check-circle"
+                        title="No pending invoices"
+                        message="There are no invoices waiting for approval."
+                    />
+                </template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
                 <Column
@@ -118,7 +117,7 @@
                 >
                     <template #body="{ data }">
                         <router-link
-                            :to="{ name: 'showInvoiceApproval', params: { id: data.id } }"
+                            :to="{ name: 'invoiceApprovalDocument', params: { id: data.id } }"
                             class="font-medium text-[var(--admin-primary)] hover:underline"
                         >
                             {{ data.invoice_number }}
@@ -149,14 +148,16 @@
 
                 <Column
                     field="total_amount"
-                    header="Total"
+                    header="Total (MMK)"
                     :sortable="true"
-                    header-class="invoice-approval-numeric"
-                    body-class="invoice-approval-numeric"
-                    style="width: 150px; min-width: 150px"
+                    header-class="invoice-approval-total"
+                    body-class="invoice-approval-total"
+                    style="width: 140px; min-width: 140px; max-width: 140px"
                 >
                     <template #body="{ data }">
-                        {{ formatCurrency(data.total_amount) }}
+                        <span class="invoice-approval-total__value">
+                            {{ formatCurrencyAmount(data.total_amount) }}
+                        </span>
                     </template>
                 </Column>
 
@@ -173,29 +174,11 @@
                     </template>
                 </Column>
 
-                <Column
-                    header="Status"
-                    header-class="invoice-approval-nowrap"
-                    body-class="invoice-approval-nowrap"
-                    style="width: 150px; min-width: 150px"
-                >
-                    <template #body="{ data }">
-                        <StatusBadge :value="data.payment_status || data.display_status || data.status" />
-                    </template>
-                </Column>
-
-                <Column
-                    header="Actions"
-                    :exportable="false"
-                    header-class="invoice-approval-nowrap"
-                    body-class="invoice-approval-nowrap"
-                    style="width: 120px; min-width: 120px"
-                >
+                <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions
-                            :can-reject="false"
-                            approve-label="Approve"
                             @approve="approveFromList(data)"
+                            @reject="rejectFromList(data)"
                         />
                     </template>
                 </Column>
@@ -203,48 +186,82 @@
 
             <Loading v-if="isLoading" />
         </div>
+
+        <RejectContractDialog
+            v-model="showRejectDialog"
+            entity="invoice"
+            :close-on-confirm="false"
+            @confirm="onRejectConfirm"
+        />
     </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
+import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
+import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
-import StatusBadge from '@/components/global/StatusBadge.vue';
-import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
-import { INVOICE_LIST_STATUS_OPTIONS } from '@/constants/constant';
-import { formatCurrency, formatDate } from '@/utils/formatter';
+import { formatCurrencyAmount, formatDate } from '@/utils/formatter';
 import { useInvoiceApprovalList } from './useInvoiceApprovalList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'InvoiceApprovalList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Dropdown,
         Calendar,
         Loading,
         AdminListFilters,
-        StatusBadge,
-        ApprovalListActions, ListExportActions },
+        ApprovalListActions,
+        RejectContractDialog,
+        ListExportActions,
+    },
     setup() {
         const list = useInvoiceApprovalList();
+        const showRejectDialog = ref(false);
+        const selectedItem = ref(null);
 
         const approveFromList = (item) => {
             list.approveItem(item);
         };
 
+        const rejectFromList = (item) => {
+            selectedItem.value = item;
+            showRejectDialog.value = true;
+        };
+
+        const onRejectConfirm = async (reason) => {
+            if (!selectedItem.value) {
+                return;
+            }
+
+            const rejected = await list.rejectItem(selectedItem.value, {
+                rejection_reason: reason,
+            });
+
+            if (rejected) {
+                selectedItem.value = null;
+                showRejectDialog.value = false;
+            }
+        };
+
         return {
             ...list,
-            statusOptions: INVOICE_LIST_STATUS_OPTIONS,
-            formatCurrency,
-            formatDate,
+            showRejectDialog,
             approveFromList,
+            rejectFromList,
+            onRejectConfirm,
+            formatCurrencyAmount,
+            formatDate,
         };
     },
 });
@@ -270,7 +287,7 @@ export default defineComponent({
 
 :deep(.invoice-approval-table .p-datatable-table) {
     width: 100%;
-    min-width: 1360px;
+    min-width: 1210px;
 }
 
 :deep(.invoice-approval-table .p-datatable-thead > tr > th) {
@@ -281,8 +298,38 @@ export default defineComponent({
     white-space: nowrap;
 }
 
-:deep(.invoice-approval-table .invoice-approval-numeric) {
+:deep(.invoice-approval-table .invoice-approval-total) {
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
+    text-align: right !important;
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+:deep(.invoice-approval-table .invoice-approval-total .p-column-header-content) {
+    justify-content: flex-end;
+    width: 100%;
+    white-space: nowrap;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+:deep(.invoice-approval-table .invoice-approval-total .p-column-title) {
+    white-space: nowrap;
+}
+
+.invoice-approval-total__value {
+    display: block;
+    width: 100%;
     text-align: right;
+    white-space: nowrap;
+    font-size: inherit;
+    font-weight: inherit;
+    font-variant-numeric: tabular-nums;
+    line-height: inherit;
 }
 
 :deep(.invoice-approval-table .p-paginator) {

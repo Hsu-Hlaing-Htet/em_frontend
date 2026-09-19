@@ -103,7 +103,7 @@ import { computed, defineComponent, onBeforeUnmount, onMounted, ref, watch } fro
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import * as XLSX from 'xlsx';
 import { downloadXlsx } from '@/utils/export';
 import { service } from '../service';

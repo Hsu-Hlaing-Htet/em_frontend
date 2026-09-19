@@ -1,5 +1,11 @@
 <template>
-    <Toast position="top-right" />
+    <Toast
+        position="top-right"
+        :pt="{
+            root: { 'aria-live': 'polite' },
+            closeButton: { 'aria-label': 'Dismiss notification' },
+        }"
+    />
     <ConfirmDialog />
     <router-view />
 </template>

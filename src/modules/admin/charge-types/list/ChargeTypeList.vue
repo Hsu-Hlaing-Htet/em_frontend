@@ -46,7 +46,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No charge types found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-tag"
+                        title="No charge types found"
+                        message="Create a charge type or clear filters to see results."
+                    />
+                </template>
                 <template #loading>Loading charge types. Please wait.</template>
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 200px" />
@@ -61,7 +67,11 @@
                         </div>
                     </template>
                 </Column>
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 180px" />
+                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 180px">
+                    <template #body="{ data }">
+                        {{ formatDate(data.created_at) || '—' }}
+                    </template>
+                </Column>
                 <Column
                     header="Actions"
                     :exportable="false"
@@ -101,13 +111,19 @@ import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
+import { formatDate } from '@/utils/formatter';
 import { useChargeTypeList } from './useChargeTypeList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'ChargeTypeList',
-    components: { DataTable, Column, InputSwitch, StatusBadge, Button, Loading, ListExportActions, AdminListFilters },
+    components: {
+        AdminEmptyState, DataTable, Column, InputSwitch, StatusBadge, Button, Loading, ListExportActions, AdminListFilters },
     setup() {
-        return useChargeTypeList();
+        return {
+            ...useChargeTypeList(),
+            formatDate,
+        };
     },
 });
 </script>

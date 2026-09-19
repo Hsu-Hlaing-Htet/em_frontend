@@ -53,6 +53,10 @@ export const usePaymentStore = defineStore('usePaymentStore', {
             const response = await service.add(params);
             this.addResponse = response;
         },
+        async record(params) {
+            const response = await service.record(params);
+            this.addResponse = response;
+        },
         async delete(params) {
             const response = await service.delete(params);
             this.deleteResponse = response;

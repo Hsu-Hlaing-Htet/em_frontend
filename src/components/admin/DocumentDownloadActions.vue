@@ -42,14 +42,14 @@ export default defineComponent({
         const downloadMenuItems = computed(() => [
             props.hasPdfDownload
                 ? {
-                    label: 'Export as PDF',
+                    label: 'PDF',
                     icon: 'pi pi-file-pdf',
                     command: () => emit('download-pdf'),
                 }
                 : null,
             props.hasDocumentExport
                 ? {
-                    label: 'Export document',
+                    label: 'Document',
                     icon: 'pi pi-file-export',
                     command: () => emit('export-document'),
                 }

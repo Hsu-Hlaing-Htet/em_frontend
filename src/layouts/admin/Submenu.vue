@@ -467,20 +467,22 @@ export default {
 
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.65rem;
 
-    padding: 0.9rem 1rem;
-    margin: 0.35rem 0;
+    padding: 0.55rem 0.75rem;
+    margin: 0.1rem 0;
 
     overflow: hidden;
 
     border: 1px solid transparent;
     border-radius: 8px;
 
-    color: var(--admin-text-muted);
+    color: var(--rw-nav-text, var(--admin-text-muted));
+    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-size: 0.8125rem;
     text-decoration: none;
 
-    transition: all 0.25s ease;
+    transition: background-color 0.22s ease, border-color 0.22s ease, color 0.22s ease;
 }
 
 .menu-link::before {
@@ -521,25 +523,25 @@ export default {
     box-shadow: var(--rw-nav-focus-shadow);
 }
 
+.menu-link-label {
+    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
 .menu-link-icon {
     width: 1.25rem;
     text-align: center;
-    font-size: 1rem;
-
+    font-size: 0.95rem;
     color: inherit;
-
-    transition: all 0.25s ease;
+    transition: transform 0.22s ease, color 0.22s ease;
 }
 
 .menu-link:hover .menu-link-icon,
 .menu-link.menu-link-active .menu-link-icon,
 .menu-link:focus-visible .menu-link-icon {
-    transform: scale(1.08);
-}
-
-.menu-link-label {
-    font-size: 0.95rem;
-    font-weight: 500;
+    transform: scale(1.06);
 }
 
 .layout-submenu-wrapper-enter-active,

@@ -125,9 +125,12 @@ export function useContractDocument(state, options = {}) {
             documentField('Prepared By', state.created_by),
             documentField('Created Date', state.created_at),
             documentField('Approved By', state.approved_by),
-            ...(state.status === 'cancelled' ? [
-                documentField('Cancellation Reason', state.cancellation_reason),
-                documentField('Cancelled Date', state.cancelled_at),
+            ...(state.status === 'rejected' ? [
+                documentField('Rejection Reason', state.rejection_reason || state.remarks || '—'),
+            ] : []),
+            ...(state.status === 'cancelled' || state.status === 'terminated' ? [
+                documentField('Termination Reason', state.termination_reason || state.cancellation_reason),
+                documentField('Terminated Date', state.termination_date || state.cancelled_at),
             ] : []),
         ] : [
             documentField('Prepared By', state.created_by),

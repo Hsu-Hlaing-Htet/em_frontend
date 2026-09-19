@@ -46,7 +46,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No late fees found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-clock"
+                        title="No late fees found"
+                        message="Create a late fee rule or clear filters."
+                    />
+                </template>
                 <template #loading>Loading late fees. Please wait.</template>
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 180px" />
@@ -54,6 +60,15 @@
                 <Column field="value" header="Value" :sortable="true" style="min-width: 100px" />
                 <Column field="per" header="Per" :sortable="true" style="min-width: 100px" />
                 <Column field="grace_days" header="Grace Days" :sortable="true" style="min-width: 120px" />
+                <Column field="is_default" header="Default" :sortable="true" style="min-width: 110px">
+                    <template #body="{ data }">
+                        <InputSwitch
+                            :model-value="Boolean(data.is_default)"
+                            :disabled="data.status !== 'active'"
+                            @update:model-value="(value) => toggleDefault(data, value)"
+                        />
+                    </template>
+                </Column>
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         <div class="flex items-center gap-3">
@@ -105,10 +120,12 @@ import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { useLateFeeList } from './useLateFeeList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'LateFeeList',
-    components: { DataTable, Column, InputSwitch, StatusBadge, Button, Loading, ListExportActions, AdminListFilters },
+    components: {
+        AdminEmptyState, DataTable, Column, InputSwitch, StatusBadge, Button, Loading, ListExportActions, AdminListFilters },
     setup() {
         return useLateFeeList();
     },

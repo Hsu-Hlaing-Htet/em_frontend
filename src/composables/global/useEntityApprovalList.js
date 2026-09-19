@@ -4,6 +4,7 @@ import { useDebounceFn } from '@/utils/debounce';
 import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
 import { omitEmptyParams } from '@/helpers/lists/listQuery';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 
 export const useEntityApprovalList = ({
     store,
@@ -11,6 +12,7 @@ export const useEntityApprovalList = ({
     pendingStatusKey = 'status',
     approveMethod = 'approve',
     rejectMethod = null,
+    detailRouteName = null,
     getItemLabel = (item) => String(item.id ?? ''),
     loadErrorMessage = 'Unable to load pending approvals.',
     approveErrorMessage = 'Unable to approve record.',
@@ -24,6 +26,9 @@ export const useEntityApprovalList = ({
     autoLoad = true,
 }) => {
     const dt = ref();
+    const { onRowClick } = detailRouteName
+        ? useClickableListRow(detailRouteName)
+        : { onRowClick: undefined };
     const search = ref('');
     const totalRecords = ref(0);
     const isLoading = ref(false);
@@ -95,6 +100,15 @@ export const useEntityApprovalList = ({
         loadingData();
     };
 
+    const removeItemFromList = (itemId) => {
+        const previousLength = items.value.length;
+        items.value = items.value.filter((row) => row.id !== itemId);
+
+        if (items.value.length < previousLength) {
+            totalRecords.value = Math.max(0, totalRecords.value - 1);
+        }
+    };
+
     const approveItem = async (item) => {
         try {
             await store[approveMethod]({ id: item.id });
@@ -107,6 +121,7 @@ export const useEntityApprovalList = ({
                 detail: buildApproveSuccessMessage(item, response),
             });
 
+            removeItemFromList(item.id);
             await loadingData();
 
             return true;
@@ -133,6 +148,7 @@ export const useEntityApprovalList = ({
                 detail: buildRejectSuccessMessage(item, response),
             });
 
+            removeItemFromList(item.id);
             await loadingData();
 
             return true;
@@ -179,5 +195,6 @@ export const useEntityApprovalList = ({
         reload: loadingData,
         loadingData,
         resetPagination,
+        onRowClick,
     };
 };

@@ -3,13 +3,15 @@
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
                 <DocumentDownloadActions
+                    v-if="!isApprovalView"
+                    :has-document-export="false"
                     @download-pdf="downloadPdf"
-                    @export-document="exportPdf"
                     @print="printPdf"
                 />
                 <Button
+                    v-if="canSendUtility"
                     icon="pi pi-envelope"
-                    label="Send Email"
+                    label="Send"
                     @click="sendEmail"
                 />
                 <router-link :to="backRoute">

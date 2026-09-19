@@ -31,7 +31,7 @@
                 @click="close"
             />
             <Button
-                label="Send Email"
+                label="Confirm Send Email"
                 icon="pi pi-envelope"
                 :loading="submitting"
                 :disabled="submitting || !email"

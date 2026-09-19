@@ -3,7 +3,7 @@
         <div class="mb-10 flex flex-wrap items-end justify-end gap-2">
             <Button
                 v-if="canApprove()"
-                label="Approve Invoice"
+                label="Approve"
                 icon="pi pi-check"
                 :loading="isApproving"
                 @click="handleApprove"

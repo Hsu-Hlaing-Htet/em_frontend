@@ -1,14 +1,14 @@
 <template>
     <div class="customer-portal-page">
-        <header class="customer-list-page-header">
-            <h1 class="customer-page-heading">{{ $t('customer.invoices') }}</h1>
-            <p class="customer-page-lead">{{ $t('customer.invoicesLead') }}</p>
-        </header>
+        <CustomerPageHeader
+            :title="$t('customer.invoices')"
+            :subtitle="$t('customer.invoicesLead')"
+        />
 
         <CustomerSearchBar
             v-model:search="search"
             v-model:status="status"
-            class="customer-list-toolbar"
+            class="customer-list-toolbar customer-invoice-toolbar"
             :placeholder="$t('customer.invoiceSearchPlaceholder')"
             :filters="statusFilters"
         />
@@ -19,37 +19,21 @@
             <router-link
                 v-for="invoice in invoices"
                 :key="invoice.id"
-                :to="{ name: 'customerShowInvoice', params: { id: invoice.id } }"
+                :to="{ name: 'customerInvoiceDocument', params: { id: invoice.id } }"
                 class="customer-record-row customer-invoice-row"
             >
                 <span class="customer-record-cell customer-record-primary">
-                    <span class="customer-record-label">{{ $t('customer.invoice') }}</span>
+                    <span class="customer-record-label">{{ invoice.type || $t('customer.invoice') }}</span>
                     <strong>{{ invoice.invoice_number || '—' }}</strong>
-                    <small>{{ invoice.type || '—' }}</small>
+                    <small>{{ $t('customer.amount') }} (MMK) {{ formatCurrency(Number(invoice.total_amount || 0)) }}</small>
                 </span>
-                <span class="customer-record-cell customer-record-amount">
-                    <span class="customer-record-label">{{ $t('customer.amount') }}</span>
-                    <strong>{{ formatCurrency(Number(invoice.total_amount || 0)) }}</strong>
-                    <small>{{ $t('customer.paidAmount') }} {{ formatCurrency(Number(invoice.paid_amount || 0)) }}</small>
-                </span>
-                <span class="customer-record-cell">
+                <span class="customer-record-cell customer-record-meta">
                     <span class="customer-record-label">{{ $t('customer.dueDate') }}</span>
                     <strong>{{ invoice.due_date || '—' }}</strong>
                     <small>{{ invoice.billing_period || '—' }}</small>
-                </span>
-                <span class="customer-record-status">
-                    <span class="customer-record-label">{{ $t('customer.status') }}</span>
                     <StatusBadge :value="invoice.status" />
                 </span>
             </router-link>
-
-            <Button
-                v-if="hasMore()"
-                :label="$t('common.loadMore')"
-                class="customer-load-more btn"
-                :loading="isLoadingMore"
-                @click="loadMore"
-            />
         </div>
 
         <CustomerEmptyState
@@ -63,22 +47,22 @@
 
 <script>
 import { defineComponent } from 'vue';
-import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import CustomerSearchBar from '@/components/customer/CustomerSearchBar.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
+import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerInvoiceList from '@/composables/customer/useCustomerInvoiceList';
-import { formatCurrency } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
 
 export default defineComponent({
     name: 'CustomerInvoiceList',
     components: {
-        Button,
         Loading,
         StatusBadge,
         CustomerSearchBar,
         CustomerEmptyState,
+        CustomerPageHeader,
     },
     setup() {
         return { ...useCustomerInvoiceList(), formatCurrency };

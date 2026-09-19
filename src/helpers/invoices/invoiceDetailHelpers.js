@@ -30,7 +30,7 @@ export function formatPropertyUnit(invoice) {
 }
 
 export function resolveInvoicePaymentStatus(invoice) {
-    return invoice?.payment_status || invoice?.status || 'unpaid';
+    return invoice?.payment_status || invoice?.status || 'issued';
 }
 
 export function formatInvoiceNotes(invoice) {

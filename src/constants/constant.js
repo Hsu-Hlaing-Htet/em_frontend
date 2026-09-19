@@ -12,11 +12,8 @@ export const ROOM_TYPE_OPTIONS = [
 
 export const ROOM_STATUS_OPTIONS = [
     { label: 'Available', value: 'available' },
-    { label: 'Reserved', value: 'reserved' },
     { label: 'Occupied', value: 'occupied' },
     { label: 'Sold', value: 'sold' },
-    { label: 'Maintenance', value: 'maintenance' },
-    { label: 'Inactive', value: 'inactive' },
 ];
 
 export const ROOM_IMAGE_DESCRIPTION_OPTIONS = [
@@ -55,18 +52,6 @@ export const LATE_FEE_STATUS_OPTIONS = [
     { label: 'Inactive', value: 'inactive' },
 ];
 
-export const CONTRACT_TYPE_OPTIONS = [
-    { label: 'Rent', value: 'rent' },
-    { label: 'Sale', value: 'sale' },
-];
-
-export const CONTRACT_STATUS_OPTIONS = [
-    { label: 'Draft', value: 'draft' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Active', value: 'active' },
-    { label: 'Rejected', value: 'rejected' },
-];
-
 export const PAYMENT_TYPE_OPTIONS = [
     { label: 'Full', value: 'full' },
     { label: 'Installment', value: 'installment' },
@@ -90,31 +75,21 @@ export const PAYMENT_PLAN_STATUS_OPTIONS = [
 export const INVOICE_STATUS_OPTIONS = [
     { label: 'Draft', value: 'draft' },
     { label: 'Issued', value: 'issued' },
-    { label: 'Partial', value: 'partial' },
-    { label: 'Paid', value: 'paid' },
     { label: 'Overdue', value: 'overdue' },
+    { label: 'Paid', value: 'paid' },
 ];
 
 export const INVOICE_LIST_STATUS_OPTIONS = [
     { label: 'All', value: null },
-    { label: 'Unpaid', value: 'unpaid' },
-    { label: 'Partial', value: 'partial' },
-    { label: 'Paid', value: 'paid' },
+    { label: 'Issued', value: 'issued' },
     { label: 'Overdue', value: 'overdue' },
+    { label: 'Paid', value: 'paid' },
 ];
 
-export const PAYMENT_STATUS_OPTIONS = [
-    { label: 'Pending', value: 'pending' },
-    { label: 'Approved', value: 'approved' },
+export const PAYMENT_LIST_STATUS_OPTIONS = [
+    { label: 'All', value: null },
+    { label: 'Paid', value: 'paid' },
     { label: 'Rejected', value: 'rejected' },
-];
-
-export const PAYMENT_LIST_BILLING_STATUS_OPTIONS = [
-    { label: 'All statuses', value: null },
-    { label: 'Paid', value: 'paid' },
-    { label: 'Partial', value: 'partial' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Overdue', value: 'overdue' },
 ];
 
 export const PAYMENT_TYPE_FILTER_OPTIONS = [
@@ -137,17 +112,17 @@ export const RECEIPT_STATUS_OPTIONS = [
 
 export const MAINTENANCE_STATUS_OPTIONS = [
     { label: 'Pending', value: 'pending' },
+    { label: 'Accepted', value: 'accepted' },
     { label: 'In Progress', value: 'in_progress' },
     { label: 'Completed', value: 'completed' },
-    { label: 'Rejected', value: 'rejected' },
+    { label: 'Cancelled', value: 'cancelled' },
 ];
 
-export const MAINTENANCE_CATEGORY_OPTIONS = [
-    { label: 'Plumbing', value: 'plumbing' },
-    { label: 'Electrical', value: 'electrical' },
-    { label: 'HVAC', value: 'hvac' },
-    { label: 'Appliance', value: 'appliance' },
-    { label: 'General', value: 'general' },
+export const MAINTENANCE_CUSTOMER_STATUS_OPTIONS = [
+    { label: 'Pending', value: 'pending' },
+    { label: 'In Progress', value: 'in_progress' },
+    { label: 'Completed', value: 'completed' },
+    { label: 'Cancelled', value: 'cancelled' },
 ];
 
 export const MAINTENANCE_PRIORITY_OPTIONS = [
@@ -174,6 +149,7 @@ export const ACTIVE_SALE_STATUS_OPTIONS = [
     { label: 'Active', value: 'active' },
     { label: 'Completed', value: 'completed' },
     { label: 'Terminated', value: 'terminated' },
+    { label: 'Rejected', value: 'rejected' },
 ];
 
 export const PAYMENT_PLAN_OPTIONS = [
@@ -183,7 +159,7 @@ export const PAYMENT_PLAN_OPTIONS = [
 ];
 
 
-export const DURATION_MONTHS_OPTIONS = [3, 6, 12, 18, 24, 36, 48].map((months) => ({
+export const DURATION_MONTHS_OPTIONS = [12, 18, 24, 36, 48].map((months) => ({
     label: `${months} months`,
     value: months,
 }));

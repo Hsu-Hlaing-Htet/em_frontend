@@ -90,9 +90,13 @@
                         <Column header="Current Unit" style="min-width: 130px">
                             <template #body="{ data }">
                                 <InputNumber :model-value="data.current_reading" class="w-full"
-                                    :min="data.previous_reading" :min-fraction-digits="0" :max-fraction-digits="2"
+                                    :invalid="Boolean(data.currentReadingError)"
+                                    :min-fraction-digits="0" :max-fraction-digits="2"
                                     :use-grouping="false" :disabled="!data.utility_type_id || data.isRowLoading"
                                     @update:model-value="handleCurrentReadingChange(data.id, $event)" />
+                                <small v-if="data.currentReadingError" class="p-error mt-1 block">
+                                    {{ data.currentReadingError }}
+                                </small>
                             </template>
                         </Column>
                         <Column header="Usage" style="min-width: 90px">
@@ -100,14 +104,14 @@
                                 <span>{{ formatUnitValue(data.usage) }}</span>
                             </template>
                         </Column>
-                        <Column header="Unit Price" style="min-width: 110px">
+                        <Column header="Unit Price (MMK)" style="min-width: 110px">
                             <template #body="{ data }">
                                 <span>{{ formatOptionalUnitValue(data.unit_price) }}</span>
                             </template>
                         </Column>
-                        <Column header="Amount" style="min-width: 100px">
+                        <Column header="Amount (MMK)" style="min-width: 100px">
                             <template #body="{ data }">
-                                <span>{{ formatCurrency(data.amount) }}</span>
+                                <span>{{ formatCurrencyAmount(data.amount) }}</span>
                             </template>
                         </Column>
                         <Column header="" style="width: 60px">
@@ -130,7 +134,7 @@
                 </div>
 
                 <div class="flex justify-end gap-2 md:col-span-2 mt-4">
-                    <Button type="submit" label="Save" :disabled="isSaving" />
+                    <Button type="submit" label="Save" :disabled="isSaving || !canCreate" />
                     <router-link :to="backRoute">
                         <Button type="button" label="Cancel" severity="secondary" />
                     </router-link>
@@ -146,7 +150,7 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';

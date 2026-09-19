@@ -14,6 +14,7 @@ export function customerNotificationIcon(type) {
         payment: 'pi pi-wallet',
         receipt: 'pi pi-receipt',
         contract: 'pi pi-home',
+        utility: 'pi pi-bolt',
         maintenance: 'pi pi-wrench',
         announcement: 'pi pi-megaphone',
     }[type] || 'pi pi-bell';
@@ -25,6 +26,7 @@ export function customerNotificationTone(type) {
         payment: 'tone-gold',
         receipt: 'tone-purple',
         contract: 'tone-green',
+        utility: 'tone-blue',
         maintenance: 'tone-blue',
         announcement: 'tone-neutral',
     }[type] || 'tone-neutral';
@@ -36,6 +38,7 @@ export function customerNotificationRoute(item) {
         payment: 'customerShowInvoice',
         receipt: 'customerShowReceipt',
         contract: 'customerShowContract',
+        utility: 'customerShowInvoice',
         maintenance: 'customerShowMaintenanceRequest',
     };
 

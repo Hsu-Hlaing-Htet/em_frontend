@@ -4,16 +4,15 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import {
-    MAINTENANCE_CATEGORY_OPTIONS,
-    MAINTENANCE_PRIORITY_OPTIONS,
-} from '@/constants/constant';
+import { MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
 import { useMaintenanceRequestStore } from '../store';
+import { useMaintenanceCategoryStore } from '@/modules/admin/maintenance-categories/store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useResidentStore } from '@/modules/admin/residents/store';
 
 export default function useEditMaintenanceRequest() {
     const store = useMaintenanceRequestStore();
+    const categoryStore = useMaintenanceCategoryStore();
     const roomStore = useRoomStore();
     const residentStore = useResidentStore();
     const route = useRoute();
@@ -23,13 +22,14 @@ export default function useEditMaintenanceRequest() {
     const errors = new Errors();
     const roomOptions = ref([]);
     const residentOptions = ref([]);
+    const categoryOptions = ref([]);
 
     const state = reactive({
         id: null,
         room_id: null,
         user_id: null,
         title: '',
-        category: null,
+        maintenance_category_id: null,
         priority: null,
         description: '',
         status: '',
@@ -41,6 +41,7 @@ export default function useEditMaintenanceRequest() {
         await Promise.all([
             roomStore.fetchAll({ per_page: 100 }),
             residentStore.fetchAll({ per_page: 100 }),
+            categoryStore.fetchAll({ per_page: 100, status: 'active' }),
             fetchRequest(),
         ]);
 
@@ -59,6 +60,14 @@ export default function useEditMaintenanceRequest() {
                 value: resident.id,
             }));
         }
+
+        const categories = categoryStore.getAllResponse;
+        if (categories?.data?.data) {
+            categoryOptions.value = categories.data.data.map((category) => ({
+                label: category.name,
+                value: category.id,
+            }));
+        }
     });
 
     onBeforeUnmount(() => {
@@ -74,7 +83,16 @@ export default function useEditMaintenanceRequest() {
             const response = store.getOneResponse;
 
             if (response?.data) {
-                Object.assign(state, response.data);
+                Object.assign(state, {
+                    id: response.data.id,
+                    room_id: response.data.room_id,
+                    user_id: response.data.user_id,
+                    title: response.data.title,
+                    maintenance_category_id: response.data.maintenance_category_id,
+                    priority: response.data.priority,
+                    description: response.data.description || '',
+                    status: response.data.status,
+                });
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load maintenance request.');
@@ -90,7 +108,7 @@ export default function useEditMaintenanceRequest() {
             { field: 'room_id', type: 'select' },
             { field: 'user_id', type: 'select' },
             { field: 'title', type: 'text' },
-            { field: 'category', type: 'select' },
+            { field: 'maintenance_category_id', type: 'select' },
             { field: 'priority', type: 'select' },
         ])) {
             return;
@@ -128,7 +146,7 @@ export default function useEditMaintenanceRequest() {
         state,
         roomOptions,
         residentOptions,
-        categoryOptions: MAINTENANCE_CATEGORY_OPTIONS,
+        categoryOptions,
         priorityOptions: MAINTENANCE_PRIORITY_OPTIONS,
         handleSubmit,
     };

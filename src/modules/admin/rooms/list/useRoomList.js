@@ -1,16 +1,51 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { multisortConvert } from '@/utils/multisort';
 import { useDebounceFn } from '@/utils/debounce';
-import { formatCurrency } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
 import { ROOM_STATUS_OPTIONS, ROOM_TYPE_OPTIONS } from '@/constants/constant';
 import { useRoomStore } from '../store';
 import { useDeleteConfirm } from '@/composables/global/useDeleteConfirm';
 import { useListExport } from '@/composables/admin/useListExport';
+import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { ROOM_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
+
+function formatRoomType(type) {
+    const normalized = String(type || '').toLowerCase();
+
+    if (normalized === 'sale') {
+        return 'Sale';
+    }
+
+    if (normalized === 'rent') {
+        return 'Rent';
+    }
+
+    if (normalized === 'both') {
+        return 'Both';
+    }
+
+    return type || '—';
+}
+
+function formatRoomListPrice(item) {
+    const type = String(item?.type || '').toLowerCase();
+
+    if (type === 'rent') {
+        return formatCurrency(item.rent_price);
+    }
+
+    if (type === 'sale') {
+        return formatCurrency(item.sale_price);
+    }
+
+    // both — sale price / monthly rent
+    return `${formatCurrency(item.sale_price)} / ${formatCurrency(item.rent_price)}`;
+}
 
 export const useRoomList = () => {
     const dt = ref();
+    const { onRowClick } = useClickableListRow('showRoom');
     const search = ref('');
     const selectedBuilding = ref(null);
     const selectedType = ref(null);
@@ -180,16 +215,13 @@ export const useRoomList = () => {
             return store.getAllResponse;
         },
         mapItem: (item) => ({
-            building_name: item.building_name || item.building?.building_name || '',
             room_number: item.room_number,
+            building_name: item.building_name || item.building?.building_name || '',
             floor_number: item.floor_number,
             area_sqft: item.area_sqft,
-            type: item.type,
+            type: formatRoomType(item.type),
             status: item.status,
-            sale_price: item.sale_price,
-            rent_price: item.rent_price,
-            rent_deposit_price: item.rent_deposit_price,
-            booking_deposit_price: item.booking_deposit_price,
+            list_price: formatRoomListPrice(item),
         }),
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
@@ -217,12 +249,15 @@ export const useRoomList = () => {
         statusOptions: ROOM_STATUS_OPTIONS,
         onSort,
         onPage,
+        onRowClick,
         resetSearch,
         showConfirmDialog,
         showLifecycleDialog,
         showBulkDeleteConfirmDialog,
         canBulkDelete,
         formatCurrency,
+        formatRoomType,
+        formatRoomListPrice,
         isExporting,
         canExport,
         downloadList,

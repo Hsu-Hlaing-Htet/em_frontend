@@ -64,7 +64,7 @@ export const DASHBOARD_SECTIONS = {
         key: 'invoices',
         label: 'Invoices',
         icon: 'pi pi-receipt',
-        description: 'Issued, partial, and overdue billing',
+        description: 'Issued, overdue, and paid billing',
         component: 'InvoicesSection',
         adminRoute: '/admin/invoices',
     },

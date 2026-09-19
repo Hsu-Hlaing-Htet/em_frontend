@@ -5,6 +5,8 @@ import {
     exportRentContractDocument,
     printContractDocument,
     printRentContractDocument,
+    viewContractDocument,
+    viewRentContractDocument,
 } from '@/helpers/documents/documentOutput';
 import { useContractDocumentActions as createActions } from './createContractDocumentActions';
 import { saleService } from '@/modules/admin/sale-contracts/service';
@@ -16,6 +18,7 @@ const contractDocumentConfig = {
         downloadDocument: downloadContractDocumentPdf,
         exportDocument: exportContractDocument,
         printDocument: printContractDocument,
+        viewDocument: viewContractDocument,
         sendDocumentEmail: saleService.sendDocumentEmail.bind(saleService),
     },
     rent: {
@@ -23,6 +26,7 @@ const contractDocumentConfig = {
         downloadDocument: downloadRentContractDocumentPdf,
         exportDocument: exportRentContractDocument,
         printDocument: printRentContractDocument,
+        viewDocument: viewRentContractDocument,
         sendDocumentEmail: rentService.sendDocumentEmail.bind(rentService),
     },
 };

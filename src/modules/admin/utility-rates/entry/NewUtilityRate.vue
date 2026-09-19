@@ -77,7 +77,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import InputNumber from 'primevue/inputnumber';
 import Calendar from 'primevue/calendar';
 import Button from 'primevue/button';

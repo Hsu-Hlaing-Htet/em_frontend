@@ -20,8 +20,8 @@ function normalizeApiMessage(message, status) {
         return 'Please enter a valid email address.';
     }
 
-    if (lower.includes('gmail address') || text === 'Please use a Gmail address.') {
-        return 'Please use a Gmail address.';
+    if (lower.includes('reserved') || text === 'This email address is reserved.') {
+        return 'This email address is reserved.';
     }
 
     if (lower.includes('email') && (lower.includes('already been taken') || lower.includes('already registered') || lower.includes('already exists') || lower.includes('already in use'))) {

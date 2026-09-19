@@ -2,10 +2,10 @@ import api from '@/libs/axios';
 import { endpoint } from '@/services/endpoint';
 
 const service = {
-    getAll: async ({ page, per_page, search, order }) => {
+    getAll: async ({ page, per_page, search, order, status } = {}) => {
         try {
             const result = await api.get(endpoint.residents, {
-                params: { page, per_page, search, order },
+                params: { page, per_page, search, order, status },
             });
             return result.data;
         } catch {

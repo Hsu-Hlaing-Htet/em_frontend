@@ -39,6 +39,7 @@ export default function useShowActiveRent() {
         start_date: '',
         billing_day: 0,
         remarks: '',
+        rejection_reason: '',
         status: '',
         approved_by: '',
         approved_at: '',
@@ -127,14 +128,10 @@ export default function useShowActiveRent() {
             EventBus.emit('show-toast', {
                 severity: 'success',
                 summary: '',
-                detail: response?.message || `Contract sent successfully to ${state.customer_email}.`,
+                detail: response?.message || 'Contract sent successfully.',
             });
-        } catch {
-            EventBus.emit('show-toast', {
-                severity: 'error',
-                summary: '',
-                detail: 'Unable to send the contract. Please try again.',
-            });
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to send the contract. Please try again.');
         } finally {
             isSendingEmail.value = false;
         }

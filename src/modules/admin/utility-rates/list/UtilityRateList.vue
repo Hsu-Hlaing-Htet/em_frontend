@@ -46,11 +46,21 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No utility rates found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-percentage"
+                        title="No utility rates found"
+                        message="Add a rate or clear filters to see results."
+                    />
+                </template>
                 <template #loading>Loading utility rates. Please wait.</template>
 
                 <Column field="type_name" header="Utility Type" :sortable="true" style="min-width: 180px" />
-                <Column field="unit_price" header="Unit Price" :sortable="true" style="min-width: 120px" />
+                <Column field="unit_price" header="Unit Price (MMK)" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ formatCurrencyAmount(data.unit_price) }}
+                    </template>
+                </Column>
                 <Column field="effective_date" header="Effective Date" :sortable="true" style="min-width: 140px" />
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
@@ -63,7 +73,11 @@
                         </div>
                     </template>
                 </Column>
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 180px" />
+                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 180px">
+                    <template #body="{ data }">
+                        {{ formatDate(data.created_at) || '—' }}
+                    </template>
+                </Column>
                 <Column
                     header="Actions"
                     :exportable="false"
@@ -103,13 +117,20 @@ import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
+import { formatCurrencyAmount, formatDate } from '@/utils/formatter';
 import { useUtilityRateList } from './useUtilityRateList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'UtilityRateList',
-    components: { DataTable, Column, InputSwitch, StatusBadge, Button, Loading, ListExportActions, AdminListFilters },
+    components: {
+        AdminEmptyState, DataTable, Column, InputSwitch, StatusBadge, Button, Loading, ListExportActions, AdminListFilters },
     setup() {
-        return useUtilityRateList();
+        return {
+            ...useUtilityRateList(),
+            formatCurrencyAmount,
+            formatDate,
+        };
     },
 });
 </script>

@@ -37,5 +37,9 @@ export const useInvoiceStore = defineStore('useInvoiceStore', {
             const response = await service.issue(params);
             this.actionResponse = response;
         },
+        async delete(params) {
+            const response = await service.delete(params);
+            this.actionResponse = response;
+        },
     },
 });

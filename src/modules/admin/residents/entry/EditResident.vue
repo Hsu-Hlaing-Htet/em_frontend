@@ -21,7 +21,7 @@
                     </small>
                 </div>
 <div class="field">
-                <GmailInput
+                <EmailInput
                     v-model="state.email"
                         :original-email="state.original_email"
                         :errors="errors"
@@ -99,7 +99,7 @@
 <script>
 import { defineComponent } from 'vue';
 import ConfirmDialog from 'primevue/confirmdialog';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
@@ -107,7 +107,7 @@ import DateOfBirthSelect from '@/components/admin/DateOfBirthSelect.vue';
 import Loading from '@/components/global/Loading.vue';
 import NrcInput from '@/components/admin/NrcInput.vue';
 import PhoneInput from '@/components/admin/PhoneInput.vue';
-import GmailInput from '@/components/admin/GmailInput.vue';
+import EmailInput from '@/components/admin/EmailInput.vue';
 import useEditResident from './useEditResident';
 
 export default defineComponent({
@@ -122,7 +122,7 @@ export default defineComponent({
         Loading,
         NrcInput,
         PhoneInput,
-        GmailInput,
+        EmailInput,
     },
     setup() {
         return useEditResident();

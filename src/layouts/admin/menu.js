@@ -42,26 +42,14 @@ const menuList = [
         icon: 'pi pi-file',
         items: [
             {
-                labelKey: 'navigation.saleDrafts',
-                key: 'sale-drafts',
-                icon: 'pi pi-file-edit',
-                to: '/admin/sale-contracts/drafts',
-            },
-            {
-                labelKey: 'navigation.activeSales',
-                key: 'active-sales',
+                labelKey: 'navigation.saleContracts',
+                key: 'sale-contracts',
                 icon: 'pi pi-check-circle',
                 to: '/admin/sale-contracts/active',
             },
             {
-                labelKey: 'navigation.rentDrafts',
-                key: 'rent-drafts',
-                icon: 'pi pi-file-edit',
-                to: '/admin/rent-contracts/drafts',
-            },
-            {
-                labelKey: 'navigation.activeRents',
-                key: 'active-rents',
+                labelKey: 'navigation.rentContracts',
+                key: 'rent-contracts',
                 icon: 'pi pi-check-circle',
                 to: '/admin/rent-contracts/active',
             },
@@ -168,6 +156,12 @@ const menuList = [
                 key: 'charge-types',
                 icon: 'pi pi-tags',
                 to: '/admin/charge-types',
+            },
+            {
+                labelKey: 'navigation.maintenanceCategories',
+                key: 'maintenance-categories',
+                icon: 'pi pi-wrench',
+                to: '/admin/maintenance-categories',
             },
             {
                 labelKey: 'navigation.paymentPlans',

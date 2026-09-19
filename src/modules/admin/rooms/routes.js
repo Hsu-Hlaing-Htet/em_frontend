@@ -51,6 +51,22 @@ const routes = [
                 },
             },
             {
+                path: ':id/create-contract',
+                name: 'createRoomContract',
+                component: () => import('@/modules/admin/rooms/entry/CreateRoomContract.vue'),
+                meta: {
+                    navKey: 'rooms',
+                    action: 'create',
+                    resource: 'sale_contract',
+                    layout: 'default',
+                    title: 'Create Contract',
+                    breadcrumbs: [
+                        { title: 'Room', routeName: 'showRoom' },
+                        { title: 'Create Contract', routeName: 'createRoomContract' },
+                    ],
+                },
+            },
+            {
                 path: ':id',
                 name: 'showRoom',
                 component: () => import('@/modules/admin/rooms/detail/ShowRoom.vue'),

@@ -4,55 +4,55 @@ import { useEntityApprovalList } from '@/composables/global/useEntityApprovalLis
 import { useListExport } from '@/composables/admin/useListExport';
 import { UTILITY_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 import { toQueryDate } from '@/helpers/lists/listQuery';
-import { service as roomService } from '@/modules/admin/rooms/service';
+import { service as buildingService } from '@/modules/admin/buildings/service';
 import { useUtilityStore } from '../store';
 
 export const useUtilityApprovalList = () => {
-    const statusFilter = ref(null);
-    const roomFilter = ref(null);
-    const roomOptions = ref([]);
+    const buildingFilter = ref(null);
+    const buildingOptions = ref([]);
     const billingMonthFrom = ref(null);
     const billingMonthTo = ref(null);
     const store = useUtilityStore();
 
-    const loadRoomOptions = async () => {
-        const response = await roomService.getAll({ per_page: 500 });
+    const loadBuildingOptions = async () => {
+        const response = await buildingService.getAll({ per_page: 100 });
 
-        roomOptions.value = (response?.data?.data || []).map((room) => ({
-            label: room.building_name
-                ? `${room.building_name} - ${room.room_number}`
-                : room.room_number,
-            value: room.id,
+        buildingOptions.value = (response?.data?.data || []).map((building) => ({
+            label: building.building_name,
+            value: building.id,
         }));
     };
 
     const list = useEntityApprovalList({
         store,
         pendingStatus: 'pending',
+        rejectMethod: 'reject',
+        detailRouteName: 'showUtilityApproval',
         getItemLabel: (item) => item.room_number || `#${item.id}`,
         loadErrorMessage: 'Unable to load pending utility approvals.',
         approveErrorMessage: 'Unable to approve utility.',
         rejectErrorMessage: 'Unable to reject utility.',
+        buildRejectSuccessMessage: (item, response) => response?.message
+            || `${item.room_number || `#${item.id}`} has been rejected.`,
         mapItems: (rows) => rows.map((item) => ({
             ...item,
             customer_name: item.customer_name || '',
             created_by: item.created_by_name || item.created_by || '',
         })),
         buildFilterParams: () => ({
-            room_id: roomFilter.value || undefined,
+            building_id: buildingFilter.value || undefined,
             billing_month_from: toQueryDate(billingMonthFrom.value),
             billing_month_to: toQueryDate(billingMonthTo.value),
         }),
-        getWatchSources: () => [statusFilter, roomFilter, billingMonthFrom, billingMonthTo],
+        getWatchSources: () => [buildingFilter, billingMonthFrom, billingMonthTo],
         resetFilters: () => {
-            statusFilter.value = null;
-            roomFilter.value = null;
+            buildingFilter.value = null;
             billingMonthFrom.value = null;
             billingMonthTo.value = null;
         },
     });
 
-    onMounted(loadRoomOptions);
+    onMounted(loadBuildingOptions);
 
     const {
         isExporting,
@@ -70,7 +70,7 @@ export const useUtilityApprovalList = () => {
             order: multisortConvert(list.lazyParams.value.multiSortMeta) || undefined,
             search: list.search.value?.trim() || undefined,
             status: 'pending',
-            room_id: roomFilter.value || undefined,
+            building_id: buildingFilter.value || undefined,
             billing_month_from: toQueryDate(billingMonthFrom.value),
             billing_month_to: toQueryDate(billingMonthTo.value),
         }),
@@ -89,19 +89,17 @@ export const useUtilityApprovalList = () => {
         }),
         getFilterSummary: () => [
             { label: 'Search', value: list.search.value || '' },
-            { label: 'Status', value: 'pending' },
-            { label: 'Room', value: roomOptions.value.find((o) => o.value === roomFilter.value)?.label || '' },
-            { label: 'Billing Month From', value: toQueryDate(billingMonthFrom.value) || '' },
-            { label: 'Billing Month To', value: toQueryDate(billingMonthTo.value) || '' },
+            { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingFilter.value)?.label || '' },
+            { label: 'From Date', value: toQueryDate(billingMonthFrom.value) || '' },
+            { label: 'To Date', value: toQueryDate(billingMonthTo.value) || '' },
         ],
         hasData: computed(() => list.totalRecords.value > 0),
     });
 
     return {
         ...list,
-        statusFilter,
-        roomFilter,
-        roomOptions,
+        buildingFilter,
+        buildingOptions,
         billingMonthFrom,
         billingMonthTo,
         isExporting,

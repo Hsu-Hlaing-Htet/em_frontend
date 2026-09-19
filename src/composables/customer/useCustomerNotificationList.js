@@ -11,7 +11,7 @@ import {
     isCustomerNotificationUnread,
 } from '@/helpers/customer/notifications';
 
-const FILTER_TYPES = ['all', 'invoice', 'payment', 'receipt', 'contract', 'maintenance', 'announcement'];
+const FILTER_TYPES = ['all', 'invoice', 'payment', 'receipt', 'contract', 'utility', 'maintenance', 'announcement'];
 
 export default function useCustomerNotificationList() {
     const notificationStore = useCustomerNotificationStore();

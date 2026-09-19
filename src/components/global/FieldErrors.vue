@@ -25,7 +25,17 @@ export default defineComponent({
                 return [];
             }
 
-            return props.errors.get(props.field);
+            const value = props.errors.get(props.field);
+
+            if (Array.isArray(value)) {
+                return value.filter((message) => typeof message === 'string' && message.trim().length > 0);
+            }
+
+            if (typeof value === 'string' && value.trim()) {
+                return [value.trim()];
+            }
+
+            return [];
         });
 
         return { messages };

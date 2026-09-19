@@ -15,6 +15,8 @@ export default function useShowReceipt() {
     const isLoading = ref(true);
     const isSendingEmail = ref(false);
     const workflowLoading = ref({ approve: false, reject: false });
+    const showApproveDialog = ref(false);
+    const showRejectDialog = ref(false);
     const isApprovalView = computed(() => route.meta.approvalContext === true);
     const backRoute = computed(() => (
         isApprovalView.value
@@ -91,11 +93,17 @@ export default function useShowReceipt() {
         }
     };
 
-    const runWorkflow = async (action) => {
+    const runWorkflow = async (action, payload = {}) => {
+        const canRun = action === 'approve' ? canApprove() : canReject();
+
+        if (!canRun || workflowLoading.value.approve || workflowLoading.value.reject) {
+            return;
+        }
+
         workflowLoading.value[action] = true;
 
         try {
-            await store[action]({ id: state.id });
+            await store[action]({ id: state.id, ...payload });
             const response = store.getActionResponse;
 
             if (response) {
@@ -106,6 +114,8 @@ export default function useShowReceipt() {
                     summary: '',
                     detail: response.message,
                 });
+                showApproveDialog.value = false;
+                showRejectDialog.value = false;
 
                 if (isApprovalView.value && action === 'approve') {
                     await router.push({ name: 'showReceipt', params: { id: state.id } });
@@ -162,6 +172,8 @@ export default function useShowReceipt() {
         isLoading,
         isSendingEmail,
         workflowLoading,
+        showApproveDialog,
+        showRejectDialog,
         state,
         formattedCreatedAt,
         handleSendEmail,

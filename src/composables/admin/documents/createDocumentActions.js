@@ -5,6 +5,7 @@ export function createDocumentActions({
     getDocument,
     getFilename,
     printDocument,
+    viewDocument,
     exportDocument,
     downloadDocument,
     sendEmail,
@@ -63,6 +64,14 @@ export function createDocumentActions({
         printDocument(document);
     };
 
+    const viewPdf = () => {
+        const document = getDocument();
+
+        if (document) {
+            viewDocument(document);
+        }
+    };
+
     const sendDocumentEmail = async () => {
         try {
             const response = await sendEmail();
@@ -81,6 +90,7 @@ export function createDocumentActions({
         downloadPdf,
         exportPdf,
         printPdf,
+        viewPdf,
         sendEmail: sendDocumentEmail,
     };
 }

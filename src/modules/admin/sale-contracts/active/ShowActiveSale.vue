@@ -3,13 +3,14 @@
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
                 <DocumentDownloadActions
+                    :has-document-export="false"
                     @download-pdf="downloadPdf"
                     @export-document="exportPdf"
                     @print="printContract"
                 />
                 <Button
                     icon="pi pi-envelope"
-                    label="Send Email"
+                    label="Send"
                     :loading="isSendingEmail"
                     :disabled="isSendingEmail"
                     @click="openSendEmailDialog"

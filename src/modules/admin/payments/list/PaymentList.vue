@@ -16,66 +16,62 @@
                 :rows="10"
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
+                row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
+                @row-click="onRowClick"
             >
                 <template #header>
                     <AdminListFilters
                         title="Payment Tracking"
                         :search="search"
-                        search-placeholder="Search payment ref, invoice #, or customer..."
+                        search-placeholder="Search payment ref, invoice no, customer, or room..."
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
-                        <div class="admin-filter-group">
                         <Dropdown
-                            v-model="buildingId"
-                            :options="buildingOptions"
+                            v-model="paymentType"
+                            :options="paymentTypeOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="Building"
+                            placeholder="Payment Type"
                             show-clear
-                            class="w-44"
+                            class="w-40"
                         />
-                        <Dropdown
-                            v-model="roomId"
-                            :options="roomOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Room"
-                            :disabled="!buildingId"
-                            show-clear
-                            class="w-36"
-                        />
-                        </div>
                         <Dropdown
                             v-model="paymentMethodId"
                             :options="paymentMethodOptions"
                             option-label="label"
                             option-value="value"
-                            placeholder="Payment method"
+                            placeholder="Payment Method"
                             show-clear
                             class="w-44"
+                        />
+                        <Dropdown
+                            v-model="status"
+                            :options="statusOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Status"
+                            class="w-36"
                         />
                         <div class="admin-filter-group admin-filter-group--dates">
                         <Calendar
                             v-model="paymentDateFrom"
-                            placeholder="DD/MM/YYYY"
+                            placeholder="From Date"
                             date-format="dd/mm/yy"
                             show-icon
                             class="w-40"
                         />
                         <Calendar
                             v-model="paymentDateTo"
-                            placeholder="DD/MM/YYYY"
+                            placeholder="To Date"
                             date-format="dd/mm/yy"
                             show-icon
                             class="w-40"
                         />
                         </div>
                         <template #actions>
-                            <router-link :to="{ name: 'newPayment' }">
-                                <Button label="Create" />
-                            </router-link>
                             <ListExportActions
                                 :loading="isExporting"
                                 :disabled="!canExport"
@@ -89,7 +85,13 @@
                     </AdminListFilters>
                 </template>
 
-                <template #empty>No payments found.</template>
+                <template #empty>
+                    <AdminEmptyState
+                        icon="pi pi-wallet"
+                        title="No payments found"
+                        message="No payments match your search or filters."
+                    />
+                </template>
                 <template #loading>Loading payments. Please wait.</template>
 
                 <Column header="Invoice No" style="min-width: 130px" frozen>
@@ -103,18 +105,17 @@
                     </template>
                 </Column>
                 <Column field="customer_name" header="Customer Name" style="min-width: 150px" />
-                <Column field="property_unit" header="Property/Unit" style="min-width: 170px" />
-                <Column header="Invoice Amount" style="min-width: 130px">
+                <Column header="Invoice Amount (MMK)" style="min-width: 130px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.invoice_amount) }}
                     </template>
                 </Column>
-                <Column header="Paid Amount" style="min-width: 130px">
+                <Column header="Paid Amount (MMK)" style="min-width: 130px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.amount) }}
                     </template>
                 </Column>
-                <Column header="Balance" style="min-width: 120px">
+                <Column header="Balance (MMK)" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.balance) }}
                     </template>
@@ -132,11 +133,6 @@
                         <StatusBadge :value="data.display_status || data.status" />
                     </template>
                 </Column>
-                <Column field="note" header="Notes" style="min-width: 160px">
-                    <template #body="{ data }">
-                        {{ data.note || '—' }}
-                    </template>
-                </Column>
             </DataTable>
 
             <Loading v-if="isLoading" />
@@ -148,28 +144,30 @@
 import { defineComponent } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
-import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
-import { formatCurrency } from '@/utils/formatter';
+import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
 import { usePaymentList } from './usePaymentList';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'PaymentList',
     components: {
+        AdminEmptyState,
         DataTable,
         Column,
         Dropdown,
         Calendar,
-        Button,
         Loading,
         AdminListFilters,
-        StatusBadge, ListExportActions },
+        StatusBadge,
+        ListExportActions,
+    },
     setup() {
         const list = usePaymentList();
 

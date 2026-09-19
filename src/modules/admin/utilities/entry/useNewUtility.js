@@ -11,12 +11,12 @@ import {
     VALIDATION_MESSAGES,
 } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import { formatCurrency } from '@/utils/formatter';
+import { formatCurrency, formatCurrencyAmount } from '@/utils/formatter';
 import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
 import { useBuildingStore } from '@/modules/admin/buildings/store';
-import { formatBillingMonth, formatOptionalUnitValue, formatUnitValue, formatUtilityDate, recalcEntry } from '../utils/utilityFormHelpers';
+import { formatBillingMonth, formatOptionalUnitValue, formatUnitValue, formatUtilityDate, recalcEntry, getCurrentReadingError } from '../utils/utilityFormHelpers';
 
 let nextRowId = 1;
 
@@ -33,6 +33,7 @@ const createReadingRow = ({ roomId = null, roomLabel = '', billingMonth = null }
     amount: 0,
     isRowLoading: false,
     rowError: '',
+    currentReadingError: '',
 });
 
 export default function useNewUtility() {
@@ -181,11 +182,13 @@ export default function useNewUtility() {
                 });
 
                 const previous = response?.data?.rooms?.[0];
+                const previousReading = Number(previous?.previous_reading || 0);
                 patchReadingRow(rowId, {
-                    previous_reading: Number(previous?.previous_reading || 0),
+                    previous_reading: previousReading,
                     unit_price: Number(response.data.unit_price),
                     isRowLoading: false,
                     rowError: '',
+                    currentReadingError: getCurrentReadingError(row.current_reading, previousReading) ?? '',
                 });
 
                 return;
@@ -200,6 +203,7 @@ export default function useNewUtility() {
                 unit_price: Number(response.data.unit_price),
                 isRowLoading: false,
                 rowError: '',
+                currentReadingError: getCurrentReadingError(row.current_reading, 0) ?? '',
             });
         } catch (error) {
             const rowError = error?.data?.message
@@ -215,7 +219,12 @@ export default function useNewUtility() {
     };
 
     const handleCurrentReadingChange = (rowId, value) => {
-        patchReadingRow(rowId, { current_reading: value ?? 0 });
+        const row = readingRows.value.find((entry) => entry.id === rowId);
+
+        patchReadingRow(rowId, {
+            current_reading: value,
+            currentReadingError: getCurrentReadingError(value, row?.previous_reading ?? 0) ?? '',
+        });
     };
 
     const addReadingRow = () => {
@@ -321,8 +330,9 @@ export default function useNewUtility() {
             && Boolean(row.room_id)
             && Boolean(formatBillingMonth(row.billing_month))
             && !row.rowError
+            && !row.currentReadingError
             && Number(row.unit_price) > 0
-            && Number(row.current_reading) >= Number(row.previous_reading)
+            && isValidNumber(row.current_reading, { min: 0 })
         ))
     ));
 
@@ -343,17 +353,17 @@ export default function useNewUtility() {
                 return;
             }
 
-            if (!isValidNumber(row.previous_reading, { min: 0 })
-                || !isValidNumber(row.current_reading, { min: 0 })) {
-                patchReadingRow(row.id, { rowError: requiredMessage('current_reading') });
+            const currentReadingError = getCurrentReadingError(row.current_reading, row.previous_reading);
+
+            if (currentReadingError) {
+                patchReadingRow(row.id, { currentReadingError });
                 valid = false;
                 return;
             }
 
-            if (Number(row.current_reading) < Number(row.previous_reading)) {
-                patchReadingRow(row.id, {
-                    rowError: 'Current reading must be greater than or equal to previous reading.',
-                });
+            if (!isValidNumber(row.previous_reading, { min: 0 })
+                || !isValidNumber(row.current_reading, { min: 0 })) {
+                patchReadingRow(row.id, { rowError: requiredMessage('current_reading') });
                 valid = false;
                 return;
             }
@@ -453,6 +463,7 @@ export default function useNewUtility() {
         canAddRow,
         totalAmount,
         formatCurrency,
+        formatCurrencyAmount,
         formatUnitValue,
         formatOptionalUnitValue,
         handleCurrentReadingChange,

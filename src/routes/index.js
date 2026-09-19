@@ -7,6 +7,10 @@ import { adminRoutes } from '../modules/admin/routes.js';
 import { customerRoutes } from '../modules/customer/routes.js';
 import NotFound from '@/pages/404.vue';
 import Forbidden from '@/pages/Forbidden.vue';
+import Unauthorized from '@/pages/Unauthorized.vue';
+import SessionExpired from '@/pages/SessionExpired.vue';
+import ServerError from '@/pages/ServerError.vue';
+import ServiceUnavailable from '@/pages/ServiceUnavailable.vue';
 
 const resetPasswordRoute = {
     path: '/reset-password',
@@ -37,12 +41,37 @@ const routes = [
         path: '/forbidden',
         name: 'forbidden',
         component: Forbidden,
-        meta: { title: 'Access forbidden' },
+        meta: { title: 'Access forbidden', public: true },
+    },
+    {
+        path: '/unauthorized',
+        name: 'unauthorized',
+        component: Unauthorized,
+        meta: { title: 'Unauthorized', public: true },
+    },
+    {
+        path: '/session-expired',
+        name: 'session-expired',
+        component: SessionExpired,
+        meta: { title: 'Session expired', public: true },
+    },
+    {
+        path: '/server-error',
+        name: 'server-error',
+        component: ServerError,
+        meta: { title: 'Server error', public: true },
+    },
+    {
+        path: '/service-unavailable',
+        name: 'service-unavailable',
+        component: ServiceUnavailable,
+        meta: { title: 'Service unavailable', public: true },
     },
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
         component: NotFound,
+        meta: { title: 'Page not found', public: true },
     },
 ];
 
@@ -106,10 +135,12 @@ router.beforeEach(async (to, from, next) => {
     }
 
     const mustChangePassword = Boolean(auth.user?.must_change_password);
+    const hasActiveTemporaryPassword = Boolean(auth.user?.temporary_password_active);
+    const requiresForcedPasswordChange = mustChangePassword && !hasActiveTemporaryPassword;
 
     if (
         auth.isAuthenticated
-        && mustChangePassword
+        && requiresForcedPasswordChange
         && !to.meta.allowPasswordChangeRequired
         && to.name !== 'force-change-password'
     ) {
@@ -118,7 +149,7 @@ router.beforeEach(async (to, from, next) => {
 
     if (
         auth.isAuthenticated
-        && !mustChangePassword
+        && !requiresForcedPasswordChange
         && to.name === 'force-change-password'
     ) {
         if (adminRoles.includes(auth.role)) {
@@ -160,7 +191,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (to.meta.guestOnly && auth.isAuthenticated) {
-        if (mustChangePassword) {
+        if (requiresForcedPasswordChange) {
             return next({ name: 'force-change-password' });
         }
 

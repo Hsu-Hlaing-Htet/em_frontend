@@ -11,7 +11,7 @@ export const SUPER_ADMIN_EMAIL = 'admin@rosewoodroyale.com';
 export const VALIDATION_MESSAGES = {
     emailRequired: 'Email is required.',
     emailInvalid: 'Please enter a valid email address.',
-    emailGmail: 'Please use a Gmail address.',
+    emailReserved: 'This email address is reserved.',
     emailUnique: 'This email is already in use.',
     nrcInvalid: 'Please enter a valid NRC.',
     phoneInvalid: 'Please enter a valid phone number.',
@@ -53,7 +53,6 @@ const FIELD_LABELS = {
     sale_price: 'Sale price',
     rent_price: 'Rent price',
     rent_deposit_price: 'Rent deposit',
-    booking_deposit_price: 'Booking deposit',
     title: 'Title',
     category: 'Category',
     priority: 'Priority',
@@ -194,14 +193,8 @@ export function isReservedSuperAdminEmail(value) {
     return normalizeEmail(value) === SUPER_ADMIN_EMAIL;
 }
 
-export function isGmailAddress(value) {
-    const email = normalizeEmail(value);
-
-    return email !== '' && email.endsWith('@gmail.com');
-}
-
 /**
- * Account email policy (create/edit users): Gmail-only except reserved Super Admin email.
+ * Account email policy (create/edit users): any valid email except reserved Super Admin address.
  * Roles remain independent of email domain.
  *
  * @param {unknown} value
@@ -226,15 +219,7 @@ export function validateUserAccountEmail(value, { originalEmail = null } = {}) {
             return null;
         }
 
-        return VALIDATION_MESSAGES.emailGmail;
-    }
-
-    if (unchanged) {
-        return null;
-    }
-
-    if (!isGmailAddress(normalized)) {
-        return VALIDATION_MESSAGES.emailGmail;
+        return VALIDATION_MESSAGES.emailReserved;
     }
 
     return null;

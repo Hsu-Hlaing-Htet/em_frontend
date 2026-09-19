@@ -23,7 +23,6 @@ const ROOM_VALIDATION_RULES = [
     { field: 'sale_price', type: 'number', min: 0 },
     { field: 'rent_price', type: 'number', min: 0 },
     { field: 'rent_deposit_price', type: 'number', min: 0 },
-    { field: 'booking_deposit_price', type: 'number', min: 0 },
     {
         field: 'width_ft',
         type: 'number',
@@ -77,7 +76,6 @@ export default function useEditRoom() {
         sale_price: 0,
         rent_price: 0,
         rent_deposit_price: 0,
-        booking_deposit_price: 0,
     });
 
     bindErrorClearing(state, errors);
@@ -131,7 +129,6 @@ export default function useEditRoom() {
                     sale_price: Number(response.data.sale_price),
                     rent_price: Number(response.data.rent_price),
                     rent_deposit_price: Number(response.data.rent_deposit_price),
-                    booking_deposit_price: Number(response.data.booking_deposit_price),
                 });
 
                 loadPersistedFromRoom(response.data.room_images || []);

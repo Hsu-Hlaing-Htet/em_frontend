@@ -44,8 +44,14 @@ export default function useUtilityDocumentPage() {
         sendEmail,
     } = useUtilityDocumentActions(state, () => document.value, service);
 
+    const isApprovalView = computed(() => route.meta.approvalContext === true);
+    const canSendUtility = computed(() => (
+        !isApprovalView.value
+        && Boolean(state.id)
+        && String(state.status || '').toLowerCase() === 'approved'
+    ));
     const backRoute = computed(() => (
-        route.meta.approvalContext
+        isApprovalView.value
             ? { name: 'showUtilityApproval', params: { id: state.id } }
             : { name: 'showUtility', params: { id: state.id } }
     ));
@@ -84,6 +90,8 @@ export default function useUtilityDocumentPage() {
 
     return {
         isLoading,
+        isApprovalView,
+        canSendUtility,
         document,
         backRoute,
         downloadPdf,

@@ -169,9 +169,9 @@
                     >
                         <div class="min-w-0 flex-1">
                             <div class="mb-1 flex flex-wrap items-center gap-2">
-                                <strong class="text-sm text-[var(--admin-text)]">
+                                <span class="text-sm text-[var(--admin-text)]">
                                     {{ invoice.type || invoice.invoice_number || $t('customer.invoicePayment') }}
-                                </strong>
+                                </span>
                                 <StatusBadge value="overdue" />
                             </div>
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--admin-text-muted)]">
@@ -193,7 +193,7 @@
                     v-else
                     class="rounded-[3px] border border-[var(--admin-border)] bg-[var(--admin-surface-solid)] px-4 py-4"
                 >
-                    <p class="m-0 text-sm font-semibold text-[var(--admin-text)]">
+                    <p class="m-0 text-sm text-[var(--admin-text)]">
                         {{ $t('customer.noOverdueInvoicesTitle') }}
                     </p>
                     <p class="mt-1 text-sm text-[var(--admin-text-muted)]">

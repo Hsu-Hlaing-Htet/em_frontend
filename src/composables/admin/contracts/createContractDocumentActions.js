@@ -11,6 +11,7 @@ export function createContractDocumentActions({
     downloadDocument,
     exportDocument,
     printDocument,
+    viewDocument,
     sendDocumentEmail,
 }) {
     const fallbackHtmlFilename = () => `${getContractNo() || fallbackName}.html`;
@@ -66,6 +67,14 @@ export function createContractDocumentActions({
         printDocument(document);
     };
 
+    const viewContract = () => {
+        const document = getDocument();
+
+        if (document) {
+            viewDocument(document);
+        }
+    };
+
     const sendEmail = async () => {
         const id = getContractId();
 
@@ -92,6 +101,7 @@ export function createContractDocumentActions({
         downloadPdf,
         exportPdf,
         printContract,
+        viewContract,
         sendEmail,
     };
 }
@@ -104,6 +114,7 @@ export function useContractDocumentActions({
     downloadDocument,
     exportDocument,
     printDocument,
+    viewDocument,
     sendDocumentEmail,
 }) {
     const resolveDocument = typeof getDocument === 'function'
@@ -120,6 +131,7 @@ export function useContractDocumentActions({
         downloadDocument,
         exportDocument,
         printDocument,
+        viewDocument,
         sendDocumentEmail,
     });
 }

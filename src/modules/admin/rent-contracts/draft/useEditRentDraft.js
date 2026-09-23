@@ -38,6 +38,12 @@ export default function useEditRentDraft() {
         }
     });
 
+    watch(() => form.state.second_customer_id, () => {
+        if (errors.has('second_user_id')) {
+            errors.clear('second_user_id');
+        }
+    });
+
     const fetchDraft = async () => {
         isLoading.value = true;
 
@@ -78,6 +84,17 @@ export default function useEditRentDraft() {
         };
 
         if (!applyValidation(errors, values, DRAFT_VALIDATION_RULES)) {
+            return;
+        }
+
+        if (
+            form.state.show_second_customer
+            && form.state.second_customer_id
+            && Number(form.state.second_customer_id) === Number(form.state.customer_id)
+        ) {
+            errors.record({
+                second_user_id: ['Second customer must be different from the first customer.'],
+            });
             return;
         }
 

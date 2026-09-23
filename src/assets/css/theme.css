@@ -55,6 +55,7 @@ html:not([data-theme]) {
     --rw-btn-glow-success: 0 4px 14px rgba(47, 154, 110, 0.22);
     --rw-btn-glow-danger: 0 4px 14px rgba(196, 92, 92, 0.22);
     --rw-btn-glow-warning: 0 4px 14px rgba(201, 162, 39, 0.2);
+    --rw-overlay-z: 1250;
 
     --surface-0: #fffcf8;
     --surface-50: #f7f4ef;
@@ -165,6 +166,7 @@ html[data-theme='dark'] {
     --rw-btn-glow-success: 0 4px 16px rgba(63, 173, 127, 0.25);
     --rw-btn-glow-danger: 0 4px 16px rgba(201, 120, 130, 0.25);
     --rw-btn-glow-warning: 0 4px 16px rgba(212, 180, 90, 0.22);
+    --rw-overlay-z: 1250;
 
     --surface-0: #17181b;
     --surface-50: #121315;
@@ -344,9 +346,24 @@ body,
 }
 
 html[data-theme='dark'] .p-dropdown-panel,
-html[data-theme='dark'] .p-select-overlay {
+html[data-theme='dark'] .p-select-overlay,
+html[data-theme='dark'] .p-dropdown-header,
+html[data-theme='dark'] .p-select-header {
     background: var(--rw-surface-solid) !important;
-    border: 1px solid var(--rw-border) !important;
+    border-color: var(--rw-border) !important;
+    color: var(--rw-text) !important;
+}
+
+html[data-theme='dark'] .p-dropdown-filter.p-inputtext,
+html[data-theme='dark'] .p-select-filter {
+    background: var(--rw-surface-solid) !important;
+    color: var(--rw-text) !important;
+    border-color: var(--rw-border) !important;
+}
+
+html[data-theme='dark'] .p-dropdown-filter.p-inputtext::placeholder,
+html[data-theme='dark'] .p-select-filter::placeholder {
+    color: var(--rw-text-muted) !important;
 }
 
 html[data-theme='dark'] .p-dropdown-item:hover,

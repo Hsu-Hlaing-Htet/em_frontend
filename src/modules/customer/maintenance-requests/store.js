@@ -6,6 +6,7 @@ export const useCustomerMaintenanceRequestStore = defineStore('customerMaintenan
         listResponse: null,
         detailResponse: null,
         roomsResponse: null,
+        categoriesResponse: null,
         createResponse: null,
     }),
 
@@ -18,6 +19,9 @@ export const useCustomerMaintenanceRequestStore = defineStore('customerMaintenan
         },
         getRoomsResponse(state) {
             return state.roomsResponse;
+        },
+        getCategoriesResponse(state) {
+            return state.categoriesResponse;
         },
         getCreateResponse(state) {
             return state.createResponse;
@@ -35,6 +39,10 @@ export const useCustomerMaintenanceRequestStore = defineStore('customerMaintenan
 
         async fetchRooms() {
             this.roomsResponse = await service.getMaintenanceRooms();
+        },
+
+        async fetchCategories() {
+            this.categoriesResponse = await service.getMaintenanceCategories();
         },
 
         async create(params) {

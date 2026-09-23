@@ -57,6 +57,11 @@ export default function useRentDraftForm(initialState = null) {
         customer_nrc: '',
         customer_phone: '',
         customer_email: '',
+        second_customer_id: null,
+        second_customer_nrc: '',
+        second_customer_phone: '',
+        second_customer_email: '',
+        show_second_customer: false,
         building_id: null,
         room_id: null,
         room_price: 0,
@@ -133,6 +138,31 @@ export default function useRentDraftForm(initialState = null) {
         state.customer_email = customer.email || '';
     };
 
+    const applySecondCustomer = (customerId) => {
+        const rows = Array.isArray(customers.value) ? customers.value : [];
+        const customer = rows.find((item) => sameEntityId(item.id, customerId));
+
+        if (!customer) {
+            state.second_customer_nrc = '';
+            state.second_customer_phone = '';
+            state.second_customer_email = '';
+
+            return;
+        }
+
+        state.second_customer_nrc = customer.nrc || customer.profile?.nrc || '';
+        state.second_customer_phone = customer.phone || customer.profile?.phone || '';
+        state.second_customer_email = customer.email || '';
+    };
+
+    const clearSecondCustomer = () => {
+        state.second_customer_id = null;
+        state.second_customer_nrc = '';
+        state.second_customer_phone = '';
+        state.second_customer_email = '';
+        state.show_second_customer = false;
+    };
+
     const applyRoom = (roomId, { preserveContractTotal = false } = {}) => {
         const room = rooms.value.find((item) => sameEntityId(item.id, roomId));
 
@@ -189,6 +219,36 @@ export default function useRentDraftForm(initialState = null) {
         }
 
         applyCustomer(normalizedCustomerId);
+
+        if (
+            normalizedCustomerId != null
+            && sameEntityId(normalizedCustomerId, state.second_customer_id)
+        ) {
+            clearSecondCustomer();
+        }
+    });
+
+    watch(() => state.second_customer_id, (customerId) => {
+        if (isHydrating.value) {
+            return;
+        }
+
+        const normalizedCustomerId = resolveEntityId(customerId);
+
+        if (normalizedCustomerId !== customerId) {
+            state.second_customer_id = normalizedCustomerId;
+        }
+
+        if (
+            normalizedCustomerId != null
+            && sameEntityId(normalizedCustomerId, state.customer_id)
+        ) {
+            clearSecondCustomer();
+
+            return;
+        }
+
+        applySecondCustomer(normalizedCustomerId);
     });
 
     watch(() => state.building_id, async (buildingId) => {
@@ -268,6 +328,9 @@ export default function useRentDraftForm(initialState = null) {
             }
 
             const mapped = mapRentDraftFormFromApi(data) || data;
+            const secondCustomerId = resolveEntityId(
+                mapped.second_customer_id ?? data.second_user_id ?? null,
+            );
 
             Object.assign(state, {
                 id: mapped.id,
@@ -275,6 +338,11 @@ export default function useRentDraftForm(initialState = null) {
                 customer_nrc: mapped.customer_nrc || '',
                 customer_phone: mapped.customer_phone || '',
                 customer_email: mapped.customer_email || '',
+                second_customer_id: secondCustomerId,
+                second_customer_nrc: mapped.second_customer_nrc || '',
+                second_customer_phone: mapped.second_customer_phone || '',
+                second_customer_email: mapped.second_customer_email || '',
+                show_second_customer: Boolean(secondCustomerId),
                 building_id: buildingId,
                 room_id: resolveEntityId(mapped.room_id),
                 room_price: mapped.room_price,
@@ -312,5 +380,6 @@ export default function useRentDraftForm(initialState = null) {
         showPaymentSummary,
         paymentSummary,
         loadState,
+        clearSecondCustomer,
     };
 }

@@ -8,6 +8,7 @@ export const useMaintenanceCategoryStore = defineStore('useMaintenanceCategorySt
         updateResponse: null,
         addResponse: null,
         deleteResponse: null,
+        optionsResponse: null,
     }),
 
     getters: {
@@ -26,6 +27,9 @@ export const useMaintenanceCategoryStore = defineStore('useMaintenanceCategorySt
         getDeleteResponse(state) {
             return state.deleteResponse;
         },
+        getOptionsResponse(state) {
+            return state.optionsResponse;
+        },
     },
 
     actions: {
@@ -40,6 +44,10 @@ export const useMaintenanceCategoryStore = defineStore('useMaintenanceCategorySt
 
             const response = await service.getOne(params);
             this.detailResponse = response;
+        },
+        async fetchOptions() {
+            const response = await service.getOptions();
+            this.optionsResponse = response;
         },
         async update(params) {
             const response = await service.update(params);

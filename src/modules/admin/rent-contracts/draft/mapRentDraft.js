@@ -14,6 +14,7 @@ export function mapRentDraftFromApi(data) {
     }
 
     const customer = data.customer || {};
+    const secondCustomer = data.second_customer || {};
 
     return {
         id: data.id,
@@ -24,6 +25,11 @@ export function mapRentDraftFromApi(data) {
         customer_phone: customer.phone || '',
         customer_email: customer.email || '',
         customer_address: customer.address || data.customer_address || '',
+        second_customer_id: data.second_user_id ?? secondCustomer.id ?? null,
+        second_customer_name: secondCustomer.name || '',
+        second_customer_nrc: secondCustomer.nrc || '',
+        second_customer_phone: secondCustomer.phone || '',
+        second_customer_email: secondCustomer.email || '',
         building_id: data.building_id ?? data.room?.building_id ?? data.building?.id ?? null,
         building_name: data.building_name || data.building?.building_name || '',
         room_id: data.room_id,
@@ -62,6 +68,9 @@ export function mapRentDraftFormFromApi(data) {
 export function mapRentDraftToApi(state) {
     const payload = {
         user_id: state.customer_id,
+        second_user_id: state.show_second_customer && state.second_customer_id
+            ? state.second_customer_id
+            : null,
         room_id: state.room_id,
         payment_type: state.payment_type,
         contract_total: state.contract_total,

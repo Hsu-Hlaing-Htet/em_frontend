@@ -39,10 +39,16 @@
                         :options="categoryOptions"
                         option-label="label"
                         option-value="value"
-                        :placeholder="$t('customer.selectCategory')"
+                        :placeholder="categoryOptions.length ? $t('customer.selectCategory') : $t('customer.noMaintenanceCategories')"
                         class="w-full"
-                        :disabled="isSaving"
+                        :disabled="isSaving || isLoading || !categoryOptions.length"
                     />
+                    <small
+                        v-if="!isLoading && !categoryOptions.length"
+                        class="customer-maintenance-field__hint"
+                    >
+                        {{ $t('customer.noMaintenanceCategories') }}
+                    </small>
                     <small v-if="errors.has('category')" class="p-error customer-maintenance-field__error">
                         <span v-for="error in errors.get('category')" :key="error">{{ error }}</span>
                     </small>
@@ -118,7 +124,7 @@
                         class="customer-maintenance-upload"
                         :class="{
                             'is-dragging': isDragging,
-                            'has-file': Boolean(photoFileName),
+                            'has-file': Boolean(photoPreviewUrl),
                         }"
                         role="button"
                         tabindex="0"
@@ -150,20 +156,17 @@
                         <div v-else class="customer-maintenance-upload__preview">
                             <img
                                 :src="photoPreviewUrl"
-                                :alt="photoFileName || 'Selected attachment preview'"
+                                alt="Selected attachment preview"
                                 class="customer-maintenance-upload__image"
                             >
-                            <div class="customer-maintenance-upload__meta">
-                                <span class="customer-maintenance-upload__filename">{{ photoFileName }}</span>
-                                <button
-                                    type="button"
-                                    class="customer-maintenance-upload__remove"
-                                    :disabled="isSaving"
-                                    @click.stop="clearPhoto"
-                                >
-                                    {{ $t('common.remove') }}
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                class="customer-maintenance-upload__remove"
+                                :disabled="isSaving"
+                                @click.stop="clearPhoto"
+                            >
+                                {{ $t('common.remove') }}
+                            </button>
                         </div>
                     </div>
 
@@ -187,7 +190,7 @@
                         :label="isSaving ? $t('common.submitting') : $t('common.submit')"
                         class="customer-maintenance-btn-submit"
                         :loading="isSaving"
-                        :disabled="isSaving || !roomOptions.length"
+                        :disabled="isSaving || !roomOptions.length || !categoryOptions.length"
                     />
                 </div>
             </form>

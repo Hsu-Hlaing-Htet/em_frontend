@@ -17,6 +17,7 @@ export default function useNewPaymentMethod() {
     const errors = new Errors();
     const submitted = ref(false);
     const qrPreviewUrl = ref('');
+    const qrFileName = ref('');
 
     const state = reactive({
         name: '',
@@ -50,6 +51,7 @@ export default function useNewPaymentMethod() {
             URL.revokeObjectURL(qrPreviewUrl.value);
         }
         qrPreviewUrl.value = '';
+        qrFileName.value = '';
         state.qr_image = null;
         state.remove_qr_image = false;
 
@@ -69,6 +71,7 @@ export default function useNewPaymentMethod() {
 
         errors.clear('qr_image');
         state.qr_image = file;
+        qrFileName.value = file.name || 'Selected QR image';
         qrPreviewUrl.value = URL.createObjectURL(file);
     };
 
@@ -77,6 +80,7 @@ export default function useNewPaymentMethod() {
             URL.revokeObjectURL(qrPreviewUrl.value);
         }
         qrPreviewUrl.value = '';
+        qrFileName.value = '';
         state.qr_image = null;
         state.remove_qr_image = true;
     };
@@ -125,6 +129,7 @@ export default function useNewPaymentMethod() {
         state,
         isWalletType,
         qrPreviewUrl,
+        qrFileName,
         onQrSelected,
         clearQr,
         statusOptions: PAYMENT_METHOD_STATUS_OPTIONS,

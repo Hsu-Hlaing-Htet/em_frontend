@@ -18,6 +18,7 @@ export default function useEditPaymentMethod() {
     const errors = new Errors();
     const submitted = ref(false);
     const qrPreviewUrl = ref('');
+    const qrFileName = ref('');
 
     const state = reactive({
         id: null,
@@ -79,6 +80,7 @@ export default function useEditPaymentMethod() {
                     remove_qr_image: false,
                 });
                 qrPreviewUrl.value = response.data.qr_image_url || '';
+                qrFileName.value = response.data.qr_image_url ? 'Current QR image' : '';
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load payment method.');
@@ -93,6 +95,7 @@ export default function useEditPaymentMethod() {
             URL.revokeObjectURL(qrPreviewUrl.value);
         }
         qrPreviewUrl.value = '';
+        qrFileName.value = '';
         state.qr_image = null;
         state.remove_qr_image = false;
 
@@ -112,6 +115,7 @@ export default function useEditPaymentMethod() {
 
         errors.clear('qr_image');
         state.qr_image = file;
+        qrFileName.value = file.name || 'Selected QR image';
         qrPreviewUrl.value = URL.createObjectURL(file);
     };
 
@@ -120,6 +124,7 @@ export default function useEditPaymentMethod() {
             URL.revokeObjectURL(qrPreviewUrl.value);
         }
         qrPreviewUrl.value = '';
+        qrFileName.value = '';
         state.qr_image = null;
         state.remove_qr_image = true;
     };
@@ -168,6 +173,7 @@ export default function useEditPaymentMethod() {
         state,
         isWalletType,
         qrPreviewUrl,
+        qrFileName,
         onQrSelected,
         clearQr,
         statusOptions: PAYMENT_METHOD_STATUS_OPTIONS,

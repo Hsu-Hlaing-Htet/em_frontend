@@ -2893,22 +2893,6 @@ html[data-theme='dark'] .customer-portal-icon-badge.tone-blue {
     object-fit: contain;
 }
 
-.customer-maintenance-upload__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 0.65rem 1rem;
-}
-
-.customer-maintenance-upload__filename {
-    color: var(--admin-text);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-}
-
 .customer-maintenance-upload__remove {
     padding: 0;
     border: 0;

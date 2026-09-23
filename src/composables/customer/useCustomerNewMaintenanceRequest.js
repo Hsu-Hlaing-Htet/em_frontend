@@ -4,7 +4,7 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import { MAINTENANCE_CATEGORY_OPTIONS, MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
+import { MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
 import { useCustomerMaintenanceRequestStore } from '@/modules/customer/maintenance-requests/store';
 
 export default function useCustomerNewMaintenanceRequest() {
@@ -15,10 +15,9 @@ export default function useCustomerNewMaintenanceRequest() {
     const isDragging = ref(false);
     const errors = new Errors();
     const roomOptions = ref([]);
-    const categoryOptions = MAINTENANCE_CATEGORY_OPTIONS;
+    const categoryOptions = ref([]);
     const photoFile = ref(null);
     const photoPreviewUrl = ref('');
-    const photoFileName = ref('');
     const fileInputEl = ref(null);
 
     const state = reactive({
@@ -35,11 +34,21 @@ export default function useCustomerNewMaintenanceRequest() {
         isLoading.value = true;
 
         try {
-            await store.fetchRooms();
+            await Promise.all([
+                store.fetchRooms(),
+                store.fetchCategories(),
+            ]);
+
             const rooms = store.getRoomsResponse?.data || [];
             roomOptions.value = rooms.map((room) => ({
                 label: room.label || `${room.building_name || ''} · ${room.room_number}`.trim(),
                 value: room.id,
+            }));
+
+            const categories = store.getCategoriesResponse?.data || [];
+            categoryOptions.value = categories.map((category) => ({
+                label: category.name,
+                value: category.slug,
             }));
 
             if (roomOptions.value.length === 1) {
@@ -65,7 +74,6 @@ export default function useCustomerNewMaintenanceRequest() {
 
         photoFile.value = null;
         photoPreviewUrl.value = '';
-        photoFileName.value = '';
         isDragging.value = false;
         errors.clear('photo');
 
@@ -88,7 +96,6 @@ export default function useCustomerNewMaintenanceRequest() {
 
         errors.clear('photo');
         photoFile.value = file;
-        photoFileName.value = file.name || 'Selected image';
         photoPreviewUrl.value = URL.createObjectURL(file);
     };
 
@@ -121,6 +128,11 @@ export default function useCustomerNewMaintenanceRequest() {
         }
 
         errors.clear();
+
+        if (!categoryOptions.value.length) {
+            errors.record({ category: ['No maintenance categories available'] });
+            return;
+        }
 
         if (!applyValidation(errors, state, [
             { field: 'title', type: 'text' },
@@ -170,7 +182,6 @@ export default function useCustomerNewMaintenanceRequest() {
         errors,
         state,
         roomOptions,
-        photoFileName,
         photoPreviewUrl,
         fileInputEl,
         categoryOptions,

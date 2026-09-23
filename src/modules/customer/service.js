@@ -132,6 +132,11 @@ const service = {
         return result.data;
     },
 
+    getMaintenanceCategories: async () => {
+        const result = await api.get(endpoint.customerMaintenanceCategories);
+        return result.data;
+    },
+
     getMaintenanceRequests: async (params) => {
         const result = await api.get(endpoint.customerMaintenanceRequests, { params });
         return result.data;

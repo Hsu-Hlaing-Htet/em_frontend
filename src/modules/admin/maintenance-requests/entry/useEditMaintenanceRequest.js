@@ -4,13 +4,15 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import { MAINTENANCE_CATEGORY_OPTIONS, MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
+import { MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
 import { useMaintenanceRequestStore } from '../store';
+import { useMaintenanceCategoryStore } from '@/modules/admin/maintenance-categories/store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useResidentStore } from '@/modules/admin/residents/store';
 
 export default function useEditMaintenanceRequest() {
     const store = useMaintenanceRequestStore();
+    const categoryStore = useMaintenanceCategoryStore();
     const roomStore = useRoomStore();
     const residentStore = useResidentStore();
     const route = useRoute();
@@ -20,7 +22,7 @@ export default function useEditMaintenanceRequest() {
     const errors = new Errors();
     const roomOptions = ref([]);
     const residentOptions = ref([]);
-    const categoryOptions = MAINTENANCE_CATEGORY_OPTIONS;
+    const categoryOptions = ref([]);
 
     const state = reactive({
         id: null,
@@ -39,6 +41,7 @@ export default function useEditMaintenanceRequest() {
         await Promise.all([
             roomStore.fetchAll({ per_page: 100 }),
             residentStore.fetchAll({ per_page: 100 }),
+            categoryStore.fetchOptions(),
             fetchRequest(),
         ]);
 
@@ -57,11 +60,33 @@ export default function useEditMaintenanceRequest() {
                 value: resident.id,
             }));
         }
+
+        const categories = categoryStore.getOptionsResponse?.data || [];
+        categoryOptions.value = categories.map((category) => ({
+            label: category.name,
+            value: category.slug,
+        }));
+
+        // Keep historical inactive category visible on edit.
+        if (
+            state.category
+            && !categoryOptions.value.some((option) => option.value === state.category)
+        ) {
+            categoryOptions.value = [
+                {
+                    label: state.category,
+                    value: state.category,
+                },
+                ...categoryOptions.value,
+            ];
+        }
     });
 
     onBeforeUnmount(() => {
         store.$reset();
         store.$dispose();
+        categoryStore.$reset();
+        categoryStore.$dispose();
     });
 
     const fetchRequest = async () => {

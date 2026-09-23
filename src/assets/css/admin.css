@@ -387,21 +387,93 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     outline: none !important;
 }
 
-/* Dropdown Overlay */
+/* Dropdown Overlay — shared with Create Contract / all AppDropdown usages.
+   Width is synced to the trigger via AppDropdown (--app-dropdown-width).
+   Do NOT force max-content here; that was shrinking panels under wide fields. */
+
+.p-dropdown-panel,
+.p-select-overlay,
+.p-datepicker:not(.p-datepicker-inline),
+.p-overlaypanel,
+.p-autocomplete-panel,
+.p-multiselect-panel,
+.p-menu.p-menu-overlay,
+.p-tieredmenu.p-tieredmenu-overlay,
+.p-contextmenu {
+    z-index: var(--rw-overlay-z, 1250);
+}
 
 .p-select-overlay,
 .p-dropdown-panel {
+    box-sizing: border-box;
     background: var(--admin-surface-solid) !important;
     border: 1px solid var(--admin-border) !important;
     color: var(--admin-text) !important;
-    width: max-content !important;
-    min-width: min(16rem, calc(100vw - 2rem)) !important;
-    max-width: min(34rem, calc(100vw - 2rem)) !important;
+    box-shadow: var(--admin-shadow-soft);
+    overflow: hidden;
+}
+
+.p-dropdown-panel.app-dropdown-panel,
+.p-select-overlay.app-dropdown-panel {
+    width: var(--app-dropdown-width, 100%) !important;
+    min-width: var(--app-dropdown-width, 100%) !important;
+    max-width: min(var(--app-dropdown-width, 100%), calc(100vw - 1rem)) !important;
+}
+
+.p-dropdown-header,
+.p-select-header {
+    background: var(--admin-surface-solid) !important;
+    color: var(--admin-text) !important;
+    border-bottom: 1px solid var(--admin-border) !important;
+    padding: 0.5rem 0.625rem !important;
+    margin: 0 !important;
+}
+
+.p-dropdown-filter-container,
+.p-select-filter-container {
+    position: relative;
+    width: 100%;
+}
+
+.p-dropdown-filter.p-inputtext,
+.p-select-filter {
+    width: 100% !important;
+    box-sizing: border-box;
+    background: var(--admin-surface-solid) !important;
+    color: var(--admin-text) !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.p-dropdown-filter.p-inputtext::placeholder,
+.p-select-filter::placeholder {
+    color: var(--admin-text-muted) !important;
+    opacity: 1;
+}
+
+.p-dropdown-filter.p-inputtext:enabled:focus,
+.p-dropdown-filter.p-inputtext:focus-visible,
+.p-select-filter:enabled:focus,
+.p-select-filter:focus-visible {
+    border-color: var(--admin-primary) !important;
+    box-shadow:
+        0 0 0 1px var(--rw-focus-ring),
+        0 0 10px var(--rw-focus-ring) !important;
+    outline: none !important;
+}
+
+.p-dropdown-filter-icon,
+.p-select-filter-icon {
+    color: var(--admin-text-muted) !important;
 }
 
 .p-dropdown-items-wrapper,
 .p-select-list-container {
     max-width: 100%;
+    max-height: min(16rem, 50vh);
+    overscroll-behavior: contain;
 }
 
 .p-dropdown-items,
@@ -418,9 +490,9 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     max-width: 100%;
     min-width: 0;
     overflow: hidden;
-    white-space: normal;
-    overflow-wrap: anywhere;
+    white-space: nowrap;
     line-height: 1.35;
+    font-weight: 400;
 }
 
 .p-select-option-label,
@@ -429,6 +501,13 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.p-dropdown-empty-message,
+.p-select-empty-message {
+    color: var(--admin-text-muted) !important;
+    padding: 0.5rem 0.75rem;
 }
 
 /* hover */
@@ -647,6 +726,117 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 
 .admin-profile-photo-input {
     display: none;
+}
+
+/* Image upload dropzone — matches Customer Maintenance Request upload look */
+.admin-image-upload {
+    position: relative;
+    display: flex;
+    min-height: 9.5rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 1.25rem 1rem;
+    border: 1px dashed var(--admin-border);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--admin-surface-solid) 88%, var(--admin-bg) 12%);
+    color: var(--admin-text-muted);
+    text-align: center;
+    cursor: pointer;
+    transition:
+        border-color 200ms ease-out,
+        background-color 200ms ease-out,
+        color 200ms ease-out;
+}
+
+.admin-image-upload:hover,
+.admin-image-upload:focus-visible,
+.admin-image-upload.is-dragging {
+    border-color: color-mix(in srgb, var(--admin-primary) 45%, var(--admin-border));
+    background: color-mix(in srgb, var(--admin-surface-solid) 82%, var(--admin-primary) 8%);
+    color: var(--admin-text);
+    outline: none;
+}
+
+.admin-image-upload[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.72;
+}
+
+.admin-image-upload__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.admin-image-upload__icon {
+    font-size: 1.35rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--admin-primary) 70%, var(--admin-text-muted));
+}
+
+.admin-image-upload__text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.admin-image-upload__hint {
+    font-size: 0.75rem;
+    line-height: 1.35;
+    color: var(--admin-text-muted);
+}
+
+.admin-image-upload__preview {
+    display: flex;
+    width: 100%;
+    max-width: 28rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.admin-image-upload__image {
+    display: block;
+    max-width: 100%;
+    max-height: 11rem;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+.admin-image-upload__filename {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--admin-text);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-image-upload__remove {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--admin-primary);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.35;
+    cursor: pointer;
+}
+
+.admin-image-upload__remove:hover,
+.admin-image-upload__remove:focus-visible {
+    text-decoration: underline;
+    outline: none;
 }
 
 /* DARK MODE DROPDOWN — see theme.css */

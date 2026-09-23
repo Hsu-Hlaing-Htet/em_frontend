@@ -11,6 +11,11 @@ const service = {
         }
     },
 
+    getOptions: async () => {
+        const result = await api.get(endpoint.maintenanceCategoryOptions);
+        return result.data;
+    },
+
     add: async (params) => {
         const result = await api.post(endpoint.maintenanceCategories, params);
         return result.data;

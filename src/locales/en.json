@@ -241,6 +241,7 @@
     "noMaintenanceTitle": "No maintenance requests",
     "noMaintenanceMessage": "Submit a request when something needs attention in your room.",
     "noRoomsForMaintenance": "No rooms are available from an active approved contract.",
+    "noMaintenanceCategories": "No maintenance categories available",
     "notifications": "Notifications",
     "notificationsLead": "Payment updates, invoice alerts, and announcements",
     "noNotificationsTitle": "You're all caught up",

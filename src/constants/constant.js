@@ -126,14 +126,6 @@ export const MAINTENANCE_STATUS_OPTIONS = [
     { label: 'Cancelled', value: 'cancelled' },
 ];
 
-export const MAINTENANCE_CATEGORY_OPTIONS = [
-    { label: 'Plumbing', value: 'plumbing' },
-    { label: 'Electrical', value: 'electrical' },
-    { label: 'HVAC', value: 'hvac' },
-    { label: 'Appliance', value: 'appliance' },
-    { label: 'General', value: 'general' },
-];
-
 export const MAINTENANCE_CUSTOMER_STATUS_OPTIONS = [
     { label: 'Pending', value: 'pending' },
     { label: 'In Progress', value: 'in_progress' },

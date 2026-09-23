@@ -18,9 +18,7 @@ export default function useCustomerMaintenanceRequestList() {
     const totalRecords = ref(0);
     const page = ref(1);
     const rows = ref(10);
-    const search = ref('');
     const status = ref('');
-    let searchTimer = null;
 
     const statusFilters = computed(() => [
         { label: t('common.all'), value: '' },
@@ -43,7 +41,6 @@ export default function useCustomerMaintenanceRequestList() {
             await store.fetchAll({
                 page: page.value,
                 per_page: rows.value,
-                search: search.value || undefined,
                 status: status.value || undefined,
             });
             const response = store.getAllResponse;
@@ -72,11 +69,6 @@ export default function useCustomerMaintenanceRequestList() {
 
     watch(status, resetAndLoad);
 
-    watch(search, () => {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(resetAndLoad, 300);
-    });
-
     const loadMore = () => {
         if (!hasMore() || isLoadingMore.value) {
             return;
@@ -94,7 +86,6 @@ export default function useCustomerMaintenanceRequestList() {
         isLoading,
         isLoadingMore,
         requests,
-        search,
         status,
         statusFilters,
         hasMore,

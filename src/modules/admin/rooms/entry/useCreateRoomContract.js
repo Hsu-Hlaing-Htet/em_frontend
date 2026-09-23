@@ -195,6 +195,18 @@ export default function useCreateRoomContract() {
         }
     });
 
+    watch(() => saleForm.state.second_customer_id, () => {
+        if (errors.has('second_user_id')) {
+            errors.clear('second_user_id');
+        }
+    });
+
+    watch(() => rentForm.state.second_customer_id, () => {
+        if (errors.has('second_user_id')) {
+            errors.clear('second_user_id');
+        }
+    });
+
     onMounted(async () => {
         isLoading.value = true;
         isBootstrapping.value = true;
@@ -284,6 +296,17 @@ export default function useCreateRoomContract() {
         const rules = contractType.value === 'rent' ? RENT_VALIDATION_RULES : SALE_VALIDATION_RULES;
 
         if (!applyValidation(errors, values, rules)) {
+            return;
+        }
+
+        if (
+            form.state.show_second_customer
+            && form.state.second_customer_id
+            && Number(form.state.second_customer_id) === Number(form.state.customer_id)
+        ) {
+            errors.record({
+                second_user_id: ['Second customer must be different from the first customer.'],
+            });
             return;
         }
 

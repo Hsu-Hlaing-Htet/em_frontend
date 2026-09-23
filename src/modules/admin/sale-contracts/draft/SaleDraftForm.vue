@@ -3,7 +3,7 @@
         <div :class="embedded ? 'draft-form__body' : 'admin-panel draft-form__body mx-auto max-w-6xl'">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div class="field">
-                    <label class="mb-2 block text-md">Customer Name</label>
+                    <label class="mb-2 block text-md">Owner 1</label>
                     <Dropdown
                         v-model="state.customer_id"
                         :options="safeCustomerOptions"
@@ -30,6 +30,57 @@
                 <div class="field">
                     <EmailInput v-model="state.customer_email" />
                 </div>
+
+                <div v-if="!state.show_second_customer" class="field md:col-span-2">
+                    <button
+                        type="button"
+                        class="draft-form__party-action"
+                        @click="addSecondParty"
+                    >
+                        + Add Second Owner
+                    </button>
+                </div>
+
+                <template v-else>
+                    <div class="field">
+                        <label class="mb-2 block text-md">Owner 2 (Optional)</label>
+                        <Dropdown
+                            v-model="state.second_customer_id"
+                            :options="secondCustomerOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Select Customer"
+                            filter
+                            filter-placeholder="Search customer"
+                            class="w-full"
+                            empty-message="No customers found."
+                        />
+                        <small v-if="errors.has('second_user_id')" class="p-error">
+                            <div v-for="error in errors.get('second_user_id')" :key="error">{{ error }}</div>
+                        </small>
+                    </div>
+                    <div class="field">
+                        <NrcInput v-model="state.second_customer_nrc" field-class="md:col-span-2" />
+                    </div>
+
+                    <div class="field">
+                        <PhoneInput v-model="state.second_customer_phone" />
+                    </div>
+
+                    <div class="field">
+                        <EmailInput v-model="state.second_customer_email" />
+                    </div>
+
+                    <div class="field md:col-span-2">
+                        <button
+                            type="button"
+                            class="draft-form__party-action draft-form__party-action--remove"
+                            @click="removeSecondParty"
+                        >
+                            Remove Second Owner
+                        </button>
+                    </div>
+                </template>
 
                 <template v-if="!lockProperty">
                     <div class="field">
@@ -165,6 +216,7 @@ import Button from 'primevue/button';
 import NrcInput from '@/components/admin/NrcInput.vue';
 import PhoneInput from '@/components/admin/PhoneInput.vue';
 import EmailInput from '@/components/admin/EmailInput.vue';
+import { sameEntityId } from '@/helpers/contracts/draftBuildingRooms';
 import {
     estimateMonthlyPayment,
     remainingAfterDeposit,
@@ -237,6 +289,12 @@ export default defineComponent({
             Array.isArray(props.customerOptions) ? props.customerOptions : []
         ));
 
+        const secondCustomerOptions = computed(() => (
+            safeCustomerOptions.value.filter(
+                (option) => !sameEntityId(option.value, props.state.customer_id),
+            )
+        ));
+
         const isInstallment = computed(() => props.state.payment_type === 'installment');
 
         const showCalculatedPayments = computed(() => (
@@ -256,13 +314,51 @@ export default defineComponent({
             })
         ));
 
+        const addSecondParty = () => {
+            props.state.show_second_customer = true;
+        };
+
+        const removeSecondParty = () => {
+            props.state.show_second_customer = false;
+            props.state.second_customer_id = null;
+            props.state.second_customer_nrc = '';
+            props.state.second_customer_phone = '';
+            props.state.second_customer_email = '';
+        };
+
         return {
             safeCustomerOptions,
+            secondCustomerOptions,
             isInstallment,
             showCalculatedPayments,
             remainingBalance,
             estimatedMonthlyPayment,
+            addSecondParty,
+            removeSecondParty,
         };
     },
 });
 </script>
+
+<style scoped>
+.draft-form__party-action {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--admin-primary);
+    text-align: left;
+}
+
+.draft-form__party-action:hover {
+    text-decoration: underline;
+}
+
+.draft-form__party-action--remove {
+    color: var(--admin-text-muted);
+}
+</style>

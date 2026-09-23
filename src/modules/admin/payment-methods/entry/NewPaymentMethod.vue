@@ -123,30 +123,17 @@
 
                 <div class="field md:col-span-2">
                     <label class="mb-2 block text-md">QR Image</label>
-                    <input
-                        type="file"
-                        accept="image/png,image/jpeg,image/jpg,image/webp"
-                        class="w-full text-sm"
-                        @change="onQrSelected"
-                    >
-                    <small class="mt-1 block text-[var(--admin-text-muted)]">
-                        JPG, PNG, or WebP. Max 5 MB.
-                    </small>
-                    <div v-if="qrPreviewUrl" class="mt-3 flex flex-col gap-2">
-                        <img
-                            :src="qrPreviewUrl"
-                            alt="Payment method QR preview"
-                            class="max-h-40 w-40 rounded border border-[var(--admin-border)] object-contain"
-                        >
-                        <Button
-                            type="button"
-                            label="Remove QR"
-                            severity="secondary"
-                            size="small"
-                            class="self-start"
-                            @click="clearQr"
-                        />
-                    </div>
+                    <AdminImageUpload
+                        :preview-url="qrPreviewUrl"
+                        :file-name="qrFileName"
+                        empty-label="Upload QR image"
+                        remove-label="Remove QR"
+                        hint="JPG, PNG, or WebP. Max 5 MB."
+                        preview-alt="Payment method QR preview"
+                        :disabled="isLoading"
+                        @select="onQrSelected"
+                        @clear="clearQr"
+                    />
                     <small v-if="errors.has('qr_image')" class="p-error">
                         <div v-for="error in errors.get('qr_image')" :key="error">{{ error }}</div>
                     </small>
@@ -189,6 +176,7 @@ import InputSwitch from 'primevue/inputswitch';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
+import AdminImageUpload from '@/components/admin/AdminImageUpload.vue';
 import useNewPaymentMethod from './useNewPaymentMethod';
 
 export default defineComponent({
@@ -201,6 +189,7 @@ export default defineComponent({
         Textarea,
         Button,
         Loading,
+        AdminImageUpload,
     },
     setup() {
         return useNewPaymentMethod();

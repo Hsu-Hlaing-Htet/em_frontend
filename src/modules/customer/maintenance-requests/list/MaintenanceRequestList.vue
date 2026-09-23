@@ -11,13 +11,18 @@
             </template>
         </CustomerPageHeader>
 
-        <CustomerSearchBar
-            v-model:search="search"
-            v-model:status="status"
-            class="customer-list-toolbar"
-            :placeholder="$t('customer.maintenanceSearchPlaceholder')"
-            :filters="statusFilters"
-        />
+        <div class="customer-portal-filter-row" role="group" :aria-label="$t('customer.maintenance')">
+            <button
+                v-for="filter in statusFilters"
+                :key="filter.value || 'all'"
+                type="button"
+                class="customer-portal-filter-chip"
+                :class="{ 'is-active': status === filter.value }"
+                @click="status = filter.value"
+            >
+                {{ filter.label }}
+            </button>
+        </div>
 
         <Loading v-if="isLoading" />
 
@@ -69,7 +74,6 @@ import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
-import CustomerSearchBar from '@/components/customer/CustomerSearchBar.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerMaintenanceRequestList from '@/composables/customer/useCustomerMaintenanceRequestList';
@@ -92,7 +96,6 @@ export default defineComponent({
         Button,
         Loading,
         StatusBadge,
-        CustomerSearchBar,
         CustomerEmptyState,
         CustomerPageHeader,
     },

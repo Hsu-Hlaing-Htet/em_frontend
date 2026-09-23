@@ -22,6 +22,7 @@ export const endpoint = {
     customerNotifications: 'customer/notifications',
     customerPaymentMethods: 'customer/payment-methods',
     customerMaintenanceRooms: 'customer/maintenance-rooms',
+    customerMaintenanceCategories: 'customer/maintenance-categories',
     customerMaintenanceRequests: 'customer/maintenance-requests',
 
     /** Dashboard */
@@ -50,6 +51,7 @@ export const endpoint = {
     /** Billing */
     chargeTypes: 'charge-types',
     maintenanceCategories: 'maintenance-categories',
+    maintenanceCategoryOptions: 'maintenance-categories/options',
     lateFees: 'late-fees',
     paymentMethods: 'payment-methods',
     paymentPlans: 'payment-plans',

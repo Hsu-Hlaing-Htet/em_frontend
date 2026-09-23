@@ -4,15 +4,13 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import { MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
+import { MAINTENANCE_CATEGORY_OPTIONS, MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
 import { useMaintenanceRequestStore } from '../store';
-import { useMaintenanceCategoryStore } from '@/modules/admin/maintenance-categories/store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useResidentStore } from '@/modules/admin/residents/store';
 
 export default function useEditMaintenanceRequest() {
     const store = useMaintenanceRequestStore();
-    const categoryStore = useMaintenanceCategoryStore();
     const roomStore = useRoomStore();
     const residentStore = useResidentStore();
     const route = useRoute();
@@ -22,14 +20,14 @@ export default function useEditMaintenanceRequest() {
     const errors = new Errors();
     const roomOptions = ref([]);
     const residentOptions = ref([]);
-    const categoryOptions = ref([]);
+    const categoryOptions = MAINTENANCE_CATEGORY_OPTIONS;
 
     const state = reactive({
         id: null,
         room_id: null,
         user_id: null,
         title: '',
-        maintenance_category_id: null,
+        category: null,
         priority: null,
         description: '',
         status: '',
@@ -41,7 +39,6 @@ export default function useEditMaintenanceRequest() {
         await Promise.all([
             roomStore.fetchAll({ per_page: 100 }),
             residentStore.fetchAll({ per_page: 100 }),
-            categoryStore.fetchAll({ per_page: 100, status: 'active' }),
             fetchRequest(),
         ]);
 
@@ -58,14 +55,6 @@ export default function useEditMaintenanceRequest() {
             residentOptions.value = residents.data.data.map((resident) => ({
                 label: resident.name,
                 value: resident.id,
-            }));
-        }
-
-        const categories = categoryStore.getAllResponse;
-        if (categories?.data?.data) {
-            categoryOptions.value = categories.data.data.map((category) => ({
-                label: category.name,
-                value: category.id,
             }));
         }
     });
@@ -88,7 +77,7 @@ export default function useEditMaintenanceRequest() {
                     room_id: response.data.room_id,
                     user_id: response.data.user_id,
                     title: response.data.title,
-                    maintenance_category_id: response.data.maintenance_category_id,
+                    category: response.data.category,
                     priority: response.data.priority,
                     description: response.data.description || '',
                     status: response.data.status,
@@ -108,7 +97,7 @@ export default function useEditMaintenanceRequest() {
             { field: 'room_id', type: 'select' },
             { field: 'user_id', type: 'select' },
             { field: 'title', type: 'text' },
-            { field: 'maintenance_category_id', type: 'select' },
+            { field: 'category', type: 'select' },
             { field: 'priority', type: 'select' },
         ])) {
             return;
@@ -117,7 +106,15 @@ export default function useEditMaintenanceRequest() {
         isSaving.value = true;
 
         try {
-            await store.update({ ...state });
+            await store.update({
+                id: state.id,
+                room_id: state.room_id,
+                user_id: state.user_id,
+                title: state.title,
+                category: state.category,
+                priority: state.priority,
+                description: state.description || null,
+            });
             const response = store.getUpdateResponse;
 
             if (response) {
@@ -130,7 +127,7 @@ export default function useEditMaintenanceRequest() {
             }
         } catch (error) {
             if (error.status === 422) {
-                errors.record(error.data.data);
+                errors.record(error.data?.data || error.data?.errors || {});
             } else {
                 showApiErrorToast(error, 'Unable to save maintenance request.');
             }

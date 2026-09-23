@@ -22,6 +22,33 @@ function normalizeSeverity(severity) {
     return severity || 'info';
 }
 
+/** Auth + portal paths that share the Rosewood glass toast system (not Public). */
+const GLASS_TOAST_PATH_PREFIXES = [
+    '/admin',
+    '/customer',
+    '/login',
+    '/forgot-password',
+    '/change-password',
+    '/reset-password',
+];
+
+/**
+ * Glass toasts for Admin/Customer and auth screens that feed into them.
+ * Login success fires on /login before redirect — must still get rw-glass-toast.
+ * Public marketing pages (e.g. /contact) keep legacy pastel surfaces.
+ */
+function isPortalGlassToast() {
+    if (typeof window === 'undefined') {
+        return false;
+    }
+
+    const path = window.location?.pathname || '';
+
+    return GLASS_TOAST_PATH_PREFIXES.some(
+        (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+    );
+}
+
 export function normalizeToastOptions({
     severity = 'info',
     summary = '',
@@ -38,12 +65,17 @@ export function normalizeToastOptions({
         resolvedLife = Math.max(resolvedLife || 0, DEFAULT_LIFE[resolvedSeverity]);
     }
 
-    return {
+    const options = {
         severity: resolvedSeverity,
         summary: title,
         detail: message,
         life: resolvedLife,
         closable: true,
-        styleClass: 'rw-glass-toast',
     };
+
+    if (isPortalGlassToast()) {
+        options.styleClass = 'rw-glass-toast';
+    }
+
+    return options;
 }

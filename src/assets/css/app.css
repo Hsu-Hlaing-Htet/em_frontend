@@ -757,9 +757,8 @@ h3 {
     z-index: 90;
 }
 
+/* Progressive reveal — visible by default; Public layout gates hide via data-rw-reveal-ready */
 .reveal {
-    opacity: 0;
-    transform: translateY(26px);
     transition: opacity 0.64s ease, transform 0.64s ease;
 }
 

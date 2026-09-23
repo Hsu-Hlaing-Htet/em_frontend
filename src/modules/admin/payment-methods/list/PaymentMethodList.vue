@@ -66,6 +66,11 @@
                 <template #loading>Loading payment methods. Please wait.</template>
 
                 <Column field="name" header="Name" :sortable="true" style="min-width: 200px" />
+                <Column field="type" header="Type" :sortable="true" style="min-width: 130px">
+                    <template #body="{ data }">
+                        <span class="capitalize">{{ formatType(data.type) }}</span>
+                    </template>
+                </Column>
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         <div class="flex items-center gap-3">
@@ -136,8 +141,17 @@ export default defineComponent({
     setup() {
         const list = usePaymentMethodList();
 
+        const formatType = (type) => {
+            if (!type) {
+                return '—';
+            }
+
+            return String(type).replaceAll('_', ' ');
+        };
+
         return {
             ...list,
+            formatType,
             statusOptions: PAYMENT_METHOD_STATUS_OPTIONS,
         };
     },

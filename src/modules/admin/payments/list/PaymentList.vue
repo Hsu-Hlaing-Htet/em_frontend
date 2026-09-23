@@ -7,18 +7,22 @@
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
                 responsive-layout="scroll"
+                sort-mode="multiple"
                 scroll-height="58vh"
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
                 :value="payments"
+                :multi-sort-meta="lazyParams.multiSortMeta"
                 :total-records="totalRecords"
                 :rows="10"
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
+                removable-sort
                 row-hover
                 class="admin-clickable-rows"
                 @page="onPage($event)"
+                @sort="onSort($event)"
                 @row-click="onRowClick"
             >
                 <template #header>
@@ -94,7 +98,7 @@
                 </template>
                 <template #loading>Loading payments. Please wait.</template>
 
-                <Column header="Invoice No" style="min-width: 130px" frozen>
+                <Column field="invoice_number" header="Invoice No" :sortable="true" style="min-width: 130px" frozen>
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showPayment', params: { id: data.id } }"
@@ -104,31 +108,31 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="customer_name" header="Customer Name" style="min-width: 150px" />
-                <Column header="Invoice Amount (MMK)" style="min-width: 130px">
+                <Column field="customer_name" header="Customer Name" :sortable="true" style="min-width: 150px" />
+                <Column field="invoice_amount" header="Invoice Amount (MMK)" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.invoice_amount) }}
                     </template>
                 </Column>
-                <Column header="Paid Amount (MMK)" style="min-width: 130px">
+                <Column field="amount" header="Paid Amount (MMK)" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.amount) }}
                     </template>
                 </Column>
-                <Column header="Balance (MMK)" style="min-width: 120px">
+                <Column field="balance" header="Balance (MMK)" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.balance) }}
                     </template>
                 </Column>
-                <Column header="Payment Type" style="min-width: 110px">
+                <Column field="payment_type" header="Payment Type" :sortable="true" style="min-width: 110px">
                     <template #body="{ data }">
                         {{ formatPaymentTypeLabel(data.payment_type) }}
                     </template>
                 </Column>
 
-                <Column field="payment_date" header="Payment Date" style="min-width: 120px" />
-                <Column field="payment_method_name" header="Payment Method" style="min-width: 130px" />
-                <Column header="Status" style="min-width: 110px">
+                <Column field="payment_date" header="Payment Date" :sortable="true" style="min-width: 120px" />
+                <Column field="payment_method_name" header="Payment Method" :sortable="true" style="min-width: 130px" />
+                <Column field="status" header="Status" :sortable="true" style="min-width: 110px">
                     <template #body="{ data }">
                         <StatusBadge :value="data.display_status || data.status" />
                     </template>

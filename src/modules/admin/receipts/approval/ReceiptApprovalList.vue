@@ -90,15 +90,15 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="customer_name" header="Customer Name" style="min-width: 180px" />
-                <Column field="invoice_number" header="Invoice No." style="min-width: 140px" />
-                <Column header="Amount Received (MMK)" style="min-width: 160px">
+                <Column field="customer_name" header="Customer Name" :sortable="true" style="min-width: 180px" />
+                <Column field="invoice_number" header="Invoice No." :sortable="true" style="min-width: 140px" />
+                <Column field="paid_amount" header="Amount Received (MMK)" :sortable="true" style="min-width: 160px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.paid_amount ?? data.amount) }}
                     </template>
                 </Column>
-                <Column field="payment_date" header="Payment Date" style="min-width: 135px" />
-                <Column field="payment_method_name" header="Payment Method" style="min-width: 150px" />
+                <Column field="payment_date" header="Payment Date" :sortable="true" style="min-width: 135px" />
+                <Column field="payment_method_name" header="Payment Method" :sortable="true" style="min-width: 150px" />
                 <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions

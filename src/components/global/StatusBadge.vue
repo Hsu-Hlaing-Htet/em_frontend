@@ -27,8 +27,12 @@ const toneClass = computed(() => `status-badge--${config.value.tone}`);
 
 const toneStyle = computed(() => ({
     color: `var(--status-${config.value.tone}-text)`,
-    background: 'transparent',
+    backgroundColor: 'transparent',
+    backgroundImage: 'none',
     border: 'none',
+    borderRadius: '0',
+    padding: '0',
+    boxShadow: 'none',
 }));
 </script>
 

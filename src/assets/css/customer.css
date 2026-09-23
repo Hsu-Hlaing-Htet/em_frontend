@@ -207,7 +207,7 @@
 }
 
 .customer-list-page-header {
-    margin-bottom: 1rem;
+    margin-bottom: 1.1rem;
 }
 
 .customer-list-page-header--actions {
@@ -215,12 +215,12 @@
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.85rem;
 }
 
 .customer-list-toolbar {
     align-items: center;
-    padding: 0.75rem;
+    padding: 0.85rem;
     border: 1px solid var(--admin-border);
     border-radius: 6px;
     background: var(--admin-surface-solid);
@@ -240,17 +240,19 @@
 .customer-record-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.6rem;
 }
 
 .customer-record-row {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(130px, 0.8fr) minmax(150px, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 1rem;
+    column-gap: 1rem;
+    row-gap: 0.35rem;
     width: 100%;
-    min-height: 72px;
-    padding: 0.75rem 1rem;
+    min-width: 0;
+    min-height: 0;
+    padding: 0.85rem 1.1rem;
     border: 1px solid var(--admin-border);
     border-radius: 6px;
     background-color: var(--admin-surface-solid);
@@ -259,25 +261,6 @@
     text-decoration: none;
     box-shadow: var(--admin-shadow-soft);
     cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.customer-record-row:hover,
-.customer-record-row:focus-visible,
-.customer-record-row:focus-within,
-.customer-record-row:active {
-    background-color: color-mix(in srgb, var(--admin-surface-solid) 92%, var(--admin-primary) 8%) !important;
-    background-image: none !important;
-    border-color: color-mix(in srgb, var(--admin-primary) 35%, var(--admin-border));
-    box-shadow:
-        inset 3px 0 0 color-mix(in srgb, var(--admin-primary) 38%, transparent),
-        var(--admin-shadow);
-    outline: none;
-}
-
-.customer-record-row:focus-visible,
-.customer-record-row:focus-within {
-    box-shadow: inset 3px 0 0 var(--admin-primary), var(--rw-focus-shadow);
 }
 
 .customer-record-cell,
@@ -285,23 +268,184 @@
     display: flex;
     min-width: 0;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.2rem;
+}
+
+.customer-record-primary {
+    align-items: flex-start;
+    text-align: left;
+    min-width: 0;
+}
+
+.customer-record-meta {
+    align-items: flex-end;
+    justify-content: center;
+    justify-self: end;
+    width: max-content;
+    max-width: none;
+    min-width: max-content;
+    flex-shrink: 0;
+    gap: 5px;
+    overflow: visible;
+    text-align: right;
 }
 
 .customer-record-label {
     color: var(--admin-text-muted);
 }
 
-.customer-record-cell strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
+.customer-record-created {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 0;
+    max-width: none;
+    overflow: visible;
+    color: var(--admin-text);
+    font-family: var(--customer-font-ui);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.35;
     white-space: nowrap;
 }
 
-.customer-record-cell small {
+.customer-record-created-sep {
+    white-space: pre;
+}
+
+.customer-record-created-date,
+.customer-record-created-time {
+    overflow: visible;
+    white-space: nowrap;
+}
+
+.customer-receipt-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.customer-contract-row {
+    align-items: center;
+}
+
+.customer-contract-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--admin-text);
+}
+
+.customer-contract-property {
+    color: var(--admin-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+
+.customer-contract-meta {
+    gap: 0.35rem;
+}
+
+.customer-contract-amount {
+    color: var(--admin-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.customer-payment-amount {
+    color: var(--admin-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.customer-receipt-identity {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 0;
+    width: 100%;
+}
+
+.customer-receipt-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+    margin-top: 0.15rem;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--admin-primary);
+}
+
+.customer-receipt-icon .pi {
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+.customer-receipt-copy {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.15rem;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.customer-receipt-action {
+    margin-top: 0.15rem;
+    color: var(--admin-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.customer-record-cell strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.customer-record-cell small,
+.customer-record-cell time {
     overflow: hidden;
     color: var(--admin-text-muted);
     text-overflow: ellipsis;
+    white-space: normal;
+}
+
+.customer-record-meta,
+.customer-record-meta strong,
+.customer-record-meta time,
+.customer-record-meta small,
+.customer-record-meta .rw-date,
+.customer-record-meta .rw-money,
+.customer-record-meta .status-badge,
+.customer-record-meta .customer-receipt-action,
+.customer-record-meta .customer-record-created,
+.customer-record-meta .customer-record-created-date,
+.customer-record-meta .customer-record-created-time {
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.customer-record-meta strong,
+.customer-record-meta time,
+.customer-record-meta .rw-date,
+.customer-record-meta .rw-money,
+.customer-record-meta .status-badge,
+.customer-contract-amount,
+.customer-payment-amount,
+.customer-receipt-action,
+.customer-notification-read-state,
+.customer-record-created {
     white-space: nowrap;
 }
 
@@ -312,7 +456,19 @@
 
 .customer-record-amount strong {
     font-size: 0.875rem;
-    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+}
+
+/* Pagination page numbers only */
+[data-customer-layout] .p-paginator .p-paginator-page,
+[data-customer-layout] .p-paginator .p-paginator-current {
+    --rosewood-admin-serif: var(--rosewood-brand-font, 'Cormorant Garamond', Georgia, serif);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
+}
+
+[data-customer-layout] .customer-record-label {
+    --rosewood-admin-serif: var(--rosewood-brand-font, 'Cormorant Garamond', Georgia, serif);
 }
 
 .customer-record-status {
@@ -320,73 +476,220 @@
     justify-self: end;
 }
 
-.customer-receipt-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.5rem;
-    padding: 0.25rem 0.5rem 0.25rem 0;
+.customer-record-meta .status-badge,
+.customer-record-meta .p-tag {
+    align-self: flex-end;
 }
 
-.customer-receipt-main {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(130px, 0.8fr) minmax(150px, 1fr) auto;
+.customer-notification-primary {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.customer-notification-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-self: end;
+    gap: 6px;
+    max-width: none;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.customer-notification-time {
+    color: var(--admin-text-muted);
+    font-family: var(--customer-font-ui);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.customer-notification-read-row,
+.customer-notification-unread-inline {
+    display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    min-width: 0;
-    padding: 0.5rem 0 0.5rem 1rem;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    text-align: left;
-    cursor: pointer;
+    justify-content: flex-end;
+    gap: 5px;
+    min-height: 0;
 }
 
-.customer-receipt-main:focus-visible {
-    border-radius: 5px;
-    outline: none;
+.customer-notification-read-state {
+    font-family: var(--customer-font-ui);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: var(--rw-danger);
+    white-space: nowrap;
 }
 
-.customer-record-download {
-    align-self: center;
+.customer-notification-unread-inline .customer-portal-unread-dot,
+.customer-notification-read-row .customer-portal-unread-dot {
+    width: 5px;
+    height: 5px;
+    margin: 0;
+    flex-shrink: 0;
 }
 
+.customer-notification-row.is-unread .customer-portal-notification-feed-copy strong {
+    font-weight: 600;
+}
+
+.customer-notification-row:not(.is-unread) .customer-portal-notification-feed-copy strong {
+    font-weight: 500;
+    color: var(--admin-text);
+}
+
+.customer-notification-row:not(.is-unread) .customer-portal-notification-feed-copy small {
+    color: var(--admin-text-muted);
+}
+
+.customer-portal-notification-item.is-unread .customer-portal-notification-copy strong {
+    font-weight: 600;
+}
+
+.customer-portal-notification-item:not(.is-unread) .customer-portal-notification-copy strong {
+    font-weight: 500;
+    color: var(--admin-text);
+}
+
+.customer-portal-notification-item:not(.is-unread) .customer-portal-notification-copy small {
+    color: var(--admin-text-muted);
+}
+
+.customer-portal-notification-aside .customer-notification-read-state {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--rw-danger);
+    white-space: nowrap;
+}
+
+.customer-portal-notification-aside .customer-portal-unread-dot {
+    width: 5px;
+    height: 5px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Phone widths: keep LEFT / RIGHT — do not auto-stack */
 @media (max-width: 767px) {
+    .customer-record-list {
+        gap: 0.5rem;
+    }
+
     .customer-record-row {
         grid-template-columns: minmax(0, 1fr) auto;
-        gap: 0.75rem 1rem;
+        column-gap: 0.75rem;
+        row-gap: 0.2rem;
+        padding: 0.9rem 1rem;
     }
 
     .customer-receipt-row {
         grid-template-columns: minmax(0, 1fr) auto;
     }
 
-    .customer-receipt-main {
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 0.75rem 1rem;
-    }
-
+    .customer-record-meta,
     .customer-record-amount,
     .customer-record-status {
         align-items: flex-end;
+        justify-self: end;
+        text-align: right;
+        max-width: none;
+        width: max-content;
+        min-width: max-content;
+        overflow: visible;
+    }
+
+    .customer-receipt-action {
+        margin-top: 0.1rem;
+    }
+
+    .customer-record-meta .status-badge,
+    .customer-record-meta .p-tag {
+        align-self: flex-end;
+        margin-left: 0;
+    }
+
+    .customer-notification-meta {
+        max-width: none;
+        gap: 6px;
+    }
+
+    .customer-contract-title {
+        font-size: 0.9375rem;
+    }
+
+    .customer-contract-property,
+    .customer-record-cell small {
+        font-size: 0.75rem;
+    }
+
+    .customer-contract-amount,
+    .customer-record-meta strong {
+        font-size: 0.8125rem;
+    }
+
+    .customer-portal-notification-feed .customer-portal-notification-type-badge {
+        font-size: 0.6875rem;
+    }
+}
+
+/* Extremely narrow: keep LEFT/RIGHT, but stack date above time in the RIGHT column */
+@media (max-width: 360px) {
+    .customer-record-created {
+        flex-direction: column;
+        align-items: flex-end;
+        white-space: normal;
+        gap: 0.1rem;
+        font-size: 0.75rem;
+    }
+
+    .customer-record-created-sep {
+        display: none;
+    }
+}
+
+/* Extremely narrow only: allow graceful stack */
+@media (max-width: 340px) {
+    .customer-record-row,
+    .customer-receipt-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.45rem;
+    }
+
+    .customer-record-meta,
+    .customer-record-amount,
+    .customer-record-status {
+        align-items: flex-start;
+        justify-self: stretch;
+        text-align: left;
+        max-width: none;
+    }
+
+    .customer-record-meta .status-badge,
+    .customer-record-meta .p-tag {
+        align-self: flex-start;
+    }
+
+    .customer-notification-meta {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .customer-notification-read-row {
+        justify-content: flex-start;
     }
 }
 
 @media (max-width: 479px) {
     .customer-record-row {
-        padding: 0.75rem;
-    }
-
-    .customer-record-status {
-        align-self: end;
-        grid-column: 2;
-        grid-row: 2;
-    }
-
-    .customer-receipt-row {
-        padding: 0.25rem;
-    }
-
-    .customer-receipt-main {
-        padding: 0.5rem;
+        padding: 0.875rem 0.9rem;
     }
 }
 
@@ -417,73 +720,506 @@
     }
 }
 
-/* Customer portal — aligned with admin panel tokens */
+/* Customer portal — typography + surfaces aligned to Admin (relaxed scale) */
 [data-customer-layout] {
+
+
+    /* Same Admin surface language, slightly softer padding */
     --customer-portal-accent: var(--admin-primary);
     --customer-portal-burgundy: var(--rw-primary-deep);
     --customer-portal-burgundy-deep: var(--rw-primary-darker);
     --customer-portal-gold: var(--rw-warning);
-    --customer-portal-card-radius: 3px;
-    --customer-portal-card-padding: 20px;
-    --customer-portal-transition: 0.18s ease;
+    --customer-portal-card-radius: 6px;
+    --customer-portal-card-padding: 1.25rem 1.35rem;
+    --customer-portal-section-gap: 1rem;
+    --customer-portal-transition: 220ms ease-out;
+    --customer-portal-lift: -2px;
+    /* Floating Rent Assistant clearance (trigger ~58px + corner inset) */
+    --customer-assistant-clearance: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+
+    /* Shared interactive surface (Apple-like edge + depth, no fill) */
+    --customer-interactive-border: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 42%, var(--admin-border));
+    --customer-interactive-ring: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 14%, transparent);
+    --customer-interactive-shadow:
+        0 0 0 1px var(--customer-interactive-ring),
+        0 8px 24px rgba(0, 0, 0, 0.16);
+    --customer-interactive-transition:
+        border-color 220ms ease-out,
+        box-shadow 220ms ease-out,
+        transform 220ms ease-out;
+
+    background: var(--admin-bg);
+    color: var(--admin-text);
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Typography — mirrors Admin Portal (.admin-list-toolbar__title, forms, tables) */
+html[data-theme='light'] [data-customer-layout],
+html:not([data-theme]) [data-customer-layout] {
+    --customer-interactive-shadow:
+        0 0 0 1px var(--customer-interactive-ring),
+        0 8px 24px rgba(28, 25, 23, 0.08);
+}
+
+/*
+ * Shared clickable surface interaction — Customer Portal only.
+ * Edge + depth + tiny lift. No background fill.
+ */
+.customer-interactive-surface,
+.customer-portal-card--interactive,
+.customer-record-row,
+.customer-portal-notification-item,
+.customer-portal-overdue-row {
+    transition: var(--customer-interactive-transition);
+    will-change: transform;
+}
+
+/* Pointer devices only — avoids sticky hover on touch */
+@media (hover: hover) and (pointer: fine) {
+    .customer-interactive-surface:hover,
+    .customer-portal-card--interactive:hover,
+    .customer-record-row:hover,
+    .customer-portal-notification-item:hover,
+    .customer-portal-notification-item.is-unread:hover,
+    .customer-portal-notification-feed-item:hover,
+    .customer-portal-notification-feed-item.is-unread:hover,
+    .customer-portal-overdue-row:hover {
+        border-color: var(--customer-interactive-border);
+        box-shadow: var(--customer-interactive-shadow);
+        transform: translateY(var(--customer-portal-lift));
+    }
+
+    .customer-interactive-surface:active,
+    .customer-portal-card--interactive:active,
+    .customer-record-row:active,
+    .customer-portal-notification-item:active,
+    .customer-portal-overdue-row:active {
+        transform: translateY(0);
+    }
+}
+
+.customer-interactive-surface:focus-visible,
+.customer-portal-card--interactive:focus-visible,
+.customer-record-row:focus-visible,
+.customer-portal-notification-item:focus-visible,
+.customer-portal-notification-feed-item:focus-visible,
+.customer-portal-overdue-row:focus-visible {
+    border-color: var(--customer-interactive-border);
+    box-shadow:
+        0 0 0 1px var(--customer-interactive-ring),
+        0 0 0 3px color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 18%, transparent),
+        0 8px 24px rgba(0, 0, 0, 0.12);
+    outline: none;
+    transform: none;
+}
+
+/* Mouse click: no sticky rectangular focus box on dashboard/list surfaces */
+.customer-interactive-surface:focus:not(:focus-visible),
+.customer-portal-card--interactive:focus:not(:focus-visible),
+.customer-record-row:focus:not(:focus-visible),
+.customer-portal-notification-item:focus:not(:focus-visible),
+.customer-portal-notification-feed-item:focus:not(:focus-visible),
+.customer-portal-overdue-row:focus:not(:focus-visible),
+.customer-portal-help-cta:focus:not(:focus-visible),
+.customer-portal-help-contact:focus:not(:focus-visible),
+.customer-portal-action-link:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.customer-portal-overdue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.customer-portal-overdue-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    width: 100%;
+    align-items: start;
+    column-gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 3px;
+    background: var(--admin-surface-solid);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.customer-portal-overdue-main {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-align: left;
+}
+
+.customer-portal-overdue-title {
+    color: var(--admin-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.customer-portal-overdue-amount {
+    color: var(--admin-text);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.customer-portal-overdue-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.customer-portal-overdue-aside time {
+    color: var(--admin-text-muted);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.customer-portal-overdue-chevron {
+    align-self: center;
+    color: var(--admin-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1;
+}
+
+/* =========================================================
+   Customer typography hierarchy (Admin font roles, calmer scale)
+   Brand + major headings: Cormorant (shared --rosewood-brand-font)
+   UI / body / labels / status / nav: Inter
+   Numeric/data: Inter tabular (via .rw-numeric*)
+   Icons: PrimeIcons / Font Awesome — never UI font
+   ========================================================= */
+
+/* TEXT-only containers — do NOT target span/i/button globally (breaks icons + brand) */
+[data-customer-layout] .customer-shell,
+[data-customer-layout] .customer-main,
+[data-customer-layout] .customer-portal-home,
+[data-customer-layout] .customer-portal-page,
+[data-customer-layout] .customer-portal-header-inner,
+[data-customer-layout] .customer-portal-hero-copy,
+[data-customer-layout] .customer-record-cell,
+[data-customer-layout] .admin-panel,
+[data-customer-layout] p,
+[data-customer-layout] label,
+[data-customer-layout] dt,
+[data-customer-layout] dd:not(.rw-numeric):not(.rw-date):not(.rw-money),
+[data-customer-layout] input,
+[data-customer-layout] textarea,
+[data-customer-layout] select,
+[data-customer-layout] .p-inputtext,
+[data-customer-layout] .p-dropdown-label {
+    font-family: var(--customer-font-ui);
+}
+
+/* Brand lockup — header only: soft white (dark) / high-contrast (light) → burgundy hover */
+[data-customer-layout] .customer-portal-header .rosewood-brand .rosewood-brand__name,
+[data-customer-layout] .customer-portal-header a.rosewood-brand .rosewood-brand__name {
+    font-weight: var(--rosewood-brand-name-weight, 600) !important;
+    font-style: normal !important;
+    letter-spacing: var(--rosewood-brand-name-tracking, 0.02em);
+    line-height: 1.15;
+    color: #f5f5f7;
+    transition:
+        color 200ms ease-out,
+        transform 200ms ease-out,
+        letter-spacing 200ms ease-out;
+}
+
+[data-customer-layout] .customer-portal-header .rosewood-brand:hover .rosewood-brand__name,
+[data-customer-layout] .customer-portal-header .rosewood-brand:focus-visible .rosewood-brand__name {
+    color: var(--rw-brand, #8f2338);
+    transform: translateX(2px);
+    letter-spacing: 0.04em;
+}
+
+/* Light mode: keep readable dark text; hover still → burgundy */
+[data-customer-layout][data-theme='light'] .customer-portal-header .rosewood-brand .rosewood-brand__name,
+html[data-theme='light'] [data-customer-layout] .customer-portal-header .rosewood-brand .rosewood-brand__name {
+    color: var(--rw-text, var(--admin-text, #1c1917));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-customer-layout] .customer-portal-header .rosewood-brand .rosewood-brand__name {
+        transition: color 200ms ease-out;
+    }
+
+    [data-customer-layout] .customer-portal-header .rosewood-brand:hover .rosewood-brand__name,
+    [data-customer-layout] .customer-portal-header .rosewood-brand:focus-visible .rosewood-brand__name {
+        transform: none;
+        letter-spacing: var(--rosewood-brand-name-tracking, 0.02em);
+    }
+}
+
+/* Major page / hero headings — same Admin heading serif */
+[data-customer-layout] .customer-portal-hero-title,
 [data-customer-layout] .customer-page-heading,
 [data-customer-layout] .customer-portal-page-title {
-    font-size: 1rem;
+    font-family: var(--customer-font-heading) !important;
     font-weight: 600;
-    line-height: 1.5;
+    letter-spacing: -0.01em;
     color: var(--admin-text);
+}
+
+[data-customer-layout] .customer-page-heading,
+[data-customer-layout] .customer-portal-page-title {
+    font-size: 1.25rem;
+    line-height: 1.3;
 }
 
 [data-customer-layout] .customer-page-lead,
 [data-customer-layout] .customer-portal-page-lead,
 [data-customer-layout] .customer-portal-unread-summary {
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-family: var(--customer-font-ui);
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.55;
     color: var(--admin-text-muted);
 }
 
+/* Card / panel / section titles — Admin panel-title serif role */
 [data-customer-layout] .customer-portal-panel-head h2,
 [data-customer-layout] .customer-portal-contract-card h2,
 [data-customer-layout] .customer-portal-help-card h2,
-[data-customer-layout] .customer-portal-quick-action h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1.5;
+[data-customer-layout] .customer-portal-quick-action h3,
+[data-customer-layout] .customer-section-title {
+    font-family: var(--customer-font-heading) !important;
+    font-size: clamp(1.05rem, 1rem + 0.2vw, 1.2rem);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.35;
+    color: var(--admin-text);
 }
 
+/* Eyebrows / metadata labels — Admin UI font */
 [data-customer-layout] .customer-portal-card-eyebrow,
 [data-customer-layout] .customer-portal-contract-meta dt,
 [data-customer-layout] .customer-record-label {
-    font-size: 0.75rem;
+    font-family: var(--customer-font-ui);
+    font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+    line-height: 1.4;
+    color: var(--admin-text-muted);
 }
 
-[data-customer-layout] .customer-record-cell strong,
+[data-customer-layout] .customer-portal-hero-eyebrow {
+    font-family: var(--customer-font-ui);
+    margin: 0;
+    color: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 72%, #f4e8ea 28%);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    line-height: 1.4;
+}
+
+[data-customer-layout] .customer-portal-hero-title {
+    font-size: clamp(1.55rem, 2.6vw, 2rem);
+    line-height: 1.15;
+    color: rgba(250, 247, 242, 0.96) !important;
+}
+
+[data-customer-layout] .customer-portal-hero-lead,
+[data-customer-layout] .customer-portal-hero-property {
+    font-family: var(--customer-font-ui);
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+[data-customer-layout] .customer-portal-hero-lead {
+    color: rgba(236, 230, 222, 0.78);
+}
+
+[data-customer-layout] .customer-portal-hero-property {
+    color: rgba(236, 230, 222, 0.72);
+    font-weight: 500;
+}
+
+[data-customer-layout] .customer-portal-contract-type,
+[data-customer-layout] .customer-portal-card-copy,
+[data-customer-layout] .customer-portal-quick-action p {
+    font-family: var(--customer-font-ui);
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--admin-text-muted);
+}
+
+[data-customer-layout] .customer-portal-contract-meta dd {
+    font-family: var(--customer-font-ui);
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--admin-text);
+}
+
+[data-customer-layout] .customer-record-cell strong:not(.rw-numeric):not(.rw-money):not(.rw-date):not(.pi):not([class*='pi-']),
 [data-customer-layout] .customer-portal-notification-copy strong,
 [data-customer-layout] .customer-portal-notification-feed-copy strong {
-    font-size: 0.875rem;
+    font-family: var(--customer-font-ui);
+    font-size: 0.9rem;
     font-weight: 600;
     line-height: 1.5;
 }
 
-[data-customer-layout] .customer-record-cell small,
+[data-customer-layout] .customer-record-cell small:not(.rw-numeric):not(.rw-money):not(.pi):not([class*='pi-']),
 [data-customer-layout] .customer-portal-notification-copy small,
-[data-customer-layout] .customer-portal-notification-copy time,
+[data-customer-layout] .customer-portal-notification-copy time:not(.rw-numeric):not(.rw-date),
 [data-customer-layout] .customer-portal-notification-feed-copy small,
-[data-customer-layout] .customer-portal-notification-feed-copy time {
-    font-size: 0.875rem;
+[data-customer-layout] .customer-portal-notification-feed-copy time:not(.rw-numeric):not(.rw-date) {
+    font-family: var(--customer-font-ui);
+    font-size: 0.8125rem;
+    font-weight: 400;
     line-height: 1.5;
 }
 
 [data-customer-layout] .customer-portal-action-link {
+    font-family: var(--customer-font-ui);
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.5;
+}
+
+/* Header profile name / role — Admin UI */
+[data-customer-layout] .customer-user-profile__name,
+[data-customer-layout] .customer-user-profile .text-sm:not(.pi):not([class*='pi-']) {
+    font-family: var(--customer-font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--admin-text);
+}
+
+[data-customer-layout] .customer-user-profile__role,
+[data-customer-layout] .customer-user-profile .text-xs:not(.pi):not([class*='pi-']) {
+    font-family: var(--customer-font-ui);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--admin-text-muted);
+}
+
+[data-customer-layout] .customer-user-profile-menu li {
+    font-family: var(--customer-font-ui);
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+[data-customer-layout] .customer-mobile-nav-item {
+    font-family: var(--customer-font-ui);
+    font-weight: 500;
+}
+
+/* Status — match Admin list status (icon + label, no pill fill) */
+[data-customer-layout] .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--customer-font-ui);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+[data-customer-layout] .status-badge__label {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
+[data-customer-layout] .status-badge__icon {
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+[data-customer-layout] .customer-portal-filter-chip {
+    font-family: var(--customer-font-ui);
+    font-weight: 500;
+}
+
+[data-customer-layout] .customer-portal-notification-type-badge,
+[data-customer-layout] .customer-portal-notification-type-label {
+    font-family: var(--customer-font-ui);
+    font-weight: 600;
+}
+
+[data-customer-layout] .customer-portal-outstanding {
+    font-family: var(--customer-font-ui);
+    font-weight: 400;
+}
+
+[data-customer-layout] .customer-portal-outstanding strong:not(.rw-numeric):not(.rw-money):not(.rw-date):not(.rw-count) {
+    font-family: var(--customer-font-ui);
+    font-weight: 600;
+}
+
+/* Restore icon fonts after any Customer typography rules */
+[data-customer-layout] .pi,
+[data-customer-layout] .pi::before {
+    font-family: 'primeicons' !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1 !important;
+    speak: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+[data-customer-layout] .fas,
+[data-customer-layout] .fa-solid,
+[data-customer-layout] .fas::before,
+[data-customer-layout] .fa-solid::before {
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1;
+}
+
+[data-customer-layout] .far,
+[data-customer-layout] .fa-regular,
+[data-customer-layout] .far::before,
+[data-customer-layout] .fa-regular::before {
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1;
+}
+
+[data-customer-layout] .fab,
+[data-customer-layout] .fa-brands,
+[data-customer-layout] .fab::before,
+[data-customer-layout] .fa-brands::before {
+    font-family: 'Font Awesome 6 Brands' !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1;
 }
 
 .customer-portal-header {
@@ -510,12 +1246,27 @@
 
 .customer-portal-brand {
     min-width: 0;
+    border-radius: 4px;
+}
+
+/* Brand lockup: mouse click leaves no ring; keyboard keeps subtle focus */
+.customer-shell .customer-portal-header .rosewood-brand:focus:not(:focus-visible),
+.customer-shell .customer-portal-brand:focus:not(:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.customer-shell .customer-portal-header .rosewood-brand:focus-visible,
+.customer-shell .customer-portal-brand:focus-visible {
+    outline: var(--rw-focus-outline, 2px solid var(--rw-brand, #8f2338));
+    outline-offset: 3px;
+    box-shadow: none;
 }
 
 .customer-portal-header-actions {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
+    gap: 0.75rem;
     margin: 0 0 0 auto;
     padding: 0;
     list-style: none;
@@ -627,7 +1378,12 @@
 .customer-portal-page {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--customer-portal-section-gap, 1rem);
+}
+
+/* Dashboard only: clear floating Rent Assistant without a large empty zone */
+.customer-portal-home {
+    padding-bottom: var(--customer-assistant-clearance, 4.75rem);
 }
 
 /* Shared card shell — mirrors .admin-panel */
@@ -650,94 +1406,126 @@
     color: inherit;
     text-decoration: none;
     cursor: pointer;
-    transition:
-        transform var(--customer-portal-transition),
-        border-color var(--customer-portal-transition),
-        box-shadow var(--customer-portal-transition),
-        background-color var(--customer-portal-transition);
-}
-
-.customer-portal-card--interactive:hover,
-.customer-portal-card--interactive:focus-visible {
-    border-color: color-mix(in srgb, var(--admin-primary) 28%, var(--admin-border));
-    background-color: color-mix(in srgb, var(--admin-surface-solid) 92%, var(--admin-primary) 8%);
-    box-shadow: var(--admin-shadow);
-    outline: none;
-}
-
-.customer-portal-card--interactive:active {
-    background-color: color-mix(in srgb, var(--admin-surface-solid) 88%, var(--admin-primary) 12%);
 }
 
 .customer-portal-hero {
-    margin-top: 1rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
+    position: relative;
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: stretch;
+    min-height: 148px;
     overflow: hidden;
     border: 1px solid var(--admin-border);
     border-radius: var(--customer-portal-card-radius);
-    min-height: 80px;
-    box-shadow: none;
-    background: var(--admin-surface-solid);
+    box-shadow: var(--admin-shadow-soft);
+    background: #0a0a0c;
+}
+
+.customer-portal-hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.customer-portal-hero-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1);
+    transition: transform 700ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .customer-portal-hero:hover .customer-portal-hero-image {
+        transform: scale(1.015);
+    }
+}
+
+.customer-portal-hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        rgba(10, 10, 12, 0.9) 0%,
+        rgba(10, 10, 12, 0.68) 42%,
+        rgba(10, 10, 12, 0.28) 100%
+    );
 }
 
 .customer-portal-hero-copy {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 0.8rem 1.1rem;
-    gap: 0.25rem;
-    color: var(--admin-text);
-}
-
-.customer-portal-hero-eyebrow {
-    margin: 0 0 0.35rem;
-    font-size: 0.875rem;
-    color: var(--admin-primary);
+    align-items: flex-start;
+    width: 100%;
+    max-width: 36rem;
+    padding: 1.15rem 1.35rem;
+    gap: 0.28rem;
+    color: rgba(248, 245, 240, 0.92);
+    text-align: left;
 }
 
 .customer-portal-hero-title {
     margin: 0;
-    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.15;
 }
 
 .customer-portal-hero-lead {
-    margin: 0.1rem 0 0;
-    color: var(--admin-text-muted);
-    font-size: 0.875rem;
+    margin: 0.2rem 0 0;
+    color: rgba(236, 230, 222, 0.78);
     line-height: 1.5;
 }
 
 .customer-portal-hero-property {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
     flex-wrap: wrap;
-    margin-top: 0.35rem;
-    color: var(--admin-text-muted);
-    font-size: 0.875rem;
+    margin-top: 0.45rem;
+    color: rgba(236, 230, 222, 0.72);
     font-weight: 500;
-    line-height: 1.5;
+    line-height: 1.45;
 }
 
 .customer-portal-hero-property-icon {
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1;
-    color: var(--admin-primary);
+    color: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 78%, #ffffff 22%);
 }
 
-.customer-portal-hero-image-wrap {
-    display: none;
+@media (max-width: 767.98px) {
+    .customer-portal-hero {
+        min-height: 136px;
+    }
+
+    .customer-portal-hero-copy {
+        max-width: none;
+        padding: 1rem 1.15rem;
+    }
+
+    .customer-portal-hero-overlay {
+        background: linear-gradient(
+            90deg,
+            rgba(10, 10, 12, 0.94) 0%,
+            rgba(10, 10, 12, 0.82) 48%,
+            rgba(10, 10, 12, 0.58) 100%
+        );
+    }
 }
 
 .customer-portal-feature-grid,
 .customer-portal-bottom-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: var(--customer-portal-section-gap, 1.05rem);
 }
 
 .customer-portal-contract-card {
@@ -747,6 +1535,7 @@
     border-radius: var(--customer-portal-card-radius);
     background: var(--admin-surface-solid);
     box-shadow: var(--admin-shadow-soft);
+    overflow: hidden;
 }
 
 .customer-portal-contract-card::before {
@@ -763,9 +1552,66 @@
     position: relative;
 }
 
-.customer-portal-contract-card > * {
+.customer-portal-contract-card > *:not(.customer-portal-card-media),
+.customer-portal-help-card > *:not(.customer-portal-card-media) {
     position: relative;
+    z-index: 2;
+}
+
+.customer-portal-card-media {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    width: min(42%, 15.5rem);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.customer-portal-card-media--help {
+    width: min(36%, 13.5rem);
+}
+
+.customer-portal-card-media-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
+    opacity: 0.42;
+    filter: saturate(0.82) brightness(0.72);
+    transform: scale(1);
+    transition: transform 200ms ease-out;
+}
+
+.customer-portal-card-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
     z-index: 1;
+    background:
+        linear-gradient(
+            90deg,
+            var(--admin-surface-solid) 0%,
+            color-mix(in srgb, var(--admin-surface-solid) 88%, transparent) 24%,
+            color-mix(in srgb, var(--admin-surface-solid) 42%, transparent) 58%,
+            color-mix(in srgb, var(--admin-surface-solid) 12%, transparent) 100%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(8, 8, 10, 0.18) 0%,
+            transparent 35%,
+            rgba(8, 8, 10, 0.22) 100%
+        );
+    pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .customer-portal-contract-card:hover .customer-portal-card-media-image,
+    .customer-portal-help-card:hover .customer-portal-card-media-image {
+        transform: scale(1.015);
+    }
 }
 
 .customer-portal-contract-card .customer-portal-contract-type,
@@ -787,17 +1633,245 @@
     margin: 0;
 }
 
+.customer-portal-contract-card--summary {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 11.25rem;
+    max-height: 13.75rem;
+    padding: 1.5rem 1.75rem;
+    background: #101012;
+    border-color: color-mix(in srgb, var(--admin-border) 70%, rgba(255, 255, 255, 0.08));
+    overflow: hidden;
+}
+
+/* Full-card building photo — not a right-side strip */
+.customer-portal-contract-card--summary .customer-portal-card-media {
+    display: block;
+    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.customer-portal-contract-card--summary .customer-portal-card-media-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
+    opacity: 1;
+    filter: saturate(0.9) contrast(1.04) brightness(0.94);
+    transform: scale(1.01);
+}
+
+/* Readability overlay above image, below text */
+.customer-portal-contract-card--summary .customer-portal-card-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+        90deg,
+        rgba(15, 15, 17, 0.94) 0%,
+        rgba(15, 15, 17, 0.82) 35%,
+        rgba(15, 15, 17, 0.48) 62%,
+        rgba(15, 15, 17, 0.18) 100%
+    );
+    pointer-events: none;
+}
+
+.customer-portal-contract-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.55rem;
+    max-width: min(22rem, 70%);
+    position: relative;
+    z-index: 2;
+}
+
+.customer-portal-contract-summary-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.customer-portal-contract-summary-head .customer-portal-card-eyebrow,
+[data-customer-layout] .customer-portal-contract-card--summary .customer-portal-card-eyebrow {
+    margin: 0;
+    color: rgba(236, 230, 222, 0.62);
+}
+
+.customer-portal-contract-summary-cue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: auto;
+    color: rgba(236, 230, 222, 0.5);
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+.customer-portal-contract-summary-title,
+[data-customer-layout] .customer-portal-contract-card--summary .customer-portal-contract-summary-title {
+    margin: 0;
+    font-size: clamp(1.5rem, 1.35rem + 0.5vw, 1.8125rem);
+    font-weight: 600;
+    line-height: 1.2;
+    color: rgba(250, 247, 242, 0.96);
+}
+
+.customer-portal-contract-card--summary .customer-portal-card-copy,
+[data-customer-layout] .customer-portal-contract-card--summary .customer-portal-card-copy {
+    margin: 0;
+    max-width: 18rem;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: rgba(236, 230, 222, 0.72);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .customer-portal-contract-card--summary:hover .customer-portal-card-media-image {
+        transform: scale(1.015);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .customer-portal-contract-card--summary {
+        min-height: 9.5rem;
+        max-height: 11.25rem;
+        padding: 1.35rem 1.35rem;
+    }
+
+    .customer-portal-contract-card--summary .customer-portal-card-media {
+        display: block;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .customer-portal-contract-card--summary .customer-portal-card-media-image {
+        opacity: 1;
+        filter: saturate(0.88) contrast(1.05) brightness(0.92);
+        object-fit: cover;
+        object-position: 70% center;
+        transform: scale(1.01);
+    }
+
+    .customer-portal-contract-card--summary .customer-portal-card-media::after {
+        background: linear-gradient(
+            90deg,
+            rgba(15, 15, 17, 0.96) 0%,
+            rgba(15, 15, 17, 0.88) 38%,
+            rgba(15, 15, 17, 0.52) 66%,
+            rgba(15, 15, 17, 0.2) 100%
+        );
+    }
+
+    .customer-portal-contract-summary {
+        max-width: min(20rem, 72%);
+        gap: 0.45rem;
+    }
+
+    .customer-portal-contract-summary-title,
+    [data-customer-layout] .customer-portal-contract-card--summary .customer-portal-contract-summary-title {
+        font-size: clamp(1.35rem, 5vw, 1.55rem);
+        color: rgba(250, 247, 242, 0.96);
+    }
+
+    .customer-portal-contract-card--summary .customer-portal-card-copy,
+    [data-customer-layout] .customer-portal-contract-card--summary .customer-portal-card-copy {
+        font-size: 0.875rem;
+        color: rgba(236, 230, 222, 0.72);
+    }
+
+    .customer-portal-help-card .customer-portal-card-media,
+    .customer-portal-help-card .customer-portal-card-media--help {
+        display: block;
+        width: min(40%, 12rem);
+    }
+
+    .customer-portal-help-card .customer-portal-card-media-image {
+        opacity: 0.46;
+        filter: saturate(0.74) brightness(0.72);
+        object-fit: cover;
+        object-position: center right;
+    }
+
+    .customer-portal-help-card .customer-portal-card-media::after {
+        background:
+            linear-gradient(
+                90deg,
+                var(--admin-surface-solid) 0%,
+                color-mix(in srgb, var(--admin-surface-solid) 96%, transparent) 40%,
+                color-mix(in srgb, var(--admin-surface-solid) 70%, transparent) 65%,
+                color-mix(in srgb, var(--admin-surface-solid) 20%, transparent) 100%
+            );
+    }
+
+    .customer-portal-help-copy {
+        max-width: min(22.5rem, 60%);
+        position: relative;
+        z-index: 2;
+    }
+}
+
+/* Extremely narrow: keep full-bleed photo + readable left text */
+@media (max-width: 360px) {
+    .customer-portal-contract-card--summary .customer-portal-card-media {
+        display: block;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .customer-portal-contract-card--summary .customer-portal-card-media::after {
+        background: linear-gradient(
+            90deg,
+            rgba(15, 15, 17, 0.97) 0%,
+            rgba(15, 15, 17, 0.9) 42%,
+            rgba(15, 15, 17, 0.55) 70%,
+            rgba(15, 15, 17, 0.22) 100%
+        );
+    }
+
+    .customer-portal-contract-summary {
+        max-width: 78%;
+    }
+
+    .customer-portal-help-card .customer-portal-card-media,
+    .customer-portal-help-card .customer-portal-card-media--help {
+        width: min(36%, 9rem);
+    }
+
+    .customer-portal-help-copy {
+        max-width: 62%;
+    }
+}
+
 .customer-portal-card-eyebrow {
-    margin: 0 0 0.35rem;
+    margin: 0 0 0.4rem;
     color: var(--admin-primary);
     opacity: 1;
 }
 
 .customer-portal-contract-type,
 .customer-portal-card-copy {
-    margin: 0.35rem 0 0;
-    font-size: 0.875rem;
-    line-height: 1.5;
+    margin: 0.4rem 0 0;
+    line-height: 1.55;
     opacity: 1;
 }
 
@@ -823,8 +1897,8 @@
 .customer-portal-contract-meta {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.85rem 1rem;
-    margin: 1.15rem 0 0;
+    gap: 0.85rem 1.1rem;
+    margin: 1.1rem 0 0;
 }
 
 .customer-portal-contract-meta div {
@@ -838,22 +1912,146 @@
 
 .customer-portal-contract-meta dd {
     margin: 0;
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.5;
-}
-
-.customer-portal-card-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.85rem 1.25rem;
-    margin-top: 1.15rem;
 }
 
 .customer-portal-help-card {
     display: flex;
     flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+}
+
+.customer-portal-help-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 0.75rem;
+    max-width: 22.5rem;
+}
+
+.customer-portal-help-card .customer-portal-card-media--help {
+    width: min(40%, 14.75rem);
+}
+
+.customer-portal-help-card .customer-portal-card-media-image {
+    opacity: 0.52;
+    filter: saturate(0.72) brightness(0.78) contrast(1.02);
+}
+
+.customer-portal-help-card .customer-portal-card-media::after {
+    background:
+        linear-gradient(
+            90deg,
+            var(--admin-surface-solid) 0%,
+            color-mix(in srgb, var(--admin-surface-solid) 94%, transparent) 20%,
+            color-mix(in srgb, var(--admin-surface-solid) 52%, transparent) 52%,
+            color-mix(in srgb, var(--admin-surface-solid) 16%, transparent) 78%,
+            color-mix(in srgb, var(--admin-surface-solid) 6%, transparent) 100%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(8, 8, 10, 0.2) 0%,
+            transparent 42%,
+            rgba(8, 8, 10, 0.22) 100%
+        );
+}
+
+.customer-portal-help-card .customer-portal-card-eyebrow {
+    margin: 0;
+}
+
+.customer-portal-help-card h2 {
+    margin: 0;
+    color: var(--admin-text);
+}
+
+.customer-portal-help-card .customer-portal-card-copy {
+    margin: 0;
+    color: var(--admin-text-muted);
+}
+
+.customer-portal-help-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: fit-content;
+    min-height: 2.875rem;
+    margin-top: 0.15rem;
+    padding: 0.65rem 1.7rem;
+    border: 1px solid color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 58%, var(--admin-border));
+    border-radius: var(--customer-portal-card-radius, 6px);
+    background: transparent;
+    color: var(--admin-text);
+    font-family: var(--customer-font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color 200ms ease-out,
+        border-color 200ms ease-out,
+        color 200ms ease-out,
+        transform 200ms ease-out,
+        box-shadow 200ms ease-out;
+}
+
+.customer-portal-help-cta i {
+    color: var(--rw-brand, var(--admin-primary));
+    font-size: 0.875rem;
+    line-height: 1;
+    transition: color 200ms ease-out;
+}
+
+.customer-portal-help-cta:hover,
+.customer-portal-help-cta:focus-visible {
+    background: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 16%, transparent);
+    border-color: var(--rw-brand, var(--admin-primary));
+    color: #fff;
+    box-shadow: none;
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.customer-portal-help-cta:hover i,
+.customer-portal-help-cta:focus-visible i {
+    color: #fff;
+}
+
+.customer-portal-help-cta:active {
+    transform: translateY(0);
+}
+
+.customer-portal-help-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.1rem;
+    border: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 72%, var(--admin-text-muted));
+    font-family: var(--customer-font-ui);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.45;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 200ms ease-out;
+}
+
+.customer-portal-help-contact i {
+    color: inherit;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.customer-portal-help-contact:hover,
+.customer-portal-help-contact:focus-visible {
+    color: var(--rw-brand, var(--admin-primary));
+    outline: none;
 }
 
 .customer-portal-panel {
@@ -908,80 +2106,106 @@
     color: var(--admin-nav-active-text);
 }
 
-html[data-theme='light'] .customer-portal-hero-eyebrow {
-    color: var(--admin-primary);
-}
-
 html[data-theme='light'] .customer-portal-contract-card::before {
     opacity: 0.18; /* keep burgundy accent subtle on light backgrounds */
 }
 
+html[data-theme='light'] .customer-portal-contract-card--summary::before {
+    display: none;
+}
+
 html[data-theme='light']
-    .customer-portal-contract-card .customer-portal-contract-type,
+    .customer-portal-contract-card:not(.customer-portal-contract-card--summary) .customer-portal-contract-type,
 html[data-theme='light']
-    .customer-portal-contract-card .customer-portal-card-copy,
+    .customer-portal-contract-card:not(.customer-portal-contract-card--summary) .customer-portal-card-copy,
 html[data-theme='light']
-    .customer-portal-contract-card .customer-portal-contract-meta dt {
+    .customer-portal-contract-card:not(.customer-portal-contract-card--summary) .customer-portal-contract-meta dt {
     color: var(--admin-text-muted);
 }
 
 .customer-portal-quick-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.customer-portal-quick-action-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
+}
+
+.customer-portal-quick-action-head h3 {
+    min-width: 0;
+}
+
+.customer-portal-quick-action-head .customer-portal-icon-badge {
+    flex-shrink: 0;
 }
 
 .customer-portal-quick-action p {
     margin: 0;
     flex: 1;
     color: var(--admin-text-muted);
-    font-size: 0.875rem;
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
 .customer-portal-icon-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border: 1px solid var(--admin-border);
-    border-radius: var(--customer-portal-card-radius);
-    font-size: 0.95rem;
+    width: auto;
+    height: auto;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 1.25rem; /* ~20px */
+    line-height: 1;
+}
+
+.customer-portal-icon-badge .pi {
+    font-size: inherit;
+    line-height: 1;
 }
 
 .customer-portal-icon-badge--round {
-    border-radius: 999px;
+    border-radius: 0;
 }
 
 .customer-portal-icon-badge.tone-gold {
-    background: var(--status-warning-bg);
-    border-color: var(--status-warning-border);
+    background: transparent;
+    border-color: transparent;
     color: var(--status-warning-text);
 }
 
 .customer-portal-icon-badge.tone-green {
-    background: var(--status-success-bg);
-    border-color: var(--status-success-border);
+    background: transparent;
+    border-color: transparent;
     color: var(--status-success-text);
 }
 
 .customer-portal-icon-badge.tone-purple {
-    background: var(--status-accent-bg);
-    border-color: var(--status-accent-border);
+    background: transparent;
+    border-color: transparent;
     color: var(--status-accent-text);
 }
 
 .customer-portal-icon-badge.tone-blue {
-    background: color-mix(in srgb, #3b82f6 14%, transparent);
-    border-color: color-mix(in srgb, #3b82f6 24%, var(--admin-border));
+    background: transparent;
+    border-color: transparent;
     color: #3b82f6;
 }
 
 .customer-portal-icon-badge.tone-burgundy {
-    background: var(--status-info-bg);
-    border-color: var(--status-info-border);
+    background: transparent;
+    border-color: transparent;
     color: var(--status-info-text);
+}
+
+html[data-theme='dark'] .customer-portal-icon-badge.tone-blue {
+    color: #60a5fa;
 }
 
 .customer-portal-panel-head {
@@ -989,24 +2213,24 @@ html[data-theme='light']
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .customer-portal-notification-list,
 .customer-portal-notification-feed {
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
+    gap: 0.5rem;
 }
 
-.customer-portal-notification-item,
-.customer-portal-notification-feed-item {
+.customer-portal-notification-item {
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.65rem;
     align-items: start;
     width: 100%;
-    padding: 0.85rem 0.75rem;
+    min-width: 0;
+    padding: 0.7rem 0.8rem;
     border: 1px solid var(--admin-border);
     border-radius: 6px;
     background: var(--admin-surface-solid);
@@ -1014,10 +2238,137 @@ html[data-theme='light']
     text-align: left;
     cursor: pointer;
     box-shadow: none;
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background-color 0.2s ease;
+}
+
+.customer-portal-notification-main {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 0.6rem;
+}
+
+.customer-portal-notification-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 0.15rem;
+    flex-shrink: 0;
+    min-width: 0;
+    text-align: right;
+}
+
+.customer-portal-notification-aside time {
+    color: var(--admin-text-muted);
+    font-size: 0.75rem;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.customer-portal-notification-aside-status,
+.customer-notification-unread-inline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    min-height: 1rem;
+}
+
+.customer-portal-notification-feed-item.customer-record-row {
+    align-items: start;
+    box-shadow: none;
+}
+
+/* Notifications page feed: match Customer Portal UI typography roles */
+.customer-portal-notification-feed .customer-portal-notification-feed-copy {
+    gap: 0.15rem;
+}
+
+.customer-portal-notification-feed .customer-portal-notification-feed-copy strong {
+    font-family: var(--customer-font-ui);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--admin-text);
+}
+
+.customer-portal-notification-feed .customer-portal-notification-feed-copy small {
+    font-family: var(--customer-font-ui);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+.customer-portal-notification-type-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.customer-portal-notification-type-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    color: var(--rw-brand, var(--admin-primary));
+    line-height: 1;
+}
+
+.customer-portal-notification-type-icon i {
+    font-size: 0.8125rem;
+    line-height: 1;
+}
+
+.customer-portal-notification-type-icon.tone-burgundy {
+    color: var(--rw-brand, var(--admin-primary));
+}
+
+.customer-portal-notification-type-icon.tone-gold {
+    color: var(--rw-warning, #b45309);
+}
+
+.customer-portal-notification-type-icon.tone-green {
+    color: var(--status-success-text, #15803d);
+}
+
+.customer-portal-notification-type-icon.tone-blue {
+    color: #3b82f6;
+}
+
+.customer-portal-notification-type-icon.tone-purple {
+    color: #7c3aed;
+}
+
+.customer-portal-notification-type-icon.tone-neutral {
+    color: var(--admin-text-muted);
+}
+
+.customer-portal-notification-type-label,
+.customer-portal-notification-type-badge {
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--admin-text-muted);
+    font-family: var(--customer-font-ui);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    line-height: 1.25;
+    text-transform: uppercase;
+}
+
+.customer-portal-notification-type-row .customer-portal-notification-type-label {
+    color: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 72%, var(--admin-text-muted));
+}
+
+.customer-portal-notification-feed .customer-notification-row:not(.is-unread)
+    .customer-portal-notification-feed-copy strong {
+    font-weight: 500;
 }
 
 .customer-portal-notification-item:last-child,
@@ -1025,25 +2376,11 @@ html[data-theme='light']
     border-bottom: 1px solid var(--admin-border);
 }
 
-.customer-portal-notification-item:hover,
-.customer-portal-notification-feed-item:hover,
-.customer-portal-notification-item:focus-visible,
-.customer-portal-notification-feed-item:focus-visible,
-.customer-portal-notification-item.is-unread:hover,
-.customer-portal-notification-feed-item.is-unread:hover,
-.customer-portal-notification-item.is-unread:focus-visible,
-.customer-portal-notification-feed-item.is-unread:focus-visible {
-    border-color: color-mix(in srgb, var(--admin-primary) 28%, var(--admin-border));
-    background-color: color-mix(in srgb, var(--admin-surface-solid) 92%, var(--admin-primary) 8%);
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--admin-primary) 55%, transparent);
-    outline: none;
-}
-
 .customer-portal-notification-copy,
 .customer-portal-notification-feed-copy {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.15rem;
     min-width: 0;
 }
 
@@ -1051,7 +2388,8 @@ html[data-theme='light']
 .customer-portal-notification-feed-copy strong {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .customer-portal-notification-copy small,
@@ -1061,10 +2399,14 @@ html[data-theme='light']
     color: var(--admin-text-muted);
 }
 
+.customer-portal-notification-feed-copy small {
+    white-space: normal;
+}
+
 .customer-portal-unread-dot {
-    width: 0.55rem;
-    height: 0.55rem;
-    margin-top: 0.35rem;
+    width: 5px;
+    height: 5px;
+    margin: 0;
     border-radius: 999px;
     background: var(--rw-danger);
     flex-shrink: 0;
@@ -1095,14 +2437,14 @@ html[data-theme='light']
 
 .customer-portal-payment-day {
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1;
 }
 
 .customer-portal-payment-month,
 .customer-portal-payment-year {
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--admin-text-muted);
@@ -1125,7 +2467,7 @@ html[data-theme='light']
     margin-top: 0.35rem !important;
     color: var(--admin-text) !important;
     font-size: 1rem !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
 }
 
 .customer-portal-outstanding {
@@ -1133,7 +2475,7 @@ html[data-theme='light']
     align-items: baseline;
     justify-content: space-between;
     gap: 0.75rem;
-    margin: 1rem 0;
+    margin: 0.65rem 0 0;
     color: var(--admin-text-muted);
     font-size: 0.875rem;
 }
@@ -1164,12 +2506,14 @@ html[data-theme='light']
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    margin-bottom: 0.85rem;
 }
 
 .customer-portal-filter-chip {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    flex: 0 0 auto;
     min-height: 36px;
     padding: 0.45rem 0.75rem;
     border: 1px solid var(--admin-border);
@@ -1178,6 +2522,7 @@ html[data-theme='light']
     color: var(--admin-text);
     font-size: 0.875rem;
     font-weight: 500;
+    white-space: nowrap;
     cursor: pointer;
     transition:
         background-color var(--customer-portal-transition),
@@ -1196,13 +2541,78 @@ html[data-theme='light']
     font-size: 0.75rem;
 }
 
+@media (max-width: 767px) {
+    .customer-portal-filter-row {
+        flex-wrap: nowrap;
+        gap: 0.45rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.15rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+    }
+
+    .customer-portal-filter-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .customer-portal-notification-item,
+    .customer-portal-overdue-row {
+        column-gap: 0.65rem;
+        padding: 0.7rem 0.8rem;
+    }
+
+    .customer-portal-notification-list,
+    .customer-portal-notification-feed,
+    .customer-portal-overdue-list {
+        gap: 0.45rem;
+    }
+
+    .customer-portal-overdue-aside .status-badge,
+    .customer-portal-notification-aside .customer-notification-read-state {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 340px) {
+    .customer-portal-notification-item,
+    .customer-portal-overdue-row {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 0.45rem;
+    }
+
+    .customer-portal-notification-aside,
+    .customer-portal-overdue-aside {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .customer-portal-overdue-chevron {
+        display: none;
+    }
+}
+
+/* Touch / coarse pointer: subtle pressed feedback (not desktop hover) */
+@media (hover: none), (pointer: coarse) {
+    .customer-record-row:active,
+    .customer-portal-notification-item:active,
+    .customer-portal-notification-feed-item:active,
+    .customer-portal-overdue-row:active {
+        transform: scale(0.99);
+        border-color: color-mix(in srgb, var(--admin-border) 55%, var(--rw-brand, var(--admin-primary)) 45%);
+    }
+}
+
 .customer-portal-notification-type-badge {
+    /* Legacy alias — prefer .customer-portal-notification-type-label */
     align-self: flex-start;
-    padding: 0.15rem 0.45rem;
-    border-radius: 999px;
-    background: var(--admin-nav-active-bg);
-    color: var(--admin-primary);
-    font-size: 0.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--admin-text-muted);
+    font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -1211,37 +2621,11 @@ html[data-theme='light']
 
 @media (min-width: 768px) {
     .customer-portal-hero {
-        grid-template-columns: 1fr;
-        align-items: start;
-        min-height: 128px;
+        min-height: 168px;
     }
 
     .customer-portal-hero-copy {
-        padding: 0.95rem 1.4rem;
-    }
-
-    .customer-portal-hero-image-wrap {
-        display: none;
-    }
-
-    .customer-portal-hero-image-wrap::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        background:
-            linear-gradient(180deg, rgba(17, 17, 17, 0.08) 0%, rgba(17, 17, 17, 0.2) 100%);
-        pointer-events: none;
-    }
-
-    .customer-portal-hero-image {
-        display: block;
-        width: 100%;
-        height: 100%;
-        min-height: 100%;
-        object-fit: cover;
-        object-position: center;
-        mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.28) 18%, rgba(0, 0, 0, 0.82) 42%, #000 100%);
+        padding: 1.25rem 1.6rem;
     }
 
     .customer-portal-feature-grid,
@@ -1254,20 +2638,32 @@ html[data-theme='light']
     }
 }
 
-@media (hover: none) {
-    .customer-portal-card--interactive:active {
-        background-color: color-mix(in srgb, var(--admin-surface-solid) 88%, var(--admin-primary) 12%);
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
+    .customer-interactive-surface,
     .customer-portal-card--interactive,
+    .customer-record-row,
+    .customer-portal-notification-item,
+    .customer-portal-notification-feed-item,
     .customer-portal-action-link,
     .customer-portal-action-link i,
     .customer-portal-filter-chip,
-    .customer-portal-notification-item,
-    .customer-portal-notification-feed-item {
-        transition: none;
+    .customer-portal-hero-image,
+    .customer-portal-card-media-image {
+        transition: border-color 220ms ease-out, box-shadow 220ms ease-out;
+        will-change: auto;
+    }
+
+    .customer-interactive-surface:hover,
+    .customer-portal-card--interactive:hover,
+    .customer-record-row:hover,
+    .customer-portal-notification-item:hover,
+    .customer-portal-notification-feed-item:hover,
+    .customer-portal-hero:hover .customer-portal-hero-image,
+    .customer-portal-contract-card:hover .customer-portal-card-media-image,
+    .customer-portal-help-card:hover .customer-portal-card-media-image,
+    .customer-portal-help-cta:hover,
+    .customer-portal-help-cta:focus-visible {
+        transform: none;
     }
 }
 
@@ -1305,3 +2701,294 @@ html[data-theme='light']
     outline: none;
     box-shadow: none;
 }
+
+/* =========================================================
+   Customer — Rent Assistant clearance (dashboard + portal)
+   Keep floating bottom-right; avoid covering overdue / last content.
+   ========================================================= */
+
+[data-customer-layout] .rw-chat {
+    --chat-bottom: calc(1.35rem + env(safe-area-inset-bottom, 0px));
+    right: max(1.35rem, env(safe-area-inset-right, 0px));
+}
+
+[data-customer-layout] .rw-chat.is-near-footer {
+    --chat-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 767.98px) {
+    [data-customer-layout] .rw-chat {
+        --chat-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
+        right: max(0.85rem, env(safe-area-inset-right, 0px));
+    }
+
+    [data-customer-layout] .rw-chat.is-near-footer {
+        --chat-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .customer-portal-home {
+        --customer-assistant-clearance: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+@media (min-width: 768px) {
+    /* Nudge assistant slightly off the overdue card edge on desktop */
+    [data-customer-layout] .rw-chat {
+        --chat-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+        right: max(1.5rem, env(safe-area-inset-right, 0px));
+    }
+}
+
+/* =========================================================
+   Customer — Create Maintenance Request
+   ========================================================= */
+
+.customer-maintenance-create-page {
+    width: 100%;
+    max-width: 56rem;
+    margin: 0 auto;
+    min-width: 0;
+}
+
+.customer-maintenance-create-card {
+    min-width: 0;
+    padding: 1.35rem 1.5rem 1.5rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius, 6px);
+    background: var(--admin-surface-solid);
+    box-shadow: var(--admin-shadow-soft);
+}
+
+.customer-maintenance-create-card__head {
+    margin: 0 0 1.15rem;
+    padding: 0 0 0.85rem;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.customer-maintenance-create-card__title {
+    margin: 0;
+    color: var(--admin-text);
+    font-family: var(--customer-font-heading);
+    font-size: 1.05rem;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.customer-maintenance-create-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 1.75rem;
+    row-gap: 1.15rem;
+    align-items: start;
+}
+
+.customer-maintenance-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.customer-maintenance-field--full,
+.customer-maintenance-create-form__actions {
+    grid-column: 1 / -1;
+}
+
+.customer-maintenance-field__label {
+    margin: 0;
+    color: var(--admin-text);
+    font-family: var(--customer-font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.customer-maintenance-field__hint {
+    color: var(--admin-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+.customer-maintenance-field__error {
+    display: block;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+.customer-maintenance-textarea.p-inputtextarea,
+.customer-maintenance-create-form .customer-maintenance-textarea {
+    min-height: 9rem;
+    resize: vertical;
+}
+
+.customer-maintenance-upload {
+    position: relative;
+    display: flex;
+    min-height: 9.5rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 1.25rem 1rem;
+    border: 1px dashed var(--admin-border);
+    border-radius: var(--customer-portal-card-radius, 6px);
+    background: color-mix(in srgb, var(--admin-surface-solid) 88%, var(--admin-bg) 12%);
+    color: var(--admin-text-muted);
+    text-align: center;
+    cursor: pointer;
+    transition:
+        border-color 200ms ease-out,
+        background-color 200ms ease-out,
+        color 200ms ease-out;
+}
+
+.customer-maintenance-upload:hover,
+.customer-maintenance-upload:focus-visible,
+.customer-maintenance-upload.is-dragging {
+    border-color: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 45%, var(--admin-border));
+    background: color-mix(in srgb, var(--admin-surface-solid) 82%, var(--rw-brand, var(--admin-primary)) 8%);
+    color: var(--admin-text);
+    outline: none;
+}
+
+.customer-maintenance-upload__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.customer-maintenance-upload__icon {
+    font-size: 1.35rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 70%, var(--admin-text-muted));
+}
+
+.customer-maintenance-upload__text {
+    font-family: var(--customer-font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.customer-maintenance-upload__preview {
+    display: flex;
+    width: 100%;
+    max-width: 28rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.customer-maintenance-upload__image {
+    display: block;
+    max-width: 100%;
+    max-height: 11rem;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+.customer-maintenance-upload__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem 1rem;
+}
+
+.customer-maintenance-upload__filename {
+    color: var(--admin-text);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.customer-maintenance-upload__remove {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--rw-brand, var(--admin-primary));
+    font-family: var(--customer-font-ui);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.35;
+    cursor: pointer;
+}
+
+.customer-maintenance-upload__remove:hover,
+.customer-maintenance-upload__remove:focus-visible {
+    text-decoration: underline;
+    outline: none;
+}
+
+.customer-maintenance-create-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+}
+
+.customer-maintenance-create-form__actions .p-button {
+    min-height: 2.75rem;
+    min-width: 6.75rem;
+}
+
+.customer-maintenance-btn-submit.p-button {
+    background: var(--rw-brand, var(--admin-primary));
+    border-color: var(--rw-brand, var(--admin-primary));
+    color: var(--rw-on-primary, #fff);
+}
+
+.customer-maintenance-btn-submit.p-button:enabled:hover {
+    background: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 88%, #000 12%);
+    border-color: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 88%, #000 12%);
+}
+
+@media (max-width: 767.98px) {
+    .customer-maintenance-create-page {
+        max-width: none;
+        padding-inline: 0;
+    }
+
+    .customer-maintenance-create-card {
+        padding: 1.15rem 1rem 1.25rem;
+    }
+
+    .customer-maintenance-create-form {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 1rem;
+        column-gap: 0;
+    }
+
+    .customer-maintenance-textarea.p-inputtextarea,
+    .customer-maintenance-create-form .customer-maintenance-textarea {
+        min-height: 8.25rem;
+    }
+
+    .customer-maintenance-create-form__actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 0.65rem;
+    }
+
+    .customer-maintenance-create-form__actions .p-button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 430px) {
+    .customer-maintenance-create-form__actions {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+

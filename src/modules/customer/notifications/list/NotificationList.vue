@@ -21,7 +21,7 @@
                 @click="activeFilter = option.value"
             >
                 {{ option.label }}
-                <span>{{ option.count }}</span>
+                <span class="rw-numeric rw-count">{{ option.count }}</span>
             </button>
         </div>
 
@@ -32,32 +32,41 @@
                 v-for="item in filteredNotifications"
                 :key="item.id || `${item.type}-${item.resource_id}-${item.created_at}`"
                 type="button"
-                class="customer-record-row customer-portal-notification-feed-item customer-notification-row"
+                class="customer-interactive-surface customer-record-row customer-portal-notification-feed-item customer-notification-row"
                 :class="{ 'is-unread': isNotificationUnread(item) }"
                 @click="openNotification(item)"
             >
                 <span class="customer-record-cell customer-record-primary customer-notification-primary">
-                    <span class="customer-portal-icon-badge customer-portal-icon-badge--round" :class="notificationTone(item.type)">
-                        <i :class="notificationIcon(item.type)" aria-hidden="true" />
-                    </span>
-
                     <span class="customer-portal-notification-feed-copy">
-                        <span class="customer-portal-notification-type-badge">{{ item.type }}</span>
-                        <strong>{{ item.title }}</strong>
-                        <small>{{ item.message }}</small>
+                        <span class="customer-portal-notification-type-row">
+                            <span
+                                class="customer-portal-notification-type-icon"
+                                :class="notificationTone(item.type)"
+                                aria-hidden="true"
+                            >
+                                <i :class="notificationIcon(item.type)" />
+                            </span>
+                            <span v-if="item.type" class="customer-portal-notification-type-label">
+                                {{ item.type }}
+                            </span>
+                        </span>
+                        <strong v-if="item.title">{{ item.title }}</strong>
+                        <small v-if="item.message">{{ item.message }}</small>
                     </span>
                 </span>
 
                 <span class="customer-record-cell customer-record-meta customer-notification-meta">
-                    <time>{{ formatDisplayDateTime(item.created_at) }}</time>
-                    <span class="customer-notification-read-state">
-                        {{ isNotificationUnread(item) ? 'Unread' : 'Read' }}
-                    </span>
+                    <time
+                        v-if="item.created_at"
+                        class="customer-notification-time"
+                    >{{ formatDisplayDateTime(item.created_at) }}</time>
                     <span
                         v-if="isNotificationUnread(item)"
-                        class="customer-portal-unread-dot"
-                        aria-hidden="true"
-                    />
+                        class="customer-notification-unread-inline"
+                    >
+                        <span class="customer-notification-read-state">UNREAD</span>
+                        <span class="customer-portal-unread-dot" aria-hidden="true" />
+                    </span>
                 </span>
             </button>
         </div>

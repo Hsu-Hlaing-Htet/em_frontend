@@ -36,6 +36,7 @@ const service = {
     },
 
     accept: async (params) => {
+        // Backend Accept = start (pending → in_progress). Alias route also exists.
         const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/accept`);
         return result.data;
     },
@@ -46,11 +47,14 @@ const service = {
     },
 
     assign: async (params) => {
-        const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/assign`, {
-            assigned_staff: params.assigned_staff,
-            visit_date: params.visit_date,
-        });
-        return result.data;
+        // Assignment fields are not persisted by the current backend workflow.
+        // Keep the call shape for UI compatibility; surface a clear 422 via local guard.
+        throw {
+            status: 422,
+            data: {
+                message: 'Staff assignment is not available in the current maintenance workflow. Use Complete when work is done.',
+            },
+        };
     },
 
     complete: async (params) => {

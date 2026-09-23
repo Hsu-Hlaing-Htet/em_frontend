@@ -12,19 +12,23 @@
                 v-for="contract in contracts"
                 :key="contract.id"
                 :to="{ name: 'customerShowContract', params: { id: contract.id } }"
-                class="customer-record-row customer-contract-row"
+                class="customer-interactive-surface customer-record-row customer-contract-row"
             >
                 <span class="customer-record-cell customer-record-primary">
-                    <span class="customer-record-label">{{ $t('customer.contract') }}</span>
-                    <strong>{{ contract.contract_number || '—' }}</strong>
-                    <small>{{ contract.type || '—' }}</small>
-                    <small>{{ $t('customer.room') }} {{ contract.room_number || '—' }}</small>
+                    <strong class="customer-contract-title">{{ formatContractTypeLabel(contract.type) }}</strong>
+                    <small v-if="formatPropertyLabel(contract)" class="customer-contract-property">
+                        {{ formatPropertyLabel(contract) }}
+                    </small>
                 </span>
-                <span class="customer-record-cell customer-record-meta">
-                    <span class="customer-record-label">{{ $t('customer.total') }} (MMK)</span>
-                    <strong>{{ formatCurrency(Number(contract.contract_total || 0)) }}</strong>
-                    <small>{{ contract.building_name || '—' }}</small>
-                    <StatusBadge :value="contract.status" />
+
+                <span class="customer-record-cell customer-record-meta customer-contract-meta">
+                    <StatusBadge v-if="contract.status" :value="contract.status" />
+                    <strong
+                        v-if="formatContractListAmount(contract)"
+                        class="customer-contract-amount rw-numeric rw-money"
+                    >
+                        {{ formatContractListAmount(contract) }}
+                    </strong>
                 </span>
             </router-link>
 
@@ -54,7 +58,49 @@ import StatusBadge from '@/components/global/StatusBadge.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerContractList from '@/composables/customer/useCustomerContractList';
-import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
+import {
+    formatContractTypeLabel,
+    formatPropertyLabel,
+} from '@/helpers/customer/notifications';
+import { formatCurrency } from '@/utils/formatter';
+
+function hasAmount(value) {
+    return value !== null && value !== undefined && value !== '';
+}
+
+function resolveRentMonthlyAmount(contract) {
+    if (hasAmount(contract?.room_price)) {
+        return Number(contract.room_price);
+    }
+
+    if (hasAmount(contract?.estimated_monthly_payment)) {
+        return Number(contract.estimated_monthly_payment);
+    }
+
+    if (hasAmount(contract?.room?.rent_price)) {
+        return Number(contract.room.rent_price);
+    }
+
+    return null;
+}
+
+function formatContractListAmount(contract) {
+    if (contract?.type === 'rent') {
+        const monthly = resolveRentMonthlyAmount(contract);
+
+        if (monthly === null || Number.isNaN(monthly)) {
+            return '';
+        }
+
+        return `${formatCurrency(monthly)} / month`;
+    }
+
+    if (hasAmount(contract?.contract_total)) {
+        return formatCurrency(Number(contract.contract_total));
+    }
+
+    return '';
+}
 
 export default defineComponent({
     name: 'CustomerContractList',
@@ -66,7 +112,12 @@ export default defineComponent({
         CustomerPageHeader,
     },
     setup() {
-        return { ...useCustomerContractList(), formatCurrency };
+        return {
+            ...useCustomerContractList(),
+            formatContractTypeLabel,
+            formatPropertyLabel,
+            formatContractListAmount,
+        };
     },
 });
 </script>

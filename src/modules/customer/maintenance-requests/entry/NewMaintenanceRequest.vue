@@ -5,42 +5,53 @@
             :subtitle="$t('customer.createMaintenanceLead')"
         />
 
-        <div class="admin-panel customer-maintenance-create-card">
-            <h2 class="m-0 mb-3 text-base font-semibold">{{ $t('customer.requestInformation') }}</h2>
-            <div class="mb-4 border-b border-[var(--admin-border)]" />
+        <section class="customer-maintenance-create-card" aria-labelledby="customer-mr-request-info">
+            <header class="customer-maintenance-create-card__head">
+                <h2 id="customer-mr-request-info" class="customer-maintenance-create-card__title">
+                    {{ $t('customer.requestInformation') }}
+                </h2>
+            </header>
 
             <form class="customer-maintenance-create-form" @submit.prevent="handleSubmit">
-                <div>
-                    <label for="title" class="mb-2 block text-md">{{ $t('customer.requestTitle') }}</label>
+                <div class="customer-maintenance-field">
+                    <label for="title" class="customer-maintenance-field__label">
+                        {{ $t('customer.requestTitle') }}
+                    </label>
                     <InputText
                         id="title"
                         v-model="state.title"
                         class="w-full"
                         :placeholder="$t('customer.enterRequestTitle')"
+                        :disabled="isSaving"
                     />
-                    <small v-if="errors.has('title')" class="p-error">
-                        <div v-for="error in errors.get('title')" :key="error">{{ error }}</div>
+                    <small v-if="errors.has('title')" class="p-error customer-maintenance-field__error">
+                        <span v-for="error in errors.get('title')" :key="error">{{ error }}</span>
                     </small>
                 </div>
 
-                <div>
-                    <label for="maintenance_category_id" class="mb-2 block text-md">{{ $t('customer.category') }}</label>
+                <div class="customer-maintenance-field">
+                    <label for="category" class="customer-maintenance-field__label">
+                        {{ $t('customer.category') }}
+                    </label>
                     <Dropdown
-                        id="maintenance_category_id"
-                        v-model="state.maintenance_category_id"
+                        id="category"
+                        v-model="state.category"
                         :options="categoryOptions"
                         option-label="label"
                         option-value="value"
                         :placeholder="$t('customer.selectCategory')"
                         class="w-full"
+                        :disabled="isSaving"
                     />
-                    <small v-if="errors.has('maintenance_category_id')" class="p-error">
-                        <div v-for="error in errors.get('maintenance_category_id')" :key="error">{{ error }}</div>
+                    <small v-if="errors.has('category')" class="p-error customer-maintenance-field__error">
+                        <span v-for="error in errors.get('category')" :key="error">{{ error }}</span>
                     </small>
                 </div>
 
-                <div>
-                    <label for="room_id" class="mb-2 block text-md">{{ $t('customer.room') }}</label>
+                <div class="customer-maintenance-field">
+                    <label for="room_id" class="customer-maintenance-field__label">
+                        {{ $t('customer.room') }}
+                    </label>
                     <Dropdown
                         id="room_id"
                         v-model="state.room_id"
@@ -49,18 +60,23 @@
                         option-value="value"
                         :placeholder="$t('customer.selectRoom')"
                         class="w-full"
-                        :disabled="!roomOptions.length"
+                        :disabled="isSaving || !roomOptions.length"
                     />
-                    <small v-if="!roomOptions.length && !isLoading" class="text-[var(--admin-text-muted)]">
+                    <small
+                        v-if="!roomOptions.length && !isLoading"
+                        class="customer-maintenance-field__hint"
+                    >
                         {{ $t('customer.noRoomsForMaintenance') }}
                     </small>
-                    <small v-if="errors.has('room_id')" class="p-error">
-                        <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
+                    <small v-if="errors.has('room_id')" class="p-error customer-maintenance-field__error">
+                        <span v-for="error in errors.get('room_id')" :key="error">{{ error }}</span>
                     </small>
                 </div>
 
-                <div>
-                    <label for="priority" class="mb-2 block text-md">{{ $t('customer.priority') }}</label>
+                <div class="customer-maintenance-field">
+                    <label for="priority" class="customer-maintenance-field__label">
+                        {{ $t('customer.priority') }}
+                    </label>
                     <Dropdown
                         id="priority"
                         v-model="state.priority"
@@ -69,77 +85,113 @@
                         option-value="value"
                         :placeholder="$t('customer.selectPriority')"
                         class="w-full"
+                        :disabled="isSaving"
                     />
-                    <small v-if="errors.has('priority')" class="p-error">
-                        <div v-for="error in errors.get('priority')" :key="error">{{ error }}</div>
+                    <small v-if="errors.has('priority')" class="p-error customer-maintenance-field__error">
+                        <span v-for="error in errors.get('priority')" :key="error">{{ error }}</span>
                     </small>
                 </div>
 
-                <div class="customer-maintenance-create-form__full">
-                    <label for="description" class="mb-2 block text-md">{{ $t('customer.description') }}</label>
+                <div class="customer-maintenance-field customer-maintenance-field--full">
+                    <label for="description" class="customer-maintenance-field__label">
+                        {{ $t('customer.description') }}
+                    </label>
                     <Textarea
                         id="description"
                         v-model="state.description"
-                        rows="5"
-                        class="w-full"
+                        class="w-full customer-maintenance-textarea"
                         :placeholder="$t('customer.describeIssue')"
+                        :disabled="isSaving"
+                        rows="6"
                     />
-                    <small v-if="errors.has('description')" class="p-error">
-                        <div v-for="error in errors.get('description')" :key="error">{{ error }}</div>
+                    <small v-if="errors.has('description')" class="p-error customer-maintenance-field__error">
+                        <span v-for="error in errors.get('description')" :key="error">{{ error }}</span>
                     </small>
                 </div>
 
-                <div class="customer-maintenance-create-form__full">
-                    <label class="mb-2 block text-md">{{ $t('customer.uploadPhoto') }}</label>
+                <div class="customer-maintenance-field customer-maintenance-field--full">
+                    <label class="customer-maintenance-field__label">
+                        {{ $t('customer.uploadImageAttachment') }}
+                    </label>
+
                     <div
-                        class="flex min-h-[140px] flex-col items-center justify-center gap-3 rounded-md border border-dashed border-[var(--admin-border)] p-4"
+                        class="customer-maintenance-upload"
+                        :class="{
+                            'is-dragging': isDragging,
+                            'has-file': Boolean(photoFileName),
+                        }"
+                        role="button"
+                        tabindex="0"
+                        :aria-label="$t('customer.uploadImageOrAttachment')"
+                        @click="openFilePicker"
+                        @keydown.enter.prevent="openFilePicker"
+                        @keydown.space.prevent="openFilePicker"
+                        @dragenter.prevent="isDragging = true"
+                        @dragover.prevent="isDragging = true"
+                        @dragleave.prevent="isDragging = false"
+                        @drop.prevent="onPhotoDrop"
                     >
-                        <FileUpload
-                            mode="basic"
-                            accept="image/*"
-                            :auto="false"
-                            choose-label="Upload image or attachment"
-                            custom-upload
-                            @select="onPhotoSelect"
-                        />
-                        <div v-if="photoPreviewUrl" class="flex w-full flex-col items-center gap-2">
+                        <input
+                            ref="fileInputEl"
+                            type="file"
+                            class="customer-maintenance-upload__input"
+                            accept="image/png,image/jpeg,image/jpg,image/webp"
+                            :disabled="isSaving"
+                            @change="onPhotoInputChange"
+                        >
+
+                        <template v-if="!photoPreviewUrl">
+                            <i class="pi pi-cloud-upload customer-maintenance-upload__icon" aria-hidden="true" />
+                            <span class="customer-maintenance-upload__text">
+                                {{ $t('customer.uploadImageOrAttachment') }}
+                            </span>
+                        </template>
+
+                        <div v-else class="customer-maintenance-upload__preview">
                             <img
                                 :src="photoPreviewUrl"
-                                alt="Selected attachment preview"
-                                class="max-h-48 max-w-full rounded object-contain"
+                                :alt="photoFileName || 'Selected attachment preview'"
+                                class="customer-maintenance-upload__image"
                             >
-                            <Button
-                                type="button"
-                                label="Remove"
-                                severity="secondary"
-                                text
-                                @click="clearPhoto"
-                            />
+                            <div class="customer-maintenance-upload__meta">
+                                <span class="customer-maintenance-upload__filename">{{ photoFileName }}</span>
+                                <button
+                                    type="button"
+                                    class="customer-maintenance-upload__remove"
+                                    :disabled="isSaving"
+                                    @click.stop="clearPhoto"
+                                >
+                                    {{ $t('common.remove') }}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <small v-if="errors.has('photo')" class="p-error">
-                        <div v-for="error in errors.get('photo')" :key="error">{{ error }}</div>
+
+                    <small v-if="errors.has('photo')" class="p-error customer-maintenance-field__error">
+                        <span v-for="error in errors.get('photo')" :key="error">{{ error }}</span>
                     </small>
                 </div>
 
                 <div class="customer-maintenance-create-form__actions">
-                    <router-link :to="{ name: 'customerMaintenanceRequestList' }">
-                        <Button
-                            type="button"
-                            :label="$t('common.cancel')"
-                            severity="secondary"
-                            outlined
-                        />
-                    </router-link>
+                    <Button
+                        type="button"
+                        :label="$t('common.cancel')"
+                        severity="secondary"
+                        outlined
+                        class="customer-maintenance-btn-cancel"
+                        :disabled="isSaving"
+                        @click="goBack"
+                    />
                     <Button
                         type="submit"
-                        :label="$t('common.submit')"
+                        :label="isSaving ? $t('common.submitting') : $t('common.submit')"
+                        class="customer-maintenance-btn-submit"
                         :loading="isSaving"
-                        :disabled="!roomOptions.length"
+                        :disabled="isSaving || !roomOptions.length"
                     />
                 </div>
             </form>
-        </div>
+        </section>
 
         <Loading v-if="isLoading" />
     </div>
@@ -149,7 +201,6 @@
 import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Dropdown from '@/components/global/AppDropdown.vue';
-import FileUpload from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Loading from '@/components/global/Loading.vue';
@@ -161,7 +212,6 @@ export default defineComponent({
     components: {
         Button,
         Dropdown,
-        FileUpload,
         InputText,
         Textarea,
         Loading,

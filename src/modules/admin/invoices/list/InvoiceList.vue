@@ -168,7 +168,7 @@
                     </template>
                 </Column>
 
-                <Column header="Status" style="min-width: 110px">
+                <Column field="status" header="Status" :sortable="true" style="min-width: 110px">
                     <template #body="{ data }">
                         <StatusBadge :value="data.payment_status || data.display_status || data.status" />
                     </template>

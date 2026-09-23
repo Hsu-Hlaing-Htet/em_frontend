@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* Numeric/data typography — Admin + Customer only.
+   Apply .rw-numeric (or aliases) ONLY on actual numeric value nodes.
+   Never put these classes on containers that also hold normal text. */
+
+:root {
+    --rw-font-sans: 'Inter', 'Inter var', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --rw-font-numeric: var(--rw-font-sans);
+}
+
+[data-admin-layout],
+[data-customer-layout] {
+    --rw-font-sans: 'Inter', 'Inter var', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --rw-font-numeric: var(--rw-font-sans);
+    --admin-font-ui: var(--rw-font-sans);
+}
+
+.rw-numeric,
+.rw-money,
+.rw-percent,
+.rw-date,
+.rw-count,
+[data-admin-layout] .rw-numeric,
+[data-admin-layout] .rw-money,
+[data-admin-layout] .rw-percent,
+[data-admin-layout] .rw-date,
+[data-admin-layout] .rw-count,
+[data-customer-layout] .rw-numeric,
+[data-customer-layout] .rw-money,
+[data-customer-layout] .rw-percent,
+[data-customer-layout] .rw-date,
+[data-customer-layout] .rw-count {
+    font-family: var(--rw-font-numeric) !important;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
+}
+
+[data-admin-layout] .rw-numeric--kpi,
+[data-admin-layout] .rw-count {
+    font-weight: 600;
+}
+
+[data-admin-layout] .rw-numeric--percent,
+[data-admin-layout] .rw-percent,
+[data-customer-layout] .rw-percent {
+    font-weight: 600;
+}
+
+[data-admin-layout] .rw-numeric--money,
+[data-admin-layout] .rw-money,
+[data-customer-layout] .rw-numeric--money,
+[data-customer-layout] .rw-money {
+    font-weight: 500;
+}
+
+[data-admin-layout] .rw-numeric--meta,
+[data-admin-layout] .rw-date,
+[data-customer-layout] .rw-numeric--meta,
+[data-customer-layout] .rw-date {
+    font-weight: 400;
+}

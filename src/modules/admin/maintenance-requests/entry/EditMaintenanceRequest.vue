@@ -43,19 +43,19 @@
                     </small>
                 </div>
             <div class="field">
-                <label for="maintenance_category_id" class="mb-2 block text-md">Category</label>
+                <label for="category" class="mb-2 block text-md">Category</label>
                 <Dropdown
-                    id="maintenance_category_id"
-                    v-model="state.maintenance_category_id"
+                    id="category"
+                    v-model="state.category"
                     :options="categoryOptions"
                     option-label="label"
                     option-value="value"
                     class="w-full"
                 />
-                    <small v-if="errors.has('maintenance_category_id')" class="p-error">
-                        <div v-for="error in errors.get('maintenance_category_id')" :key="error">{{ error }}</div>
-                    </small>
-                </div>
+                <small v-if="errors.has('category')" class="p-error">
+                    <div v-for="error in errors.get('category')" :key="error">{{ error }}</div>
+                </small>
+            </div>
             <div class="field">
                 <label for="priority" class="mb-2 block text-md">Priority</label>
                 <Dropdown

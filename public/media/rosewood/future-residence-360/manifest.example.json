@@ -1,0 +1,8 @@
+{
+  "frameCount": 72,
+  "pattern": "frame-{index}.webp",
+  "pad": 3,
+  "width": 1600,
+  "height": 1200,
+  "_comment": "EXAMPLE ONLY — remove this file or replace with a real manifest once frames exist. Detection requires a valid manifest with frame files present."
+}

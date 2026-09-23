@@ -64,6 +64,89 @@
                             </small>
                         </div>
 
+                        <div
+                            v-if="selectedPaymentMethod"
+                            class="customer-payment-method-details md:col-span-2"
+                        >
+                            <h3 class="customer-payment-method-details__title">
+                                {{ selectedPaymentMethod.name }}
+                            </h3>
+
+                            <div
+                                v-if="selectedPaymentMethod.phone_number"
+                                class="customer-payment-method-details__row"
+                            >
+                                <div class="customer-payment-method-details__meta">
+                                    <span class="customer-payment-method-details__label">
+                                        {{ $t('customer.phoneNumber') }}
+                                    </span>
+                                    <span class="customer-payment-method-details__value rw-numeric">
+                                        {{ selectedPaymentMethod.phone_number }}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="customer-payment-copy-btn"
+                                    @click="copyField('phone', selectedPaymentMethod.phone_number)"
+                                >
+                                    {{ copiedField === 'phone' ? $t('common.copied') : $t('common.copy') }}
+                                </button>
+                            </div>
+
+                            <div
+                                v-if="selectedPaymentMethod.account_name"
+                                class="customer-payment-method-details__row"
+                            >
+                                <div class="customer-payment-method-details__meta">
+                                    <span class="customer-payment-method-details__label">
+                                        {{ $t('customer.accountName') }}
+                                    </span>
+                                    <span class="customer-payment-method-details__value">
+                                        {{ selectedPaymentMethod.account_name }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div
+                                v-if="selectedPaymentMethod.account_number"
+                                class="customer-payment-method-details__row"
+                            >
+                                <div class="customer-payment-method-details__meta">
+                                    <span class="customer-payment-method-details__label">
+                                        {{ $t('customer.accountNumber') }}
+                                    </span>
+                                    <span class="customer-payment-method-details__value rw-numeric">
+                                        {{ selectedPaymentMethod.account_number }}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="customer-payment-copy-btn"
+                                    @click="copyField('account', selectedPaymentMethod.account_number)"
+                                >
+                                    {{ copiedField === 'account' ? $t('common.copied') : $t('common.copy') }}
+                                </button>
+                            </div>
+
+                            <div
+                                v-if="selectedPaymentMethod.qr_image_url"
+                                class="customer-payment-method-details__qr"
+                            >
+                                <img
+                                    :src="selectedPaymentMethod.qr_image_url"
+                                    :alt="`${selectedPaymentMethod.name} QR`"
+                                    class="customer-payment-method-details__qr-image"
+                                >
+                            </div>
+
+                            <p
+                                v-if="selectedPaymentMethod.instructions"
+                                class="customer-payment-method-details__instructions"
+                            >
+                                {{ selectedPaymentMethod.instructions }}
+                            </p>
+                        </div>
+
                         <div class="md:col-span-2">
                             <label class="mb-2 block text-md">{{ $t('customer.uploadPaymentProof') }}</label>
                             <p class="mb-2 text-sm text-[var(--admin-text-muted)]">
@@ -180,6 +263,96 @@ export default defineComponent({
     gap: 1rem;
 }
 
+.customer-payment-method-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.95rem 1rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--customer-portal-card-radius, 6px);
+    background: color-mix(in srgb, var(--admin-surface-solid) 92%, var(--admin-bg) 8%);
+}
+
+.customer-payment-method-details__title {
+    margin: 0;
+    color: var(--admin-text);
+    font-family: var(--customer-font-ui);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.customer-payment-method-details__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 0.75rem;
+}
+
+.customer-payment-method-details__meta {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.customer-payment-method-details__label {
+    color: var(--admin-text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.customer-payment-method-details__value {
+    color: var(--admin-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.customer-payment-copy-btn {
+    min-height: 2rem;
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--rw-brand, var(--admin-primary));
+    font-family: var(--customer-font-ui);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.customer-payment-copy-btn:hover,
+.customer-payment-copy-btn:focus-visible {
+    border-color: color-mix(in srgb, var(--rw-brand, var(--admin-primary)) 45%, var(--admin-border));
+    outline: none;
+}
+
+.customer-payment-method-details__qr {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.customer-payment-method-details__qr-image {
+    width: 140px;
+    height: 140px;
+    max-width: 100%;
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    background: #fff;
+    object-fit: contain;
+}
+
+.customer-payment-method-details__instructions {
+    margin: 0;
+    color: var(--admin-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+
 .customer-payment-message {
     padding: 1rem;
     color: var(--admin-text);
@@ -198,6 +371,11 @@ export default defineComponent({
 @media (max-width: 767px) {
     .customer-payment-form-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .customer-payment-method-details__qr-image {
+        width: 130px;
+        height: 130px;
     }
 }
 </style>

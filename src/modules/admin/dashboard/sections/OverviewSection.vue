@@ -94,24 +94,28 @@ function statIcon(stat) {
                 @click="handleStatClick(stat)"
             >
                 <div class="dashboard-kpi-header">
-                    <span class="dashboard-kpi-icon" aria-hidden="true">
+                    <p class="dashboard-kpi-label">
+                        {{ stat.label }}
+                    </p>
+                    <span
+                        class="dashboard-kpi-icon"
+                        aria-hidden="true"
+                    >
                         <i :class="statIcon(stat)" />
                     </span>
-                    <div class="dashboard-kpi-copy">
-                        <p class="dashboard-kpi-label">
-                            {{ stat.label }}
-                        </p>
-                        <h3 class="dashboard-kpi-value">
-                            {{ stat.value }}
-                        </h3>
-                        <p
-                            class="dashboard-kpi-change"
-                            :class="changeClass(stat)"
-                        >
-                            {{ stat.change }}
-                        </p>
-                    </div>
                 </div>
+
+                <h3 class="dashboard-kpi-value rw-numeric">
+                    {{ stat.value }}
+                </h3>
+
+                <p
+                    class="dashboard-kpi-change rw-numeric"
+                    :class="changeClass(stat)"
+                >
+                    {{ stat.change }}
+                </p>
+
                 <div class="dashboard-kpi-spark">
                     <DashboardSparkline
                         :values="stat.sparkline || []"
@@ -135,7 +139,7 @@ function statIcon(stat) {
                     </div>
                     <div class="dashboard-panel__metric">
                         <span class="dashboard-panel__metric-label">Collection rate</span>
-                        <strong class="dashboard-panel__metric-value">{{ collectionRate }}%</strong>
+                        <strong class="dashboard-panel__metric-value rw-numeric">{{ collectionRate }}%</strong>
                     </div>
                 </div>
 
@@ -180,8 +184,8 @@ function statIcon(stat) {
                             />
                         </div>
                         <div class="dashboard-aging-meta">
-                            <strong>{{ bucket.amount_label }}</strong>
-                            <span>{{ bucket.percent || 0 }}%</span>
+                            <strong class="dashboard-aging-amount rw-numeric rw-money">{{ bucket.amount_label }}</strong>
+                            <span class="dashboard-aging-percent rw-numeric">{{ bucket.percent || 0 }}%</span>
                         </div>
                     </div>
                 </div>
@@ -191,5 +195,3 @@ function statIcon(stat) {
         <DashboardOperationalSections />
     </div>
 </template>
-
-<style scoped src="../dashboardShared.css"></style>

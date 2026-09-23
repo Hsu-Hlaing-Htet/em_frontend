@@ -98,13 +98,6 @@ export const DASHBOARD_SECTIONS = {
         description: 'Alerts and unread platform updates',
         component: 'NotificationsSection',
     },
-    activity: {
-        key: 'activity',
-        label: 'Activity',
-        icon: 'pi pi-history',
-        description: 'Chronological platform event timeline',
-        component: 'ActivitySection',
-    },
     reports: {
         key: 'reports',
         label: 'Reports',

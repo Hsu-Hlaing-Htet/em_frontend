@@ -46,8 +46,8 @@
 
         <FloatingChat
             mode="rent"
-            context-label="Rent assistant"
-            question="Ask about your lease, invoices, or payments."
+            context-label="Your lease & account"
+            question="Ask about your lease, bills, or account"
             :visible="true"
         />
 

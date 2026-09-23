@@ -89,7 +89,7 @@ export default function useInvoiceDocumentPage(options = {}) {
     const normalizedStatus = computed(() => String(state.status || '').toLowerCase());
     const normalizedPaymentStatus = computed(() => String(state.payment_status || '').toLowerCase());
     const canApproveInvoice = computed(() => (
-        isApprovalView.value && ['draft', 'pending_approval'].includes(normalizedStatus.value)
+        isApprovalView.value && normalizedStatus.value === 'draft'
     ));
     const canRejectInvoice = computed(() => canApproveInvoice.value);
     const canDownloadInvoice = computed(() => !isApprovalView.value);
@@ -191,6 +191,7 @@ export default function useInvoiceDocumentPage(options = {}) {
             await router.push({ name: 'invoiceList' });
         } catch (error) {
             showApiErrorToast(error, 'Unable to approve invoice.');
+            // Keep modal open so staff can retry or cancel after a conflict/error.
         } finally {
             isApproving.value = false;
         }

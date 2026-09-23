@@ -161,7 +161,7 @@ onMounted(load);
         </div>
 
         <template v-else-if="property">
-            <div class="container rw-detail-top">
+            <div class="container rw-detail-top reveal reveal--scale is-visible">
                 <button type="button" class="rw-back" @click="goBack">
                     <i class="fas fa-arrow-left" />
                     Back to listings
@@ -201,7 +201,7 @@ onMounted(load);
 
                         <div
                             v-if="metaItems.length"
-                            class="rw-detail-meta"
+                            class="rw-detail-meta reveal-stagger is-visible"
                             :style="{ '--meta-cols': Math.min(metaItems.length, 4) }"
                         >
                             <article
@@ -288,7 +288,7 @@ onMounted(load);
             <section
                 v-if="hasLocation"
                 id="detail-location"
-                class="rw-section rw-section--alt"
+                class="rw-section rw-section--alt reveal"
             >
                 <div class="container">
                     <div class="rw-section-head">
@@ -308,13 +308,13 @@ onMounted(load);
             <section
                 v-if="similar.length"
                 id="detail-similar"
-                class="rw-section"
+                class="rw-section reveal"
             >
                 <div class="container">
                     <div class="rw-section-head">
                         <h2>Similar Residences</h2>
                     </div>
-                    <div class="rw-property-grid">
+                    <div class="rw-property-grid reveal-stagger is-visible">
                         <PropertyCard
                             v-for="item in similar"
                             :key="item.id"

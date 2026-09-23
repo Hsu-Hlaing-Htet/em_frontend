@@ -1,6 +1,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDebounceFn } from '@/utils/debounce';
+import { multisortConvert } from '@/utils/multisort';
 import { parseDate } from '@/utils/formatter';
 import {
     formatPropertyUnit,
@@ -53,6 +54,7 @@ export const usePaymentList = () => {
         lazyParams.value = {
             page: 0,
             rows: dt.value?.rows || 10,
+            multiSortMeta: [],
             first: 0,
         };
     };
@@ -109,12 +111,20 @@ export const usePaymentList = () => {
         loadingData();
     };
 
+    const onSort = (event) => {
+        lazyParams.value = event;
+        lazyParams.value.page = 0;
+        lazyParams.value.first = 0;
+        loadingData();
+    };
+
     const loadingData = async () => {
         isLoading.value = true;
 
         await store.fetchAll(omitEmptyParams({
             page: lazyParams.value.page + 1,
             per_page: lazyParams.value.rows,
+            order: multisortConvert(lazyParams.value.multiSortMeta) || undefined,
             ...buildFilterQuery(),
         }));
 
@@ -204,6 +214,7 @@ export const usePaymentList = () => {
         columns: PAYMENT_EXPORT_COLUMNS,
         emptyMessage: 'No payments available to export.',
         getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta) || undefined,
             ...buildFilterQuery(),
         }),
         fetchPage: async (params) => {
@@ -238,6 +249,7 @@ export const usePaymentList = () => {
         paymentMethodOptions,
         statusOptions: PAYMENT_LIST_STATUS_OPTIONS,
         onPage,
+        onSort,
         onRowClick,
         resetSearch,
         isExporting,

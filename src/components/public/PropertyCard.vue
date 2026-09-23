@@ -3,11 +3,15 @@
         <router-link
             :to="detailTo"
             class="rw-property-card__media"
+            :data-rw-parallax-measure="parallax ? '' : undefined"
         >
             <img
                 :src="property.featured_image || placeholder"
                 :alt="property.property_name || 'Rosewood Royale residence'"
                 loading="lazy"
+                :data-rw-parallax="parallax ? 'light' : undefined"
+                :data-rw-max-y="parallax ? '10' : undefined"
+                :data-rw-base-scale="parallax ? '1.02' : undefined"
             >
             <span class="rw-badge">{{ offerLabel }}</span>
         </router-link>
@@ -61,6 +65,11 @@ const props = defineProps({
     property: {
         type: Object,
         required: true,
+    },
+    /** Enable light image drift on landing inventory cards only. */
+    parallax: {
+        type: Boolean,
+        default: false,
     },
 });
 
@@ -151,7 +160,12 @@ const metaItems = computed(() => {
     transition: transform 0.5s ease;
 }
 
-.rw-property-card:hover .rw-property-card__media img {
+.rw-property-card__media img[data-rw-parallax] {
+    height: 112%;
+    will-change: transform;
+}
+
+.rw-property-card:hover .rw-property-card__media img:not([data-rw-parallax]) {
     transform: scale(1.035);
 }
 

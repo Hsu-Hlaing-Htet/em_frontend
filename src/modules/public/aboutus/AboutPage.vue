@@ -199,9 +199,9 @@ onMounted(async () => {
             </div>
         </section>
 
-        <section class="rw-section reveal">
+        <section class="rw-section">
             <div class="container rw-about-story">
-                <div>
+                <div class="reveal reveal--left">
                     <p class="rw-kicker">Our Story</p>
                     <h2>Crafted for people who notice.</h2>
                     <p>
@@ -213,7 +213,7 @@ onMounted(async () => {
                         relevant options, and support when you need it.
                     </p>
                 </div>
-                <div class="rw-about-story__media">
+                <div class="rw-about-story__media reveal reveal--scale">
                     <img
                         src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1400"
                         alt="Refined residence interior"
@@ -320,7 +320,7 @@ onMounted(async () => {
                     </div>
                 </div>
 
-                <div class="rw-about-locations reveal-stagger">
+                <div class="rw-about-locations reveal-stagger is-visible">
                     <router-link
                         v-for="location in locations"
                         :key="location.name"
@@ -412,8 +412,8 @@ onMounted(async () => {
             </div>
         </section>
 
-        <section class="rw-section reveal">
-            <div class="container rw-about-cta">
+        <section class="rw-section">
+            <div class="container rw-about-cta reveal-stage">
                 <p class="rw-kicker">Your Next Chapter</p>
                 <h2>Find a place that feels right.</h2>
                 <p class="rw-lede">

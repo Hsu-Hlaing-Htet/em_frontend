@@ -4,7 +4,7 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import { MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
+import { MAINTENANCE_CATEGORY_OPTIONS, MAINTENANCE_PRIORITY_OPTIONS } from '@/constants/constant';
 import { useCustomerMaintenanceRequestStore } from '@/modules/customer/maintenance-requests/store';
 
 export default function useCustomerNewMaintenanceRequest() {
@@ -12,16 +12,19 @@ export default function useCustomerNewMaintenanceRequest() {
     const router = useRouter();
     const isLoading = ref(true);
     const isSaving = ref(false);
+    const isDragging = ref(false);
     const errors = new Errors();
     const roomOptions = ref([]);
-    const categoryOptions = ref([]);
+    const categoryOptions = MAINTENANCE_CATEGORY_OPTIONS;
     const photoFile = ref(null);
     const photoPreviewUrl = ref('');
+    const photoFileName = ref('');
+    const fileInputEl = ref(null);
 
     const state = reactive({
         room_id: null,
         title: '',
-        maintenance_category_id: null,
+        category: null,
         priority: null,
         description: '',
     });
@@ -32,20 +35,16 @@ export default function useCustomerNewMaintenanceRequest() {
         isLoading.value = true;
 
         try {
-            await Promise.all([
-                store.fetchRooms(),
-                store.fetchCategories(),
-            ]);
+            await store.fetchRooms();
             const rooms = store.getRoomsResponse?.data || [];
             roomOptions.value = rooms.map((room) => ({
                 label: room.label || `${room.building_name || ''} · ${room.room_number}`.trim(),
                 value: room.id,
             }));
-            const categories = store.getCategoriesResponse?.data || [];
-            categoryOptions.value = categories.map((category) => ({
-                label: category.name,
-                value: category.id,
-            }));
+
+            if (roomOptions.value.length === 1) {
+                state.room_id = roomOptions.value[0].value;
+            }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load maintenance request options.');
         } finally {
@@ -59,18 +58,6 @@ export default function useCustomerNewMaintenanceRequest() {
         store.$dispose();
     });
 
-    const onPhotoSelect = (event) => {
-        const file = event.files?.[0] || null;
-        clearPhoto();
-
-        if (!file) {
-            return;
-        }
-
-        photoFile.value = file;
-        photoPreviewUrl.value = URL.createObjectURL(file);
-    };
-
     const clearPhoto = () => {
         if (photoPreviewUrl.value) {
             URL.revokeObjectURL(photoPreviewUrl.value);
@@ -78,14 +65,66 @@ export default function useCustomerNewMaintenanceRequest() {
 
         photoFile.value = null;
         photoPreviewUrl.value = '';
+        photoFileName.value = '';
+        isDragging.value = false;
+        errors.clear('photo');
+
+        if (fileInputEl.value) {
+            fileInputEl.value.value = '';
+        }
+    };
+
+    const assignPhoto = (file) => {
+        clearPhoto();
+
+        if (!file) {
+            return;
+        }
+
+        if (!String(file.type || '').startsWith('image/')) {
+            errors.record({ photo: ['Please choose an image file.'] });
+            return;
+        }
+
+        errors.clear('photo');
+        photoFile.value = file;
+        photoFileName.value = file.name || 'Selected image';
+        photoPreviewUrl.value = URL.createObjectURL(file);
+    };
+
+    const openFilePicker = () => {
+        if (isSaving.value) {
+            return;
+        }
+
+        fileInputEl.value?.click();
+    };
+
+    const onPhotoInputChange = (event) => {
+        const file = event.target?.files?.[0] || null;
+        assignPhoto(file);
+    };
+
+    const onPhotoDrop = (event) => {
+        isDragging.value = false;
+        const file = event.dataTransfer?.files?.[0] || null;
+        assignPhoto(file);
+    };
+
+    const goBack = () => {
+        router.push({ name: 'customerMaintenanceRequestList' });
     };
 
     const handleSubmit = async () => {
+        if (isSaving.value) {
+            return;
+        }
+
         errors.clear();
 
         if (!applyValidation(errors, state, [
             { field: 'title', type: 'text' },
-            { field: 'maintenance_category_id', type: 'select' },
+            { field: 'category', type: 'select' },
             { field: 'room_id', type: 'select' },
             { field: 'priority', type: 'select' },
             { field: 'description', type: 'text' },
@@ -96,9 +135,9 @@ export default function useCustomerNewMaintenanceRequest() {
         isSaving.value = true;
 
         try {
+            // Photo remains UI-only until backend supports attachments on maintenance_requests.
             await store.create({
                 ...state,
-                photo: photoFile.value || undefined,
             });
             const response = store.getCreateResponse;
 
@@ -115,7 +154,7 @@ export default function useCustomerNewMaintenanceRequest() {
             }
         } catch (error) {
             if (error.status === 422) {
-                errors.record(error.data?.data || {});
+                errors.record(error.data?.data || error.data?.errors || {});
             } else {
                 showApiErrorToast(error, 'Unable to submit maintenance request.');
             }
@@ -127,14 +166,20 @@ export default function useCustomerNewMaintenanceRequest() {
     return {
         isLoading,
         isSaving,
+        isDragging,
         errors,
         state,
         roomOptions,
+        photoFileName,
         photoPreviewUrl,
+        fileInputEl,
         categoryOptions,
         priorityOptions: MAINTENANCE_PRIORITY_OPTIONS,
-        onPhotoSelect,
+        openFilePicker,
+        onPhotoInputChange,
+        onPhotoDrop,
         clearPhoto,
+        goBack,
         handleSubmit,
     };
 }

@@ -96,14 +96,14 @@ watch(sort, () => {
                 >
             </div>
             <div class="rw-page-hero__overlay" />
-            <div class="container rw-page-hero__content rw-listing-hero__copy">
+            <div class="container rw-page-hero__content rw-listing-hero__copy rw-hero-copy">
                 <p class="rw-kicker">Rosewood Royale Residences</p>
                 <h1>{{ heroTitle }}</h1>
                 <p class="rw-lede">{{ heroCopy }}</p>
             </div>
         </section>
 
-        <section class="rw-section rw-section--tight">
+        <section class="rw-section rw-section--tight reveal">
             <div class="container">
                 <PropertySearch
                     :model-value="filters"
@@ -118,7 +118,7 @@ watch(sort, () => {
             class="rw-section rw-listing-results"
         >
             <div class="container">
-                <div class="rw-listing-toolbar">
+                <div class="rw-listing-toolbar reveal">
                     <div>
                         <p class="rw-listing-count">
                             <strong>{{ resultMeta.total }}</strong>
@@ -169,7 +169,7 @@ watch(sort, () => {
                 </div>
 
                 <div class="rw-listing-layout">
-                    <div class="rw-filters-desktop">
+                    <div class="rw-filters-desktop reveal">
                         <PropertyFilters
                             :model-value="filters"
                             :fixed-purpose="fixedPurpose"

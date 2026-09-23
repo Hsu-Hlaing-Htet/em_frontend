@@ -43,9 +43,14 @@
     flex-shrink: 0;
     width: var(--rosewood-brand-logo-size);
     height: var(--rosewood-brand-logo-size);
-    object-fit: contain;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
     object-position: center;
-    border-radius: 8px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+    background: transparent;
 }
 
 .rosewood-brand__name {
@@ -93,13 +98,13 @@
 
 .rosewood-brand--lg {
     --rosewood-brand-gap: 14px;
-    --rosewood-brand-logo-size: 54px;
+    --rosewood-brand-logo-size: 52px;
     --rosewood-brand-name-size: 1.5rem;
 }
 
 .rosewood-brand--compact {
     --rosewood-brand-gap: 10px;
-    --rosewood-brand-logo-size: 36px;
+    --rosewood-brand-logo-size: 38px;
     --rosewood-brand-name-size: 1.05rem;
 }
 

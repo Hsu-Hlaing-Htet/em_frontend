@@ -58,7 +58,32 @@ export function getApiErrorMessage(error, fallback = 'Something went wrong. Plea
         return 'You do not have permission to perform this action.';
     }
 
+    // Prefer explicit safe API messages for conflict / not-found / method errors.
+    if (status === 404) {
+        return normalizeApiMessage(data?.message || 'The requested resource could not be found.', status);
+    }
+
+    if (status === 405) {
+        return normalizeApiMessage(data?.message || 'This action is not supported.', status);
+    }
+
+    if (status === 409) {
+        return normalizeApiMessage(data?.message || fallback, status);
+    }
+
     if (status >= 500) {
+        // Only surface short safe business messages; never stack traces.
+        const serverMessage = String(data?.message || '').trim();
+        if (
+            serverMessage
+            && serverMessage.length <= 180
+            && !serverMessage.includes('SQLSTATE')
+            && !serverMessage.includes('Stack trace')
+            && !serverMessage.includes('/')
+        ) {
+            return normalizeApiMessage(serverMessage, status);
+        }
+
         return 'Something went wrong. Please try again.';
     }
 

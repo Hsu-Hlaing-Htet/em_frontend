@@ -7,18 +7,22 @@
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
                 responsive-layout="scroll"
+                sort-mode="multiple"
                 scroll-height="58vh"
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
                 :value="items"
+                :multi-sort-meta="lazyParams.multiSortMeta"
                 :total-records="totalRecords"
                 :rows="10"
                 :first="lazyParams.first"
                 :rows-per-page-options="[10, 25, 50]"
+                removable-sort
                 row-hover
                 class="admin-clickable-rows"
                 @page="onPage($event)"
+                @sort="onSort($event)"
                 @row-click="onRowClick"
             >
                 <template #header>
@@ -85,7 +89,7 @@
                 </template>
                 <template #loading>Loading pending approvals. Please wait.</template>
 
-                <Column header="Invoice No" style="min-width: 130px" frozen>
+                <Column field="invoice_number" header="Invoice No" :sortable="true" style="min-width: 130px" frozen>
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showPaymentApproval', params: { id: data.id } }"
@@ -95,24 +99,24 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="customer_name" header="Customer" style="min-width: 150px" />
-                <Column header="Due (MMK)" style="min-width: 120px">
+                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 150px" />
+                <Column field="invoice_amount" header="Due (MMK)" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.invoice_amount) }}
                     </template>
                 </Column>
-                <Column header="Amount (MMK)" style="min-width: 120px">
+                <Column field="amount" header="Amount (MMK)" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.amount) }}
                     </template>
                 </Column>
-                <Column header="Type" style="min-width: 100px">
+                <Column field="payment_type" header="Type" :sortable="true" style="min-width: 100px">
                     <template #body="{ data }">
                         {{ formatPaymentTypeLabel(data.payment_type) }}
                     </template>
                 </Column>
-                <Column field="payment_date" header="Date" style="min-width: 120px" />
-                <Column field="payment_method_name" header="Method" style="min-width: 120px" />
+                <Column field="payment_date" header="Date" :sortable="true" style="min-width: 120px" />
+                <Column field="payment_method_name" header="Method" :sortable="true" style="min-width: 120px" />
                 <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions

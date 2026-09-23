@@ -174,7 +174,7 @@ export default function useCustomerProfilePage() {
             }
         } catch (error) {
             if (error.status === 422) {
-                errors.record(error.data.data);
+                errors.record(error.data?.data || error.data?.errors || {});
                 return;
             }
             showApiErrorToast(error, 'Unable to update your profile.');

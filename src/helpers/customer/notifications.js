@@ -1,11 +1,22 @@
 const TERMINAL_STATUSES = new Set(['read', 'paid', 'approved', 'completed', 'rejected']);
 
+/**
+ * Unread is driven by persisted read_at only.
+ * Entity status (issued/approved/pending/etc.) must never imply "read".
+ */
 export function isCustomerNotificationUnread(item) {
-    if (!item?.status) {
-        return true;
+    if (!item) {
+        return false;
     }
 
-    return !TERMINAL_STATUSES.has(String(item.status).toLowerCase());
+    return !item.read_at;
+}
+
+/**
+ * @deprecated Kept for any legacy callers; prefer read_at.
+ */
+export function isCustomerNotificationTerminalStatus(status) {
+    return TERMINAL_STATUSES.has(String(status || '').toLowerCase());
 }
 
 export function customerNotificationIcon(type) {
@@ -33,9 +44,29 @@ export function customerNotificationTone(type) {
 }
 
 export function customerNotificationRoute(item) {
+    if (item?.type === 'payment') {
+        if (item.status === 'approved' && item.receipt_id) {
+            return {
+                name: 'customerShowReceipt',
+                params: { id: item.receipt_id },
+            };
+        }
+
+        const paymentId = item.payment_id
+            || (item.status === 'approved' ? null : item.resource_id);
+
+        if (paymentId) {
+            return {
+                name: 'customerShowPayment',
+                params: { id: paymentId },
+            };
+        }
+
+        return null;
+    }
+
     const routeByType = {
         invoice: 'customerShowInvoice',
-        payment: 'customerShowInvoice',
         receipt: 'customerShowReceipt',
         contract: 'customerShowContract',
         utility: 'customerShowInvoice',
@@ -95,7 +126,7 @@ export function formatContractTypeLabel(type) {
     }
 
     if (type === 'sale') {
-        return 'Sale Agreement';
+        return 'Residential Sale Agreement';
     }
 
     if (!type) {
@@ -110,7 +141,7 @@ export function formatPropertyLabel(contract) {
     const room = contract?.room_number?.trim();
 
     if (building && room) {
-        return `${building} - Unit ${room}`;
+        return `${building} · Unit ${room}`;
     }
 
     if (building) {
@@ -121,7 +152,7 @@ export function formatPropertyLabel(contract) {
         return `Unit ${room}`;
     }
 
-    return contract?.contract_number?.trim() || '';
+    return '';
 }
 
 export function invoiceDueStatus(invoice) {

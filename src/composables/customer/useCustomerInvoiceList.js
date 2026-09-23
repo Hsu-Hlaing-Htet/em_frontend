@@ -1,6 +1,5 @@
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
 import { useCustomerInvoiceStore } from '@/modules/customer/invoices/store';
 import { showApiErrorToast } from '@/utils/apiError';
 
@@ -11,24 +10,12 @@ function cloneRows(rows) {
 export default function useCustomerInvoiceList() {
     const store = useCustomerInvoiceStore();
     const router = useRouter();
-    const { t } = useI18n();
     const isLoading = ref(true);
     const isLoadingMore = ref(false);
     const invoices = ref([]);
     const totalRecords = ref(0);
     const page = ref(1);
     const rows = ref(10);
-    const search = ref('');
-    const status = ref('');
-    let searchTimer = null;
-
-    const statusFilters = computed(() => [
-        { label: t('common.all'), value: '' },
-        { label: t('common.open'), value: 'issued' },
-        { label: t('common.partial'), value: 'partial' },
-        { label: t('common.paid'), value: 'paid' },
-        { label: t('common.overdue'), value: 'overdue' },
-    ]);
 
     const hasMore = () => invoices.value.length < totalRecords.value;
 
@@ -43,8 +30,6 @@ export default function useCustomerInvoiceList() {
             await store.fetchAll({
                 page: page.value,
                 per_page: rows.value,
-                search: search.value || undefined,
-                status: status.value || undefined,
             });
             const response = store.getAllResponse;
             const nextRows = cloneRows(response?.data?.data);
@@ -58,18 +43,9 @@ export default function useCustomerInvoiceList() {
         }
     };
 
-    const resetAndLoad = () => {
+    onMounted(() => {
         page.value = 1;
         loadInvoices();
-    };
-
-    onMounted(resetAndLoad);
-
-    watch(status, resetAndLoad);
-
-    watch(search, () => {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(resetAndLoad, 300);
     });
 
     const loadMore = () => {
@@ -89,9 +65,6 @@ export default function useCustomerInvoiceList() {
         isLoading,
         isLoadingMore,
         invoices,
-        search,
-        status,
-        statusFilters,
         hasMore,
         loadMore,
         openInvoice,

@@ -26,14 +26,23 @@
                 v-for="request in requests"
                 :key="request.id"
                 :to="{ name: 'customerShowMaintenanceRequest', params: { id: request.id } }"
-                class="customer-record-row customer-maintenance-row"
+                class="customer-interactive-surface customer-record-row customer-maintenance-row"
             >
                 <span class="customer-record-cell customer-record-primary">
-                    <strong>{{ request.title }}</strong>
+                    <strong v-if="request.title">{{ request.title }}</strong>
+                    <small v-if="formatMaintenanceMeta(request)">{{ formatMaintenanceMeta(request) }}</small>
                 </span>
                 <span class="customer-record-cell customer-record-meta">
-                    <time>{{ formatDate(request.created_date || request.created_at) || '—' }}</time>
-                    <StatusBadge :value="request.status" />
+                    <time
+                        v-if="createdAtParts(request.created_at)"
+                        class="customer-record-created rw-date"
+                        :datetime="request.created_at"
+                    >
+                        <span class="customer-record-created-date">{{ createdAtParts(request.created_at).date }}</span>
+                        <span class="customer-record-created-sep" aria-hidden="true"> · </span>
+                        <span class="customer-record-created-time">{{ createdAtParts(request.created_at).time }}</span>
+                    </time>
+                    <StatusBadge v-if="request.status" :value="request.status" />
                 </span>
             </router-link>
 
@@ -64,7 +73,18 @@ import CustomerSearchBar from '@/components/customer/CustomerSearchBar.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerMaintenanceRequestList from '@/composables/customer/useCustomerMaintenanceRequestList';
-import { formatDate } from '@/utils/formatter';
+import { formatCustomerDateTimeParts } from '@/helpers/customer/datetime';
+
+function formatMaintenanceMeta(request) {
+    const room = request?.room_number ? `Room ${request.room_number}` : '';
+    const category = request?.category || '';
+
+    if (room && category) {
+        return `${room} · ${category}`;
+    }
+
+    return room || category || '';
+}
 
 export default defineComponent({
     name: 'CustomerMaintenanceRequestList',
@@ -79,7 +99,8 @@ export default defineComponent({
     setup() {
         return {
             ...useCustomerMaintenanceRequestList(),
-            formatDate,
+            createdAtParts: formatCustomerDateTimeParts,
+            formatMaintenanceMeta,
         };
     },
 });

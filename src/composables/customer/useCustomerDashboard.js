@@ -11,15 +11,13 @@ import {
     customerNotificationIcon,
     customerNotificationRoute,
     customerNotificationTone,
-    formatContractTypeLabel,
-    formatPropertyLabel,
     formatRelativeTime,
     invoiceDueStatus,
     isCustomerNotificationUnread,
 } from '@/helpers/customer/notifications';
 
 const OPEN_INVOICE_STATUSES = new Set(['issued', 'partial', 'overdue', 'unpaid']);
-const ACTIVE_CONTRACT_STATUSES = new Set(['approved', 'active']);
+const ACTIVE_CONTRACT_STATUSES = new Set(['active']);
 
 function cloneRows(rows) {
     return Array.isArray(rows) ? rows.map((row) => ({ ...row })) : [];
@@ -64,9 +62,28 @@ export default function useCustomerDashboard() {
     ));
 
     const primaryActiveContract = computed(() => activeContracts.value[0] || null);
+    const activeContractCount = computed(() => activeContracts.value.length);
     const contractListRoute = { name: 'customerContractList' };
 
-    const hasMultipleContracts = computed(() => activeContracts.value.length > 1);
+    const activeContractSummaryTitle = computed(() => {
+        const count = activeContractCount.value;
+
+        if (count === 0) {
+            return t('customer.noActiveContracts');
+        }
+
+        if (count === 1) {
+            return t('customer.activeContractCountOne', { count });
+        }
+
+        return t('customer.activeContractCountMany', { count });
+    });
+
+    const activeContractSummaryLead = computed(() => (
+        activeContractCount.value === 0
+            ? t('customer.noActiveContractsLead')
+            : t('customer.activeContractSummaryLead')
+    ));
 
     const latestNotifications = computed(() => notificationStore.latestNotifications);
 
@@ -107,15 +124,6 @@ export default function useCustomerDashboard() {
             to: { name: 'customerMaintenanceRequestList' },
             action: t('customer.viewRequestsAction'),
         },
-        {
-            key: 'assistant',
-            title: t('customer.rentAssistant'),
-            description: t('customer.quickActionRentAssistant'),
-            icon: 'pi pi-comments',
-            tone: 'tone-gold',
-            to: { name: 'customerDashboard', query: { openAssistant: '1' } },
-            action: t('customer.openRentAssistantAction'),
-        },
     ]);
 
     const formatMoney = (value) => formatCurrency(Number(value || 0));
@@ -140,14 +148,14 @@ export default function useCustomerDashboard() {
     const formatDisplayDateTime = (value) => formatRelativeTime(value, locale.value === 'my' ? 'my-MM' : 'en-GB');
 
     const openNotification = (item) => {
+        // Optimistic read first so badge/UI update before navigation.
+        notificationStore.markAsRead(item?.id);
+
         const target = customerNotificationRoute(item);
 
-        if (!target) {
-            return;
+        if (target) {
+            router.push(target);
         }
-
-        notificationStore.markAsRead(item?.id);
-        router.push(target);
     };
 
     const openInvoice = (invoiceId) => {
@@ -162,18 +170,14 @@ export default function useCustomerDashboard() {
         try {
             const results = await Promise.allSettled([
                 service.getContracts({ page: 1, per_page: 20, status: 'active' }),
-                service.getContracts({ page: 1, per_page: 20, status: 'approved' }),
                 service.getInvoices({ page: 1, per_page: 1000 }),
             ]);
 
-            const [activeResponse, approvedResponse, invoiceResponse] = results.map(
+            const [activeResponse, invoiceResponse] = results.map(
                 (result) => (result.status === 'fulfilled' ? result.value : null),
             );
 
-            const contractRows = [
-                ...cloneRows(activeResponse?.data?.data),
-                ...cloneRows(approvedResponse?.data?.data),
-            ].filter((contract, index, rows) => (
+            const contractRows = cloneRows(activeResponse?.data?.data).filter((contract, index, rows) => (
                 ACTIVE_CONTRACT_STATUSES.has(contract.status)
                 && rows.findIndex((row) => row.id === contract.id) === index
             ));
@@ -197,8 +201,10 @@ export default function useCustomerDashboard() {
         customerName,
         activeContracts,
         primaryActiveContract,
+        activeContractCount,
+        activeContractSummaryTitle,
+        activeContractSummaryLead,
         contractListRoute,
-        hasMultipleContracts,
         latestNotifications,
         overdueInvoices,
         overdueTotal,
@@ -207,8 +213,6 @@ export default function useCustomerDashboard() {
         formatMoney,
         formatDisplayDate,
         formatDisplayDateTime,
-        formatContractTypeLabel,
-        formatPropertyLabel,
         notificationIcon: customerNotificationIcon,
         notificationTone: customerNotificationTone,
         isNotificationUnread: isCustomerNotificationUnread,

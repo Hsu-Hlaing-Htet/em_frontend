@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue';
-import logoDark from '@/assets/images/logo-dark.jpg';
-import logoWhite from '@/assets/images/logo-white.jpg';
+
+/** Public URL — same asset for all portals (frontend/public/images/logo-dark.jpg). */
+const LOGO_SRC = '/images/logo-dark.jpg';
 
 const props = defineProps({
     to: {
@@ -9,8 +10,9 @@ const props = defineProps({
         default: null,
     },
     /**
-     * on-dark  — public header / dark chrome (logo-white + ivory text)
-     * on-light — admin, customer, auth (logo-dark + burgundy text)
+     * on-dark  — public header / dark chrome
+     * on-light — admin, customer, auth
+     * Logo asset is always logo-dark.jpg (circular dark badge).
      */
     variant: {
         type: String,
@@ -38,8 +40,6 @@ const props = defineProps({
 
 const emit = defineEmits(['click']);
 
-const logoSrc = computed(() => (props.variant === 'on-dark' ? logoWhite : logoDark));
-
 const rootClass = computed(() => [
     'rosewood-brand',
     `rosewood-brand--${props.variant}`,
@@ -66,8 +66,8 @@ function onClick(event) {
         @click="onClick"
     >
         <img
-            :src="logoSrc"
-            alt=""
+            :src="LOGO_SRC"
+            alt="Rosewood Royale"
             class="rosewood-brand__logo"
             width="48"
             height="48"
@@ -87,8 +87,8 @@ function onClick(event) {
         @click="onClick"
     >
         <img
-            :src="logoSrc"
-            alt=""
+            :src="LOGO_SRC"
+            alt="Rosewood Royale"
             class="rosewood-brand__logo"
             width="48"
             height="48"

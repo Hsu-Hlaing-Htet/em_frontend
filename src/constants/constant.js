@@ -105,6 +105,14 @@ export const PAYMENT_METHOD_STATUS_OPTIONS = [
     { label: 'Inactive', value: 'inactive' },
 ];
 
+export const PAYMENT_METHOD_TYPE_OPTIONS = [
+    { label: 'Wallet', value: 'wallet' },
+    { label: 'Cash', value: 'cash' },
+    { label: 'Bank Transfer', value: 'bank_transfer' },
+    { label: 'Cheque', value: 'cheque' },
+    { label: 'Other', value: 'other' },
+];
+
 export const RECEIPT_STATUS_OPTIONS = [
     { label: 'Draft', value: 'draft' },
     { label: 'Issued', value: 'issued' },
@@ -116,6 +124,14 @@ export const MAINTENANCE_STATUS_OPTIONS = [
     { label: 'In Progress', value: 'in_progress' },
     { label: 'Completed', value: 'completed' },
     { label: 'Cancelled', value: 'cancelled' },
+];
+
+export const MAINTENANCE_CATEGORY_OPTIONS = [
+    { label: 'Plumbing', value: 'plumbing' },
+    { label: 'Electrical', value: 'electrical' },
+    { label: 'HVAC', value: 'hvac' },
+    { label: 'Appliance', value: 'appliance' },
+    { label: 'General', value: 'general' },
 ];
 
 export const MAINTENANCE_CUSTOMER_STATUS_OPTIONS = [

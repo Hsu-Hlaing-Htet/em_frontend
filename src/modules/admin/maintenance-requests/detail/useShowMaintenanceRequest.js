@@ -63,15 +63,14 @@ export default function useShowMaintenanceRequest() {
     });
 
     const canAccept = computed(() => state.status === 'pending');
-    const canReject = computed(() => state.status === 'pending');
-    const canAssign = computed(() => state.status === 'accepted');
+    const canReject = computed(() => ['pending', 'in_progress'].includes(state.status));
+    // Backend has no accepted/assign persistence — Accept starts work (in_progress).
+    const canAssign = computed(() => false);
     const canWorkDone = computed(() => state.status === 'in_progress');
     const canCancel = computed(() => state.status === 'in_progress');
     const isPending = computed(() => state.status === 'pending');
     const isRejected = computed(() => {
-        const status = state.status === 'rejected' ? 'cancelled' : state.status;
-
-        if (status !== 'cancelled') {
+        if (state.status !== 'rejected') {
             return false;
         }
 
@@ -79,15 +78,22 @@ export default function useShowMaintenanceRequest() {
         const reachedInProgress = history.some((item) => item.status === 'in_progress')
             || Boolean(state.assigned_staff);
 
+        // Rejected before work started → Rejected. After in_progress cancel → Cancelled.
         return !reachedInProgress;
     });
-    const statusBadgeValue = computed(() => (isRejected.value ? 'rejected' : state.status));
+    const statusBadgeValue = computed(() => {
+        if (state.status === 'rejected') {
+            return isRejected.value ? 'rejected' : 'cancelled';
+        }
+
+        return state.status;
+    });
     const showPostAcceptPanels = computed(() => (
         !isPending.value
-        && !isRejected.value
+        && state.status !== 'rejected'
         && Boolean(state.status)
     ));
-    const showAssignmentForm = computed(() => state.status === 'accepted');
+    const showAssignmentForm = computed(() => false);
     const showInProgressActions = computed(() => state.status === 'in_progress');
     const showAssignedStaff = computed(() => Boolean(state.assigned_staff)
         || ['in_progress', 'completed'].includes(state.status));

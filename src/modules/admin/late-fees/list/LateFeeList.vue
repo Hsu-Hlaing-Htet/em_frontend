@@ -60,7 +60,7 @@
                 <Column field="value" header="Value" :sortable="true" style="min-width: 100px" />
                 <Column field="per" header="Per" :sortable="true" style="min-width: 100px" />
                 <Column field="grace_days" header="Grace Days" :sortable="true" style="min-width: 120px" />
-                <Column field="is_default" header="Default" :sortable="true" style="min-width: 110px">
+                <Column field="is_default" header="Default" style="min-width: 110px">
                     <template #body="{ data }">
                         <InputSwitch
                             :model-value="Boolean(data.is_default)"

@@ -144,6 +144,7 @@ export const PAYMENT_PLAN_EXPORT_COLUMNS = [
 
 export const PAYMENT_METHOD_EXPORT_COLUMNS = [
     { field: 'name', header: 'Name' },
+    { field: 'type', header: 'Type' },
     { field: 'status', header: 'Status', format: status },
 ];
 

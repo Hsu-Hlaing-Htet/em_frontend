@@ -179,7 +179,7 @@ function toggleFaq(index) {
                     Support that continues beyond finding a property — designed with clarity, discretion, and care.
                 </p>
 
-                <div class="rw-services-hero__values" aria-label="Service values">
+                <div class="rw-services-hero__values reveal-stagger is-visible" aria-label="Service values">
                     <article
                         v-for="item in heroValues"
                         :key="item.label"
@@ -268,7 +268,7 @@ function toggleFaq(index) {
                     </div>
                 </div>
 
-                <ol class="rw-process">
+                <ol class="rw-process reveal-stagger">
                     <li
                         v-for="(step, index) in processSteps"
                         :key="step.number"

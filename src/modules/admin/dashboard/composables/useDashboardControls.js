@@ -68,12 +68,6 @@ const LIST_CONTROL_CONFIG = {
         defaultSort: 'created_at',
         pageSize: 5,
     },
-    activity: {
-        searchKeys: ['title', 'detail', 'tag'],
-        statusKey: 'tag',
-        defaultSort: 'time',
-        pageSize: 6,
-    },
     reports: {
         searchKeys: ['name', 'category', 'period'],
         defaultSort: 'generated_at',

@@ -178,9 +178,9 @@ async function submit() {
             </div>
         </section>
 
-        <section class="rw-section reveal">
+        <section class="rw-section">
             <div class="container rw-contact-split">
-                <div class="rw-contact-info">
+                <div class="rw-contact-info reveal reveal--left">
                     <p class="rw-kicker">Get in Touch</p>
                     <h2>Reach Rosewood Royale</h2>
                     <p class="rw-lede">
@@ -232,7 +232,7 @@ async function submit() {
                 </div>
 
                 <form
-                    class="rw-contact-form"
+                    class="rw-contact-form reveal"
                     @submit.prevent="submit"
                 >
                     <div class="rw-contact-form__grid">

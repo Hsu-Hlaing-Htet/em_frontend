@@ -65,10 +65,11 @@ export function mapSaleDraftToApi(state) {
         room_id: state.room_id,
         payment_type: state.payment_type,
         contract_total: state.contract_total,
-        deposit_amount: toNumber(state.deposit),
         start_date: state.start_date ? formatDate(state.start_date) : null,
         remark: state.remarks || null,
     };
+
+    // deposit_amount is derived server-side from the room — do not send it.
 
     if (state.payment_type === 'installment') {
         payload.duration_months = state.duration_months;

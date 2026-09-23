@@ -15,7 +15,7 @@ const updated = '18 September 2026';
                 >
             </div>
             <div class="rw-page-hero__overlay" />
-            <div class="container rw-page-hero__content">
+            <div class="container rw-page-hero__content reveal-stage is-visible">
                 <p class="rw-kicker">Legal</p>
                 <h1>Privacy Policy</h1>
                 <p class="rw-lede">
@@ -26,9 +26,9 @@ const updated = '18 September 2026';
 
         <section class="rw-section">
             <div class="container rw-legal">
-                <p class="rw-legal__updated">Last updated: {{ updated }}</p>
+                <p class="rw-legal__updated reveal">Last updated: {{ updated }}</p>
 
-                <article>
+                <article class="reveal">
                     <h2>1. Who we are</h2>
                     <p>
                         Rosewood Royale operates this public website to present residences, services, and ways to

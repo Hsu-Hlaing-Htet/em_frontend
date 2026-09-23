@@ -67,7 +67,6 @@ const service = {
     submitPayment: async (params) => {
         const formData = new FormData();
         formData.append('invoice_id', params.invoice_id);
-        formData.append('amount', params.amount);
         formData.append('payment_method_id', params.payment_method_id);
         formData.append('payment_date', params.payment_date);
 
@@ -118,6 +117,11 @@ const service = {
         return result.data;
     },
 
+    markNotificationRead: async (notificationId) => {
+        const result = await api.post(`${endpoint.customerNotifications}/${notificationId}/read`);
+        return result.data;
+    },
+
     getPaymentMethods: async () => {
         const result = await api.get(endpoint.customerPaymentMethods);
         return result.data;
@@ -125,11 +129,6 @@ const service = {
 
     getMaintenanceRooms: async () => {
         const result = await api.get(endpoint.customerMaintenanceRooms);
-        return result.data;
-    },
-
-    getMaintenanceCategories: async () => {
-        const result = await api.get(endpoint.customerMaintenanceCategories);
         return result.data;
     },
 
@@ -147,13 +146,12 @@ const service = {
         const formData = new FormData();
         formData.append('room_id', params.room_id);
         formData.append('title', params.title);
-        formData.append('maintenance_category_id', params.maintenance_category_id);
+        formData.append('category', params.category);
         formData.append('priority', params.priority);
         formData.append('description', params.description || '');
 
-        if (params.photo) {
-            formData.append('photo', params.photo);
-        }
+        // Photo upload is UI-only for now; backend maintenance_requests has no photo column.
+        // Do not send unsupported fields that would confuse validation.
 
         const result = await api.post(endpoint.customerMaintenanceRequests, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },

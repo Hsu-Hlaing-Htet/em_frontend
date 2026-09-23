@@ -1,6 +1,14 @@
 <template>
     <div v-if="!isLoading" class="customer-portal-home">
-        <section class="customer-portal-hero">
+        <section class="customer-portal-hero" aria-label="Welcome">
+            <div class="customer-portal-hero-media" aria-hidden="true">
+                <img
+                    class="customer-portal-hero-image"
+                    src="@/assets/images/customer-dashboard-hero.jpg"
+                    alt=""
+                >
+            </div>
+            <div class="customer-portal-hero-overlay" aria-hidden="true" />
             <div class="customer-portal-hero-copy">
                 <p class="customer-portal-hero-eyebrow">{{ $t('customer.welcomeBackEyebrow') }}</p>
                 <h1 class="customer-portal-hero-title">{{ customerName || $t('customer.customerFallback') }}</h1>
@@ -14,72 +22,56 @@
 
         <section class="customer-portal-feature-grid">
             <router-link
-                v-if="primaryActiveContract"
                 :to="contractListRoute"
-                class="customer-portal-contract-card customer-portal-card--interactive customer-portal-contract-card--link"
+                class="customer-interactive-surface customer-portal-contract-card customer-portal-card--interactive customer-portal-contract-card--link customer-portal-contract-card--summary"
             >
-                <div class="customer-portal-contract-card-head">
-                    <div>
-                        <p class="customer-portal-card-eyebrow">{{ $t('customer.activeContract') }}</p>
-                        <h2>{{ formatPropertyLabel(primaryActiveContract) || '—' }}</h2>
-                        <p class="customer-portal-contract-type">
-                            {{ formatContractTypeLabel(primaryActiveContract.type) }}
-                        </p>
-                    </div>
+                <div class="customer-portal-card-media" aria-hidden="true">
+                    <img
+                        class="customer-portal-card-media-image"
+                        src="@/assets/images/customer-card-contract.jpg"
+                        alt=""
+                    >
                 </div>
-
-                <dl class="customer-portal-contract-meta">
-                    <div>
-                        <dt>{{ $t('customer.contractId') }}</dt>
-                        <dd>{{ primaryActiveContract.contract_number || '—' }}</dd>
+                <div class="customer-portal-contract-summary">
+                    <div class="customer-portal-contract-summary-head">
+                        <p class="customer-portal-card-eyebrow">{{ $t('customer.activeContracts') }}</p>
+                        <span class="customer-portal-contract-summary-cue" aria-hidden="true">›</span>
                     </div>
-                    <div>
-                        <dt>{{ $t('customer.startDate') }}</dt>
-                        <dd>{{ formatDisplayDate(primaryActiveContract.start_date) }}</dd>
-                    </div>
-                    <div>
-                        <dt>{{ $t('customer.endDate') }}</dt>
-                        <dd>{{ formatDisplayDate(primaryActiveContract.end_date) }}</dd>
-                    </div>
-                    <div>
-                        <dt>{{ $t('customer.status') }}</dt>
-                        <dd><StatusBadge :value="primaryActiveContract.status" /></dd>
-                    </div>
-                </dl>
-            </router-link>
-
-            <router-link
-                v-else
-                :to="contractListRoute"
-                class="customer-portal-contract-card customer-portal-card--interactive customer-portal-contract-card--link is-empty"
-            >
-                <p class="customer-portal-card-eyebrow">{{ $t('customer.activeContract') }}</p>
-                <h2>{{ $t('customer.noActiveContracts') }}</h2>
-                <p class="customer-portal-card-copy">{{ $t('customer.noActiveContractsLead') }}</p>
-                <span class="customer-portal-action-link customer-portal-action-link--inverse">
-                    {{ $t('customer.viewAllContracts') }}
-                </span>
+                    <h2 class="customer-portal-contract-summary-title">{{ activeContractSummaryTitle }}</h2>
+                    <p class="customer-portal-card-copy">{{ activeContractSummaryLead }}</p>
+                </div>
             </router-link>
 
             <article class="customer-portal-help-card">
-                <p class="customer-portal-card-eyebrow">{{ $t('customer.helpTitle') }}</p>
-                <h2>{{ $t('customer.helpHeading') }}</h2>
-                <p class="customer-portal-card-copy">{{ $t('customer.helpLead') }}</p>
+                <div class="customer-portal-card-media customer-portal-card-media--help" aria-hidden="true">
+                    <img
+                        class="customer-portal-card-media-image"
+                        src="@/assets/images/customer-card-help.jpg"
+                        alt=""
+                    >
+                </div>
+                <div class="customer-portal-help-copy">
+                    <p class="customer-portal-card-eyebrow">{{ $t('customer.helpTitle') }}</p>
+                    <h2>{{ $t('customer.helpHeading') }}</h2>
+                    <p class="customer-portal-card-copy">{{ $t('customer.helpLead') }}</p>
 
-                <router-link
-                    :to="{ name: 'customerNewMaintenanceRequest' }"
-                    class="btn customer-portal-block-btn"
-                >
-                    {{ $t('customer.requestMaintenance') }}
-                </router-link>
+                    <router-link
+                        :to="{ name: 'customerNewMaintenanceRequest' }"
+                        class="customer-portal-help-cta"
+                    >
+                        <i class="pi pi-wrench" aria-hidden="true" />
+                        <span>{{ $t('customer.requestMaintenance') }}</span>
+                        <i class="pi pi-arrow-right" aria-hidden="true" />
+                    </router-link>
 
-                <router-link
-                    to="/contact"
-                    class="customer-portal-action-link"
-                >
-                    <i class="pi pi-headphones" aria-hidden="true" />
-                    {{ $t('customer.contactCustomerService') }}
-                </router-link>
+                    <router-link
+                        to="/contact"
+                        class="customer-portal-help-contact"
+                    >
+                        <i class="pi pi-headphones" aria-hidden="true" />
+                        <span>{{ $t('customer.contactCustomerService') }}</span>
+                    </router-link>
+                </div>
             </article>
         </section>
 
@@ -88,12 +80,14 @@
                 v-for="action in quickActions"
                 :key="action.key"
                 :to="action.to"
-                class="customer-portal-quick-action customer-portal-card customer-portal-card--interactive"
+                class="customer-interactive-surface customer-portal-quick-action customer-portal-card customer-portal-card--interactive"
             >
-                <span class="customer-portal-icon-badge" :class="action.tone">
-                    <i :class="action.icon" aria-hidden="true" />
-                </span>
-                <h3>{{ action.title }}</h3>
+                <div class="customer-portal-quick-action-head">
+                    <h3>{{ action.title }}</h3>
+                    <span class="customer-portal-icon-badge" :class="action.tone">
+                        <i :class="action.icon" aria-hidden="true" />
+                    </span>
+                </div>
                 <p>{{ action.description }}</p>
                 <span class="customer-portal-action-link">
                     {{ action.action }}
@@ -118,25 +112,45 @@
                         v-for="item in latestNotifications"
                         :key="item.id || `${item.type}-${item.resource_id}-${item.created_at}`"
                         type="button"
-                        class="customer-portal-notification-item"
+                        class="customer-interactive-surface customer-portal-notification-item"
                         :class="{ 'is-unread': isNotificationUnread(item) }"
                         @click="openNotification(item)"
                     >
-                        <span class="customer-portal-icon-badge customer-portal-icon-badge--round" :class="notificationTone(item.type)">
-                            <i :class="notificationIcon(item.type)" aria-hidden="true" />
+                        <span class="customer-portal-notification-main">
+                            <span class="customer-portal-notification-copy">
+                                <span class="customer-portal-notification-type-row">
+                                    <span
+                                        class="customer-portal-notification-type-icon"
+                                        :class="notificationTone(item.type)"
+                                        aria-hidden="true"
+                                    >
+                                        <i :class="notificationIcon(item.type)" />
+                                    </span>
+                                    <span
+                                        v-if="item.type"
+                                        class="customer-portal-notification-type-label"
+                                    >
+                                        {{ item.type }}
+                                    </span>
+                                </span>
+                                <strong>{{ item.title }}</strong>
+                                <small v-if="item.message">{{ item.message }}</small>
+                            </span>
                         </span>
 
-                        <span class="customer-portal-notification-copy">
-                            <strong>{{ item.title }}</strong>
-                            <small>{{ item.message }}</small>
-                            <time>{{ formatDisplayDateTime(item.created_at) }}</time>
+                        <span class="customer-portal-notification-aside">
+                            <time
+                                v-if="item.created_at"
+                                class="rw-date"
+                            >{{ formatDisplayDateTime(item.created_at) }}</time>
+                            <span
+                                v-if="isNotificationUnread(item)"
+                                class="customer-notification-unread-inline"
+                            >
+                                <span class="customer-notification-read-state">UNREAD</span>
+                                <span class="customer-portal-unread-dot" aria-hidden="true" />
+                            </span>
                         </span>
-
-                        <span
-                            v-if="isNotificationUnread(item)"
-                            class="customer-portal-unread-dot"
-                            aria-hidden="true"
-                        />
                     </button>
                 </div>
 
@@ -159,33 +173,45 @@
                     </router-link>
                 </div>
 
-                <div v-if="overdueInvoices.length" class="flex flex-col gap-3">
+                <div v-if="overdueInvoices.length" class="customer-portal-overdue-list">
                     <button
                         v-for="invoice in overdueInvoices"
                         :key="invoice.id"
                         type="button"
-                        class="flex w-full items-center gap-3 rounded-[3px] border border-[var(--admin-border)] border-l-[3px] border-l-[var(--rw-danger)] bg-[var(--admin-surface-solid)] px-3 py-3 text-left transition-[color,background-color,border-color,box-shadow] duration-200 hover:border-[color-mix(in_srgb,var(--rw-danger)_35%,var(--admin-border))] hover:bg-[color-mix(in_srgb,var(--admin-surface-solid)_92%,var(--rw-danger)_8%)] hover:shadow-[var(--admin-shadow)] focus-visible:border-[color-mix(in_srgb,var(--rw-danger)_35%,var(--admin-border))] focus-visible:bg-[color-mix(in_srgb,var(--admin-surface-solid)_92%,var(--rw-danger)_8%)] focus-visible:shadow-[var(--admin-shadow)] focus-visible:outline-none"
+                        class="customer-interactive-surface customer-portal-overdue-row"
                         @click="openInvoice(invoice.id)"
                     >
-                        <div class="min-w-0 flex-1">
-                            <div class="mb-1 flex flex-wrap items-center gap-2">
-                                <span class="text-sm text-[var(--admin-text)]">
+                        <span class="customer-portal-overdue-main">
+                            <span class="customer-portal-overdue-title">
+                                <template v-if="invoice.type && invoice.invoice_number">
+                                    {{ invoice.type }} · {{ invoice.invoice_number }}
+                                </template>
+                                <template v-else>
                                     {{ invoice.type || invoice.invoice_number || $t('customer.invoicePayment') }}
-                                </span>
-                                <StatusBadge value="overdue" />
-                            </div>
-                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--admin-text-muted)]">
-                                <span>Due {{ formatDisplayDate(invoice.due_date) }}</span>
-                                <span>{{ formatMoney(invoice.remaining_balance ?? invoice.total_amount) }}</span>
-                            </div>
-                        </div>
+                                </template>
+                            </span>
+                            <strong class="customer-portal-overdue-amount rw-numeric rw-money">
+                                {{ formatMoney(invoice.remaining_balance ?? invoice.total_amount) }}
+                            </strong>
+                        </span>
 
-                        <i class="pi pi-chevron-right text-sm text-[var(--admin-text-muted)]" aria-hidden="true" />
+                        <span class="customer-portal-overdue-aside">
+                            <time
+                                v-if="invoice.due_date"
+                                class="rw-numeric rw-date"
+                            >{{ formatDisplayDate(invoice.due_date) }}</time>
+                            <StatusBadge value="overdue" />
+                        </span>
+
+                        <i
+                            class="pi pi-chevron-right customer-portal-overdue-chevron"
+                            aria-hidden="true"
+                        />
                     </button>
 
                     <div class="customer-portal-outstanding">
                         <span>{{ $t('customer.outstandingBalance') }}</span>
-                        <strong>{{ formatMoney(outstandingBalance) }}</strong>
+                        <strong class="rw-numeric rw-money">{{ formatMoney(outstandingBalance) }}</strong>
                     </div>
                 </div>
 
@@ -218,6 +244,8 @@ const {
     isLoading,
     customerName,
     primaryActiveContract,
+    activeContractSummaryTitle,
+    activeContractSummaryLead,
     contractListRoute,
     latestNotifications,
     overdueInvoices,
@@ -226,8 +254,6 @@ const {
     formatMoney,
     formatDisplayDate,
     formatDisplayDateTime,
-    formatContractTypeLabel,
-    formatPropertyLabel,
     notificationIcon,
     notificationTone,
     isNotificationUnread,

@@ -69,9 +69,9 @@
                     </template>
                 </Column>
                 <Column field="email" header="Email" :sortable="true" style="min-width: 90px" />
-                <Column field="phone" header="Phone" :sortable="true" style="min-width: 160px" />
-                <Column field="nrc" header="NRC" :sortable="true" style="min-width: 100px" />
-                <Column field="gender" header="Gender" :sortable="true" style="min-width: 90px" />
+                <Column field="phone" header="Phone" style="min-width: 160px" />
+                <Column field="nrc" header="NRC" style="min-width: 100px" />
+                <Column field="gender" header="Gender" style="min-width: 90px" />
                 <Column field="status" header="Status" :sortable="true" style="min-width: 100px">
                     <template #body="{ data }">
                         <StatusBadge :value="data.status" />

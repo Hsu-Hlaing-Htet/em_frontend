@@ -11,7 +11,6 @@ export const STATUS_FILTER_OPTIONS = {
     bookings: ['all', 'pending', 'confirmed', 'completed', 'cancelled'],
     maintenance: ['all', 'pending', 'scheduled', 'in_progress', 'completed'],
     notifications: ['all', 'unread', 'read'],
-    activity: ['all', 'billing', 'inquiry', 'contract', 'property', 'client', 'operations'],
     reports: ['all', 'ready', 'generating', 'scheduled'],
     roles: ['all', 'active', 'inactive'],
 };
@@ -84,10 +83,6 @@ export const SORT_OPTIONS = {
     ],
     notifications: [
         { value: 'created_at', label: 'Created date' },
-        { value: 'title', label: 'Title' },
-    ],
-    activity: [
-        { value: 'time', label: 'Recent first' },
         { value: 'title', label: 'Title' },
     ],
 };

@@ -91,7 +91,7 @@
                 <template #loading>Loading maintenance requests. Please wait.</template>
 
                 <Column field="user_name" header="Resident" :sortable="true" style="min-width: 160px" />
-                <Column field="title" header="Title" :sortable="true" style="min-width: 220px" />
+                <Column field="title" header="Title" style="min-width: 220px" />
                 <Column field="room_number" header="Room" :sortable="true" style="min-width: 100px" />
                 <Column field="category" header="Category" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">

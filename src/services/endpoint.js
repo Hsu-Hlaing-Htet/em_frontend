@@ -22,7 +22,6 @@ export const endpoint = {
     customerNotifications: 'customer/notifications',
     customerPaymentMethods: 'customer/payment-methods',
     customerMaintenanceRooms: 'customer/maintenance-rooms',
-    customerMaintenanceCategories: 'customer/maintenance-categories',
     customerMaintenanceRequests: 'customer/maintenance-requests',
 
     /** Dashboard */
@@ -64,7 +63,6 @@ export const endpoint = {
     invoices: 'invoices',
     invoiceItems: 'invoice-items',
     payments: 'payments',
-    paymentRecord: 'payments/record',
     receipts: 'receipts',
     maintenanceRequests: 'maintenance-requests',
     listExportPdf: 'list-exports/pdf',

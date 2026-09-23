@@ -15,8 +15,8 @@
             />
 
             <div class="hidden min-w-0 flex-col lg:flex">
-                <span class="whitespace-nowrap text-sm">{{ user?.name || 'Customer' }}</span>
-                <span class="text-xs capitalize">{{ user?.role || 'customer' }}</span>
+                <span class="customer-user-profile__name whitespace-nowrap text-sm">{{ user?.name || 'Customer' }}</span>
+                <span class="customer-user-profile__role text-xs capitalize">{{ user?.role || 'customer' }}</span>
             </div>
             <i class="pi pi-angle-down ml-auto hidden text-sm transition-all duration-200 lg:block" />
         </button>

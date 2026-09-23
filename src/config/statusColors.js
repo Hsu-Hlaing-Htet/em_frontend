@@ -42,6 +42,11 @@ export const STATUS_DEFINITIONS = {
     paid: { tone: STATUS_TONES.success, label: 'Paid', icon: 'pi pi-check' },
     unpaid: { tone: STATUS_TONES.info, label: 'Issued', icon: 'pi pi-send' },
     overdue: { tone: STATUS_TONES.danger, label: 'Overdue', icon: 'pi pi-exclamation-triangle' },
+
+    // Priority
+    high: { tone: STATUS_TONES.danger, label: 'High', icon: 'pi pi-exclamation-circle' },
+    medium: { tone: STATUS_TONES.warning, label: 'Medium', icon: 'pi pi-minus-circle' },
+    low: { tone: STATUS_TONES.neutral, label: 'Low', icon: 'pi pi-arrow-down' },
 };
 
 const DEFAULT_DEFINITION = {

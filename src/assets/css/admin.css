@@ -19,20 +19,18 @@
 
     background: var(--admin-bg);
     color: var(--admin-text);
-    font-variant-numeric: tabular-nums lining-nums;
-    -webkit-font-smoothing: antialiased;
 }
 
 [data-customer-layout] {
-    --customer-portal-card-radius: 3px;
-    --customer-portal-card-padding: 20px;
+    --customer-portal-card-radius: 6px;
+    --customer-portal-card-padding: 1.15rem 1.25rem;
     --customer-portal-transition: 0.22s ease;
     --customer-portal-lift: -3px;
 
     background: var(--admin-bg);
-    color: var(--admin-text);
-    font-family: var(--font-body);
+    font-weight: 400;
     line-height: 1.5;
+
 }
 
 [data-admin-layout][data-sidebar-collapsed="true"] {
@@ -56,6 +54,40 @@
     background: var(--admin-sidebar-bg);
     border-right: 1px solid var(--admin-border);
     box-shadow: none;
+}
+
+/* Admin sidebar brand name only — soft white, burgundy hover (logo untouched) */
+.admin-sidebar .rosewood-brand .rosewood-brand__name {
+    color: #f5f5f7;
+    transition:
+        color 200ms ease-out,
+        transform 200ms ease-out,
+        letter-spacing 200ms ease-out;
+}
+
+.admin-sidebar .rosewood-brand:hover .rosewood-brand__name,
+.admin-sidebar .rosewood-brand:focus-visible .rosewood-brand__name {
+    color: var(--rw-brand, #8f2338);
+    transform: translateX(2px);
+    letter-spacing: 0.04em;
+}
+
+/* Light cream sidebar: soft white has no contrast — use soft charcoal, same hover */
+html[data-theme='light'] .admin-sidebar .rosewood-brand .rosewood-brand__name,
+html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
+    color: var(--rw-text, #1c1917);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-sidebar .rosewood-brand .rosewood-brand__name {
+        transition: color 200ms ease-out;
+    }
+
+    .admin-sidebar .rosewood-brand:hover .rosewood-brand__name,
+    .admin-sidebar .rosewood-brand:focus-visible .rosewood-brand__name {
+        transform: none;
+        letter-spacing: var(--rosewood-brand-name-tracking, 0.02em);
+    }
 }
 
 .admin-panel {
@@ -276,6 +308,25 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+}
+
+/* Compact, muted sort indicators — only active direction is emphasized */
+.p-datatable .p-sortable-column .p-sortable-column-icon,
+.p-datatable .p-sortable-column .p-sortable-column-badge {
+    font-size: 0.625rem;
+    margin-left: 0.3rem;
+    color: var(--admin-text-muted);
+    opacity: 0.4;
+    vertical-align: middle;
+}
+
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+    opacity: 0.95;
+    color: var(--admin-primary);
+}
+
+.p-datatable .p-sortable-column:not(.p-highlight) .p-sortable-column-icon {
+    opacity: 0.32;
 }
 
 .p-datatable .p-datatable-tbody > tr:hover {
@@ -612,3 +663,4 @@
 [data-admin-layout] .p-button:focus:not(:focus-visible) {
     outline: none;
 }
+

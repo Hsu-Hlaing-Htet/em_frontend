@@ -21,6 +21,8 @@ export default function useCustomerShowInvoice() {
     const paymentMethods = ref([]);
     const proofFile = ref(null);
     const proofPreviewUrl = ref('');
+    const copiedField = ref('');
+    let copyResetTimer = null;
 
     const invoiceItems = ref([]);
     const invoicePayments = ref([]);
@@ -77,9 +79,17 @@ export default function useCustomerShowInvoice() {
     });
 
     const canPay = computed(() => {
-        return ['issued', 'overdue'].includes(String(state.status || '').toLowerCase())
+        return ['issued', 'partial', 'overdue', 'unpaid'].includes(String(state.status || '').toLowerCase())
             && remainingAmount.value > 0
             && !state.has_pending_payment;
+    });
+
+    const selectedPaymentMethod = computed(() => {
+        if (!paymentForm.payment_method_id) {
+            return null;
+        }
+
+        return paymentMethods.value.find((method) => method.value === paymentForm.payment_method_id) || null;
     });
 
     const formattedAmountDue = computed(() => formatCurrency(remainingAmount.value));
@@ -122,17 +132,47 @@ export default function useCustomerShowInvoice() {
     });
 
     onBeforeUnmount(() => {
+        if (copyResetTimer) {
+            clearTimeout(copyResetTimer);
+        }
         clearProofFile();
         store.$reset();
         store.$dispose();
     });
 
+    async function copyField(fieldKey, value) {
+        if (!value || typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(String(value));
+            copiedField.value = fieldKey;
+            if (copyResetTimer) {
+                clearTimeout(copyResetTimer);
+            }
+            copyResetTimer = setTimeout(() => {
+                copiedField.value = '';
+            }, 1600);
+        } catch {
+            copiedField.value = '';
+        }
+    }
+
     async function loadPaymentMethods() {
         try {
             const response = await service.getPaymentMethods();
             paymentMethods.value = (response?.data || []).map((method) => ({
+                id: method.id,
                 label: method.name,
                 value: method.id,
+                name: method.name,
+                type: method.type || '',
+                account_name: method.account_name || null,
+                account_number: method.account_number || null,
+                phone_number: method.phone_number || null,
+                qr_image_url: method.qr_image_url || null,
+                instructions: method.instructions || null,
             }));
         } catch (error) {
             showApiErrorToast(error, 'Unable to load payment methods.');
@@ -190,21 +230,14 @@ export default function useCustomerShowInvoice() {
         errors.clear();
 
         if (!applyValidation(errors, {
-            amount: paymentForm.amount,
             payment_method_id: paymentForm.payment_method_id,
             payment_date: paymentForm.payment_date,
             proof: proofFile.value,
         }, [
-            { field: 'amount', type: 'number', gt: 0 },
             { field: 'payment_method_id', type: 'select' },
             { field: 'payment_date', type: 'date' },
             { field: 'proof', type: 'file' },
         ])) {
-            return;
-        }
-
-        if (Math.abs(Number(paymentForm.amount) - remainingAmount.value) > 0.009) {
-            errors.record({ amount: ['Payment amount must equal the full current amount due.'] });
             return;
         }
 
@@ -213,7 +246,6 @@ export default function useCustomerShowInvoice() {
         try {
             await paymentStore.submitPayment({
                 invoice_id: state.id,
-                amount: paymentForm.amount,
                 payment_method_id: paymentForm.payment_method_id,
                 payment_date: formatDate(paymentForm.payment_date),
                 note: buildPaymentNote(),
@@ -233,7 +265,7 @@ export default function useCustomerShowInvoice() {
             clearProofFile();
         } catch (error) {
             if (error.status === 422) {
-                errors.record(error.data.data);
+                errors.record(error.data?.data || error.data?.errors || {});
                 return;
             }
             showApiErrorToast(error, 'Unable to submit payment.');
@@ -330,6 +362,8 @@ export default function useCustomerShowInvoice() {
         invoicePayments,
         paymentForm,
         paymentMethods,
+        selectedPaymentMethod,
+        copiedField,
         proofFile,
         proofPreviewUrl,
         remainingAmount,
@@ -344,5 +378,6 @@ export default function useCustomerShowInvoice() {
         goToPaymentForm,
         onProofSelected,
         clearProofFile,
+        copyField,
     };
 }

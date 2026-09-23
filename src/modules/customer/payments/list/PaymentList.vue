@@ -5,14 +5,6 @@
             :subtitle="$t('customer.paymentsLead')"
         />
 
-        <CustomerSearchBar
-            v-model:search="search"
-            v-model:status="status"
-            class="customer-list-toolbar"
-            :placeholder="$t('customer.paymentSearchPlaceholder')"
-            :filters="statusFilters"
-        />
-
         <Loading v-if="isLoading" />
 
         <div v-else-if="payments.length" class="customer-record-list">
@@ -20,18 +12,36 @@
                 v-for="payment in payments"
                 :key="payment.id"
                 type="button"
-                class="customer-record-row customer-payment-row"
+                class="customer-interactive-surface customer-record-row customer-payment-row"
                 @click="openPayment(payment)"
             >
                 <span class="customer-record-cell customer-record-primary">
-                    <strong>{{ payment.invoice_number || $t('customer.invoicePayment') }}</strong>
-                    <small>{{ $t('customer.paymentAmount') }} (MMK) {{ formatCurrency(Number(payment.amount || 0)) }}</small>
-                    <small>{{ payment.payment_method_name || $t('customer.methodPending') }}</small>
+                    <strong>
+                        <template v-if="payment.invoice_number">
+                            {{ $t('customer.invoice') }} {{ payment.invoice_number }}
+                        </template>
+                        <template v-else>
+                            {{ $t('customer.invoicePayment') }}
+                        </template>
+                    </strong>
+                    <strong
+                        v-if="hasAmount(payment.amount)"
+                        class="customer-payment-amount rw-numeric rw-money"
+                    >{{ formatCurrency(Number(payment.amount)) }}</strong>
+                    <small v-if="payment.payment_method_name">{{ payment.payment_method_name }}</small>
                 </span>
 
                 <span class="customer-record-cell customer-record-meta">
-                    <strong>{{ payment.payment_date || '—' }}</strong>
-                    <StatusBadge :value="payment.status" />
+                    <time
+                        v-if="createdAtParts(payment.created_at)"
+                        class="customer-record-created rw-date"
+                        :datetime="payment.created_at"
+                    >
+                        <span class="customer-record-created-date">{{ createdAtParts(payment.created_at).date }}</span>
+                        <span class="customer-record-created-sep" aria-hidden="true"> · </span>
+                        <span class="customer-record-created-time">{{ createdAtParts(payment.created_at).time }}</span>
+                    </time>
+                    <StatusBadge v-if="payment.status" :value="payment.status" />
                 </span>
             </button>
 
@@ -58,11 +68,11 @@ import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
-import CustomerSearchBar from '@/components/customer/CustomerSearchBar.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerPaymentList from '@/composables/customer/useCustomerPaymentList';
-import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
+import { formatCustomerDateTimeParts } from '@/helpers/customer/datetime';
+import { formatCurrency } from '@/utils/formatter';
 
 export default defineComponent({
     name: 'CustomerPaymentList',
@@ -70,14 +80,17 @@ export default defineComponent({
         Button,
         Loading,
         StatusBadge,
-        CustomerSearchBar,
         CustomerEmptyState,
         CustomerPageHeader,
     },
     setup() {
+        const hasAmount = (value) => value !== null && value !== undefined && value !== '';
+
         return {
             ...useCustomerPaymentList(),
             formatCurrency,
+            createdAtParts: formatCustomerDateTimeParts,
+            hasAmount,
         };
     },
 });

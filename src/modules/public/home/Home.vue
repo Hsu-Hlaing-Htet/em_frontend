@@ -1,21 +1,26 @@
 <script setup>
-import { computed, nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import PropertyCard from '@/components/public/PropertyCard.vue';
 import PropertyCardSkeleton from '@/components/public/PropertyCardSkeleton.vue';
 import PropertySearch from '@/components/public/PropertySearch.vue';
 import ExploreLocations from './sections/ExploreLocations.vue';
 import TestimonialsSection from './sections/TestimonialsSection.vue';
+import ExploreRosewood3D from './sections/ExploreRosewood3D.vue';
 import {
     getFeaturedProperties,
     getPropertyStats,
     getPublicProperties,
 } from '@/modules/public/service';
 import { useAnimatedCounter } from '@/composables/public/useAnimatedCounter';
+import { useLandingParallaxRoot } from '@/composables/public/useScrollParallax';
 import { useAssistantChat } from '@/composables/shared/useAssistantChat';
 
 const router = useRouter();
 const { requestOpenAssistant } = useAssistantChat();
+
+const landingRoot = ref(null);
+const { rescan: rescanParallax } = useLandingParallaxRoot(landingRoot);
 
 const loading = ref(true);
 const saleProperties = ref([]);
@@ -179,9 +184,16 @@ function watchStory() {
     document.getElementById('belong')?.scrollIntoView({ behavior: 'smooth' });
 }
 
+watch(loading, async (isLoading) => {
+    if (isLoading) return;
+    await nextTick();
+    rescanParallax();
+});
+
 onMounted(async () => {
     await load();
     await nextTick();
+    rescanParallax();
     const cards = document.querySelectorAll('.landing-stat');
     cards.forEach((card, index) => {
         const counter = [totalCounter, availableCounter, forSaleCounter][index];
@@ -191,10 +203,16 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div>
-        <section class="rw-page-hero rw-page-hero--tall">
+    <div ref="landingRoot" class="rw-landing">
+        <section class="rw-page-hero rw-page-hero--tall" data-rw-parallax-measure>
             <div class="rw-page-hero__media" aria-hidden="true">
-                <img :src="heroImage" alt="">
+                <img
+                    :src="heroImage"
+                    alt=""
+                    data-rw-parallax="strong"
+                    data-rw-max-y="36"
+                    data-rw-base-scale="1.04"
+                >
             </div>
             <div class="rw-page-hero__overlay" />
             <div class="container rw-page-hero__content rw-hero-copy">
@@ -217,7 +235,7 @@ onMounted(async () => {
             </div>
         </section>
 
-        <section class="rw-section rw-section--tight" style="margin-top: -2.5rem; position: relative; z-index: 3">
+        <section class="rw-section rw-section--tight reveal" style="margin-top: -2.5rem; position: relative; z-index: 3">
             <div class="container">
                 <PropertySearch
                     :model-value="searchModel"
@@ -228,11 +246,14 @@ onMounted(async () => {
 
         <section class="rw-section rw-section--tight reveal">
             <div class="container">
-                <div class="rw-category-pair">
-                    <router-link to="/rent" class="rw-category-card">
+                <div class="rw-category-pair reveal-stagger">
+                    <router-link to="/rent" class="rw-category-card" data-rw-parallax-measure>
                         <img
                             src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1200"
                             alt="For Rent"
+                            data-rw-parallax="medium"
+                            data-rw-max-y="16"
+                            data-rw-base-scale="1.03"
                         >
                         <div class="rw-category-card__overlay">
                             <span>Residences</span>
@@ -243,10 +264,13 @@ onMounted(async () => {
                             </span>
                         </div>
                     </router-link>
-                    <router-link to="/buy" class="rw-category-card">
+                    <router-link to="/buy" class="rw-category-card" data-rw-parallax-measure>
                         <img
                             src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200"
                             alt="For Sale"
+                            data-rw-parallax="medium"
+                            data-rw-max-y="16"
+                            data-rw-base-scale="1.03"
                         >
                         <div class="rw-category-card__overlay">
                             <span>Residences</span>
@@ -260,6 +284,8 @@ onMounted(async () => {
                 </div>
             </div>
         </section>
+
+        <ExploreRosewood3D :poster="heroImage" />
 
         <section class="rw-section reveal">
             <div class="container">
@@ -276,21 +302,32 @@ onMounted(async () => {
                 <div v-if="loading" class="rw-property-grid">
                     <PropertyCardSkeleton v-for="n in 3" :key="`hp-sk-${n}`" />
                 </div>
-                <div v-else class="rw-property-grid reveal-stagger">
+                <div
+                    v-else-if="handpicked.length"
+                    class="rw-property-grid reveal-stagger is-visible"
+                >
                     <PropertyCard
                         v-for="property in handpicked"
                         :key="`hp-${property.purpose}-${property.id}`"
                         :property="property"
+                        parallax
                     />
                 </div>
+                <p
+                    v-else
+                    class="rw-lede"
+                    style="margin: 0; max-width: 36rem"
+                >
+                    No residences are available in live inventory right now. Please check back soon, or browse all properties.
+                </p>
             </div>
         </section>
 
         <ExploreLocations :locations="locations" />
 
-        <section id="belong" class="rw-section rw-section--alt reveal">
+        <section id="belong" class="rw-section rw-section--alt">
             <div class="container rw-belong">
-                <div>
+                <div class="reveal reveal--left">
                     <p class="rw-kicker">Brand</p>
                     <h2>A Place to Belong</h2>
                     <p class="rw-lede">
@@ -298,16 +335,19 @@ onMounted(async () => {
                         spaces chosen with care, and relationships built with integrity.
                     </p>
                 </div>
-                <div class="rw-belong__image">
+                <div class="rw-belong__image reveal reveal--scale" data-rw-parallax-measure>
                     <img
                         src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1400"
                         alt="Rosewood interior"
+                        data-rw-parallax="light"
+                        data-rw-max-y="12"
+                        data-rw-base-scale="1.02"
                     >
                 </div>
             </div>
 
             <div class="container" style="margin-top: 2.25rem">
-                <div class="rw-stats-row">
+                <div class="rw-stats-row reveal-stagger">
                     <article class="landing-stat">
                         <h3>{{ totalCounter.formattedValue() }}</h3>
                         <p>Properties Listed</p>
@@ -347,16 +387,23 @@ onMounted(async () => {
                         <p class="rw-service-preview__number">{{ service.number }}</p>
                         <h3>{{ service.title }}</h3>
                         <p>{{ service.copy }}</p>
-                        <div class="rw-service-preview__media">
-                            <img :src="service.image" :alt="service.title" loading="lazy">
+                        <div class="rw-service-preview__media" data-rw-parallax-measure>
+                            <img
+                                :src="service.image"
+                                :alt="service.title"
+                                loading="lazy"
+                                data-rw-parallax="light"
+                                data-rw-max-y="8"
+                                data-rw-base-scale="1.02"
+                            >
                         </div>
                     </article>
                 </div>
             </div>
         </section>
 
-        <section class="rw-section rw-section--alt reveal">
-            <div class="container rw-closing">
+        <section class="rw-section rw-section--alt">
+            <div class="container rw-closing reveal-stage">
                 <p class="rw-closing__eyebrow">Rosewood Royale</p>
                 <h2>Let Us Help You Find What’s Next</h2>
                 <p class="rw-lede">
@@ -413,9 +460,10 @@ onMounted(async () => {
 
 .rw-belong__image img {
     width: 100%;
-    height: 100%;
+    height: 112%;
     object-fit: cover;
     min-height: 300px;
+    will-change: transform;
 }
 
 .rw-service-preview {
@@ -449,12 +497,12 @@ onMounted(async () => {
 
 .rw-service-preview__media img {
     width: 100%;
-    height: 100%;
+    height: 118%;
     object-fit: cover;
     transition: transform 0.7s ease;
 }
 
-.rw-service-preview__card:hover .rw-service-preview__media img {
+.rw-service-preview__card:hover .rw-service-preview__media img:not([data-rw-parallax]) {
     transform: scale(1.035);
 }
 

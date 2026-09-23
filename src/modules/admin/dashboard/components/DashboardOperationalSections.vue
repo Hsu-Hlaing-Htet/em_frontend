@@ -1,5 +1,6 @@
 <script setup>
 import { computed, inject, unref } from 'vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import DashboardEmptyState from './DashboardEmptyState.vue';
 
 const dashboard = inject('dashboard', null);
@@ -9,68 +10,19 @@ function safeList(source) {
     return Array.isArray(value) ? value.filter(Boolean) : [];
 }
 
-const activityItems = computed(() => safeList(dashboard?.recentActivity).slice(0, 4));
+const pendingApprovalItems = computed(() => safeList(dashboard?.pendingApprovals?.latest).slice(0, 5));
 const expiringContracts = computed(() => (
     safeList(dashboard?.upcomingContracts)
         .filter((contract) => Number(contract?.days_left) <= 60)
         .slice(0, 5)
 ));
+const systemAlertItems = computed(() => safeList(dashboard?.systemAlerts?.items).slice(0, 5));
 
-const overdueInvoiceCount = computed(() => {
-    const metric = safeList(dashboard?.invoiceStats).find((item) => item?.key === 'overdue');
-    return Number(metric?.value) || 0;
-});
-
-const expiredContractCount = computed(() => (
-    Number(dashboard?.systemAlerts?.expired_contracts) || 0
-));
-
-const unresolvedMaintenanceCount = computed(() => (
-    Number(dashboard?.systemAlerts?.unresolved_maintenance) || 0
-));
-
-const alerts = computed(() => [
-    {
-        key: 'overdue-payments',
-        label: 'Overdue payments',
-        detail: 'Invoices requiring payment follow-up',
-        count: overdueInvoiceCount.value,
-        severity: overdueInvoiceCount.value ? 'high' : 'clear',
-        status: overdueInvoiceCount.value ? 'Action needed' : 'Clear',
-        to: '/admin/invoices',
-    },
-    {
-        key: 'expired-contracts',
-        label: 'Expired contracts',
-        detail: 'Active contracts past their end date',
-        count: expiredContractCount.value,
-        severity: expiredContractCount.value ? 'high' : 'clear',
-        status: expiredContractCount.value ? 'Review' : 'Clear',
-        to: '/admin/rent-contracts/active',
-    },
-    {
-        key: 'unresolved-maintenance',
-        label: 'Unresolved maintenance',
-        detail: 'Open maintenance requests',
-        count: unresolvedMaintenanceCount.value,
-        severity: unresolvedMaintenanceCount.value ? 'medium' : 'clear',
-        status: unresolvedMaintenanceCount.value ? 'Open' : 'Clear',
-        to: '/admin/maintenance-requests',
-    },
-]);
-
-function contractWindow(daysLeft) {
-    const days = Number(daysLeft) || 0;
-
-    if (days <= 7) {
-        return '7 days';
-    }
-
-    if (days <= 30) {
-        return '30 days';
-    }
-
-    return '60 days';
+function contractDetail(contract) {
+    return [contract?.customer, contract?.property]
+        .map((part) => String(part || '').trim())
+        .filter(Boolean)
+        .join(' · ');
 }
 
 function contractUrgency(daysLeft) {
@@ -93,31 +45,42 @@ function contractUrgency(daysLeft) {
         <article class="dashboard-panel dashboard-operations-card">
             <div class="dashboard-panel__header">
                 <div>
-                    <h2 class="dashboard-panel__title">Recent Activity</h2>
-                    <p class="dashboard-panel__subtitle">Latest admin actions and approvals</p>
+                    <h2 class="dashboard-panel__title">Pending Approvals</h2>
+                    <p class="dashboard-panel__subtitle">Newest items waiting for review</p>
                 </div>
             </div>
 
-            <div v-if="activityItems.length" class="dashboard-activity-compact-list">
-                <div
-                    v-for="item in activityItems"
+            <div v-if="pendingApprovalItems.length" class="dashboard-ops-list">
+                <router-link
+                    v-for="item in pendingApprovalItems"
                     :key="item.id"
-                    class="dashboard-activity-compact-row"
+                    :to="item.to"
+                    class="dashboard-ops-row"
                 >
-                    <span class="dashboard-activity-dot" aria-hidden="true" />
-                    <div class="dashboard-activity-compact-copy">
-                        <strong>{{ item.title }}</strong>
-                        <span>{{ item.detail }}</span>
+                    <div class="dashboard-ops-main">
+                        <strong class="dashboard-ops-reference">{{ item.reference }}</strong>
+                        <span class="dashboard-ops-detail">{{ item.detail }}</span>
                     </div>
-                    <time>{{ item.time }}</time>
-                </div>
+
+                    <div class="dashboard-ops-aside">
+                        <span class="dashboard-ops-meta">{{ item.type_label }}</span>
+                        <time class="dashboard-ops-datetime rw-numeric rw-date">
+                            {{ item.created_at }}
+                        </time>
+                    </div>
+
+                    <i
+                        class="pi pi-chevron-right dashboard-ops-chevron"
+                        aria-hidden="true"
+                    />
+                </router-link>
             </div>
 
             <DashboardEmptyState
                 v-else
-                title="No recent activity"
-                message="Recent admin actions will appear here."
-                icon="pi pi-history"
+                title="No pending approvals"
+                message="You're all caught up."
+                icon="pi pi-check-circle"
             />
         </article>
 
@@ -133,34 +96,40 @@ function contractUrgency(daysLeft) {
                 </router-link>
             </div>
 
-            <div v-if="expiringContracts.length" class="dashboard-expiring-list">
+            <div v-if="expiringContracts.length" class="dashboard-ops-list">
                 <router-link
                     v-for="contract in expiringContracts"
                     :key="contract.id"
                     :to="contract.to"
-                    class="dashboard-expiring-row"
-                    :class="`dashboard-expiring-row--${contractUrgency(contract.days_left)}`"
+                    class="dashboard-ops-row"
                 >
-                    <div class="dashboard-expiring-copy">
-                        <strong>{{ contract.number }}</strong>
-                        <span>{{ contract.customer || contract.client || contract.property }}</span>
+                    <div class="dashboard-ops-main">
+                        <strong class="dashboard-ops-reference">{{ contract.number }}</strong>
+                        <span class="dashboard-ops-detail">{{ contractDetail(contract) }}</span>
                     </div>
-                    <div class="dashboard-expiring-date">
-                        <span>{{ contract.end_date }}</span>
-                        <small>{{ contractWindow(contract.days_left) }} window</small>
+
+                    <div class="dashboard-ops-aside">
+                        <time class="dashboard-ops-datetime rw-numeric rw-date">
+                            {{ contract.end_date }}
+                        </time>
+                        <span
+                            class="dashboard-ops-days rw-numeric"
+                            :class="`dashboard-ops-days--${contractUrgency(contract.days_left)}`"
+                        >
+                            {{ contract.days_left }} days
+                        </span>
                     </div>
-                    <span
-                        class="dashboard-days-badge"
-                        :class="`dashboard-days-badge--${contractUrgency(contract.days_left)}`"
-                    >
-                        {{ contract.days_left }} days
-                    </span>
+
+                    <i
+                        class="pi pi-chevron-right dashboard-ops-chevron"
+                        aria-hidden="true"
+                    />
                 </router-link>
             </div>
 
             <DashboardEmptyState
                 v-else
-                title="No upcoming expirations"
+                title="No contracts expiring soon."
                 message="No active contracts end in the next 60 days."
                 icon="pi pi-calendar"
             />
@@ -174,31 +143,68 @@ function contractUrgency(daysLeft) {
                 </div>
             </div>
 
-            <div class="dashboard-alert-list">
+            <div v-if="systemAlertItems.length" class="dashboard-ops-list">
                 <router-link
-                    v-for="alert in alerts"
-                    :key="alert.key"
+                    v-for="alert in systemAlertItems"
+                    :key="alert.id"
                     :to="alert.to"
-                    class="dashboard-alert-row"
+                    class="dashboard-ops-row"
+                    :class="{ 'dashboard-ops-row--stacked': alert.kind !== 'overdue_invoice' }"
                 >
-                    <span
-                        class="dashboard-alert-indicator"
-                        :class="`dashboard-alert-indicator--${alert.severity}`"
+                    <div class="dashboard-ops-main">
+                        <strong class="dashboard-ops-reference">
+                            {{ alert.title || alert.number }}
+                        </strong>
+                        <span class="dashboard-ops-detail">{{ alert.detail }}</span>
+                        <span
+                            v-if="alert.kind !== 'overdue_invoice'"
+                            class="dashboard-ops-status-text"
+                        >
+                            {{ alert.status_label }}
+                        </span>
+                    </div>
+
+                    <div
+                        class="dashboard-ops-aside"
+                        :class="{ 'dashboard-ops-aside--stretch': alert.kind !== 'overdue_invoice' }"
+                    >                        <time
+                            v-if="alert.kind === 'overdue_invoice'"
+                            class="dashboard-ops-datetime rw-numeric rw-date"
+                        >
+                            {{ alert.due_date }}
+                        </time>
+                        <time
+                            v-else
+                            class="dashboard-ops-datetime rw-numeric rw-date"
+                        >
+                            {{ alert.created_at }}
+                        </time>
+
+                        <span class="dashboard-ops-status-row">
+                            <StatusBadge
+                                v-if="alert.kind === 'overdue_invoice'"
+                                value="overdue"
+                            />
+                            <StatusBadge
+                                v-else
+                                value="high"
+                            />
+                        </span>
+                    </div>
+
+                    <i
+                        class="pi pi-chevron-right dashboard-ops-chevron"
                         aria-hidden="true"
                     />
-                    <div class="dashboard-alert-copy">
-                        <strong>{{ alert.label }}</strong>
-                        <span>{{ alert.detail }}</span>
-                    </div>
-                    <span class="dashboard-alert-count">{{ alert.count }}</span>
-                    <span
-                        class="dashboard-alert-status"
-                        :class="`dashboard-alert-status--${alert.severity}`"
-                    >
-                        {{ alert.status }}
-                    </span>
                 </router-link>
             </div>
+
+            <DashboardEmptyState
+                v-else
+                title="No system alerts."
+                message="Operational conditions are currently clear."
+                icon="pi pi-check-circle"
+            />
         </article>
     </section>
 </template>

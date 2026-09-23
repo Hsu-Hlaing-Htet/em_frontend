@@ -5,14 +5,6 @@
             :subtitle="$t('customer.invoicesLead')"
         />
 
-        <CustomerSearchBar
-            v-model:search="search"
-            v-model:status="status"
-            class="customer-list-toolbar customer-invoice-toolbar"
-            :placeholder="$t('customer.invoiceSearchPlaceholder')"
-            :filters="statusFilters"
-        />
-
         <Loading v-if="isLoading" />
 
         <div v-else-if="invoices.length" class="customer-record-list">
@@ -20,18 +12,27 @@
                 v-for="invoice in invoices"
                 :key="invoice.id"
                 :to="{ name: 'customerInvoiceDocument', params: { id: invoice.id } }"
-                class="customer-record-row customer-invoice-row"
+                class="customer-interactive-surface customer-record-row customer-invoice-row"
             >
                 <span class="customer-record-cell customer-record-primary">
                     <span class="customer-record-label">{{ invoice.type || $t('customer.invoice') }}</span>
-                    <strong>{{ invoice.invoice_number || '—' }}</strong>
-                    <small>{{ $t('customer.amount') }} (MMK) {{ formatCurrency(Number(invoice.total_amount || 0)) }}</small>
+                    <strong v-if="invoice.invoice_number">{{ invoice.invoice_number }}</strong>
+                    <small v-if="hasAmount(invoice.total_amount)">
+                        {{ $t('customer.amount') }}
+                        <span class="rw-numeric rw-money">{{ formatCurrency(Number(invoice.total_amount)) }}</span>
+                    </small>
                 </span>
                 <span class="customer-record-cell customer-record-meta">
-                    <span class="customer-record-label">{{ $t('customer.dueDate') }}</span>
-                    <strong>{{ invoice.due_date || '—' }}</strong>
-                    <small>{{ invoice.billing_period || '—' }}</small>
-                    <StatusBadge :value="invoice.status" />
+                    <time
+                        v-if="createdAtParts(invoice.created_at)"
+                        class="customer-record-created rw-date"
+                        :datetime="invoice.created_at"
+                    >
+                        <span class="customer-record-created-date">{{ createdAtParts(invoice.created_at).date }}</span>
+                        <span class="customer-record-created-sep" aria-hidden="true"> · </span>
+                        <span class="customer-record-created-time">{{ createdAtParts(invoice.created_at).time }}</span>
+                    </time>
+                    <StatusBadge v-if="invoice.status" :value="invoice.status" />
                 </span>
             </router-link>
         </div>
@@ -49,23 +50,29 @@
 import { defineComponent } from 'vue';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
-import CustomerSearchBar from '@/components/customer/CustomerSearchBar.vue';
 import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerInvoiceList from '@/composables/customer/useCustomerInvoiceList';
-import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
+import { formatCustomerDateTimeParts } from '@/helpers/customer/datetime';
+import { formatCurrency } from '@/utils/formatter';
 
 export default defineComponent({
     name: 'CustomerInvoiceList',
     components: {
         Loading,
         StatusBadge,
-        CustomerSearchBar,
         CustomerEmptyState,
         CustomerPageHeader,
     },
     setup() {
-        return { ...useCustomerInvoiceList(), formatCurrency };
+        const hasAmount = (value) => value !== null && value !== undefined && value !== '';
+
+        return {
+            ...useCustomerInvoiceList(),
+            formatCurrency,
+            createdAtParts: formatCustomerDateTimeParts,
+            hasAmount,
+        };
     },
 });
 </script>

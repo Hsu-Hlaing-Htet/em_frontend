@@ -275,6 +275,7 @@ export default defineComponent({
     gap: 0.35rem;
     padding: 0 0.35rem;
     font-size: 0.68rem;
+    font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--admin-text-muted);

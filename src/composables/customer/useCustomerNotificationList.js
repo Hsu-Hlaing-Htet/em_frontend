@@ -53,14 +53,13 @@ export default function useCustomerNotificationList() {
     });
 
     const openNotification = (item) => {
+        notificationStore.markAsRead(item?.id);
+
         const target = customerNotificationRoute(item);
 
-        if (!target) {
-            return;
+        if (target) {
+            router.push(target);
         }
-
-        notificationStore.markAsRead(item.id);
-        router.push(target);
     };
 
     const formatDisplayDateTime = (value) => formatRelativeTime(

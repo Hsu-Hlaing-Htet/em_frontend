@@ -108,7 +108,7 @@
                         {{ formatCurrencyAmount(data.total_amount) }}
                     </template>
                 </Column>
-                <Column field="created_by" header="Created By" :sortable="true" style="min-width: 120px" />
+                <Column field="created_by" header="Created By" style="min-width: 120px" />
                 <Column header="Actions" :exportable="false" style="min-width: 120px">
                     <template #body="{ data }">
                         <ApprovalListActions

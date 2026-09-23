@@ -17,17 +17,21 @@ defineProps({
                 </div>
             </div>
 
-            <div class="rw-locations reveal-stagger">
+            <div class="rw-locations reveal-stagger is-visible">
                 <router-link
                     v-for="location in locations"
                     :key="location.name"
                     :to="{ path: '/properties', query: { township: location.name } }"
                     class="rw-location-card"
+                    data-rw-parallax-measure
                 >
                     <img
                         :src="location.image"
                         :alt="location.name"
                         loading="lazy"
+                        data-rw-parallax="medium"
+                        data-rw-max-y="28"
+                        data-rw-base-scale="1.035"
                     >
                     <div class="rw-location-card__overlay">
                         <h3>{{ location.name }}</h3>
@@ -63,12 +67,12 @@ defineProps({
 
 .rw-location-card img {
     width: 100%;
-    height: 100%;
+    height: 118%;
     object-fit: cover;
     transition: transform 0.55s ease;
 }
 
-.rw-location-card:hover img {
+.rw-location-card:hover img:not([data-rw-parallax]) {
     transform: scale(1.035);
 }
 

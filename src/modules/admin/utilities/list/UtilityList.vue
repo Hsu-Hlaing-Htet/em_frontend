@@ -125,7 +125,7 @@
                         <StatusBadge :value="data.status" />
                     </template>
                 </Column>
-                <Column field="created_by_name" header="Created By" :sortable="true" style="min-width: 120px">
+                <Column field="created_by_name" header="Created By" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ data.created_by_name || '—' }}
                     </template>

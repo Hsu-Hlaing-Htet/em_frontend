@@ -94,7 +94,7 @@
                 </Column>
 
                 <Column field="location" :header="$t('property.location')" :sortable="true" style="min-width: 180px" />
-                <Column field="description" :header="$t('property.description')" :sortable="true" style="min-width: 220px">
+                <Column field="description" :header="$t('property.description')" style="min-width: 220px">
                     <template #body="{ data }">
                         <span class="line-clamp-2">{{ data.description || '—' }}</span>
                     </template>

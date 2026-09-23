@@ -31,7 +31,6 @@ export function useDashboard() {
     const selectedStat = ref(null);
     const propertyFilter = ref(null);
     const invoiceFilter = ref(null);
-    const activityFilter = ref('all');
     const quickActionQuery = ref('');
     const globalSearch = ref('');
     const selectedRoleId = ref(null);
@@ -45,10 +44,16 @@ export function useDashboard() {
     const revenueCollections = ref({ collection_rate: 0, points: [] });
     const receivableAging = ref([]);
     const upcomingContracts = ref([]);
-    const recentActivity = ref([]);
     const systemAlerts = ref({
         expired_contracts: 0,
         unresolved_maintenance: 0,
+        overdue_invoices: 0,
+        items: [],
+    });
+    const pendingApprovals = ref({
+        total: 0,
+        items: [],
+        latest: [],
     });
     const quickActions = ref([]);
 
@@ -85,7 +90,6 @@ export function useDashboard() {
         bookings,
         maintenance,
         notifications,
-        activity: recentActivity,
         reports,
         roles,
     };
@@ -126,16 +130,6 @@ export function useDashboard() {
     });
 
     const invoiceTotal = computed(() => invoiceStats.value.reduce((sum, item) => sum + (item?.value ?? 0), 0));
-
-    const filteredActivity = computed(() => {
-        const items = (recentActivity.value ?? []).filter(Boolean);
-
-        if (activityFilter.value === 'all') {
-            return items.slice(0, 4);
-        }
-
-        return items.filter((item) => item?.tag === activityFilter.value).slice(0, 4);
-    });
 
     const filteredQuickActions = computed(() => {
         const query = quickActionQuery.value.trim().toLowerCase();
@@ -215,10 +209,6 @@ export function useDashboard() {
 
     function clearInvoiceFilter() {
         invoiceFilter.value = null;
-    }
-
-    function setActivityFilter(filter) {
-        activityFilter.value = filter;
     }
 
     function hoverBar(item) {
@@ -301,10 +291,16 @@ export function useDashboard() {
         revenueCollections.value = payload.revenue_collections ?? { collection_rate: 0, points: [] };
         receivableAging.value = payload.receivable_aging ?? [];
         upcomingContracts.value = payload.upcoming_contracts ?? [];
-        recentActivity.value = payload.activity_timeline ?? [];
         systemAlerts.value = payload.system_alerts ?? {
             expired_contracts: 0,
             unresolved_maintenance: 0,
+            overdue_invoices: 0,
+            items: [],
+        };
+        pendingApprovals.value = payload.pending_approval_breakdown ?? {
+            total: 0,
+            items: [],
+            latest: [],
         };
         quickActions.value = payload.quick_actions ?? [];
         properties.value = payload.properties ?? [];
@@ -406,7 +402,6 @@ export function useDashboard() {
         selectedStat,
         propertyFilter,
         invoiceFilter,
-        activityFilter,
         quickActionQuery,
         globalSearch,
         settings,
@@ -419,8 +414,8 @@ export function useDashboard() {
         revenueCollections,
         receivableAging,
         upcomingContracts,
-        recentActivity,
         systemAlerts,
+        pendingApprovals,
         quickActions,
         properties,
         customers,
@@ -443,7 +438,6 @@ export function useDashboard() {
         visibleRevenueOverview,
         filteredPropertyStats,
         filteredInvoiceStats,
-        filteredActivity,
         revenueSummaryCards,
         unreadNotificationCount,
         statusFilterOptions: STATUS_FILTER_OPTIONS,
@@ -461,7 +455,6 @@ export function useDashboard() {
         clearPropertyFilter,
         toggleInvoiceFilter,
         clearInvoiceFilter,
-        setActivityFilter,
         hoverBar,
         clearHoveredBar,
         openDetail,

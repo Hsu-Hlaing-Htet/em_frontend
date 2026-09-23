@@ -108,12 +108,12 @@
                         {{ formatCurrency(data.contract_total) }}
                     </template>
                 </Column>
-                <Column field="paid_amount" header="Paid Amount (MMK)" :sortable="true" style="min-width: 130px">
+                <Column field="paid_amount" header="Paid Amount (MMK)" style="min-width: 130px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.paid_amount) }}
                     </template>
                 </Column>
-                <Column field="remaining_amount" header="Remaining Amount (MMK)" :sortable="true" style="min-width: 140px">
+                <Column field="remaining_amount" header="Remaining Amount (MMK)" style="min-width: 140px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.remaining_amount) }}
                     </template>

@@ -146,7 +146,7 @@
                     </template>
                 </Column>
 
-                <Column header="Price (MMK)">
+                <Column field="list_price" header="Price (MMK)" :sortable="true">
                     <template #body="{ data }">
                         {{ formatRoomListPrice(data) }}
                     </template>

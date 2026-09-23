@@ -5,7 +5,7 @@ const routes = [
         component: () => import('./list/MaintenanceRequestList.vue'),
         meta: {
             title: 'Maintenance Requests',
-            breadcrumbs: [{ title: 'Maintenance', routeName: 'customerMaintenanceRequestList' }],
+            breadcrumbs: [{ title: 'Maintenance Requests', routeName: 'customerMaintenanceRequestList' }],
         },
     },
     {
@@ -15,7 +15,7 @@ const routes = [
         meta: {
             title: 'New Maintenance Request',
             breadcrumbs: [
-                { title: 'Maintenance', routeName: 'customerMaintenanceRequestList' },
+                { title: 'Maintenance Requests', routeName: 'customerMaintenanceRequestList' },
                 { title: 'Create', routeName: 'customerNewMaintenanceRequest' },
             ],
         },
@@ -27,7 +27,7 @@ const routes = [
         meta: {
             title: 'Maintenance Request Details',
             breadcrumbs: [
-                { title: 'Maintenance', routeName: 'customerMaintenanceRequestList' },
+                { title: 'Maintenance Requests', routeName: 'customerMaintenanceRequestList' },
                 { title: 'Details', routeName: 'customerShowMaintenanceRequest' },
             ],
         },

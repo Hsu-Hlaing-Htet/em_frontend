@@ -36,7 +36,7 @@ const follow = PUBLIC_SOCIAL_LINKS;
 
 <template>
     <footer
-        class="rw-footer"
+        class="rw-footer reveal reveal--fade"
         data-public-footer
     >
         <div class="container rw-footer__grid">

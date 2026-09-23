@@ -141,7 +141,7 @@ export default function useCreateRoomContract() {
             room_id: room.value.id,
             payment_type: isRent ? 'full' : 'installment',
             room_price: isRent ? room.value.rent_price : room.value.sale_price,
-            deposit_amount: isRent ? room.value.rent_deposit_price : 0,
+            deposit_amount: isRent ? room.value.rent_deposit_price : room.value.booking_deposit_price,
             contract_total: isRent ? room.value.rent_price : room.value.sale_price,
             room: {
                 id: room.value.id,
@@ -152,6 +152,7 @@ export default function useCreateRoomContract() {
                 sale_price: room.value.sale_price,
                 rent_price: room.value.rent_price,
                 rent_deposit_price: room.value.rent_deposit_price,
+                booking_deposit_price: room.value.booking_deposit_price,
             },
             building: {
                 id: room.value.building_id,
@@ -314,7 +315,15 @@ export default function useCreateRoomContract() {
             }
         } catch (error) {
             if (error.status === 422) {
-                errors.record(error.data?.data || {});
+                errors.record(error.data?.data || error.data?.errors || {});
+                const apiMessage = String(error.data?.message || '').trim();
+                if (apiMessage && !errors.any()) {
+                    EventBus.emit('show-toast', {
+                        severity: 'warn',
+                        summary: '',
+                        detail: apiMessage,
+                    });
+                }
             } else {
                 showApiErrorToast(error, 'Unable to submit contract for approval.');
             }

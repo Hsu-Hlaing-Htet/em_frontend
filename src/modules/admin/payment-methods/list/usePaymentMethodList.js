@@ -146,7 +146,11 @@ export const usePaymentMethodList = () => {
             await store.fetchAll(params);
             return store.getAllResponse;
         },
-        mapItem: (item) => ({ name: item.name, status: item.status }),
+        mapItem: (item) => ({
+            name: item.name,
+            type: item.type || '',
+            status: item.status,
+        }),
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
             { label: 'Status', value: statusFilter.value || '' },

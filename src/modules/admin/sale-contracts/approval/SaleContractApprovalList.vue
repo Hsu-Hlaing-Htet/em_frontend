@@ -102,7 +102,7 @@
                         {{ getPaymentTypeLabel(data.payment_type) }}
                     </template>
                 </Column>
-                <Column field="created_by" header="Created By" :sortable="true" style="min-width: 130px" />
+                <Column field="created_by" header="Created By" style="min-width: 130px" />
                 <Column field="created_at" header="Created Date" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">
                         {{ formatDate(data.created_at) || '—' }}

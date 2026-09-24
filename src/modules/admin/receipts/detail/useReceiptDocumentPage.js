@@ -1,5 +1,5 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useReceiptStore } from '../store';
@@ -9,14 +9,9 @@ import { service } from '../service';
 
 export default function useReceiptDocumentPage() {
     const route = useRoute();
-    const router = useRouter();
     const store = useReceiptStore();
     const isLoading = ref(true);
     const isSendingEmail = ref(false);
-    const workflowLoading = ref({ approve: false, reject: false });
-    const showApproveDialog = ref(false);
-    const showRejectDialog = ref(false);
-    const isApprovalView = computed(() => route.meta.approvalContext === true);
 
     const state = reactive({
         id: null,
@@ -62,15 +57,9 @@ export default function useReceiptDocumentPage() {
         viewPdf,
     } = useReceiptDocumentActions(state, () => document.value, service);
 
-    const backRoute = computed(() => (
-        isApprovalView.value
-            ? { name: 'receiptApprovalList' }
-            : { name: 'receiptList' }
-    ));
+    const backRoute = computed(() => ({ name: 'receiptList' }));
 
-    const canApprove = () => isApprovalView.value && state.approval_status === 'pending';
-    const canReject = () => isApprovalView.value && state.approval_status === 'pending';
-    const canSendEmail = computed(() => !isApprovalView.value && (
+    const canSendEmail = computed(() => (
         state.can_send_email
         || (state.approval_status === 'approved' && !state.is_sent && !state.sent_at)
     ));
@@ -98,46 +87,6 @@ export default function useReceiptDocumentPage() {
             showApiErrorToast(error, 'Unable to send receipt email. You can retry when mail delivery is available.');
         } finally {
             isSendingEmail.value = false;
-        }
-    };
-
-    const runWorkflow = async (action, payload = {}) => {
-        const canRun = action === 'approve' ? canApprove() : canReject();
-
-        if (!canRun || workflowLoading.value.approve || workflowLoading.value.reject) {
-            return;
-        }
-
-        workflowLoading.value[action] = true;
-
-        try {
-            await store[action]({ id: state.id, ...payload });
-            const response = store.getActionResponse;
-
-            if (response?.data) {
-                Object.assign(state, response.data);
-                state.items = response.data.items || state.items;
-            }
-
-            EventBus.emit('show-toast', {
-                severity: action === 'reject' ? 'warn' : 'success',
-                summary: '',
-                detail: response?.message || `Receipt ${action}d successfully.`,
-            });
-
-            showApproveDialog.value = false;
-            showRejectDialog.value = false;
-
-            if (isApprovalView.value) {
-                await router.push({ name: 'receiptApprovalList' });
-
-                return;
-            }
-
-        } catch (error) {
-            showApiErrorToast(error, `Unable to ${action} receipt.`);
-        } finally {
-            workflowLoading.value[action] = false;
         }
     };
 
@@ -176,7 +125,6 @@ export default function useReceiptDocumentPage() {
         isLoading,
         document,
         backRoute,
-        isApprovalView,
         downloadPdf,
         exportPdf,
         printPdf,
@@ -185,11 +133,5 @@ export default function useReceiptDocumentPage() {
         handleSendEmail,
         isSendingEmail,
         canSendEmail,
-        workflowLoading,
-        showApproveDialog,
-        showRejectDialog,
-        canApprove,
-        canReject,
-        runWorkflow,
     };
 }

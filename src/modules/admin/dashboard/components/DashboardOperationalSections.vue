@@ -58,7 +58,7 @@ function contractUrgency(daysLeft) {
                     class="dashboard-ops-row"
                 >
                     <div class="dashboard-ops-main">
-                        <strong class="dashboard-ops-reference">{{ item.reference }}</strong>
+                        <span class="dashboard-ops-reference">{{ item.reference }}</span>
                         <span class="dashboard-ops-detail">{{ item.detail }}</span>
                     </div>
 
@@ -104,7 +104,7 @@ function contractUrgency(daysLeft) {
                     class="dashboard-ops-row"
                 >
                     <div class="dashboard-ops-main">
-                        <strong class="dashboard-ops-reference">{{ contract.number }}</strong>
+                        <span class="dashboard-ops-reference">{{ contract.number }}</span>
                         <span class="dashboard-ops-detail">{{ contractDetail(contract) }}</span>
                     </div>
 
@@ -152,9 +152,9 @@ function contractUrgency(daysLeft) {
                     :class="{ 'dashboard-ops-row--stacked': alert.kind !== 'overdue_invoice' }"
                 >
                     <div class="dashboard-ops-main">
-                        <strong class="dashboard-ops-reference">
+                        <span class="dashboard-ops-reference">
                             {{ alert.title || alert.number }}
-                        </strong>
+                        </span>
                         <span class="dashboard-ops-detail">{{ alert.detail }}</span>
                         <span
                             v-if="alert.kind !== 'overdue_invoice'"

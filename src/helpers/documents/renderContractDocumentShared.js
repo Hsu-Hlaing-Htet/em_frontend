@@ -10,21 +10,66 @@ import {
     buildPropertyLocationRows,
 } from './contractDocumentRows';
 
-function renderSignatureLines(signatures = []) {
-    const customer = signatures[0];
-    const company = signatures[1];
+function isCompanySignature(signature = {}) {
+    const role = String(signature.role || '');
+    const label = String(signature.label || '');
 
-    const lines = [
-        { label: customer?.label || 'Customer Signature', key: 'customer' },
-        { label: company?.label || 'Company Representative', key: 'company' },
+    return /authorized officer|company representative|company|seller|landlord/i.test(`${role} ${label}`);
+}
+
+function groupSignatures(signatures = []) {
+    const groups = [];
+
+    signatures.forEach((signature) => {
+        const company = isCompanySignature(signature);
+        const roleKey = company
+            ? 'company'
+            : String(signature.role || signature.label || 'Signature');
+        const last = groups[groups.length - 1];
+
+        if (last && last.roleKey === roleKey && !company) {
+            last.parties.push(signature);
+            return;
+        }
+
+        groups.push({
+            roleKey,
+            company,
+            heading: company
+                ? (signature.label || 'Company Representative')
+                : (signature.role || signature.label || 'Signature'),
+            parties: [signature],
+        });
+    });
+
+    return groups;
+}
+
+function renderSignatureBlocks(signatures = []) {
+    const items = signatures.length ? signatures : [
+        { role: 'Customer', label: 'Customer', name: '' },
+        { role: 'Authorized Officer', label: 'Company Representative', name: '' },
     ];
+    const groups = groupSignatures(items);
+    const hasJoint = groups.some((group) => group.parties.length > 1);
 
-    return lines.map((line) => `
-        <p class="contract-doc-signature-line">
-            <span class="contract-doc-signature-label">${escapeHtml(line.label)}:</span>
-            <span class="contract-doc-signature-blank">________</span>
-        </p>
-    `).join('');
+    return `
+        <div class="contract-doc-signatures${hasJoint ? ' contract-doc-signatures--joint' : ''}">
+            ${groups.map((group) => `
+                <div class="contract-doc-signature-block${group.parties.length > 1 ? ' contract-doc-signature-block--multi' : ''}">
+                    <p class="contract-doc-signature-role">${escapeHtml(group.heading)}</p>
+                    <div class="contract-doc-signature-parties">
+                        ${group.parties.map((party) => `
+                            <div class="contract-doc-signature-party">
+                                <p class="contract-doc-signature-blank-line">________________</p>
+                                <p class="contract-doc-signature-name">${escapeHtml(party?.name || '________________')}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
 }
 
 function renderCovenantItems(items = []) {
@@ -60,6 +105,7 @@ export function renderContractDocumentBody(document, variant) {
             customerRole: variant.customerRole,
             companyFields: document.company,
             customerFields: (document.customer || []).filter((item) => item.label !== 'Address'),
+            secondCustomerFields: (document.secondCustomer || []).filter((item) => item.label !== 'Address'),
         })}
 
         ${renderContractSection('II. Property', `
@@ -89,9 +135,7 @@ export function renderContractDocumentBody(document, variant) {
                 IN WITNESS WHEREOF, the parties hereto have executed this ${escapeHtml(variant.agreementName)}
                 as of the date first written above.
             </p>
-            <div class="contract-doc-signatures">
-                ${renderSignatureLines(document.signatures)}
-            </div>
+            ${renderSignatureBlocks(document.signatures)}
             <p class="contract-doc-signature-note">Signatures are completed manually on the printed copy.</p>
         `)}
     `;

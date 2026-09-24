@@ -33,14 +33,6 @@ export const useReceiptStore = defineStore('useReceiptStore', {
             const response = await service.getOne(params);
             this.detailResponse = response;
         },
-        async approve(params) {
-            const response = await service.approve(params);
-            this.actionResponse = response;
-        },
-        async reject(params) {
-            const response = await service.reject(params);
-            this.actionResponse = response;
-        },
         async issue(params) {
             const response = await service.issue(params);
             this.actionResponse = response;

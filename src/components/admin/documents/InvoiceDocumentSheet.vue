@@ -1,29 +1,73 @@
 <template>
-    <div v-html="articleHtml" />
+    <iframe
+        v-if="html"
+        ref="frameEl"
+        class="invoice-doc-frame"
+        title="Invoice document"
+        :srcdoc="html"
+        @load="resizeFrame"
+    />
 </template>
 
 <script>
-import { computed, defineComponent } from 'vue';
-import { renderInvoiceDocumentArticle } from '@/helpers/documents/renderInvoiceDocument';
-import { DOCUMENT_LOGO_URL } from '@/helpers/documents/documentOutput';
-import '@/assets/css/documents/document-font.css';
-import '@/assets/css/documents/invoice-document.css';
+import { defineComponent, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
 export default defineComponent({
     name: 'InvoiceDocumentSheet',
     props: {
-        document: {
-            type: Object,
-            required: true,
+        html: {
+            type: String,
+            default: '',
         },
     },
     setup(props) {
-        const articleHtml = computed(() => renderInvoiceDocumentArticle(
-            props.document,
-            DOCUMENT_LOGO_URL,
-        ));
+        const frameEl = ref(null);
 
-        return { articleHtml };
+        const resizeFrame = async () => {
+            await nextTick();
+            const frame = frameEl.value;
+            if (!frame) {
+                return;
+            }
+
+            try {
+                const doc = frame.contentDocument;
+                const height = Math.max(
+                    doc?.body?.scrollHeight || 0,
+                    doc?.documentElement?.scrollHeight || 0,
+                    Math.round(297 * 3.78),
+                );
+                frame.style.height = `${height + 8}px`;
+            } catch {
+                frame.style.height = '1123px';
+            }
+        };
+
+        watch(() => props.html, () => {
+            nextTick(resizeFrame);
+        });
+
+        onBeforeUnmount(() => {
+            if (frameEl.value) {
+                frameEl.value.srcdoc = '';
+            }
+        });
+
+        return {
+            frameEl,
+            resizeFrame,
+        };
     },
 });
 </script>
+
+<style scoped>
+.invoice-doc-frame {
+    display: block;
+    width: min(100%, 210mm);
+    min-height: 297mm;
+    margin: 0 auto;
+    border: 0;
+    background: transparent;
+}
+</style>

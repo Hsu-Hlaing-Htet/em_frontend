@@ -62,7 +62,7 @@
 
 .pdf-frame .invoice-doc,
 .pdf-frame .receipt-doc {
-    background: #fbf8f4;
+    background: #ffffff;
 }
 
 @media (max-width: 768px) {

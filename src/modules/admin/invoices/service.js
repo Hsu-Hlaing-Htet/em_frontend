@@ -45,6 +45,16 @@ const service = {
         return result.data;
     },
 
+    previewDocumentHtml: async (params) => {
+        const response = await api.get(`${endpoint.invoices}/${params.id}/document/preview`, {
+            responseType: 'text',
+            headers: { Accept: 'text/html' },
+            transformResponse: [(data) => data],
+        });
+
+        return typeof response.data === 'string' ? response.data : String(response.data ?? '');
+    },
+
     downloadDocument: async (params) => {
         const response = await api.get(`${endpoint.invoices}/${params.id}/document/download`, {
             responseType: 'blob',

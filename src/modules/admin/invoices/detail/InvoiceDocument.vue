@@ -3,7 +3,7 @@
         <header class="pdf-bar no-print">
             <div class="pdf-actions">
                 <Button
-                    v-if="isApprovalView && document"
+                    v-if="isApprovalView && documentHtml"
                     icon="pi pi-eye"
                     label="View"
                     severity="secondary"
@@ -52,7 +52,7 @@
 
         <div class="pdf-canvas">
             <div class="pdf-frame">
-                <InvoiceDocumentSheet :document="document" />
+                <InvoiceDocumentSheet :html="documentHtml" />
             </div>
         </div>
 

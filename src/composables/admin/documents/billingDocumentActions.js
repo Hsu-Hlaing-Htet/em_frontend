@@ -1,8 +1,8 @@
-import { createBillingDocumentActions } from './createBillingDocumentActions';
+import { createDocumentActions } from './createDocumentActions';
 import {
-    exportInvoiceDocument,
-    printInvoiceDocument,
-    viewInvoiceDocument,
+    printDocumentHtml,
+    exportDocumentHtml,
+    downloadDocumentHtml,
     exportReceiptDocument,
     printReceiptDocument,
     viewReceiptDocument,
@@ -12,22 +12,32 @@ import {
     viewUtilityDocument,
 } from '@/helpers/documents/documentOutput';
 import { formatUtilityReference } from '@/helpers/documents/billingDocumentHelpers';
+import { createBillingDocumentActions } from './createBillingDocumentActions';
 
-export function useInvoiceDocumentActions(state, getDocument, service) {
-    return createBillingDocumentActions({
-        state,
-        getDocument,
-        getFilename: (current) => `${current.invoice_number || 'invoice'}.html`,
-        printDocument: printInvoiceDocument,
-        viewDocument: viewInvoiceDocument,
-        exportDocument: exportInvoiceDocument,
-        downloadDocument: (current) => service.downloadDocument({
-            id: current.id,
-            fallbackFilename: `${current.invoice_number || 'invoice'}.pdf`,
+export function useInvoiceDocumentActions(state, getHtml, service) {
+    const resolveHtml = typeof getHtml === 'function'
+        ? getHtml
+        : () => getHtml?.value;
+
+    return createDocumentActions({
+        getDocument: resolveHtml,
+        getFilename: () => `${state.invoice_number || 'invoice'}.html`,
+        printDocument: printDocumentHtml,
+        viewDocument: exportDocumentHtml,
+        exportDocument: (html, filename) => {
+            if (!exportDocumentHtml(html)) {
+                downloadDocumentHtml(html, filename);
+            }
+
+            return true;
+        },
+        downloadDocument: () => service.downloadDocument({
+            id: state.id,
+            fallbackFilename: `${state.invoice_number || 'invoice'}.pdf`,
         }),
-        sendDocumentEmail: (current) => service.sendDocumentEmail({
-            id: current.id,
-            email: current.customer_email || undefined,
+        sendEmail: () => service.sendDocumentEmail({
+            id: state.id,
+            email: state.customer_email || undefined,
         }),
         messages: {
             downloadSuccess: 'Invoice document downloaded.',

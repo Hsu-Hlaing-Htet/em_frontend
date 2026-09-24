@@ -1,5 +1,5 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
@@ -11,18 +11,9 @@ import { service } from '../service';
 export default function useShowReceipt() {
     const store = useReceiptStore();
     const route = useRoute();
-    const router = useRouter();
     const isLoading = ref(true);
     const isSendingEmail = ref(false);
-    const workflowLoading = ref({ approve: false, reject: false });
-    const showApproveDialog = ref(false);
-    const showRejectDialog = ref(false);
-    const isApprovalView = computed(() => route.meta.approvalContext === true);
-    const backRoute = computed(() => (
-        isApprovalView.value
-            ? { name: 'receiptApprovalList' }
-            : { name: 'receiptList' }
-    ));
+    const backRoute = computed(() => ({ name: 'receiptList' }));
 
     const state = reactive({
         id: null,
@@ -93,41 +84,6 @@ export default function useShowReceipt() {
         }
     };
 
-    const runWorkflow = async (action, payload = {}) => {
-        const canRun = action === 'approve' ? canApprove() : canReject();
-
-        if (!canRun || workflowLoading.value.approve || workflowLoading.value.reject) {
-            return;
-        }
-
-        workflowLoading.value[action] = true;
-
-        try {
-            await store[action]({ id: state.id, ...payload });
-            const response = store.getActionResponse;
-
-            if (response) {
-                Object.assign(state, response.data);
-                state.items = response.data.items || [];
-                EventBus.emit('show-toast', {
-                    severity: 'success',
-                    summary: '',
-                    detail: response.message,
-                });
-                showApproveDialog.value = false;
-                showRejectDialog.value = false;
-
-                if (isApprovalView.value && action === 'approve') {
-                    await router.push({ name: 'showReceipt', params: { id: state.id } });
-                } else if (isApprovalView.value) {
-                    await router.push({ name: 'receiptApprovalList' });
-                }
-            }
-        } finally {
-            workflowLoading.value[action] = false;
-        }
-    };
-
     const handleSendEmail = async () => {
         isSendingEmail.value = true;
 
@@ -154,8 +110,6 @@ export default function useShowReceipt() {
         }
     };
 
-    const canApprove = () => isApprovalView.value && state.approval_status === 'pending';
-    const canReject = () => isApprovalView.value && state.approval_status === 'pending';
     const canSendEmail = () => state.can_send_email
         || (state.approval_status === 'approved' && !state.is_sent && !state.sent_at);
     const formattedCreatedAt = computed(() => formatBillingDocumentDate(
@@ -166,20 +120,13 @@ export default function useShowReceipt() {
     ));
 
     return {
-        isApprovalView,
         backRoute,
         documentRoute,
         isLoading,
         isSendingEmail,
-        workflowLoading,
-        showApproveDialog,
-        showRejectDialog,
         state,
         formattedCreatedAt,
         handleSendEmail,
-        runWorkflow,
-        canApprove,
-        canReject,
         canSendEmail,
         downloadPdf,
     };

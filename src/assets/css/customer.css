@@ -1249,16 +1249,37 @@ html[data-theme='light'] [data-customer-layout] .customer-portal-header .rosewoo
     border-radius: 4px;
 }
 
-/* Brand lockup: mouse click leaves no ring; keyboard keeps subtle focus */
+/*
+ * Customer header brand: never show a persistent burgundy rectangle.
+ * Active-route classes (router-link-active / aria-current) must not look selected.
+ * Mouse :focus leaves no ring; keyboard :focus-visible keeps a soft indicator.
+ */
+.customer-shell .customer-portal-header .rosewood-brand,
+.customer-shell .customer-portal-header .rosewood-brand.router-link-active,
+.customer-shell .customer-portal-header .rosewood-brand.router-link-exact-active,
+.customer-shell .customer-portal-header .rosewood-brand[aria-current='page'],
+.customer-shell .customer-portal-brand,
+.customer-shell .customer-portal-brand.router-link-active,
+.customer-shell .customer-portal-brand.router-link-exact-active,
+.customer-shell .customer-portal-brand[aria-current='page'] {
+    outline: none;
+    box-shadow: none;
+}
+
+.customer-shell .customer-portal-header .rosewood-brand:focus,
 .customer-shell .customer-portal-header .rosewood-brand:focus:not(:focus-visible),
+.customer-shell .customer-portal-header .rosewood-brand.router-link-active:focus:not(:focus-visible),
+.customer-shell .customer-portal-header .rosewood-brand.router-link-exact-active:focus:not(:focus-visible),
+.customer-shell .customer-portal-brand:focus,
 .customer-shell .customer-portal-brand:focus:not(:focus-visible) {
     outline: none !important;
     box-shadow: none !important;
 }
 
+/* Soft keyboard-only focus — overrides .customer-shell :focus-visible catch-all */
 .customer-shell .customer-portal-header .rosewood-brand:focus-visible,
 .customer-shell .customer-portal-brand:focus-visible {
-    outline: var(--rw-focus-outline, 2px solid var(--rw-brand, #8f2338));
+    outline: 2px solid color-mix(in srgb, var(--rw-brand, #8f2338) 45%, transparent);
     outline-offset: 3px;
     box-shadow: none;
 }
@@ -1302,15 +1323,27 @@ html[data-theme='light'] [data-customer-layout] .customer-portal-header .rosewoo
         color 0.3s ease;
 }
 
-.customer-portal-header-icon:hover,
-.customer-portal-header-icon:focus-visible {
+.customer-portal-header-icon:hover {
     color: var(--rw-text, var(--admin-text));
     background: var(--rw-hover-bg, var(--admin-nav-active-bg));
+}
+
+/* No persistent ring for active route or mouse focus on header icon links (e.g. bell) */
+.customer-portal-header-icon,
+.customer-portal-header-icon.router-link-active,
+.customer-portal-header-icon.router-link-exact-active,
+.customer-portal-header-icon[aria-current='page'],
+.customer-portal-header-icon:focus:not(:focus-visible) {
     outline: none;
+    box-shadow: none;
 }
 
 .customer-portal-header-icon:focus-visible {
-    box-shadow: var(--rw-focus-shadow);
+    color: var(--rw-text, var(--admin-text));
+    background: var(--rw-hover-bg, var(--admin-nav-active-bg));
+    outline: 2px solid color-mix(in srgb, var(--rw-brand, #8f2338) 45%, transparent);
+    outline-offset: 2px;
+    box-shadow: none;
 }
 
 .customer-portal-header-icon-bell {
@@ -1638,7 +1671,6 @@ html[data-theme='light'] [data-customer-layout] .customer-portal-header .rosewoo
     flex-direction: column;
     justify-content: center;
     min-height: 11.25rem;
-    max-height: 13.75rem;
     padding: 1.5rem 1.75rem;
     background: #101012;
     border-color: color-mix(in srgb, var(--admin-border) 70%, rgba(255, 255, 255, 0.08));
@@ -1752,7 +1784,7 @@ html[data-theme='light'] [data-customer-layout] .customer-portal-header .rosewoo
 @media (max-width: 767.98px) {
     .customer-portal-contract-card--summary {
         min-height: 9.5rem;
-        max-height: 11.25rem;
+        height: auto;
         padding: 1.35rem 1.35rem;
     }
 
@@ -2631,6 +2663,14 @@ html[data-theme='dark'] .customer-portal-icon-badge.tone-blue {
     .customer-portal-feature-grid,
     .customer-portal-bottom-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch;
+    }
+
+    /* Equal-height feature cards: stretch to the shared row height */
+    .customer-portal-feature-grid > .customer-portal-contract-card,
+    .customer-portal-feature-grid > .customer-portal-help-card {
+        height: 100%;
+        align-self: stretch;
     }
 
     .customer-portal-quick-actions {

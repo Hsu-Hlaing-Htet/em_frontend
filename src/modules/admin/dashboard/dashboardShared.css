@@ -1,4 +1,10 @@
 .admin-dashboard {
+    /* Prefer PrimeVue's bundled Inter var (100–900 axis) over static Google "Inter"
+       so dashboard weights resolve to real faces without synthesis/fallback heaviness. */
+    --rw-font-sans: 'Inter var', Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --rw-font-numeric: 'Inter var', Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --admin-font-ui: var(--rw-font-sans);
+
     --dashboard-card-bg: var(--rw-surface-solid, #fbfaf8);
     --dashboard-card-border: var(--rw-border, rgba(45, 35, 30, 0.1));
     --dashboard-card-hover: var(--rw-hover-bg, rgba(143, 35, 56, 0.035));
@@ -13,7 +19,9 @@
     --dashboard-red: var(--rw-danger, #b92d3a);
     --dashboard-shadow: var(--rw-shadow-soft);
     gap: 0.875rem !important;
-    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-family: var(--admin-font-ui);
+    font-weight: 400;
+    font-synthesis: none;
 }
 
 html[data-theme='dark'] .admin-dashboard {
@@ -123,7 +131,9 @@ html[data-theme='dark'] .admin-dashboard {
 .dashboard-ops-reference {
     overflow: hidden;
     color: var(--admin-text);
+    font-family: var(--admin-font-ui);
     font-size: 0.8125rem;
+    font-weight: 500;
     line-height: 1.35;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -133,8 +143,9 @@ html[data-theme='dark'] .admin-dashboard {
 .dashboard-ops-status-text {
     overflow: hidden;
     color: var(--admin-text-muted);
-    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-family: var(--admin-font-ui);
     font-size: 0.75rem;
+    font-weight: 400;
     line-height: 1.35;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -166,7 +177,7 @@ html[data-theme='dark'] .admin-dashboard {
 .dashboard-ops-datetime,
 .dashboard-ops-days {
     color: var(--admin-text-muted);
-    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-family: var(--admin-font-ui);
     font-size: 0.75rem;
     font-weight: 400;
     line-height: 1.3;
@@ -174,14 +185,15 @@ html[data-theme='dark'] .admin-dashboard {
 }
 
 .dashboard-ops-datetime {
-    font-family: var(--rw-font-numeric, Inter, 'Inter var', sans-serif) !important;
+    font-family: var(--rw-font-numeric) !important;
     font-size: 0.6875rem;
+    font-weight: 400;
     font-variant-numeric: tabular-nums lining-nums;
     font-feature-settings: 'tnum' 1, 'lnum' 1;
 }
 
 .dashboard-ops-days {
-    font-family: var(--rw-font-numeric, Inter, 'Inter var', sans-serif) !important;
+    font-family: var(--rw-font-numeric) !important;
     font-weight: 500;
     font-variant-numeric: tabular-nums lining-nums;
     font-feature-settings: 'tnum' 1, 'lnum' 1;
@@ -286,8 +298,9 @@ html[data-theme='dark'] .admin-dashboard {
 
 .dashboard-panel__subtitle {
     margin: 0.3rem 0 0;
-    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-family: var(--admin-font-ui);
     font-size: 0.78rem;
+    font-weight: 400;
     line-height: 1.4;
     color: var(--admin-text-muted);
 }
@@ -305,7 +318,7 @@ html[data-theme='dark'] .admin-dashboard {
 }
 
 .dashboard-panel__metric-label {
-    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-family: var(--admin-font-ui);
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.12em;
@@ -314,7 +327,7 @@ html[data-theme='dark'] .admin-dashboard {
 }
 
 .dashboard-panel__metric-value {
-    font-family: var(--rw-font-numeric, Inter, 'Inter var', sans-serif) !important;
+    font-family: var(--rw-font-numeric) !important;
     font-size: clamp(1.4rem, 1.2rem + 0.4vw, 1.8rem);
     font-weight: 500;
     line-height: 1.15;
@@ -339,7 +352,7 @@ html[data-theme='dark'] .admin-dashboard {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-family: var(--admin-font-ui);
     font-size: 0.72rem;
     letter-spacing: 0.02em;
     color: var(--admin-text-muted);
@@ -476,7 +489,7 @@ html[data-theme='dark'] .dashboard-kpi-card--link:hover {
 .dashboard-kpi-label {
     margin: 0;
     min-width: 0;
-    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-family: var(--admin-font-ui);
     font-size: 0.6875rem; /* 11px */
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -488,9 +501,10 @@ html[data-theme='dark'] .dashboard-kpi-card--link:hover {
 .dashboard-kpi-value {
     margin: 0.1rem 0 0;
     min-width: 0;
-    font-family: var(--rw-font-numeric, Inter, 'Inter var', sans-serif) !important;
+    font-family: var(--rw-font-numeric) !important;
     font-size: clamp(1.45rem, 1.7vw, 1.85rem);
-    font-weight: 500;
+    /* 400: Inter var Medium (500) still reads heavy at this size after face audit */
+    font-weight: 400;
     line-height: 1.15;
     letter-spacing: -0.02em;
     color: var(--admin-text);
@@ -504,7 +518,7 @@ html[data-theme='dark'] .dashboard-kpi-card--link:hover {
 .dashboard-kpi-change {
     margin: 0;
     min-height: 1.2rem;
-    font-family: var(--rw-font-numeric, Inter, 'Inter var', sans-serif) !important;
+    font-family: var(--rw-font-numeric) !important;
     font-size: 0.8125rem; /* 13px */
     font-weight: 400;
     line-height: 1.35;
@@ -561,7 +575,9 @@ html[data-theme='dark'] .dashboard-kpi-card--link:hover {
 }
 
 .dashboard-aging-label {
+    font-family: var(--admin-font-ui);
     font-size: 0.8rem;
+    font-weight: 400;
     color: var(--admin-text-muted);
 }
 
@@ -595,40 +611,51 @@ html[data-theme='dark'] .dashboard-kpi-card--link:hover {
 }
 
 .dashboard-aging-amount {
+    font-family: var(--rw-font-numeric) !important;
     font-size: 0.9375rem;
     font-weight: 500;
     color: var(--admin-text);
     white-space: nowrap;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
 }
 
 .dashboard-aging-percent {
+    font-family: var(--rw-font-numeric) !important;
     font-size: 0.8125rem;
     font-weight: 400;
     white-space: nowrap;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
 }
 
 /*
- * Dashboard numeric weights — win over shared [data-admin-layout] .rw-* utilities
- * without changing Customer Portal / global numeric roles.
+ * Single winning weight layer for Admin Dashboard numerics.
+ * Beats shared [data-admin-layout] .rw-* roles without touching Customer Portal.
  */
 [data-admin-layout] .admin-dashboard .dashboard-kpi-value.rw-numeric {
-    font-weight: 500;
+    font-family: var(--rw-font-numeric) !important;
+    font-weight: 400;
 }
 
 [data-admin-layout] .admin-dashboard .dashboard-kpi-change.rw-numeric {
+    font-family: var(--rw-font-numeric) !important;
     font-weight: 400;
 }
 
 [data-admin-layout] .admin-dashboard .dashboard-panel__metric-value.rw-numeric {
+    font-family: var(--rw-font-numeric) !important;
     font-weight: 500;
 }
 
 [data-admin-layout] .admin-dashboard .dashboard-aging-amount.rw-numeric,
 [data-admin-layout] .admin-dashboard .dashboard-aging-amount.rw-money {
+    font-family: var(--rw-font-numeric) !important;
     font-weight: 500;
 }
 
 [data-admin-layout] .admin-dashboard .dashboard-aging-percent.rw-numeric {
+    font-family: var(--rw-font-numeric) !important;
     font-weight: 400;
 }
 
@@ -638,10 +665,12 @@ html[data-theme='dark'] .dashboard-kpi-card--link:hover {
 
 [data-admin-layout] .admin-dashboard .dashboard-ops-datetime.rw-numeric,
 [data-admin-layout] .admin-dashboard .dashboard-ops-datetime.rw-date {
+    font-family: var(--rw-font-numeric) !important;
     font-weight: 400;
 }
 
 [data-admin-layout] .admin-dashboard .dashboard-ops-days.rw-numeric {
+    font-family: var(--rw-font-numeric) !important;
     font-weight: 500;
 }
 
@@ -711,7 +740,7 @@ html[data-theme='dark'] .dashboard-kpi-card--link:hover {
 
 .dashboard-contract-days {
     font-size: 0.74rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--dashboard-gold);
     white-space: nowrap;
 }
@@ -751,7 +780,7 @@ html[data-theme='dark'] .dashboard-kpi-card--link:hover {
     align-items: flex-end;
     gap: 0.75rem;
     padding-top: 1rem;
-    font-family: var(--admin-font-ui, var(--rw-font-sans, Inter, sans-serif));
+    font-family: var(--admin-font-ui);
 }
 
 .dashboard-chart-bar {

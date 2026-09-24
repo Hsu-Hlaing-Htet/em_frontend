@@ -11,32 +11,14 @@ import {
     isCustomerNotificationUnread,
 } from '@/helpers/customer/notifications';
 
-const FILTER_TYPES = ['all', 'invoice', 'payment', 'receipt', 'contract', 'utility', 'maintenance', 'announcement'];
-
 export default function useCustomerNotificationList() {
     const notificationStore = useCustomerNotificationStore();
     const router = useRouter();
     const { locale } = useI18n();
     const isLoading = ref(true);
-    const activeFilter = ref('all');
 
-    const filteredNotifications = computed(() => {
-        if (activeFilter.value === 'all') {
-            return notificationStore.notifications;
-        }
-
-        return notificationStore.notifications.filter((item) => item.type === activeFilter.value);
-    });
-
+    const notifications = computed(() => notificationStore.notifications);
     const unreadCount = computed(() => notificationStore.unreadCount);
-
-    const filterOptions = computed(() => FILTER_TYPES.map((type) => ({
-        value: type,
-        label: type === 'all' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1),
-        count: type === 'all'
-            ? notificationStore.notifications.length
-            : notificationStore.notifications.filter((item) => item.type === type).length,
-    })).filter((option) => option.value === 'all' || option.count > 0));
 
     onMounted(async () => {
         isLoading.value = true;
@@ -69,11 +51,8 @@ export default function useCustomerNotificationList() {
 
     return {
         isLoading,
-        notifications: computed(() => notificationStore.notifications),
-        filteredNotifications,
+        notifications,
         unreadCount,
-        activeFilter,
-        filterOptions,
         openNotification,
         formatDisplayDateTime,
         notificationIcon: customerNotificationIcon,

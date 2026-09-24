@@ -24,7 +24,7 @@
 
         <div class="pdf-canvas">
             <div class="pdf-frame">
-                <InvoiceDocumentSheet :document="document" />
+                <InvoiceDocumentSheet :html="documentHtml" />
             </div>
         </div>
     </div>
@@ -45,6 +45,7 @@ import { service } from '@/modules/customer/service';
 
 const customerInvoiceDocumentService = {
     downloadDocument: ({ id, fallbackFilename }) => service.downloadInvoiceDocument(id, fallbackFilename),
+    previewDocumentHtml: ({ id }) => service.previewInvoiceDocumentHtml(id),
     sendDocumentEmail: () => Promise.resolve(),
 };
 

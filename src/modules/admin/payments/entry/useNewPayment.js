@@ -4,7 +4,6 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import { toQueryDate } from '@/helpers/lists/listQuery';
 import { formatCurrencyAmount } from '@/utils/formatter';
 import { usePaymentStore } from '../store';
 import { useInvoiceStore } from '@/modules/admin/invoices/store';
@@ -50,7 +49,6 @@ export default function useNewPayment() {
         amount: null,
         amount_received: null,
         note: '',
-        payment_date: new Date(),
     });
 
     bindErrorClearing(state, errors);
@@ -126,7 +124,6 @@ export default function useNewPayment() {
         state.invoice_id = invoice.id;
         state.amount = toWholeMmk(amountDue.value);
         state.amount_received = toWholeMmk(amountDue.value);
-        state.payment_date = new Date();
     };
 
     onMounted(async () => {
@@ -203,7 +200,6 @@ export default function useNewPayment() {
             { field: 'payment_method_id', type: 'select' },
             { field: 'amount', type: 'number', gt: 0 },
             { field: 'amount_received', type: 'number', gt: 0 },
-            { field: 'payment_date', type: 'date' },
         ])) {
             return;
         }
@@ -243,7 +239,6 @@ export default function useNewPayment() {
                 payment_method_id: state.payment_method_id,
                 amount: due,
                 amount_received: received,
-                payment_date: toQueryDate(state.payment_date),
                 note: state.note || null,
             });
             const response = store.getAddResponse;

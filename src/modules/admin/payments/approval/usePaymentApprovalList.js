@@ -51,7 +51,7 @@ export const usePaymentApprovalList = () => {
         approveErrorMessage: 'Unable to approve payment.',
         rejectErrorMessage: 'Unable to reject payment.',
         buildApproveSuccessMessage: (item, response) => response?.message
-            || `${item.invoice_number || `#${item.id}`} approved. A draft receipt has been created for review.`,
+            || `${item.invoice_number || `#${item.id}`} approved. Receipt is ready in Receipts.`,
         buildRejectSuccessMessage: (item, response) => response?.message
             || `${item.invoice_number || `#${item.id}`} has been rejected.`,
         buildFilterParams,

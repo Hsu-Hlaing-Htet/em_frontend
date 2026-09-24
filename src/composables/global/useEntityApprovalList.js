@@ -33,6 +33,7 @@ export const useEntityApprovalList = ({
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const items = ref([]);
+    const approvingIds = ref(new Set());
     const lazyParams = ref({
         page: 0,
         rows: 10,
@@ -110,6 +111,12 @@ export const useEntityApprovalList = ({
     };
 
     const approveItem = async (item) => {
+        if (!item?.id || approvingIds.value.has(item.id)) {
+            return false;
+        }
+
+        approvingIds.value.add(item.id);
+
         try {
             await store[approveMethod]({ id: item.id });
 
@@ -129,6 +136,8 @@ export const useEntityApprovalList = ({
             showApiErrorToast(error, approveErrorMessage);
 
             return false;
+        } finally {
+            approvingIds.value.delete(item.id);
         }
     };
 

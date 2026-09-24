@@ -68,6 +68,13 @@ export function useContractDocument(state, options = {}) {
             documentField('Address', state.customer_address),
             documentField('Email', state.customer_email),
         ],
+        secondCustomer: state.second_customer_name ? [
+            documentField('Full Name', state.second_customer_name),
+            documentField('NRC / ID', state.second_customer_nrc),
+            documentField('Phone', state.second_customer_phone),
+            documentField('Address', state.second_customer_address),
+            documentField('Email', state.second_customer_email),
+        ] : null,
         company: [
             documentField('Company Name', COMPANY_INFO.name),
             documentField('Registration', COMPANY_INFO.registration),
@@ -142,8 +149,13 @@ export function useContractDocument(state, options = {}) {
             {
                 role: 'Tenant',
                 name: state.customer_name || '________________',
-                label: 'Customer Signature',
+                label: 'Tenant',
             },
+            ...(state.second_customer_name ? [{
+                role: 'Tenant',
+                name: state.second_customer_name || '________________',
+                label: 'Tenant',
+            }] : []),
             {
                 role: 'Authorized Officer',
                 name: state.approved_by || state.created_by || '________________',

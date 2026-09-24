@@ -415,9 +415,12 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 
 .p-dropdown-panel.app-dropdown-panel,
 .p-select-overlay.app-dropdown-panel {
-    width: var(--app-dropdown-width, 100%) !important;
-    min-width: var(--app-dropdown-width, 100%) !important;
-    max-width: min(var(--app-dropdown-width, 100%), calc(100vw - 1rem)) !important;
+    /* Only apply when AppDropdown set --app-dropdown-width on the overlay.
+       Do NOT fall back to 100% — that makes body-appended panels viewport-wide
+       during PrimeVue alignOverlay, which pins left to 0. */
+    width: var(--app-dropdown-width) !important;
+    min-width: var(--app-dropdown-width) !important;
+    max-width: min(var(--app-dropdown-width), calc(100vw - 1rem)) !important;
 }
 
 .p-dropdown-header,
@@ -852,5 +855,45 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 [data-admin-layout] [role='button']:focus:not(:focus-visible),
 [data-admin-layout] .p-button:focus:not(:focus-visible) {
     outline: none;
+}
+
+/* Compact joint-party customer cells: "Name 1 + Name 2" with sensible wrap */
+.admin-contract-party-names {
+    display: inline-block;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+}
+
+/* Inline icon actions in list tables (Edit / Deactivate / etc.) */
+.admin-table-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.15rem;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.admin-table-actions > a {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+.admin-table-actions .p-button.p-button-text {
+    width: 2.25rem;
+    height: 2.25rem;
+    min-width: 2.25rem;
+    padding: 0;
+}
+
+/* Residents list: compact row height without touching other Admin tables */
+[data-admin-layout] .admin-residents-table.p-datatable .p-datatable-thead > tr > th,
+[data-admin-layout] .admin-residents-table.p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.625rem 0.875rem;
+    vertical-align: middle;
 }
 

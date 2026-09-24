@@ -28,6 +28,8 @@ export function filterContracts(contracts, {
         result = result.filter((item) => (
             item.contract_no?.toLowerCase().includes(keyword)
             || item.customer_name?.toLowerCase().includes(keyword)
+            || item.primary_customer_name?.toLowerCase().includes(keyword)
+            || item.second_customer_name?.toLowerCase().includes(keyword)
             || item.building_name?.toLowerCase().includes(keyword)
             || item.room_number?.toLowerCase().includes(keyword)
         ));

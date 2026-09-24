@@ -11,25 +11,11 @@
             </template>
         </CustomerPageHeader>
 
-        <div v-if="filterOptions.length > 1" class="customer-portal-filter-row">
-            <button
-                v-for="option in filterOptions"
-                :key="option.value"
-                type="button"
-                class="customer-portal-filter-chip"
-                :class="{ 'is-active': activeFilter === option.value }"
-                @click="activeFilter = option.value"
-            >
-                {{ option.label }}
-                <span class="rw-numeric rw-count">{{ option.count }}</span>
-            </button>
-        </div>
-
         <Loading v-if="isLoading" />
 
-        <div v-else-if="filteredNotifications.length" class="customer-portal-notification-feed">
+        <div v-else-if="notifications.length" class="customer-portal-notification-feed">
             <button
-                v-for="item in filteredNotifications"
+                v-for="item in notifications"
                 :key="item.id || `${item.type}-${item.resource_id}-${item.created_at}`"
                 type="button"
                 class="customer-interactive-surface customer-record-row customer-portal-notification-feed-item customer-notification-row"
@@ -88,10 +74,8 @@ import useCustomerNotificationList from '@/composables/customer/useCustomerNotif
 
 const {
     isLoading,
-    filteredNotifications,
+    notifications,
     unreadCount,
-    activeFilter,
-    filterOptions,
     openNotification,
     formatDisplayDateTime,
     notificationIcon,

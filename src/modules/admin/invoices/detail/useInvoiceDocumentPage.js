@@ -3,7 +3,6 @@ import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useInvoiceStore } from '../store';
-import { useInvoiceDocument } from '@/composables/admin/documents/useInvoiceDocument';
 import { useInvoiceDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
 import { service } from '../service';
 
@@ -33,6 +32,7 @@ export default function useInvoiceDocumentPage(options = {}) {
     const isRejecting = ref(false);
     const showApproveDialog = ref(false);
     const showRejectDialog = ref(false);
+    const documentHtml = ref('');
 
     const state = reactive({
         id: null,
@@ -66,14 +66,13 @@ export default function useInvoiceDocumentPage(options = {}) {
         created_at: '',
     });
 
-    const { document } = useInvoiceDocument(state);
     const {
         downloadPdf,
         exportPdf,
         printPdf,
         viewPdf,
         sendEmail,
-    } = useInvoiceDocumentActions(state, () => document.value, documentService);
+    } = useInvoiceDocumentActions(state, () => documentHtml.value, documentService);
 
     const backRoute = computed(() => {
         if (typeof options.resolveBackRoute === 'function') {
@@ -97,7 +96,6 @@ export default function useInvoiceDocumentPage(options = {}) {
         !isApprovalView.value && ['issued', 'overdue'].includes(normalizedStatus.value)
     ));
 
-    // Outstanding balance for Pay eligibility (issued + overdue both payable).
     const outstandingBalance = computed(() => {
         const remaining = Number(state.remaining_balance);
         if (Number.isFinite(remaining) && remaining > 0) {
@@ -118,8 +116,6 @@ export default function useInvoiceDocumentPage(options = {}) {
         return 0;
     });
 
-    // Pay for Issued/Overdue unpaid invoices with balance > 0.
-    // Hide for Paid invoices or when a Pending payment already exists.
     const canRecordPayment = computed(() => {
         const status = normalizedStatus.value;
         const paymentStatus = normalizedPaymentStatus.value;
@@ -144,8 +140,18 @@ export default function useInvoiceDocumentPage(options = {}) {
         });
     };
 
+    const loadDocumentHtml = async (invoiceId) => {
+        if (!invoiceId || typeof documentService.previewDocumentHtml !== 'function') {
+            documentHtml.value = '';
+            return;
+        }
+
+        documentHtml.value = await documentService.previewDocumentHtml({ id: invoiceId });
+    };
+
     const loadInvoice = async () => {
         isLoading.value = true;
+        documentHtml.value = '';
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -155,6 +161,7 @@ export default function useInvoiceDocumentPage(options = {}) {
                 Object.assign(state, response.data, {
                     items: normalizeList(response.data.items || response.data.invoice_items || response.data.invoiceItems),
                 });
+                await loadDocumentHtml(state.id);
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load invoice document.');
@@ -191,7 +198,6 @@ export default function useInvoiceDocumentPage(options = {}) {
             await router.push({ name: 'invoiceList' });
         } catch (error) {
             showApiErrorToast(error, 'Unable to approve invoice.');
-            // Keep modal open so staff can retry or cancel after a conflict/error.
         } finally {
             isApproving.value = false;
         }
@@ -249,7 +255,8 @@ export default function useInvoiceDocumentPage(options = {}) {
         showApproveDialog,
         showRejectDialog,
         state,
-        document,
+        documentHtml,
+        document: documentHtml,
         backRoute,
         canApproveInvoice,
         canRejectInvoice,

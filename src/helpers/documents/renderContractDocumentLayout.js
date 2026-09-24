@@ -87,6 +87,43 @@ export function renderContractCompanyParty(companyFields = []) {
     `;
 }
 
+const CUSTOMER_PARTY_FIELD_ORDER = ['Full Name', 'NRC / ID', 'Phone', 'Email'];
+
+function hasPartyFieldValue(value) {
+    if (value == null) {
+        return false;
+    }
+
+    const trimmed = String(value).trim();
+
+    return trimmed !== '' && trimmed !== '-' && trimmed !== '—';
+}
+
+export function renderContractCustomerPartyBlock(fields = []) {
+    const byLabel = Object.fromEntries(
+        (fields || []).map((item) => [item.label, item.value]),
+    );
+
+    const name = byLabel['Full Name'];
+    const detailLines = CUSTOMER_PARTY_FIELD_ORDER
+        .filter((label) => label !== 'Full Name')
+        .map((label) => byLabel[label])
+        .filter(hasPartyFieldValue);
+
+    return `
+        <p class="contract-doc-party-name">${escapeHtml(formatMetaValue(name))}</p>
+        ${detailLines.map((line) => `<p class="contract-doc-party-line">${escapeHtml(formatMetaValue(line))}</p>`).join('')}
+    `;
+}
+
+export function renderContractCustomerPartyColumn(fields = []) {
+    return `
+        <div class="contract-doc-party-column">
+            ${renderContractCustomerPartyBlock(fields)}
+        </div>
+    `;
+}
+
 export function renderContractSection(title, contentHtml) {
     return `
         <section class="contract-doc-section">
@@ -101,9 +138,22 @@ export function renderContractPartiesSection({
     customerRole,
     companyFields,
     customerFields,
+    secondCustomerFields = null,
 }) {
+    const hasSecondCustomer = Array.isArray(secondCustomerFields)
+        && secondCustomerFields.some((item) => hasPartyFieldValue(item?.value));
+
+    const ownerContent = hasSecondCustomer
+        ? `
+            <div class="contract-doc-party-columns">
+                ${renderContractCustomerPartyColumn(customerFields)}
+                ${renderContractCustomerPartyColumn(secondCustomerFields)}
+            </div>
+        `
+        : renderContractCustomerPartyBlock(customerFields);
+
     return renderContractSection('I. Parties to the Agreement', `
-        <div class="contract-doc-parties">
+        <div class="contract-doc-parties${hasSecondCustomer ? ' contract-doc-parties--joint' : ''}">
             <div class="contract-doc-party">
                 <p class="contract-doc-party-role">${escapeHtml(companyRole)}</p>
                 ${renderContractCompanyParty(companyFields)}
@@ -111,9 +161,7 @@ export function renderContractPartiesSection({
             <div class="contract-doc-party-divider" aria-hidden="true"></div>
             <div class="contract-doc-party">
                 <p class="contract-doc-party-role">${escapeHtml(customerRole)}</p>
-                <div class="contract-doc-fields">
-                    ${renderContractFieldRows(customerFields)}
-                </div>
+                ${ownerContent}
             </div>
         </div>
     `);

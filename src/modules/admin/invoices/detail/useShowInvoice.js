@@ -1,7 +1,6 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
-import { useInvoiceDocument } from '@/composables/admin/documents/useInvoiceDocument';
 import { useInvoiceDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
 import {
     formatBillingPeriod,
@@ -67,8 +66,8 @@ export default function useShowInvoice() {
         created_at: '',
     });
 
-    const { document } = useInvoiceDocument(state);
-    const { downloadPdf, sendEmail } = useInvoiceDocumentActions(state, () => document.value, service);
+    // Download / email use server PDF — no client document rebuild.
+    const { downloadPdf, sendEmail } = useInvoiceDocumentActions(state, () => '', service);
 
     watch(() => route.params.id, (newId) => {
         if (newId) {

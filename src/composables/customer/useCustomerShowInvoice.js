@@ -26,6 +26,7 @@ export default function useCustomerShowInvoice() {
 
     const invoiceItems = ref([]);
     const invoicePayments = ref([]);
+    const documentHtml = ref('');
 
     const state = reactive({
         id: null,
@@ -217,6 +218,13 @@ export default function useCustomerShowInvoice() {
                 invoiceItems.value = normalizeList(rawItems).map((item) => ({ ...item }));
                 invoicePayments.value = normalizeList(data.payments).map((payment) => ({ ...payment }));
                 state.items = invoiceItems.value;
+
+                try {
+                    documentHtml.value = await service.previewInvoiceDocumentHtml(state.id);
+                } catch (previewError) {
+                    documentHtml.value = '';
+                    showApiErrorToast(previewError, 'Unable to load invoice document preview.');
+                }
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load invoice.');
@@ -358,6 +366,7 @@ export default function useCustomerShowInvoice() {
         isDownloading,
         errors,
         state,
+        documentHtml,
         invoiceItems,
         invoicePayments,
         paymentForm,

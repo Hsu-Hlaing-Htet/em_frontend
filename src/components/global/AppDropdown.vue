@@ -9,7 +9,6 @@ defineOptions({
 
 const attrs = useAttrs();
 const dropdownRef = ref(null);
-const syncedPanelStyle = ref({});
 let resizeObserver = null;
 let resizeListenerBound = false;
 
@@ -39,10 +38,20 @@ const mergedPanelClass = computed(() => {
     return [base, extra];
 });
 
-const mergedPanelStyle = computed(() => ({
-    ...syncedPanelStyle.value,
-    ...(typeof attrs.panelStyle === 'object' && attrs.panelStyle ? attrs.panelStyle : {}),
-}));
+/**
+ * Pass through consumer panelStyle only.
+ * Never put synced width here — Vue :style re-application would wipe
+ * PrimeVue DomHandler top/left after alignOverlay.
+ */
+const mergedPanelStyle = computed(() => {
+    const style = attrs.panelStyle;
+
+    if (style && typeof style === 'object' && !Array.isArray(style)) {
+        return style;
+    }
+
+    return undefined;
+});
 
 const dropdownBindings = computed(() => {
     const bindings = { ...attrs };
@@ -63,23 +72,38 @@ function resolveTriggerEl() {
     return root instanceof HTMLElement ? root : null;
 }
 
-function buildPanelWidthStyle(widthPx) {
-    const viewportCap = Math.max(160, window.innerWidth - 16);
-    const width = Math.min(widthPx, viewportCap);
+function resolveOverlayEl() {
+    const overlay = dropdownRef.value?.overlay;
 
-    return {
-        '--app-dropdown-width': `${width}px`,
-        width: `${width}px`,
-        minWidth: `${width}px`,
-        maxWidth: `${width}px`,
-    };
+    return overlay instanceof HTMLElement ? overlay : null;
+}
+
+function buildPanelWidth(widthPx) {
+    const viewportCap = Math.max(160, window.innerWidth - 16);
+
+    return Math.min(widthPx, viewportCap);
+}
+
+/**
+ * Width-only DOM sync. Must not assign left/top/transform/inset —
+ * PrimeVue absolutePosition owns those.
+ */
+function applyOverlayWidth(overlay, widthPx) {
+    const width = buildPanelWidth(widthPx);
+    const widthValue = `${width}px`;
+
+    overlay.style.setProperty('--app-dropdown-width', widthValue);
+    overlay.style.width = widthValue;
+    overlay.style.minWidth = widthValue;
+    overlay.style.maxWidth = widthValue;
 }
 
 function syncPanelWidth() {
     nextTick(() => {
         const root = resolveTriggerEl();
+        const overlay = resolveOverlayEl();
 
-        if (!root) {
+        if (!root || !overlay) {
             return;
         }
 
@@ -89,7 +113,12 @@ function syncPanelWidth() {
             return;
         }
 
-        syncedPanelStyle.value = buildPanelWidthStyle(width);
+        applyOverlayWidth(overlay, width);
+
+        // Re-run PrimeVue alignment now that width matches the trigger
+        if (typeof dropdownRef.value?.alignOverlay === 'function') {
+            dropdownRef.value.alignOverlay();
+        }
     });
 }
 
@@ -131,7 +160,6 @@ function onShow(event) {
 }
 
 function onHide(event) {
-    syncedPanelStyle.value = {};
     unbindResizeTracking();
 
     if (typeof attrs.onHide === 'function') {

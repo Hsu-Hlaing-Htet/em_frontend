@@ -21,18 +21,6 @@ const service = {
         }
     },
 
-    approve: async (params) => {
-        const result = await api.post(`${endpoint.receipts}/${params.id}/approve`);
-        return result.data;
-    },
-
-    reject: async (params) => {
-        const result = await api.post(`${endpoint.receipts}/${params.id}/reject`, {
-            rejection_reason: params.rejection_reason,
-        });
-        return result.data;
-    },
-
     issue: async (params) => {
         const result = await api.post(`${endpoint.receipts}/${params.id}/issue`);
         return result.data;

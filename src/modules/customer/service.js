@@ -54,6 +54,16 @@ const service = {
         return downloadPdfResponse(response, fallbackFilename);
     },
 
+    previewInvoiceDocumentHtml: async (id) => {
+        const response = await api.get(`${endpoint.customerInvoices}/${id}/document/preview`, {
+            responseType: 'text',
+            headers: { Accept: 'text/html' },
+            transformResponse: [(data) => data],
+        });
+
+        return typeof response.data === 'string' ? response.data : String(response.data ?? '');
+    },
+
     getPayments: async (params) => {
         const result = await api.get(endpoint.customerPayments, { params });
         return result.data;

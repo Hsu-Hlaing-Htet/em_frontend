@@ -20,7 +20,7 @@
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
                 row-hover
-                class="admin-clickable-rows"
+                class="admin-clickable-rows admin-residents-table"
                 @page="onPage($event)"
                 @sort="onSort($event)"
                 @row-click="onRowClick"
@@ -85,24 +85,29 @@
                 <Column
                     header="Actions"
                     :exportable="false"
-                    style="width: 150px"
+                    style="width: 7rem"
                 >
                     <template #body="{ data }">
-                        <router-link :to="{ name: 'editResident', params: { id: data.id } }">
-                            <Button
-                                icon="pi pi-pencil"
-                                text
-                                severity="info"
-                            />
-                        </router-link>
+                        <div class="admin-table-actions">
+                            <router-link :to="{ name: 'editResident', params: { id: data.id } }">
+                                <Button
+                                    icon="pi pi-pencil"
+                                    text
+                                    severity="info"
+                                    title="Edit"
+                                    aria-label="Edit"
+                                />
+                            </router-link>
 
-                        <Button
-                            :icon="data.status === 'inactive' ? 'pi pi-refresh' : 'pi pi-ban'"
-                            text
-                            :severity="data.status === 'inactive' ? 'success' : 'warning'"
-                            :title="data.status === 'inactive' ? 'Reactivate' : 'Deactivate'"
-                            @click="showLifecycleDialog(data)"
-                        />
+                            <Button
+                                :icon="data.status === 'inactive' ? 'pi pi-refresh' : 'pi pi-ban'"
+                                text
+                                :severity="data.status === 'inactive' ? 'success' : 'warning'"
+                                :title="data.status === 'inactive' ? 'Reactivate' : 'Deactivate'"
+                                :aria-label="data.status === 'inactive' ? 'Reactivate' : 'Deactivate'"
+                                @click="showLifecycleDialog(data)"
+                            />
+                        </div>
                     </template>
                 </Column>
             </DataTable>

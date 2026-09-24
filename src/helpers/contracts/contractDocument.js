@@ -47,6 +47,17 @@ export function buildFieldSections(document) {
             fields: document.customer,
             wideLabels: [],
         },
+    ];
+
+    if (document.secondCustomer?.length) {
+        sections.push({
+            title: 'Second Customer Information',
+            fields: document.secondCustomer,
+            wideLabels: [],
+        });
+    }
+
+    sections.push(
         {
             title: 'Company Information',
             fields: document.company,
@@ -62,7 +73,7 @@ export function buildFieldSections(document) {
             fields: document.contract,
             wideLabels: [],
         },
-    ];
+    );
 
     if (document.payment?.length) {
         sections.push({

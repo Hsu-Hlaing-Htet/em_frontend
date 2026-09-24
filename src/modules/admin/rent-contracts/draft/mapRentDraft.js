@@ -30,6 +30,7 @@ export function mapRentDraftFromApi(data) {
         second_customer_nrc: secondCustomer.nrc || '',
         second_customer_phone: secondCustomer.phone || '',
         second_customer_email: secondCustomer.email || '',
+        second_customer_address: secondCustomer.address || '',
         building_id: data.building_id ?? data.room?.building_id ?? data.building?.id ?? null,
         building_name: data.building_name || data.building?.building_name || '',
         room_id: data.room_id,

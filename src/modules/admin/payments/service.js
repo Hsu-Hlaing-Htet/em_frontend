@@ -22,7 +22,6 @@ const service = {
             invoice_id: params.invoice_id,
             payment_method_id: params.payment_method_id,
             amount: params.amount,
-            payment_date: params.payment_date,
             note: params.note ?? null,
         };
         const result = await api.post(endpoint.payments, payload);

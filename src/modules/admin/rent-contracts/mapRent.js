@@ -1,3 +1,4 @@
+import { resolveContractPartyNames } from '@/helpers/contracts/contractPartyNames';
 import { mapRentDraftFromApi, toNumber } from './draft/mapRentDraft';
 
 export function mapRentFromApi(data) {
@@ -28,10 +29,14 @@ export function mapRentListItemFromApi(data) {
         return null;
     }
 
+    const parties = resolveContractPartyNames(mapped);
+
     return {
         id: mapped.id,
         contract_no: mapped.contract_no,
-        customer_name: mapped.customer_name,
+        customer_name: parties.displayName || parties.primaryName,
+        primary_customer_name: parties.primaryName,
+        second_customer_name: parties.secondName,
         building_name: mapped.building_name,
         room_number: mapped.room_number,
         contract_total: mapped.contract_total,

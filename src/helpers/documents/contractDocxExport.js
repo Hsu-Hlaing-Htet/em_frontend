@@ -97,10 +97,24 @@ function section(title, bodyXml) {
 }
 
 function partyTable(document, variant) {
-    const customerRows = (document.customer || [])
-        .filter((item) => item.label !== 'Address' && hasValue(item.value))
-        .map((item) => `${item.label}: ${item.value}`)
-        .join('\n');
+    const formatPartyLines = (fields = []) => {
+        const byLabel = Object.fromEntries(
+            (fields || [])
+                .filter((item) => item.label !== 'Address' && hasValue(item.value))
+                .map((item) => [item.label, item.value]),
+        );
+
+        return [
+            byLabel['Full Name'],
+            byLabel['NRC / ID'],
+            byLabel.Phone,
+            byLabel.Email,
+        ].filter(hasValue).join('\n');
+    };
+
+    const customerLines = formatPartyLines(document.customer);
+    const secondCustomerLines = formatPartyLines(document.secondCustomer);
+    const hasSecondCustomer = Boolean(secondCustomerLines);
 
     const companyLines = [
         COMPANY_INFO.name,
@@ -111,9 +125,16 @@ function partyTable(document, variant) {
         `Website: ${COMPANY_INFO.website}`,
     ].filter(hasValue).join('\n');
 
+    const ownerBody = hasSecondCustomer
+        ? table(row([
+            cell(paragraph(customerLines), 2250),
+            cell(paragraph(secondCustomerLines), 2250),
+        ]))
+        : paragraph(customerLines);
+
     return table(row([
         cell(`${boldParagraph(variant.companyRole)}${paragraph(companyLines)}`, 4500),
-        cell(`${boldParagraph(variant.customerRole)}${paragraph(customerRows)}`, 4500),
+        cell(`${boldParagraph(variant.customerRole)}${ownerBody}`, 4500),
     ]));
 }
 
@@ -127,14 +148,47 @@ function covenantList(items = []) {
     return entries.map((item) => paragraph(item, 'ListParagraph')).join('');
 }
 
-function signatureTable(document, variant) {
-    const customer = document.signatures?.[0]?.label || 'Customer Signature';
-    const company = document.signatures?.[1]?.label || 'Company Representative';
+function signatureTable(document) {
+    const signatures = Array.isArray(document.signatures) && document.signatures.length
+        ? document.signatures
+        : [
+            { role: 'Customer', label: 'Customer', name: '' },
+            { role: 'Authorized Officer', label: 'Company Representative', name: '' },
+        ];
 
-    return table(row([
-        cell(`${boldParagraph(customer)}${paragraph('Signature: ______________________________')}${paragraph('Name: ')}${paragraph('Date: ')}`, 4500),
-        cell(`${boldParagraph(company)}${paragraph('Signature: ______________________________')}${paragraph('Name: ')}${paragraph('Date: ')}`, 4500),
-    ]));
+    const groups = [];
+    signatures.forEach((signature) => {
+        const isCompany = /authorized officer|company representative|company|seller|landlord/i
+            .test(`${signature.role || ''} ${signature.label || ''}`);
+        const roleKey = isCompany ? 'company' : String(signature.role || signature.label || 'Signature');
+        const last = groups[groups.length - 1];
+
+        if (last && last.roleKey === roleKey && !isCompany) {
+            last.parties.push(signature);
+            return;
+        }
+
+        groups.push({
+            roleKey,
+            heading: isCompany
+                ? (signature.label || 'Company Representative')
+                : (signature.role || signature.label || 'Signature'),
+            parties: [signature],
+        });
+    });
+
+    return groups.map((group) => {
+        const width = Math.floor(9000 / group.parties.length);
+
+        return [
+            boldParagraph(group.heading),
+            table(row(group.parties.map((party) => cell(
+                `${paragraph('______________________________')}${paragraph(`Name: ${valueOrDash(party.name)}`)}${paragraph('Date: ')}`,
+                width,
+            )))),
+            paragraph(''),
+        ].join('');
+    }).join('');
 }
 
 function documentXml(document, variant) {
@@ -165,7 +219,7 @@ function documentXml(document, variant) {
         ${section('III. Term and Financial Conditions', labelValueTable(financialRows))}
         ${section('IV. General Covenants', covenantList(covenants))}
         ${authorizationRows.length ? section('V. Document Authorization', labelValueTable(authorizationRows)) : ''}
-        ${section('VI. Execution', `${paragraph(`IN WITNESS WHEREOF, the parties hereto have executed this ${variant.agreementName} as of the date first written above.`)}${signatureTable(document, variant)}`)}
+        ${section('VI. Execution', `${paragraph(`IN WITNESS WHEREOF, the parties hereto have executed this ${variant.agreementName} as of the date first written above.`)}${signatureTable(document)}`)}
         <w:sectPr>
             <w:pgSz w:w="11906" w:h="16838"/>
             <w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/>
@@ -341,9 +395,9 @@ const saleVariant = {
     documentTitle: 'Property Sale Agreement',
     agreementName: 'Property Sale Agreement',
     companyRole: 'Seller',
-    customerRole: 'Purchaser',
-    introduction: 'This Property Sale Agreement records the principal terms agreed between Rosewood Royale Residences and the purchaser named below.',
-    customerObligation: 'The purchaser agrees to pay all amounts due under the selected payment plan and comply with residence rules and handover requirements.',
+    customerRole: 'Owner',
+    introduction: 'This Property Sale Agreement records the principal terms agreed between Rosewood Royale Residences and the owner named below.',
+    customerObligation: 'The owner agrees to pay all amounts due under the selected payment plan and comply with residence rules and handover requirements.',
     companyObligation: 'Rosewood Royale Residences agrees to transfer possession and related documentation according to the approved sale contract terms.',
 };
 

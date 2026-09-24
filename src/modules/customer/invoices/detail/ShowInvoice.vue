@@ -22,7 +22,7 @@
                     <StatusBadge :value="state.status" />
                 </div>
                 <div class="customer-payment-invoice-document">
-                    <InvoiceDocumentSheet :document="document" />
+                    <InvoiceDocumentSheet :html="documentHtml" />
                 </div>
             </section>
 
@@ -209,7 +209,6 @@ import StatusBadge from '@/components/global/StatusBadge.vue';
 import Loading from '@/components/global/Loading.vue';
 import InvoiceDocumentSheet from '@/components/admin/documents/InvoiceDocumentSheet.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
-import { useInvoiceDocument } from '@/composables/admin/documents/useInvoiceDocument';
 import useCustomerShowInvoice from '@/composables/customer/useCustomerShowInvoice';
 
 export default defineComponent({
@@ -225,13 +224,7 @@ export default defineComponent({
         CustomerPageHeader,
     },
     setup() {
-        const invoice = useCustomerShowInvoice();
-        const { document } = useInvoiceDocument(invoice.state);
-
-        return {
-            ...invoice,
-            document,
-        };
+        return useCustomerShowInvoice();
     },
 });
 </script>

@@ -120,12 +120,6 @@ const menuList = [
                 icon: 'pi pi-wallet',
                 to: '/admin/payments/approval',
             },
-            {
-                labelKey: 'navigation.receipts',
-                key: 'approval-receipts',
-                icon: 'pi pi-ticket',
-                to: '/admin/receipts/approval',
-            },
         ],
     },
     {

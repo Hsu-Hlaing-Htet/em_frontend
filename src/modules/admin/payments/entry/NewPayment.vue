@@ -71,21 +71,6 @@
                     <div v-for="error in errors.get('payment_method_id')" :key="error">{{ error }}</div>
                 </small>
             </div>
-            <div class="field">
-                <label for="payment_date" class="mb-2 block text-md">Payment Date</label>
-                <Calendar
-                    id="payment_date"
-                    v-model="state.payment_date"
-                    placeholder="DD/MM/YYYY"
-                    date-format="dd/mm/yy"
-                    class="w-full"
-                    show-icon
-                    :disabled="!canRecord"
-                />
-                <small v-if="errors.has('payment_date')" class="p-error">
-                    <div v-for="error in errors.get('payment_date')" :key="error">{{ error }}</div>
-                </small>
-            </div>
             <div class="field md:col-span-2">
                 <label for="note" class="mb-2 block text-md">Note</label>
                 <Textarea
@@ -123,7 +108,6 @@
 <script>
 import { defineComponent } from 'vue';
 import Dropdown from '@/components/global/AppDropdown.vue';
-import Calendar from 'primevue/calendar';
 import Textarea from 'primevue/textarea';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -133,7 +117,7 @@ import useNewPayment from './useNewPayment';
 
 export default defineComponent({
     name: 'NewPayment',
-    components: { Dropdown, Calendar, Textarea, InputText, InputNumber, Button, Loading },
+    components: { Dropdown, Textarea, InputText, InputNumber, Button, Loading },
     setup() {
         return useNewPayment();
     },

@@ -105,9 +105,9 @@ function statIcon(stat) {
                     </span>
                 </div>
 
-                <h3 class="dashboard-kpi-value rw-numeric">
+                <p class="dashboard-kpi-value rw-numeric">
                     {{ stat.value }}
-                </h3>
+                </p>
 
                 <p
                     class="dashboard-kpi-change rw-numeric"
@@ -139,7 +139,7 @@ function statIcon(stat) {
                     </div>
                     <div class="dashboard-panel__metric">
                         <span class="dashboard-panel__metric-label">Collection rate</span>
-                        <strong class="dashboard-panel__metric-value rw-numeric">{{ collectionRate }}%</strong>
+                        <span class="dashboard-panel__metric-value rw-numeric">{{ collectionRate }}%</span>
                     </div>
                 </div>
 
@@ -184,7 +184,7 @@ function statIcon(stat) {
                             />
                         </div>
                         <div class="dashboard-aging-meta">
-                            <strong class="dashboard-aging-amount rw-numeric rw-money">{{ bucket.amount_label }}</strong>
+                            <span class="dashboard-aging-amount rw-numeric rw-money">{{ bucket.amount_label }}</span>
                             <span class="dashboard-aging-percent rw-numeric">{{ bucket.percent || 0 }}%</span>
                         </div>
                     </div>

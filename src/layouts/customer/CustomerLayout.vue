@@ -11,6 +11,7 @@
                     variant="on-light"
                     size="md"
                     class="customer-portal-brand"
+                    @click="clearBrandPointerFocus"
                 />
 
                 <ul class="customer-portal-header-actions language-switcher-host">
@@ -135,6 +136,13 @@ const isActive = (target) => {
 };
 
 const showBreadcrumbs = computed(() => Boolean(route.meta?.breadcrumbs?.length) && route.name !== 'customerDashboard');
+
+/** Mouse/pointer clicks leave a sticky :focus-visible ring on the brand link; blur only for those. */
+function clearBrandPointerFocus(event) {
+    if (event?.detail > 0) {
+        event.currentTarget?.blur?.();
+    }
+}
 
 async function loadHeaderMeta() {
     try {

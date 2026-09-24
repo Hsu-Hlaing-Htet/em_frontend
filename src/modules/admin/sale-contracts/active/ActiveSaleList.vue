@@ -100,7 +100,11 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 140px" />
+                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 160px; max-width: 240px">
+                    <template #body="{ data }">
+                        <span class="admin-contract-party-names">{{ data.customer_name }}</span>
+                    </template>
+                </Column>
                 <Column field="room_number" header="Room" :sortable="true" style="min-width: 100px" />
                 <Column field="contract_total" header="Contract Total (MMK)" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">
@@ -124,12 +128,7 @@
                 </Column>
                 <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px">
                     <template #body="{ data }">
-                        <div class="flex flex-col gap-1">
-                            <span>{{ formatDate(data.created_at) || '—' }}</span>
-                            <span class="text-sm text-[var(--admin-text-muted)]">
-                                {{ getPaymentTypeLabel(data.payment_type) }}
-                            </span>
-                        </div>
+                        {{ formatDate(data.created_at) || '—' }}
                     </template>
                 </Column>
             </DataTable>

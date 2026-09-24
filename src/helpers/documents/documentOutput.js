@@ -27,7 +27,6 @@ import {
     renderPaymentDocumentBody,
     renderPaymentDocumentLead,
 } from './renderBillingDocument';
-import { renderInvoiceDocumentHtmlPage } from './renderInvoiceDocument';
 import { renderReceiptDocumentHtmlPage } from './renderReceiptDocument';
 import {
     downloadSaleContractDocx,
@@ -252,28 +251,11 @@ export function exportRentContractDocument(document) {
     return true;
 }
 
-export function renderInvoiceDocumentPage(document) {
-    return renderInvoiceDocumentHtmlPage(document, DOCUMENT_EXPORT_LOGO_SRC);
-}
-
 export function renderReceiptDocumentPage(document) {
     return renderReceiptDocumentHtmlPage(document, DOCUMENT_EXPORT_LOGO_SRC);
 }
 
-const invoiceDocumentHandlers = createBillingDocumentHandlers(renderInvoiceDocumentPage);
 const receiptDocumentHandlers = createBillingDocumentHandlers(renderReceiptDocumentPage);
-
-export function printInvoiceDocument(document) {
-    return invoiceDocumentHandlers.print(document);
-}
-
-export function viewInvoiceDocument(document) {
-    return exportDocumentHtml(renderInvoiceDocumentPage(document));
-}
-
-export function exportInvoiceDocument(document, filename) {
-    return invoiceDocumentHandlers.export(document, filename);
-}
 
 export function printReceiptDocument(document) {
     return receiptDocumentHandlers.print(document);

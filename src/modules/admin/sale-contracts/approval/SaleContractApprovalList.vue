@@ -90,7 +90,11 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 140px" />
+                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 160px; max-width: 240px">
+                    <template #body="{ data }">
+                        <span class="admin-contract-party-names">{{ data.customer_name }}</span>
+                    </template>
+                </Column>
                 <Column field="room_number" header="Room" :sortable="true" style="min-width: 100px" />
                 <Column field="contract_total" header="Contract Total (MMK)" :sortable="true" style="min-width: 140px">
                     <template #body="{ data }">

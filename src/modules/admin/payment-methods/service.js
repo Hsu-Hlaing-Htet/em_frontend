@@ -10,7 +10,6 @@ function appendPaymentMethodFormData(formData, params) {
         'phone_number',
         'instructions',
         'status',
-        'sort_order',
     ];
 
     fields.forEach((field) => {
@@ -20,10 +19,6 @@ function appendPaymentMethodFormData(formData, params) {
 
         formData.append(field, String(params[field]));
     });
-
-    if (params.is_customer_visible !== undefined && params.is_customer_visible !== null) {
-        formData.append('is_customer_visible', params.is_customer_visible ? '1' : '0');
-    }
 
     if (params.remove_qr_image) {
         formData.append('remove_qr_image', '1');
@@ -63,9 +58,9 @@ const service = {
     },
 
     update: async (params) => {
-        // List status toggle is a light JSON update (no file).
+        // List status toggle is a light JSON update (no file / type-specific fields).
         if (!params.qr_image && !params.remove_qr_image && params.type === undefined
-            && params.phone_number === undefined && params.is_customer_visible === undefined
+            && params.phone_number === undefined
             && params.account_name === undefined && params.instructions === undefined) {
             const result = await api.put(`${endpoint.paymentMethods}/${params.id}`, {
                 name: params.name,

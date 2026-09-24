@@ -1,6 +1,9 @@
 import { watch } from 'vue';
 import { validateNrcValue } from '@/helpers/nrc/nrcFormat';
-import { validatePhoneValue } from '@/helpers/phone/phoneFormat';
+import {
+    validatePaymentMethodWalletPhone,
+    validatePhoneValue,
+} from '@/helpers/phone/phoneFormat';
 import { parseDate } from '@/utils/formatter';
 
 export const PASSWORD_MIN_LENGTH = 8;
@@ -65,6 +68,9 @@ const FIELD_LABELS = {
     note: 'Note',
     proof: 'Payment proof',
     payment_type: 'Payment type',
+    phone_number: 'Phone Number',
+    account_name: 'Account Name',
+    account_number: 'Account Number',
     duration_months: 'Duration',
     interest_percentage: 'Interest percentage',
     value: 'Value',
@@ -359,6 +365,10 @@ function evaluateRule(values, rule) {
 
     if (type === 'phone') {
         return validatePhoneValue(value);
+    }
+
+    if (type === 'wallet_phone') {
+        return validatePaymentMethodWalletPhone(value);
     }
 
     if (type === 'number') {

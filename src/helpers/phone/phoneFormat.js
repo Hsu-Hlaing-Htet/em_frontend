@@ -58,6 +58,72 @@ export function sanitizeLocalPhoneNumber(localNumber, countryCode = DEFAULT_PHON
 }
 
 /**
+ * Payment-method wallet phones (canonical local 09xxxxxxxxx).
+ *
+ * Accepts (spaces/punctuation ignored):
+ * - 09779959901
+ * - 09 779 959 901
+ * - +959779959901
+ * - +95 9779959901
+ * - 9779959901
+ *
+ * @param {string|null|undefined} value
+ * @returns {string|null}
+ */
+export function normalizePaymentMethodWalletPhone(value) {
+    const trimmed = String(value || '').trim();
+
+    if (!trimmed) {
+        return null;
+    }
+
+    const digits = digitsOnly(trimmed);
+
+    if (!digits) {
+        return null;
+    }
+
+    // Local 09xxxxxxxxx (11 digits).
+    if (/^09\d{9}$/.test(digits)) {
+        return digits;
+    }
+
+    // National without trunk 0: 9xxxxxxxxx (10 digits).
+    if (/^9\d{9}$/.test(digits)) {
+        return `0${digits}`;
+    }
+
+    // Country code 95 + national 9xxxxxxxxx (12 digits).
+    if (/^959\d{9}$/.test(digits)) {
+        return `0${digits.slice(2)}`;
+    }
+
+    return null;
+}
+
+/**
+ * @param {string|null|undefined} value
+ * @returns {boolean}
+ */
+export function isValidPaymentMethodWalletPhone(value) {
+    return normalizePaymentMethodWalletPhone(value) !== null;
+}
+
+/**
+ * Shared validation for payment-method Wallet phone fields.
+ *
+ * @param {string|null|undefined} value
+ * @returns {string|null}
+ */
+export function validatePaymentMethodWalletPhone(value) {
+    if (!String(value || '').trim()) {
+        return PHONE_REQUIRED_MESSAGE;
+    }
+
+    return isValidPaymentMethodWalletPhone(value) ? null : PHONE_INVALID_MESSAGE;
+}
+
+/**
  * Normalize for API storage: +959xxxxxxxxx (no spaces).
  *
  * @param {string|null|undefined} countryCode

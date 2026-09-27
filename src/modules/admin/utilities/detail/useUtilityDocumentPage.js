@@ -9,12 +9,16 @@ import {
 import { useUtilityStore } from '../store';
 import { useUtilityDocument } from '@/composables/admin/documents/useUtilityDocument';
 import { useUtilityDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
+import { buildDocumentEmailRecipients } from '@/helpers/documents/buildDocumentEmailRecipients';
+import { formatUtilityReference } from '@/helpers/documents/billingDocumentHelpers';
 import { service } from '../service';
 
 export default function useUtilityDocumentPage() {
     const route = useRoute();
     const store = useUtilityStore();
     const isLoading = ref(true);
+    const showSendEmailDialog = ref(false);
+    const isSendingEmail = ref(false);
 
     const state = reactive({
         id: null,
@@ -41,7 +45,7 @@ export default function useUtilityDocumentPage() {
         downloadPdf,
         exportPdf,
         printPdf,
-        sendEmail,
+        sendEmail: sendDocumentEmail,
     } = useUtilityDocumentActions(state, () => document.value, service);
 
     const isApprovalView = computed(() => route.meta.approvalContext === true);
@@ -50,11 +54,32 @@ export default function useUtilityDocumentPage() {
         && Boolean(state.id)
         && String(state.status || '').toLowerCase() === 'approved'
     ));
+    const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
+    const utilityReference = computed(() => formatUtilityReference(state));
     const backRoute = computed(() => (
         isApprovalView.value
             ? { name: 'showUtilityApproval', params: { id: state.id } }
             : { name: 'showUtility', params: { id: state.id } }
     ));
+
+    const openSendEmailDialog = () => {
+        showSendEmailDialog.value = true;
+    };
+
+    const confirmSendEmail = async () => {
+        if (isSendingEmail.value) {
+            return;
+        }
+
+        isSendingEmail.value = true;
+
+        try {
+            await sendDocumentEmail();
+            showSendEmailDialog.value = false;
+        } finally {
+            isSendingEmail.value = false;
+        }
+    };
 
     const loadUtility = async () => {
         isLoading.value = true;
@@ -97,7 +122,12 @@ export default function useUtilityDocumentPage() {
         downloadPdf,
         exportPdf,
         printPdf,
-        sendEmail,
+        showSendEmailDialog,
+        isSendingEmail,
+        emailRecipients,
+        utilityReference,
+        openSendEmailDialog,
+        confirmSendEmail,
         sheetProps: {
             document,
             documentTitle: 'Utility Bill',

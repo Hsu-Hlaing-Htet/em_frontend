@@ -4,6 +4,7 @@ import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
 import { useInvoiceStore } from '../store';
 import { useInvoiceDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
+import { buildDocumentEmailRecipients } from '@/helpers/documents/buildDocumentEmailRecipients';
 import { service } from '../service';
 
 function normalizeList(value) {
@@ -71,8 +72,31 @@ export default function useInvoiceDocumentPage(options = {}) {
         exportPdf,
         printPdf,
         viewPdf,
-        sendEmail,
+        sendEmail: sendDocumentEmail,
     } = useInvoiceDocumentActions(state, () => documentHtml.value, documentService);
+
+    const showSendEmailDialog = ref(false);
+    const isSendingEmail = ref(false);
+    const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
+
+    const openSendEmailDialog = () => {
+        showSendEmailDialog.value = true;
+    };
+
+    const confirmSendEmail = async () => {
+        if (isSendingEmail.value) {
+            return;
+        }
+
+        isSendingEmail.value = true;
+
+        try {
+            await sendDocumentEmail();
+            showSendEmailDialog.value = false;
+        } finally {
+            isSendingEmail.value = false;
+        }
+    };
 
     const backRoute = computed(() => {
         if (typeof options.resolveBackRoute === 'function') {
@@ -272,6 +296,10 @@ export default function useInvoiceDocumentPage(options = {}) {
         printPdf,
         viewPdf,
         printContract: printPdf,
-        sendEmail,
+        showSendEmailDialog,
+        isSendingEmail,
+        emailRecipients,
+        openSendEmailDialog,
+        confirmSendEmail,
     };
 }

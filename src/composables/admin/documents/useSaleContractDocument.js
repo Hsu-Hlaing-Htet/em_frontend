@@ -101,8 +101,8 @@ export function useContractDocument(state, options = {}) {
         payment: showPayment ? [
             documentField('Total Contract Value', formatCurrency(state.contract_total)),
             documentField('Deposit Paid', formatCurrency(state.deposit)),
-            documentField('Amount Paid', formatCurrency(state.paid_amount)),
-            documentField('Remaining Balance', formatCurrency(state.remaining_amount)),
+            documentField('Total Paid', formatCurrency(state.paid_amount)),
+            documentField('Balance', formatCurrency(state.remaining_amount)),
             documentField('Payment Plan', paymentPlanLabel.value),
             documentField('Payment Type', paymentTypeLabel.value),
             ...(showInstallment.value ? [
@@ -112,7 +112,7 @@ export function useContractDocument(state, options = {}) {
             documentField('Contract Total', formatCurrency(state.contract_total)),
             documentField('Deposit', formatCurrency(state.deposit)),
             documentField('Interest (%)', `${Number(state.interest_percentage) || 0}%`),
-            documentField('Remaining Balance', formatCurrency(remainingBalance.value)),
+            documentField('Balance After Deposit', formatCurrency(remainingBalance.value)),
             documentField('Total Installment Amount', formatCurrency(totalInstallmentAmount.value)),
             documentField('Duration', `${state.duration_months} months`),
             documentField('Estimated Monthly Payment', formatCurrency(estimatedMonthly.value)),

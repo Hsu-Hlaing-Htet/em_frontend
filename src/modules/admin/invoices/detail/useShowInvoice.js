@@ -2,6 +2,7 @@ import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { useInvoiceDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
+import { buildDocumentEmailRecipients } from '@/helpers/documents/buildDocumentEmailRecipients';
 import {
     formatBillingPeriod,
     formatInvoiceNotes,
@@ -67,7 +68,30 @@ export default function useShowInvoice() {
     });
 
     // Download / email use server PDF — no client document rebuild.
-    const { downloadPdf, sendEmail } = useInvoiceDocumentActions(state, () => '', service);
+    const { downloadPdf, sendEmail: sendDocumentEmail } = useInvoiceDocumentActions(state, () => '', service);
+    const showSendEmailDialog = ref(false);
+    const isSendingEmail = ref(false);
+
+    const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
+
+    const openSendEmailDialog = () => {
+        showSendEmailDialog.value = true;
+    };
+
+    const confirmSendEmail = async () => {
+        if (isSendingEmail.value) {
+            return;
+        }
+
+        isSendingEmail.value = true;
+
+        try {
+            await sendDocumentEmail();
+            showSendEmailDialog.value = false;
+        } finally {
+            isSendingEmail.value = false;
+        }
+    };
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -130,20 +154,7 @@ export default function useShowInvoice() {
         state.id ? { name: 'showInvoiceApproval', params: { id: state.id } } : null
     ));
     const isApproved = computed(() => Boolean(state.approved_by?.id && state.approved_at));
-    const formattedApprovedAt = computed(() => {
-        if (!state.approved_at) {
-            return '';
-        }
-
-        const normalized = state.approved_at.includes('T')
-            ? state.approved_at
-            : state.approved_at.replace(' ', 'T');
-
-        return new Date(normalized).toLocaleString('en-GB', {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-        });
-    });
+    const formattedApprovedAt = computed(() => formatBillingDocumentDate(state.approved_at));
     const formattedCreatedAt = computed(() => formatBillingDocumentDate(state.created_at));
     const documentRoute = computed(() => (
         state.id ? { name: 'invoiceDocument', params: { id: state.id } } : null
@@ -177,7 +188,11 @@ export default function useShowInvoice() {
         formattedApprovedAt,
         formattedCreatedAt,
         downloadPdf,
-        sendEmail,
+        showSendEmailDialog,
+        isSendingEmail,
+        emailRecipients,
+        openSendEmailDialog,
+        confirmSendEmail,
         invoiceTypeLabel,
         propertyUnit,
         paymentStatus,

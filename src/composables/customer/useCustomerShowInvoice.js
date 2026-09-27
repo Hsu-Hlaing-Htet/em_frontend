@@ -235,6 +235,10 @@ export default function useCustomerShowInvoice() {
     }
 
     async function submitPayment() {
+        if (isSaving.value) {
+            return;
+        }
+
         errors.clear();
 
         if (!applyValidation(errors, {

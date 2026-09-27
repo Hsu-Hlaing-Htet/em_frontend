@@ -5,6 +5,7 @@ import { showApiErrorToast } from '@/utils/apiError';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { useReceiptDocument } from '@/composables/admin/documents/useReceiptDocument';
 import { useReceiptDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
+import { buildDocumentEmailRecipients } from '@/helpers/documents/buildDocumentEmailRecipients';
 import { useReceiptStore } from '../store';
 import { service } from '../service';
 
@@ -30,7 +31,12 @@ export default function useShowReceipt() {
         customer_nrc: '',
         invoice_number: '',
         invoice_amount: 0,
+        invoice_base_amount: 0,
+        late_fee: 0,
         paid_amount: 0,
+        amount_received: null,
+        refund_amount: null,
+        financial_summary: null,
         balance: 0,
         payment_type: '',
         payment_amount: '',
@@ -52,6 +58,13 @@ export default function useShowReceipt() {
 
     const { document } = useReceiptDocument(state);
     const { downloadPdf } = useReceiptDocumentActions(state, () => document.value, service);
+    const showSendEmailDialog = ref(false);
+
+    const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
+
+    const openSendEmailDialog = () => {
+        showSendEmailDialog.value = true;
+    };
 
     watch(() => route.params.id, (newId) => {
         if (newId) {
@@ -84,7 +97,11 @@ export default function useShowReceipt() {
         }
     };
 
-    const handleSendEmail = async () => {
+    const confirmSendEmail = async () => {
+        if (isSendingEmail.value) {
+            return;
+        }
+
         isSendingEmail.value = true;
 
         try {
@@ -97,6 +114,8 @@ export default function useShowReceipt() {
                 Object.assign(state, response.data);
                 state.items = response.data.items || [];
             }
+
+            showSendEmailDialog.value = false;
 
             EventBus.emit('show-toast', {
                 severity: 'success',
@@ -124,9 +143,12 @@ export default function useShowReceipt() {
         documentRoute,
         isLoading,
         isSendingEmail,
+        showSendEmailDialog,
+        emailRecipients,
         state,
         formattedCreatedAt,
-        handleSendEmail,
+        openSendEmailDialog,
+        confirmSendEmail,
         canSendEmail,
         downloadPdf,
     };

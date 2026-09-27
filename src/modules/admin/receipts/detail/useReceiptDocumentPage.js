@@ -5,6 +5,7 @@ import { showApiErrorToast } from '@/utils/apiError';
 import { useReceiptStore } from '../store';
 import { useReceiptDocument } from '@/composables/admin/documents/useReceiptDocument';
 import { useReceiptDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
+import { buildDocumentEmailRecipients } from '@/helpers/documents/buildDocumentEmailRecipients';
 import { service } from '../service';
 
 export default function useReceiptDocumentPage() {
@@ -12,6 +13,7 @@ export default function useReceiptDocumentPage() {
     const store = useReceiptStore();
     const isLoading = ref(true);
     const isSendingEmail = ref(false);
+    const showSendEmailDialog = ref(false);
 
     const state = reactive({
         id: null,
@@ -31,6 +33,9 @@ export default function useReceiptDocumentPage() {
         late_fee: 0,
         invoice_amount: 0,
         paid_amount: 0,
+        amount_received: null,
+        refund_amount: null,
+        financial_summary: null,
         balance: 0,
         payment_type: '',
         payment_amount: '',
@@ -58,13 +63,22 @@ export default function useReceiptDocumentPage() {
     } = useReceiptDocumentActions(state, () => document.value, service);
 
     const backRoute = computed(() => ({ name: 'receiptList' }));
+    const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
 
     const canSendEmail = computed(() => (
         state.can_send_email
         || (state.approval_status === 'approved' && !state.is_sent && !state.sent_at)
     ));
 
-    const handleSendEmail = async () => {
+    const openSendEmailDialog = () => {
+        showSendEmailDialog.value = true;
+    };
+
+    const confirmSendEmail = async () => {
+        if (isSendingEmail.value) {
+            return;
+        }
+
         isSendingEmail.value = true;
 
         try {
@@ -77,6 +91,8 @@ export default function useReceiptDocumentPage() {
                 Object.assign(state, response.data);
                 state.items = response.data.items || [];
             }
+
+            showSendEmailDialog.value = false;
 
             EventBus.emit('show-toast', {
                 severity: 'success',
@@ -130,8 +146,12 @@ export default function useReceiptDocumentPage() {
         printPdf,
         viewPdf,
         printContract: printPdf,
-        handleSendEmail,
+        openSendEmailDialog,
+        confirmSendEmail,
         isSendingEmail,
+        showSendEmailDialog,
+        emailRecipients,
         canSendEmail,
+        state,
     };
 }

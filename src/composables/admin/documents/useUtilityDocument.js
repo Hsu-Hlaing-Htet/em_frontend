@@ -45,7 +45,7 @@ export function useUtilityDocument(state) {
             amount: formatCurrency(item.amount),
         })),
         totalDue: {
-            label: 'Total Amount',
+            label: 'Total',
             amount: formatCurrency(state.total_amount),
         },
     }));

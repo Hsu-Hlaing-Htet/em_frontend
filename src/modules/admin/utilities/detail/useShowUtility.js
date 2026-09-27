@@ -3,12 +3,13 @@ import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { showApiErrorToast } from '@/utils/apiError';
 import { formatCurrency } from '@/utils/formatter';
-import { formatBillingMonthLabel } from '@/helpers/documents/billingDocumentHelpers';
+import { formatBillingMonthLabel, formatUtilityReference } from '@/helpers/documents/billingDocumentHelpers';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { formatUnitValue } from '../utils/utilityFormHelpers';
 import { formatUtilitySummaryNote } from '../utils/utilityDetailHelpers';
 import { buildUtilityCustomerLines } from '@/composables/admin/documents/useUtilityDocument';
 import { useUtilityDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
+import { buildDocumentEmailRecipients } from '@/helpers/documents/buildDocumentEmailRecipients';
 import { useUtilityStore } from '../store';
 import { service } from '../service';
 
@@ -20,6 +21,8 @@ export default function useShowUtility() {
     const workflowLoading = ref({ submit: false, approve: false, reject: false });
     const showApproveDialog = ref(false);
     const showRejectDialog = ref(false);
+    const showSendEmailDialog = ref(false);
+    const isSendingEmail = ref(false);
 
     const isApprovalView = computed(() => route.meta.approvalContext === true);
     const backRoute = computed(() => (
@@ -46,12 +49,33 @@ export default function useShowUtility() {
         created_at: '',
     });
 
-    const { sendEmail } = useUtilityDocumentActions(state, () => state, service);
+    const { sendEmail: sendDocumentEmail } = useUtilityDocumentActions(state, () => state, service);
     const canSendUtility = computed(() => (
         !isApprovalView.value
         && Boolean(state.id)
         && String(state.status || '').toLowerCase() === 'approved'
     ));
+    const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
+    const utilityReference = computed(() => formatUtilityReference(state));
+
+    const openSendEmailDialog = () => {
+        showSendEmailDialog.value = true;
+    };
+
+    const confirmSendEmail = async () => {
+        if (isSendingEmail.value) {
+            return;
+        }
+
+        isSendingEmail.value = true;
+
+        try {
+            await sendDocumentEmail();
+            showSendEmailDialog.value = false;
+        } finally {
+            isSendingEmail.value = false;
+        }
+    };
 
     const loadUtility = async () => {
         isLoading.value = true;
@@ -187,7 +211,12 @@ export default function useShowUtility() {
         canApprove,
         canReject,
         canSendUtility,
-        sendEmail,
+        showSendEmailDialog,
+        isSendingEmail,
+        emailRecipients,
+        utilityReference,
+        openSendEmailDialog,
+        confirmSendEmail,
         pageTitle,
         pageSubtitle,
         formattedBillingMonth,

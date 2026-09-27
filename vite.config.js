@@ -23,10 +23,5 @@ export default defineConfig(({ mode }) => {
                 '@': fileURLToPath(new URL('./src', import.meta.url)),
             },
         },
-        build: {
-            rollupOptions: {
-                input: 'src/main.js',
-            },
-        },
     };
 });

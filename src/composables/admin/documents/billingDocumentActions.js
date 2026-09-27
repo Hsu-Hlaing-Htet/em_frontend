@@ -37,7 +37,6 @@ export function useInvoiceDocumentActions(state, getHtml, service) {
         }),
         sendEmail: () => service.sendDocumentEmail({
             id: state.id,
-            email: state.customer_email || undefined,
         }),
         messages: {
             downloadSuccess: 'Invoice document downloaded.',
@@ -64,7 +63,6 @@ export function useReceiptDocumentActions(state, getDocument, service) {
         }),
         sendDocumentEmail: (current) => service.sendDocumentEmail({
             id: current.id,
-            email: current.customer_email || undefined,
         }),
         messages: {
             downloadSuccess: 'Receipt document downloaded.',
@@ -88,7 +86,6 @@ export function useUtilityDocumentActions(state, getDocument, service) {
         downloadDocument: () => downloadUtilityDocumentPdf(getDocument()),
         sendDocumentEmail: (current) => service.sendDocumentEmail({
             id: current.id,
-            email: current.customer_email || undefined,
         }),
         messages: {
             downloadSuccess: 'Utility bill downloaded.',

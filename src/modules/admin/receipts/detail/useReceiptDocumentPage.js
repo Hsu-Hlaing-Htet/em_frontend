@@ -25,6 +25,9 @@ export default function useReceiptDocumentPage() {
         issued_at: '',
         customer_name: '',
         customer_email: '',
+        primary_customer_name: '',
+        second_customer_name: '',
+        second_customer_email: '',
         customer_phone: '',
         customer_nrc: '',
         invoice_number: '',
@@ -65,12 +68,11 @@ export default function useReceiptDocumentPage() {
     const backRoute = computed(() => ({ name: 'receiptList' }));
     const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
 
-    const canSendEmail = computed(() => (
-        state.can_send_email
-        || (state.approval_status === 'approved' && !state.is_sent && !state.sent_at)
-    ));
+    const canSendEmail = computed(() => state.approval_status === 'approved');
 
-    const openSendEmailDialog = () => {
+    const openSendEmailDialog = async () => {
+        // Refresh so confirmation shows CURRENT users.email (not a stale page snapshot).
+        await loadReceipt({ quiet: true });
         showSendEmailDialog.value = true;
     };
 
@@ -84,7 +86,6 @@ export default function useReceiptDocumentPage() {
         try {
             const response = await service.sendDocumentEmail({
                 id: state.id,
-                email: state.customer_email || undefined,
             });
 
             if (response?.data) {
@@ -106,8 +107,10 @@ export default function useReceiptDocumentPage() {
         }
     };
 
-    const loadReceipt = async () => {
-        isLoading.value = true;
+    const loadReceipt = async ({ quiet = false } = {}) => {
+        if (!quiet) {
+            isLoading.value = true;
+        }
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -120,7 +123,9 @@ export default function useReceiptDocumentPage() {
         } catch (error) {
             showApiErrorToast(error, 'Unable to load receipt document.');
         } finally {
-            isLoading.value = false;
+            if (!quiet) {
+                isLoading.value = false;
+            }
         }
     };
 

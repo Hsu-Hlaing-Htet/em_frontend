@@ -31,6 +31,9 @@ export default function useUtilityDocumentPage() {
         items: [],
         customer_name: '',
         customer_email: '',
+        primary_customer_name: '',
+        second_customer_name: '',
+        second_customer_email: '',
         customer_phone: '',
         customer_address: '',
         customer_nrc: '',
@@ -62,7 +65,8 @@ export default function useUtilityDocumentPage() {
             : { name: 'showUtility', params: { id: state.id } }
     ));
 
-    const openSendEmailDialog = () => {
+    const openSendEmailDialog = async () => {
+        await loadUtility({ quiet: true });
         showSendEmailDialog.value = true;
     };
 
@@ -81,8 +85,10 @@ export default function useUtilityDocumentPage() {
         }
     };
 
-    const loadUtility = async () => {
-        isLoading.value = true;
+    const loadUtility = async ({ quiet = false } = {}) => {
+        if (!quiet) {
+            isLoading.value = true;
+        }
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -96,7 +102,9 @@ export default function useUtilityDocumentPage() {
         } catch (error) {
             showApiErrorToast(error, 'Unable to load utility bill document.');
         } finally {
-            isLoading.value = false;
+            if (!quiet) {
+                isLoading.value = false;
+            }
         }
     };
 

@@ -56,6 +56,9 @@ export default function useShowInvoice() {
         items: [],
         customer_name: '',
         customer_email: '',
+        primary_customer_name: '',
+        second_customer_name: '',
+        second_customer_email: '',
         customer_phone: '',
         customer_address: '',
         building_name: '',
@@ -74,7 +77,8 @@ export default function useShowInvoice() {
 
     const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
 
-    const openSendEmailDialog = () => {
+    const openSendEmailDialog = async () => {
+        await loadInvoice({ quiet: true });
         showSendEmailDialog.value = true;
     };
 
@@ -108,8 +112,10 @@ export default function useShowInvoice() {
         store.$dispose();
     });
 
-    const loadInvoice = async () => {
-        isLoading.value = true;
+    const loadInvoice = async ({ quiet = false } = {}) => {
+        if (!quiet) {
+            isLoading.value = true;
+        }
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -120,7 +126,9 @@ export default function useShowInvoice() {
                 state.items = response.data.items || [];
             }
         } finally {
-            isLoading.value = false;
+            if (!quiet) {
+                isLoading.value = false;
+            }
         }
     };
 

@@ -56,6 +56,9 @@ export default function useInvoiceDocumentPage(options = {}) {
         items: [],
         customer_name: '',
         customer_email: '',
+        primary_customer_name: '',
+        second_customer_name: '',
+        second_customer_email: '',
         customer_phone: '',
         customer_address: '',
         customer_nrc: '',
@@ -79,7 +82,8 @@ export default function useInvoiceDocumentPage(options = {}) {
     const isSendingEmail = ref(false);
     const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
 
-    const openSendEmailDialog = () => {
+    const openSendEmailDialog = async () => {
+        await loadInvoice({ quiet: true });
         showSendEmailDialog.value = true;
     };
 
@@ -173,9 +177,11 @@ export default function useInvoiceDocumentPage(options = {}) {
         documentHtml.value = await documentService.previewDocumentHtml({ id: invoiceId });
     };
 
-    const loadInvoice = async () => {
-        isLoading.value = true;
-        documentHtml.value = '';
+    const loadInvoice = async ({ quiet = false } = {}) => {
+        if (!quiet) {
+            isLoading.value = true;
+            documentHtml.value = '';
+        }
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -185,12 +191,16 @@ export default function useInvoiceDocumentPage(options = {}) {
                 Object.assign(state, response.data, {
                     items: normalizeList(response.data.items || response.data.invoice_items || response.data.invoiceItems),
                 });
-                await loadDocumentHtml(state.id);
+                if (!quiet) {
+                    await loadDocumentHtml(state.id);
+                }
             }
         } catch (error) {
             showApiErrorToast(error, 'Unable to load invoice document.');
         } finally {
-            isLoading.value = false;
+            if (!quiet) {
+                isLoading.value = false;
+            }
         }
     };
 

@@ -42,6 +42,9 @@ export default function useShowUtility() {
         items: [],
         customer_name: '',
         customer_email: '',
+        primary_customer_name: '',
+        second_customer_name: '',
+        second_customer_email: '',
         customer_phone: '',
         customer_address: '',
         created_by_name: '',
@@ -58,7 +61,8 @@ export default function useShowUtility() {
     const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
     const utilityReference = computed(() => formatUtilityReference(state));
 
-    const openSendEmailDialog = () => {
+    const openSendEmailDialog = async () => {
+        await loadUtility({ quiet: true });
         showSendEmailDialog.value = true;
     };
 
@@ -77,8 +81,10 @@ export default function useShowUtility() {
         }
     };
 
-    const loadUtility = async () => {
-        isLoading.value = true;
+    const loadUtility = async ({ quiet = false } = {}) => {
+        if (!quiet) {
+            isLoading.value = true;
+        }
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -90,7 +96,9 @@ export default function useShowUtility() {
                 });
             }
         } finally {
-            isLoading.value = false;
+            if (!quiet) {
+                isLoading.value = false;
+            }
         }
     };
 

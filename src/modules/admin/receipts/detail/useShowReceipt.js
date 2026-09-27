@@ -27,6 +27,9 @@ export default function useShowReceipt() {
         issued_at: '',
         customer_name: '',
         customer_email: '',
+        primary_customer_name: '',
+        second_customer_name: '',
+        second_customer_email: '',
         customer_phone: '',
         customer_nrc: '',
         invoice_number: '',
@@ -62,7 +65,30 @@ export default function useShowReceipt() {
 
     const emailRecipients = computed(() => buildDocumentEmailRecipients(state));
 
-    const openSendEmailDialog = () => {
+    const fetchReceipt = async ({ quiet = false } = {}) => {
+        if (!quiet) {
+            isLoading.value = true;
+        }
+
+        try {
+            await store.fetchOne({ id: route.params.id });
+            const response = store.getOneResponse;
+
+            if (response?.data) {
+                Object.assign(state, response.data);
+                state.items = response.data.items || [];
+            }
+        } catch (error) {
+            showApiErrorToast(error, 'Unable to load receipt.');
+        } finally {
+            if (!quiet) {
+                isLoading.value = false;
+            }
+        }
+    };
+
+    const openSendEmailDialog = async () => {
+        await fetchReceipt({ quiet: true });
         showSendEmailDialog.value = true;
     };
 
@@ -81,22 +107,6 @@ export default function useShowReceipt() {
         store.$dispose();
     });
 
-    const fetchReceipt = async () => {
-        isLoading.value = true;
-
-        try {
-            await store.fetchOne({ id: route.params.id });
-            const response = store.getOneResponse;
-
-            if (response?.data) {
-                Object.assign(state, response.data);
-                state.items = response.data.items || [];
-            }
-        } finally {
-            isLoading.value = false;
-        }
-    };
-
     const confirmSendEmail = async () => {
         if (isSendingEmail.value) {
             return;
@@ -107,7 +117,6 @@ export default function useShowReceipt() {
         try {
             const response = await service.sendDocumentEmail({
                 id: state.id,
-                email: state.customer_email || undefined,
             });
 
             if (response?.data) {
@@ -129,8 +138,7 @@ export default function useShowReceipt() {
         }
     };
 
-    const canSendEmail = () => state.can_send_email
-        || (state.approval_status === 'approved' && !state.is_sent && !state.sent_at);
+    const canSendEmail = () => state.approval_status === 'approved';
     const formattedCreatedAt = computed(() => formatBillingDocumentDate(
         state.sent_at || state.issued_at || state.created_at,
     ));

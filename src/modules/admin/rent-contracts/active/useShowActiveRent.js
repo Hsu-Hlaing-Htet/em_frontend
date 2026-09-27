@@ -26,6 +26,9 @@ export default function useShowActiveRent() {
         customer_nrc: '',
         customer_phone: '',
         customer_email: '',
+        primary_customer_name: '',
+        second_customer_name: '',
+        second_customer_email: '',
         building_name: '',
         room_number: '',
         room_price: 0,
@@ -67,8 +70,10 @@ export default function useShowActiveRent() {
     const canCancel = computed(() => state.status === 'active');
     const backRoute = { name: 'activeRentList' };
 
-    const fetchContract = async () => {
-        isLoading.value = true;
+    const fetchContract = async ({ quiet = false } = {}) => {
+        if (!quiet) {
+            isLoading.value = true;
+        }
 
         try {
             await store.fetchActiveOne({ id: route.params.id });
@@ -83,7 +88,9 @@ export default function useShowActiveRent() {
         } catch (error) {
             showApiErrorToast(error, 'Unable to load active rent detail.');
         } finally {
-            isLoading.value = false;
+            if (!quiet) {
+                isLoading.value = false;
+            }
         }
     };
 
@@ -91,7 +98,8 @@ export default function useShowActiveRent() {
         showCancelDialog.value = true;
     };
 
-    const openSendEmailDialog = () => {
+    const openSendEmailDialog = async () => {
+        await fetchContract({ quiet: true });
         showSendEmailDialog.value = true;
     };
 

@@ -33,7 +33,19 @@ export const useEntityApprovalList = ({
     const totalRecords = ref(0);
     const isLoading = ref(false);
     const items = ref([]);
-    const approvingIds = ref(new Set());
+    const approvingIds = ref([]);
+
+    const isItemApproving = (itemId) => approvingIds.value.includes(itemId);
+
+    const markApproving = (itemId) => {
+        if (!approvingIds.value.includes(itemId)) {
+            approvingIds.value = [...approvingIds.value, itemId];
+        }
+    };
+
+    const clearApproving = (itemId) => {
+        approvingIds.value = approvingIds.value.filter((id) => id !== itemId);
+    };
     const lazyParams = ref({
         page: 0,
         rows: 10,
@@ -111,14 +123,22 @@ export const useEntityApprovalList = ({
     };
 
     const approveItem = async (item) => {
-        if (!item?.id || approvingIds.value.has(item.id)) {
+        if (!item?.id || isItemApproving(item.id)) {
             return false;
         }
 
-        approvingIds.value.add(item.id);
+        markApproving(item.id);
 
         try {
-            await store[approveMethod]({ id: item.id });
+            const approvePayload = { id: item.id };
+
+            // Pass stored applied amount when present (Admin Cash). Backend also
+            // falls back to payment.amount / invoice balance when omitted.
+            if (item.amount != null && item.amount !== '') {
+                approvePayload.amount = Number(item.amount);
+            }
+
+            await store[approveMethod](approvePayload);
 
             const response = store.getActionResponse;
 
@@ -137,7 +157,7 @@ export const useEntityApprovalList = ({
 
             return false;
         } finally {
-            approvingIds.value.delete(item.id);
+            clearApproving(item.id);
         }
     };
 
@@ -205,5 +225,6 @@ export const useEntityApprovalList = ({
         loadingData,
         resetPagination,
         onRowClick,
+        isItemApproving,
     };
 };

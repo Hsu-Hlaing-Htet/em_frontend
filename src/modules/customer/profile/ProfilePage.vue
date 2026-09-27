@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="col-span-1 pt-2 md:col-span-2">
-                    <Button type="submit" :label="$t('customer.saveProfile')" :loading="isSaving" />
+                    <Button type="submit" :label="$t('common.save')" :loading="isSaving" />
                 </div>
             </form>
         </div>

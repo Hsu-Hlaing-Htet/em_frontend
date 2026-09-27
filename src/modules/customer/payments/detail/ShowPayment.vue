@@ -12,7 +12,7 @@
                     <Button label="View Invoice" severity="secondary" />
                 </router-link>
                 <router-link v-if="isRejected && makePaymentAgainRoute" :to="makePaymentAgainRoute">
-                    <Button label="Make Payment Again" icon="pi pi-wallet" />
+                    <Button label="Pay Again" icon="pi pi-wallet" />
                 </router-link>
                 <router-link v-if="isApproved && receiptRoute" :to="receiptRoute">
                     <Button label="View Receipt" icon="pi pi-receipt" />
@@ -81,12 +81,26 @@
                 </div>
 
                 <div class="customer-payment-total-grid">
-                    <span>Subtotal</span>
-                    <strong>{{ formatMoney(invoice.total_amount) }}</strong>
-                    <span>Late Fee</span>
-                    <strong>{{ formatMoney(invoice.late_fee) }}</strong>
-                    <span>Amount Due</span>
-                    <strong>{{ formatMoney(invoice.amount_due) }}</strong>
+                    <div>
+                        <span>Subtotal</span>
+                        <strong>{{ financialRows.subtotal }}</strong>
+                    </div>
+                    <div>
+                        <span>Late Fee</span>
+                        <strong>{{ financialRows.lateFee }}</strong>
+                    </div>
+                    <div class="is-section">
+                        <span>Total</span>
+                        <strong>{{ financialRows.total }}</strong>
+                    </div>
+                    <div>
+                        <span>Paid</span>
+                        <strong>{{ financialRows.paid }}</strong>
+                    </div>
+                    <div class="is-settlement">
+                        <span>{{ financialRows.settlementLabel }}</span>
+                        <strong>{{ financialRows.settlementValue }}</strong>
+                    </div>
                 </div>
 
                 <p v-if="lateFeeDescription" class="customer-payment-late-fee-note">
@@ -263,10 +277,16 @@ export default defineComponent({
 
 .customer-payment-total-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(9rem, auto);
-    gap: 0.5rem 1rem;
-    width: min(100%, 24rem);
+    gap: 0.45rem;
+    width: min(100%, 16rem);
     margin: 1rem 0 0 auto;
+}
+
+.customer-payment-total-grid > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.25rem;
+    align-items: baseline;
 }
 
 .customer-payment-total-grid span {
@@ -281,6 +301,28 @@ export default defineComponent({
     font-weight: 600;
     text-align: right;
     white-space: nowrap;
+}
+
+.customer-payment-total-grid .is-section {
+    padding-top: 0.55rem;
+    margin-top: 0.15rem;
+    border-top: 1px solid var(--admin-border);
+}
+
+.customer-payment-total-grid .is-section span,
+.customer-payment-total-grid .is-section strong {
+    font-weight: 700;
+}
+
+.customer-payment-total-grid .is-settlement {
+    padding-top: 0.55rem;
+    margin-top: 0.15rem;
+    border-top: 1px solid var(--admin-border);
+}
+
+.customer-payment-total-grid .is-settlement span,
+.customer-payment-total-grid .is-settlement strong {
+    font-weight: 700;
 }
 
 .customer-payment-late-fee-note,

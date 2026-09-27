@@ -2,11 +2,17 @@ const listeners = new Map();
 
 const EventBus = {
     on(event, callback) {
-        if (!listeners.has(event)) {
-            listeners.set(event, new Set());
-        }
+        // Toast listeners must be singular — HMR / remount without unmount
+        // previously stacked handlers and produced duplicate toasts per emit.
+        if (event === 'show-toast') {
+            listeners.set(event, new Set([callback]));
+        } else {
+            if (!listeners.has(event)) {
+                listeners.set(event, new Set());
+            }
 
-        listeners.get(event).add(callback);
+            listeners.get(event).add(callback);
+        }
 
         return () => {
             listeners.get(event)?.delete(callback);

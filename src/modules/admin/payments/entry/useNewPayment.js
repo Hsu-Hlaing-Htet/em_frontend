@@ -180,6 +180,10 @@ export default function useNewPayment() {
     });
 
     const handleSubmit = async () => {
+        if (isSaving.value) {
+            return;
+        }
+
         errors.clear();
 
         if (!canRecord.value) {
@@ -220,7 +224,7 @@ export default function useNewPayment() {
         const due = toWholeMmk(amountDue.value);
 
         if (received < due) {
-            const message = 'Received amount cannot be less than Amount Due.';
+            const message = 'Received amount cannot be less than Balance.';
             // Field error only (notify=false) — avoid a second generic validation toast.
             errors.record({ amount_received: [message] }, false);
             EventBus.emit('show-toast', {
@@ -252,11 +256,11 @@ export default function useNewPayment() {
                 await router.push({ name: 'invoiceDocument', params: { id: state.invoice_id } });
             }
         } catch (error) {
-            if (error.status === 422) {
+            if (error.status === 422 || error.status === 409) {
                 const apiMessage = String(error.data?.message || '').trim();
                 const fieldErrors = error.data?.data || error.data?.errors;
 
-                if (fieldErrors) {
+                if (error.status === 422 && fieldErrors) {
                     // Field errors already toast via Errors.record — do not double-toast.
                     errors.record(fieldErrors);
                 } else if (apiMessage) {

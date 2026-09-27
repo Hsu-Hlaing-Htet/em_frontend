@@ -26,14 +26,19 @@ export function renderReceiptDocumentBody(document) {
         `).join('')
         : '<tr><td colspan="2">No charges recorded.</td></tr>';
 
-    const lateFeeRow = document.late_fee
+    const settlementRow = document.totals?.show_change
         ? `
-            <tr>
-                <td>${cell(document.late_fee.description || 'Late Fee')}</td>
-                <td class="is-num">${cell(document.late_fee.amount)}</td>
-            </tr>
+            <div class="receipt-doc__totals-row receipt-doc__totals-row--due">
+                <span>Change</span>
+                <span>${cell(document.totals?.change)}</span>
+            </div>
         `
-        : '';
+        : `
+            <div class="receipt-doc__totals-row receipt-doc__totals-row--due">
+                <span>Balance</span>
+                <span>${cell(document.totals?.balance)}</span>
+            </div>
+        `;
 
     return `
         <section class="receipt-doc__info">
@@ -85,30 +90,28 @@ export function renderReceiptDocumentBody(document) {
                 </thead>
                 <tbody>
                     ${itemRows}
-                    ${lateFeeRow}
                 </tbody>
             </table>
         </div>
 
         <div class="receipt-doc__totals">
             <div class="receipt-doc__totals-row">
-                <span>Amount Due</span>
-                <span>${cell(document.totals?.amount_due || document.totals?.total_amount)}</span>
+                <span>Subtotal</span>
+                <span>${cell(document.totals?.subtotal)}</span>
             </div>
             <div class="receipt-doc__totals-row">
-                <span>Amount Received</span>
-                <span>${cell(document.totals?.amount_received)}</span>
+                <span>Late Fee</span>
+                <span>${cell(document.totals?.late_fee)}</span>
             </div>
-            ${document.totals?.show_change ? `
+            <div class="receipt-doc__totals-row receipt-doc__totals-row--section">
+                <span>Total</span>
+                <span>${cell(document.totals?.total)}</span>
+            </div>
             <div class="receipt-doc__totals-row">
-                <span>Change</span>
-                <span>${cell(document.totals?.refund_amount)}</span>
+                <span>Paid</span>
+                <span>${cell(document.totals?.paid)}</span>
             </div>
-            ` : ''}
-            <div class="receipt-doc__totals-row receipt-doc__totals-row--due">
-                <span>Remaining Balance</span>
-                <span>${cell(document.totals?.remaining_balance)}</span>
-            </div>
+            ${settlementRow}
         </div>
 
         <section class="receipt-doc__confirmation">

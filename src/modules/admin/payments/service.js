@@ -22,6 +22,7 @@ const service = {
             invoice_id: params.invoice_id,
             payment_method_id: params.payment_method_id,
             amount: params.amount,
+            amount_received: params.amount_received,
             note: params.note ?? null,
         };
         const result = await api.post(endpoint.payments, payload);
@@ -48,9 +49,13 @@ const service = {
     },
 
     approve: async (params) => {
-        const result = await api.post(`${endpoint.payments}/${params.id}/approve`, {
-            amount: params.amount,
-        });
+        const payload = {};
+
+        if (params.amount !== undefined && params.amount !== null && params.amount !== '') {
+            payload.amount = params.amount;
+        }
+
+        const result = await api.post(`${endpoint.payments}/${params.id}/approve`, payload);
         return result.data;
     },
 

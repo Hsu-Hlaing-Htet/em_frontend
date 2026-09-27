@@ -61,3 +61,42 @@ export function resolvePaymentListStatus(item) {
         ? 'paid'
         : (raw || 'pending');
 }
+
+function toFiniteNumber(value) {
+    if (value == null || value === '') {
+        return null;
+    }
+
+    const number = Number(value);
+
+    return Number.isFinite(number) ? number : null;
+}
+
+/**
+ * Shared row mapping for Admin Payment List and Payment Approval List.
+ *
+ * TOTAL = invoice_amount (subtotal + late fee)
+ * PAID  = tendered/submitted for THIS payment (amount_received when set, else amount)
+ * PAID BY = payment creator / submitter (created_by)
+ */
+export function mapPaymentListRow(item) {
+    const applied = toFiniteNumber(item.amount);
+    const paid = toFiniteNumber(item.paid)
+        ?? toFiniteNumber(item.financial_summary?.paid)
+        ?? toFiniteNumber(item.amount_received)
+        ?? applied;
+
+    return {
+        ...item,
+        property_unit: item.property_unit || formatPropertyUnit(item),
+        display_status: resolvePaymentListStatus(item),
+        amount: applied,
+        paid,
+        invoice_amount: toFiniteNumber(item.invoice_amount) ?? 0,
+        payment_method_name: item.payment_method_name || '',
+        customer_name: item.customer_name || '',
+        paid_by: item.paid_by || item.submitted_by_name || item.created_by_name || '',
+        invoice_number: item.invoice_number || '',
+        payment_date: item.payment_date || '',
+    };
+}

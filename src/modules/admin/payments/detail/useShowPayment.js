@@ -20,10 +20,6 @@ function normalizeRows(value) {
     return [];
 }
 
-function roundMoney(value) {
-    return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
-}
-
 function normalizePaymentDetail(data = {}) {
     const invoice = data.invoice || {};
     const contract = invoice.contract || data.contract || {};
@@ -85,6 +81,9 @@ export default function useShowPayment() {
         amount_received: null,
         refund_amount: null,
         invoice_amount: 0,
+        invoice_subtotal: 0,
+        invoice_late_fee: 0,
+        financial_summary: null,
         paid_amount: 0,
         balance: 0,
         proof_image_path: '',
@@ -190,49 +189,45 @@ export default function useShowPayment() {
         isApprovalView.value && state.status === 'pending'
     ));
 
-    const remainingAfterPaidAmount = computed(() => {
-        const currentBalance = Number(state.balance || 0);
-        const paid = Number(state.amount || 0);
-
-        return Math.max(roundMoney(currentBalance - paid), 0);
-    });
-
-    const displayRemainingBalance = computed(() => {
-        if (canReviewPayment.value) {
-            return remainingAfterPaidAmount.value;
-        }
-
-        return Number(
-            invoiceSummary.remaining_balance ?? state.balance ?? 0,
-        );
-    });
+    const financialSummary = computed(() => state.financial_summary || null);
 
     const paidAmountError = computed(() => {
         if (!canReviewPayment.value) {
             return '';
         }
 
+        // Customer submissions may have null amount until approve resolves to full balance.
         if (state.amount == null || state.amount === '') {
-            return 'Paid Amount is required.';
+            return '';
         }
 
         const paid = Number(state.amount);
         const balance = Number(state.balance || 0);
 
         if (!Number.isFinite(paid) || paid <= 0) {
-            return 'Paid Amount must be greater than zero.';
+            return 'Payment must be greater than zero.';
         }
 
-        if (Math.abs(roundMoney(paid) - roundMoney(balance)) > 0.009) {
-            return 'Paid Amount must match the current balance.';
+        // Allow <1 MMK drift from whole-MMK create rounding vs exact invoice balance.
+        if (paid > balance + 0.999) {
+            return 'Payment cannot exceed the current balance.';
         }
 
         return '';
     });
 
-    const isPaidAmountValid = computed(() => !paidAmountError.value
-        && state.amount != null
-        && Number(state.amount) > 0);
+    const isPaidAmountValid = computed(() => {
+        if (!canReviewPayment.value) {
+            return false;
+        }
+
+        // Null amount is OK — backend settles from invoice balance on approve.
+        if (state.amount == null || state.amount === '') {
+            return true;
+        }
+
+        return !paidAmountError.value && Number(state.amount) > 0;
+    });
 
     const confirmReject = async (reason) => {
         await runWorkflow('reject', { rejection_reason: reason });
@@ -267,7 +262,7 @@ export default function useShowPayment() {
             EventBus.emit('show-toast', {
                 severity: 'warn',
                 summary: '',
-                detail: paidAmountError.value || 'Enter a valid Paid Amount before approving.',
+                detail: paidAmountError.value || 'Enter a valid Payment amount before approving.',
             });
 
             return;
@@ -277,10 +272,13 @@ export default function useShowPayment() {
 
         try {
             if (action === 'approve') {
-                await store.approve({
-                    id: state.id,
-                    amount: Number(state.amount),
-                });
+                const approvePayload = { id: state.id };
+
+                if (state.amount != null && state.amount !== '') {
+                    approvePayload.amount = Number(state.amount);
+                }
+
+                await store.approve(approvePayload);
             } else {
                 await store.reject({
                     id: state.id,
@@ -338,27 +336,46 @@ export default function useShowPayment() {
     const invoiceRows = computed(() => normalizeRows(invoiceSummary.items)
         .map((item) => mapInvoiceLineItemRow(item, formatCurrency)));
 
-    const lateFeeAmount = computed(() => Number(invoiceSummary.late_fee || 0));
-    const showLateFee = computed(() => lateFeeAmount.value > 0);
-    const subTotalDisplay = computed(() => formatCurrency(Number(invoiceSummary.total_amount || 0)));
-    const lateFeeDisplay = computed(() => formatCurrency(lateFeeAmount.value));
-    const totalDisplay = computed(() => {
-        // Frozen amount due on the payment submission takes priority for approval/detail.
-        if (state.amount != null && state.amount !== '') {
-            return formatCurrency(Number(state.amount));
+    const subTotalDisplay = computed(() => {
+        if (financialSummary.value) {
+            return formatCurrency(Number(financialSummary.value.subtotal || 0));
         }
 
-        const total = Number(invoiceSummary.amount_due);
+        return formatCurrency(Number(
+            state.invoice_subtotal
+            ?? invoiceSummary.total_amount
+            ?? 0,
+        ));
+    });
+    const lateFeeDisplay = computed(() => {
+        if (financialSummary.value) {
+            return formatCurrency(Number(financialSummary.value.late_fee || 0));
+        }
 
-        if (Number.isFinite(total) && total > 0) {
-            return formatCurrency(total);
+        return formatCurrency(Number(
+            state.invoice_late_fee
+            ?? invoiceSummary.late_fee
+            ?? 0,
+        ));
+    });
+    const totalDisplay = computed(() => {
+        if (financialSummary.value) {
+            return formatCurrency(Number(financialSummary.value.total || 0));
+        }
+
+        if (state.invoice_amount != null && state.invoice_amount !== '') {
+            return formatCurrency(Number(state.invoice_amount));
         }
 
         return formatCurrency(
-            Number(invoiceSummary.total_amount || 0) + lateFeeAmount.value,
+            Number(invoiceSummary.total_amount || 0) + Number(invoiceSummary.late_fee || 0),
         );
     });
     const receivedDisplay = computed(() => {
+        if (financialSummary.value) {
+            return formatCurrency(Number(financialSummary.value.paid || 0));
+        }
+
         const received = state.amount_received != null && state.amount_received !== ''
             ? Number(state.amount_received)
             : Number(state.amount);
@@ -370,34 +387,34 @@ export default function useShowPayment() {
         return formatCurrency(received);
     });
     const refundDisplay = computed(() => {
+        if (financialSummary.value?.show_change) {
+            return formatCurrency(Number(financialSummary.value.change || 0));
+        }
+
         if (state.refund_amount != null && state.refund_amount !== '') {
             return formatCurrency(Number(state.refund_amount));
         }
 
-        const received = state.amount_received != null ? Number(state.amount_received) : null;
-        const due = state.amount != null ? Number(state.amount) : null;
-
-        if (received == null || due == null || !Number.isFinite(received) || !Number.isFinite(due)) {
-            return formatCurrency(0);
-        }
-
-        return formatCurrency(Math.max(roundMoney(received - due), 0));
+        return formatCurrency(0);
     });
     const showChange = computed(() => {
+        if (financialSummary.value) {
+            return Boolean(financialSummary.value.show_change);
+        }
+
         if (state.refund_amount != null && state.refund_amount !== '') {
             return Number(state.refund_amount) > 0;
         }
 
-        const received = state.amount_received != null ? Number(state.amount_received) : null;
-        const due = state.amount != null ? Number(state.amount) : null;
-
-        if (received == null || due == null || !Number.isFinite(received) || !Number.isFinite(due)) {
-            return false;
+        return false;
+    });
+    const balanceDisplay = computed(() => {
+        if (financialSummary.value && !financialSummary.value.show_change) {
+            return formatCurrency(Number(financialSummary.value.balance ?? 0));
         }
 
-        return roundMoney(received - due) > 0;
+        return formatCurrency(0);
     });
-    const balanceDisplay = computed(() => formatCurrency(displayRemainingBalance.value));
 
     const adminRemarkDisplay = computed(() => {
         const rejection = String(state.rejection_reason || '').trim();
@@ -438,7 +455,6 @@ export default function useShowPayment() {
         formattedPaymentDate,
         formattedVerifiedDate,
         invoiceRows,
-        showLateFee,
         subTotalDisplay,
         lateFeeDisplay,
         totalDisplay,

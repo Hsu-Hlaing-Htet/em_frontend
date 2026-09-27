@@ -29,15 +29,30 @@ onUnmounted(() => {
         subtitle="Please enter your login details."
         :show-theme-toggle="false"
     >
-        <form class="login-form space-y-4" novalidate @submit.prevent="submit">
+        <form
+            class="login-form space-y-4"
+            method="post"
+            action="/login"
+            novalidate
+            @submit.prevent="submit"
+        >
             <div>
-                <label class="mb-2 block text-sm font-semibold text-[var(--rw-primary-deep)]">
+                <label
+                    for="login-email"
+                    class="mb-2 block text-sm font-semibold text-[var(--rw-primary-deep)]"
+                >
                     Email
                 </label>
 
                 <input
+                    id="login-email"
                     v-model="form.email"
                     type="email"
+                    name="email"
+                    autocomplete="username"
+                    autocapitalize="none"
+                    autocorrect="off"
+                    spellcheck="false"
                     required
                     class="rw-input-shell w-full rounded-xl px-4 py-3 outline-none"
                     placeholder="admin@rosewoodroyale.com"
@@ -49,7 +64,10 @@ onUnmounted(() => {
 
             <div>
                 <div class="mb-2 flex items-center justify-between gap-3">
-                    <label class="text-sm font-semibold text-[var(--rw-primary-deep)]">
+                    <label
+                        for="login-password"
+                        class="text-sm font-semibold text-[var(--rw-primary-deep)]"
+                    >
                         Password
                     </label>
 
@@ -63,8 +81,11 @@ onUnmounted(() => {
 
                 <div class="rw-input-shell login-password-shell flex items-center rounded-xl px-4 py-3">
                     <input
+                        id="login-password"
                         v-model="form.password"
                         :type="showPassword ? 'text' : 'password'"
+                        name="password"
+                        autocomplete="current-password"
                         required
                         class="flex-1 bg-transparent outline-none"
                         placeholder="Enter your password"
@@ -73,6 +94,8 @@ onUnmounted(() => {
                     <button
                         type="button"
                         class="login-eye-button text-rw-muted"
+                        tabindex="-1"
+                        :aria-label="showPassword ? 'Hide password' : 'Show password'"
                         @click="showPassword = !showPassword"
                     >
                         <i

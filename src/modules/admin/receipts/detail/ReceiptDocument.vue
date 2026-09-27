@@ -13,7 +13,8 @@
                     icon="pi pi-envelope"
                     label="Send"
                     :loading="isSendingEmail"
-                    @click="handleSendEmail"
+                    :disabled="isSendingEmail"
+                    @click="openSendEmailDialog"
                 />
                 <router-link :to="backRoute">
                     <Button label="Back" severity="secondary" />
@@ -29,6 +30,15 @@
     </div>
 
     <Loading v-if="isLoading" />
+
+    <SendDocumentEmailDialog
+        v-model="showSendEmailDialog"
+        document-kind="receipt"
+        :document-number="state.receipt_number"
+        :recipients="emailRecipients"
+        :submitting="isSendingEmail"
+        @confirm="confirmSendEmail"
+    />
 </template>
 
 <script>
@@ -36,6 +46,7 @@ import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ReceiptDocumentSheet from '@/components/admin/documents/ReceiptDocumentSheet.vue';
+import SendDocumentEmailDialog from '@/components/admin/SendDocumentEmailDialog.vue';
 import useReceiptDocumentPage from './useReceiptDocumentPage';
 
 export default defineComponent({
@@ -44,6 +55,7 @@ export default defineComponent({
         Button,
         Loading,
         ReceiptDocumentSheet,
+        SendDocumentEmailDialog,
     },
     setup() {
         return useReceiptDocumentPage();

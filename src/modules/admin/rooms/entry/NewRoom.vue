@@ -123,7 +123,7 @@
                 />
 
                 <div class="flex gap-2 md:col-span-2">
-                    <Button type="submit" label="Save Room"  />
+                    <Button type="submit" label="Save" />
                     <router-link :to="{ name: 'roomList' }">
                         <Button type="button" label="Cancel" />
                     </router-link>

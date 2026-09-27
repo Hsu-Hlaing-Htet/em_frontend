@@ -6,7 +6,8 @@
                 icon="pi pi-envelope"
                 label="Send"
                 :loading="isSendingEmail"
-                @click="handleSendEmail"
+                :disabled="isSendingEmail"
+                @click="openSendEmailDialog"
             />
             <Button
                 icon="pi pi-download"
@@ -64,6 +65,15 @@
         </div>
 
         <Loading v-if="isLoading" />
+
+        <SendDocumentEmailDialog
+            v-model="showSendEmailDialog"
+            document-kind="receipt"
+            :document-number="state.receipt_number"
+            :recipients="emailRecipients"
+            :submitting="isSendingEmail"
+            @confirm="confirmSendEmail"
+        />
     </div>
 </template>
 
@@ -74,6 +84,7 @@ import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import BillingDetailCustomerSection from '@/components/billing/BillingDetailCustomerSection.vue';
 import BillingDetailTable from '@/components/billing/BillingDetailTable.vue';
+import SendDocumentEmailDialog from '@/components/admin/SendDocumentEmailDialog.vue';
 import { billingDetailTableClasses } from '@/helpers/billing/billingDetailHelpers';
 import {
     receiptLineItemColumns,
@@ -95,6 +106,7 @@ export default defineComponent({
         StatusBadge,
         BillingDetailCustomerSection,
         BillingDetailTable,
+        SendDocumentEmailDialog,
     },
     setup() {
         const receipt = useShowReceipt();

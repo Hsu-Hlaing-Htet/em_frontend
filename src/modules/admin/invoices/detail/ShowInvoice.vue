@@ -27,7 +27,9 @@
             <Button
                 icon="pi pi-envelope"
                 label="Send"
-                @click="sendEmail"
+                :loading="isSendingEmail"
+                :disabled="isSendingEmail"
+                @click="openSendEmailDialog"
             />
             <router-link
                 v-if="documentRoute"
@@ -70,6 +72,15 @@
         </div>
 
         <Loading v-if="isLoading" />
+
+        <SendDocumentEmailDialog
+            v-model="showSendEmailDialog"
+            document-kind="invoice"
+            :document-number="state.invoice_number"
+            :recipients="emailRecipients"
+            :submitting="isSendingEmail"
+            @confirm="confirmSendEmail"
+        />
     </div>
 </template>
 
@@ -79,6 +90,7 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import BillingDetailCustomerSection from '@/components/billing/BillingDetailCustomerSection.vue';
 import BillingDetailTable from '@/components/billing/BillingDetailTable.vue';
+import SendDocumentEmailDialog from '@/components/admin/SendDocumentEmailDialog.vue';
 import { billingDetailTableClasses } from '@/helpers/billing/billingDetailHelpers';
 import { invoiceLineItemColumns } from '@/helpers/billing/billingDetailColumns';
 import { mapInvoiceLineItemRow } from '@/helpers/invoices/invoiceDetailHelpers';
@@ -91,6 +103,7 @@ export default defineComponent({
         Loading,
         BillingDetailCustomerSection,
         BillingDetailTable,
+        SendDocumentEmailDialog,
     },
     setup() {
         const invoice = useShowInvoice();

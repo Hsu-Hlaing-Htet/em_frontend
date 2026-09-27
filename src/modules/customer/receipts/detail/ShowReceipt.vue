@@ -9,8 +9,9 @@
                 <div class="pdf-actions no-print">
                     <Button
                         icon="pi pi-download"
-                        :label="$t('customer.downloadReceipt')"
+                        :label="isDownloading ? 'Downloading...' : $t('common.download')"
                         :loading="isDownloading"
+                        :aria-label="$t('customer.downloadReceipt')"
                         @click="downloadPdf"
                     />
                     <router-link :to="backRoute">

@@ -36,7 +36,9 @@
                     v-if="canSendInvoice"
                     icon="pi pi-envelope"
                     label="Send"
-                    @click="sendEmail"
+                    :loading="isSendingEmail"
+                    :disabled="isSendingEmail"
+                    @click="openSendEmailDialog"
                 />
                 <Button
                     v-if="canRecordPayment"
@@ -73,6 +75,14 @@
         :close-on-confirm="false"
         @confirm="rejectInvoice"
     />
+    <SendDocumentEmailDialog
+        v-model="showSendEmailDialog"
+        document-kind="invoice"
+        :document-number="state.invoice_number"
+        :recipients="emailRecipients"
+        :submitting="isSendingEmail"
+        @confirm="confirmSendEmail"
+    />
 </template>
 
 <script>
@@ -83,6 +93,7 @@ import InvoiceDocumentSheet from '@/components/admin/documents/InvoiceDocumentSh
 import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import ApproveRecordDialog from '@/components/admin/ApproveRecordDialog.vue';
 import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
+import SendDocumentEmailDialog from '@/components/admin/SendDocumentEmailDialog.vue';
 import useInvoiceDocumentPage from './useInvoiceDocumentPage';
 
 export default defineComponent({
@@ -94,6 +105,7 @@ export default defineComponent({
         DocumentDownloadActions,
         ApproveRecordDialog,
         RejectContractDialog,
+        SendDocumentEmailDialog,
     },
     setup() {
         return useInvoiceDocumentPage();

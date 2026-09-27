@@ -13,7 +13,7 @@
                         @print="printPdf"
                     />
                     <router-link v-if="canMakePayment" :to="makePaymentRoute">
-                        <Button label="Make Payment" icon="pi pi-wallet" />
+                        <Button :label="$t('common.pay')" icon="pi pi-wallet" />
                     </router-link>
                     <router-link :to="backRoute">
                         <Button label="Back" severity="secondary" />

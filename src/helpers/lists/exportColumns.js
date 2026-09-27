@@ -1,6 +1,8 @@
 import { formatCurrencyAmount, getPaymentTypeLabel, getStatusLabel } from '@/utils/formatter';
+import { resolveInvoiceTotal } from '@/helpers/invoices/invoiceDetailHelpers';
 
 const currency = (row, field) => formatCurrencyAmount(row[field]);
+const invoiceTotalCurrency = (row) => formatCurrencyAmount(resolveInvoiceTotal(row));
 const paymentType = (row) => getPaymentTypeLabel(row.payment_type);
 const status = (row) => getStatusLabel(row.status || row.display_status || row.payment_status);
 
@@ -38,8 +40,8 @@ export function createContractExportColumns(prefix) {
         { field: 'building_name', header: 'Building' },
         { field: 'room_number', header: 'Room' },
         { field: 'contract_total', header: 'Contract Total (MMK)', type: 'currency', format: (row) => currency(row, 'contract_total') },
-        { field: 'paid_amount', header: 'Paid Amount (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount') },
-        { field: 'remaining_amount', header: 'Remaining Amount (MMK)', type: 'currency', format: (row) => currency(row, 'remaining_amount') },
+        { field: 'paid_amount', header: 'Total Paid (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount') },
+        { field: 'remaining_amount', header: 'Balance (MMK)', type: 'currency', format: (row) => currency(row, 'remaining_amount') },
         { field: 'status', header: 'Status', format: status },
         { field: 'created_at', header: 'Created At', type: 'date' },
         { field: 'payment_type', header: 'Payment Plan Type', format: paymentType },
@@ -175,19 +177,19 @@ export const MAINTENANCE_EXPORT_COLUMNS = [
 export const UTILITY_EXPORT_COLUMNS = [
     { field: 'customer_name', header: 'Customer' },
     { field: 'room_number', header: 'Room' },
-    { field: 'total_amount', header: 'Total Amount (MMK)', type: 'currency', format: (row) => currency(row, 'total_amount') },
+    { field: 'total_amount', header: 'Total (MMK)', type: 'currency', format: (row) => currency(row, 'total_amount') },
     { field: 'status', header: 'Status', format: status },
     { field: 'created_by_name', header: 'Created By' },
     { field: 'created_at', header: 'Created At', type: 'date' },
 ];
 
 export const INVOICE_EXPORT_COLUMNS = [
-    { field: 'invoice_number', header: 'Invoice No' },
+    { field: 'invoice_number', header: 'Invoice #' },
     { field: 'customer_name', header: 'Customer' },
     { field: 'building_name', header: 'Building' },
     { field: 'room_number', header: 'Room' },
-    { field: 'total_amount', header: 'Total Amount (MMK)', type: 'currency', format: (row) => currency(row, 'total_amount') },
-    { field: 'issued_date', header: 'Issued Date', type: 'date' },
+    { field: 'invoice_total', header: 'Total (MMK)', type: 'currency', format: invoiceTotalCurrency },
+    { field: 'issued_date', header: 'Issue Date', type: 'date' },
     { field: 'due_date', header: 'Due Date', type: 'date' },
     { field: 'payment_status', header: 'Status', format: (row) => getStatusLabel(row.payment_status || row.status) },
 ];
@@ -195,33 +197,22 @@ export const INVOICE_EXPORT_COLUMNS = [
 export const PAYMENT_EXPORT_COLUMNS = [
     { field: 'invoice_number', header: 'Invoice No' },
     { field: 'customer_name', header: 'Customer' },
-    { field: 'property_unit', header: 'Property / Unit' },
-    { field: 'invoice_amount', header: 'Invoice Amount (MMK)', type: 'currency', format: (row) => currency(row, 'invoice_amount') },
-    { field: 'paid_amount', header: 'Previously Paid (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount') },
-    { field: 'amount', header: 'Paid Amount (MMK)', type: 'currency', format: (row) => currency(row, 'amount') },
-    { field: 'balance', header: 'Balance (MMK)', type: 'currency', format: (row) => currency(row, 'balance') },
-    { field: 'payment_type', header: 'Payment Type' },
-    { field: 'payment_date', header: 'Payment Date', type: 'date' },
-    { field: 'payment_method_name', header: 'Payment Method' },
-    { field: 'display_status', header: 'Status', format: (row) => getStatusLabel(row.display_status || row.status) },
-    { field: 'note', header: 'Notes' },
-];
-
-export const PAYMENT_APPROVAL_EXPORT_COLUMNS = [
-    { field: 'invoice_number', header: 'Invoice No' },
-    { field: 'customer_name', header: 'Customer' },
-    { field: 'invoice_amount', header: 'Due (MMK)', type: 'currency', format: (row) => currency(row, 'invoice_amount') },
-    { field: 'amount', header: 'Amount (MMK)', type: 'currency', format: (row) => currency(row, 'amount') },
-    { field: 'payment_type', header: 'Type' },
+    { field: 'invoice_amount', header: 'Total (MMK)', type: 'currency', format: (row) => currency(row, 'invoice_amount') },
+    { field: 'paid', header: 'Paid (MMK)', type: 'currency', format: (row) => currency(row, 'paid') },
+    { field: 'paid_by', header: 'Paid By' },
     { field: 'payment_date', header: 'Date', type: 'date' },
     { field: 'payment_method_name', header: 'Method' },
 ];
 
+export const PAYMENT_APPROVAL_EXPORT_COLUMNS = PAYMENT_EXPORT_COLUMNS;
+
 export const RECEIPT_EXPORT_COLUMNS = [
-    { field: 'receipt_number', header: 'Receipt #' },
-    { field: 'customer_name', header: 'Customer Name' },
-    { field: 'invoice_number', header: 'Invoice No.' },
-    { field: 'paid_amount', header: 'Amount Received (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount') },
-    { field: 'payment_date', header: 'Payment Date', type: 'date' },
-    { field: 'payment_method_name', header: 'Payment Method' },
+    { field: 'receipt_number', header: 'Receipt No' },
+    { field: 'invoice_number', header: 'Invoice No' },
+    { field: 'customer_name', header: 'Customer' },
+    { field: 'paid_amount', header: 'Payment (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount') },
+    { field: 'paid_by', header: 'Paid By' },
+    { field: 'date', header: 'Date', type: 'date' },
+    { field: 'payment_method_name', header: 'Method' },
+    { field: 'approved_by_name', header: 'Approved By' },
 ];

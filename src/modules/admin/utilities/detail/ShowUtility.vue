@@ -104,7 +104,9 @@
                 v-if="canSendUtility"
                 icon="pi pi-envelope"
                 label="Send"
-                @click="sendEmail"
+                :loading="isSendingEmail"
+                :disabled="isSendingEmail"
+                @click="openSendEmailDialog"
             />
             <router-link :to="backRoute">
                 <Button label="Back" />
@@ -136,6 +138,15 @@
         </div>
 
         <Loading v-if="isLoading" />
+
+        <SendDocumentEmailDialog
+            v-model="showSendEmailDialog"
+            document-kind="utility bill"
+            :document-number="utilityReference"
+            :recipients="emailRecipients"
+            :submitting="isSendingEmail"
+            @confirm="confirmSendEmail"
+        />
     </div>
 </template>
 
@@ -147,6 +158,7 @@ import BillingDetailCustomerSection from '@/components/billing/BillingDetailCust
 import BillingDetailTable from '@/components/billing/BillingDetailTable.vue';
 import ApproveRecordDialog from '@/components/admin/ApproveRecordDialog.vue';
 import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
+import SendDocumentEmailDialog from '@/components/admin/SendDocumentEmailDialog.vue';
 import { billingDetailTableClasses } from '@/helpers/billing/billingDetailHelpers';
 import { utilityReadingColumns } from '@/helpers/billing/billingDetailColumns';
 import useShowUtility from './useShowUtility';
@@ -160,6 +172,7 @@ export default defineComponent({
         BillingDetailTable,
         ApproveRecordDialog,
         RejectContractDialog,
+        SendDocumentEmailDialog,
     },
     setup() {
         const utility = useShowUtility();

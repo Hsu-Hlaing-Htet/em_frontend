@@ -3,10 +3,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useDebounceFn } from '@/utils/debounce';
 import { multisortConvert } from '@/utils/multisort';
 import { parseDate } from '@/utils/formatter';
-import {
-    formatPropertyUnit,
-    resolvePaymentListStatus,
-} from '@/helpers/payments/paymentListHelpers';
+import { mapPaymentListRow } from '@/helpers/payments/paymentListHelpers';
 import {
     omitEmptyParams,
     queriesEqual,
@@ -59,18 +56,7 @@ export const usePaymentList = () => {
         };
     };
 
-    const mapPaymentRow = (item) => ({
-        ...item,
-        property_unit: item.property_unit || formatPropertyUnit(item),
-        display_status: resolvePaymentListStatus(item),
-        paid_amount: item.paid_amount ?? item.amount,
-        balance: item.balance ?? 0,
-        payment_method_name: item.payment_method_name || '',
-        customer_name: item.customer_name || '',
-        invoice_number: item.invoice_number || '',
-        invoice_amount: item.invoice_amount ?? 0,
-    });
-
+    const mapPaymentRow = (item) => mapPaymentListRow(item);
     const buildFilterQuery = () => omitEmptyParams({
         search: search.value?.trim() || undefined,
         payment_type: paymentType.value || undefined,

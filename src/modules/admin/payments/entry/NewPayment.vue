@@ -20,7 +20,7 @@
                 />
             </div>
             <div class="field">
-                <label class="mb-2 block text-md">Amount Due (MMK)</label>
+                <label class="mb-2 block text-md">Balance (MMK)</label>
                 <InputText
                     :model-value="formatCurrencyAmount(amountDue)"
                     class="w-full"
@@ -87,7 +87,7 @@
             <div class="flex justify-end gap-2 md:col-span-2">
                 <Button
                     type="submit"
-                    label="Pay"
+                    :label="isSaving ? 'Paying...' : 'Pay'"
                     :loading="isSaving"
                     :disabled="!canRecord || isSaving"
                 />

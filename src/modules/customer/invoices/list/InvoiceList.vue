@@ -17,9 +17,9 @@
                 <span class="customer-record-cell customer-record-primary">
                     <span class="customer-record-label">{{ invoice.type || $t('customer.invoice') }}</span>
                     <strong v-if="invoice.invoice_number">{{ invoice.invoice_number }}</strong>
-                    <small v-if="hasAmount(invoice.total_amount)">
-                        {{ $t('customer.amount') }}
-                        <span class="rw-numeric rw-money">{{ formatCurrency(Number(invoice.total_amount)) }}</span>
+                    <small v-if="hasAmount(invoiceTotal(invoice))">
+                        {{ $t('customer.total') }}
+                        <span class="rw-numeric rw-money">{{ formatCurrency(invoiceTotal(invoice)) }}</span>
                     </small>
                 </span>
                 <span class="customer-record-cell customer-record-meta">
@@ -54,6 +54,7 @@ import CustomerEmptyState from '@/components/customer/CustomerEmptyState.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
 import useCustomerInvoiceList from '@/composables/customer/useCustomerInvoiceList';
 import { formatCustomerDateTimeParts } from '@/helpers/customer/datetime';
+import { resolveInvoiceTotal } from '@/helpers/invoices/invoiceDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
 
 export default defineComponent({
@@ -72,6 +73,7 @@ export default defineComponent({
             formatCurrency,
             createdAtParts: formatCustomerDateTimeParts,
             hasAmount,
+            invoiceTotal: resolveInvoiceTotal,
         };
     },
 });

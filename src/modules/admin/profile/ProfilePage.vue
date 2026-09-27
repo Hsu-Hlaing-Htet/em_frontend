@@ -86,7 +86,7 @@
             </div>
 
             <div class="col-span-1 pt-2 md:col-span-2">
-                <Button type="submit" label="Save Profile" :loading="isSaving" />
+                <Button type="submit" label="Save" :loading="isSaving" />
             </div>
         </form>
     </div>

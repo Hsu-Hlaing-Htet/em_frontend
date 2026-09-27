@@ -39,13 +39,13 @@
 
         <template #footer>
             <Button
-                label="Close"
+                label="Cancel"
                 severity="secondary"
                 :disabled="submitting"
                 @click="close"
             />
             <Button
-                label="Confirm"
+                :label="submitting ? 'Terminating...' : 'Terminate'"
                 severity="danger"
                 :loading="submitting"
                 @click="confirm"

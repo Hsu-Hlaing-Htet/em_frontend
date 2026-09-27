@@ -314,7 +314,7 @@
         <template #footer>
             <Button label="Back" severity="secondary" text @click="showCancelDialog = false" />
             <Button
-                label="Cancel Request"
+                label="Cancel"
                 severity="danger"
                 :loading="workflowLoading.cancel"
                 @click="confirmCancel"

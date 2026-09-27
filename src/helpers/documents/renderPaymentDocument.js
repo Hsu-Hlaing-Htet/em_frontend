@@ -10,7 +10,7 @@ const PAYMENT_COLUMNS = [
     { label: 'Payment Date', key: 'payment_date', align: 'left' },
     { label: 'Payment Method', key: 'payment_method_name', align: 'left' },
     { label: 'Reference No', key: 'reference_number', align: 'left' },
-    { label: 'Paid Amount', key: 'amount', align: 'right' },
+    { label: 'Payment', key: 'amount', align: 'right' },
 ];
 
 function buildPaymentColumns(rows = []) {
@@ -38,7 +38,7 @@ export function renderPaymentDocumentBody(document) {
             columns: buildPaymentColumns(rows),
             rows,
             emptyMessage: 'No payment details recorded.',
-            totalLabel: document.amountPaid?.label || 'Amount Paid',
+            totalLabel: document.amountPaid?.label || 'Payment',
             totalValue: document.amountPaid?.amount,
             minWidth: '40rem',
         }],

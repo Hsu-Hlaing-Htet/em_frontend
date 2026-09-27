@@ -46,7 +46,7 @@ export function renderUtilityDocumentBody(document) {
             columns: READING_COLUMNS,
             rows: document.readings || [],
             emptyMessage: 'No utility readings recorded.',
-            totalLabel: document.totalDue?.label || 'Total Amount',
+            totalLabel: document.totalDue?.label || 'Total',
             totalValue: document.totalDue?.amount,
         }],
         authorization: document.authorization,

@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <Button type="submit" label="Save Role" class="admin-crud-primary-btn" />
+                    <Button type="submit" label="Save" class="admin-crud-primary-btn" />
                     <router-link :to="{ name: 'roleList' }">
                         <Button type="button" label="Cancel" class="p-button-outlined" />
                     </router-link>

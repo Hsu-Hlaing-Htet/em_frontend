@@ -160,7 +160,7 @@
 
                 <Transition name="draft-field">
                     <div v-if="showCalculatedPayments" class="field">
-                        <label class="mb-2 block text-md">Remaining Balance</label>
+                        <label class="mb-2 block text-md">Balance After Deposit</label>
                         <InputNumber :model-value="remainingBalance" class="w-full" mode="currency" currency="MMK"
                             locale="en-MM" readonly />
                     </div>

@@ -78,32 +78,29 @@
             </div>
 
             <div class="payment-detail-card__totals-wrap">
-                <p v-if="showLateFeeHint" class="payment-detail-card__late-fee-hint">
-                    Late fee is shown only when applicable.
-                </p>
                 <dl class="payment-detail-card__totals">
                     <div>
-                        <dt>Sub Total</dt>
+                        <dt>Subtotal</dt>
                         <dd>{{ subTotal }}</dd>
                     </div>
-                    <div v-if="showLateFee">
+                    <div>
                         <dt>Late Fee</dt>
                         <dd>{{ lateFee }}</dd>
                     </div>
-                    <div class="is-total">
-                        <dt>Amount Due</dt>
+                    <div class="is-section">
+                        <dt>Total</dt>
                         <dd>{{ total }}</dd>
                     </div>
-                    <div class="is-separator">
-                        <dt>{{ receivedLabel }}</dt>
+                    <div>
+                        <dt>Paid</dt>
                         <dd>{{ received }}</dd>
                     </div>
-                    <div v-if="showChange">
-                        <dt>{{ changeLabel }}</dt>
+                    <div v-if="showChange" class="is-settlement">
+                        <dt>Change</dt>
                         <dd>{{ change }}</dd>
                     </div>
-                    <div>
-                        <dt>Remaining Balance</dt>
+                    <div v-else class="is-settlement">
+                        <dt>Balance</dt>
                         <dd>{{ balance }}</dd>
                     </div>
                 </dl>
@@ -231,12 +228,8 @@ export default defineComponent({
         invoiceRows: { type: Array, default: () => [] },
         subTotal: { type: String, default: '—' },
         lateFee: { type: String, default: '—' },
-        showLateFee: { type: Boolean, default: false },
-        showLateFeeHint: { type: Boolean, default: true },
         total: { type: String, default: '—' },
-        receivedLabel: { type: String, default: 'Amount Received' },
         received: { type: String, default: '—' },
-        changeLabel: { type: String, default: 'Change' },
         change: { type: String, default: '—' },
         showChange: { type: Boolean, default: false },
         balance: { type: String, default: '—' },
@@ -419,15 +412,26 @@ export default defineComponent({
     white-space: nowrap;
 }
 
-.payment-detail-card__totals .is-total dt,
-.payment-detail-card__totals .is-total dd {
-    font-weight: 700;
-}
-
-.payment-detail-card__totals .is-separator {
+.payment-detail-card__totals .is-section {
     padding-top: 0.55rem;
     margin-top: 0.15rem;
     border-top: 1px solid var(--admin-border);
+}
+
+.payment-detail-card__totals .is-section dt,
+.payment-detail-card__totals .is-section dd {
+    font-weight: 700;
+}
+
+.payment-detail-card__totals .is-settlement {
+    padding-top: 0.55rem;
+    margin-top: 0.15rem;
+    border-top: 1px solid var(--admin-border);
+}
+
+.payment-detail-card__totals .is-settlement dt,
+.payment-detail-card__totals .is-settlement dd {
+    font-weight: 700;
 }
 
 .payment-detail-card__verification-grid,

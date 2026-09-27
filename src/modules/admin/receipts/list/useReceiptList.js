@@ -17,14 +17,25 @@ import { RECEIPT_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 import { service as paymentMethodService } from '@/modules/admin/payment-methods/service';
 import { useReceiptStore } from '../store';
 
-const mapReceiptRow = (item) => ({
-    ...item,
-    customer_name: item.customer_name || '',
-    invoice_number: item.invoice_number || '',
-    paid_amount: item.paid_amount ?? item.payment_amount ?? item.amount ?? 0,
-    payment_date: item.payment_date || '',
-    payment_method_name: item.payment_method_name || '',
-});
+const mapReceiptRow = (item) => {
+    const paidAmount = item.paid_amount ?? item.payment_amount ?? item.amount;
+    const numericPaid = paidAmount == null || paidAmount === ''
+        ? null
+        : Number(paidAmount);
+
+    return {
+        ...item,
+        receipt_number: item.receipt_number || '',
+        customer_name: item.customer_name || '',
+        invoice_number: item.invoice_number || '',
+        paid_amount: Number.isFinite(numericPaid) ? numericPaid : null,
+        paid_by: item.paid_by || '',
+        date: item.date || item.payment_date || '',
+        payment_date: item.payment_date || '',
+        payment_method_name: item.payment_method_name || '',
+        approved_by_name: item.payment_approved_by_name || item.approved_by_name || '',
+    };
+};
 
 export const useReceiptList = () => {
     const route = useRoute();

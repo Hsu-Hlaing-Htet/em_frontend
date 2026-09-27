@@ -91,19 +91,33 @@ export function getApiErrorMessage(error, fallback = 'Something went wrong. Plea
         return normalizeApiMessage(fallback, status);
     }
 
-    if (data.data) {
-        const messages = Object.values(data.data).flat();
+    const fieldErrors = data.data || data.errors;
 
-        if (messages.length) {
-            return normalizeApiMessage(messages[0], status);
-        }
-    }
+    if (fieldErrors && typeof fieldErrors === 'object') {
+        const entries = Object.entries(fieldErrors);
 
-    if (data.errors) {
-        const messages = Object.values(data.errors).flat();
+        if (entries.length) {
+            const [field, messages] = entries[0];
+            const firstMessage = Array.isArray(messages) ? messages[0] : messages;
+            const fieldKey = String(field || '').toLowerCase();
 
-        if (messages.length) {
-            return normalizeApiMessage(messages[0], status);
+            if (fieldKey === 'amount' && String(firstMessage || '').toLowerCase().includes('required')) {
+                return 'Paid amount is required.';
+            }
+
+            if (fieldKey === 'amount_received' && String(firstMessage || '').toLowerCase().includes('required')) {
+                return 'Received amount is required.';
+            }
+
+            if (fieldKey === 'rejection_reason' && String(firstMessage || '').toLowerCase().includes('required')) {
+                return 'Reject requires a reason.';
+            }
+
+            if (fieldKey === 'proof' && String(firstMessage || '').toLowerCase().includes('required')) {
+                return 'Payment proof is required.';
+            }
+
+            return normalizeApiMessage(firstMessage, status);
         }
     }
 

@@ -1,9 +1,6 @@
 import { ref, onMounted, computed } from 'vue';
 import { omitEmptyParams, toQueryDate } from '@/helpers/lists/listQuery';
-import {
-    formatPropertyUnit,
-    resolvePaymentListStatus,
-} from '@/helpers/payments/paymentListHelpers';
+import { mapPaymentListRow } from '@/helpers/payments/paymentListHelpers';
 import { useEntityApprovalList } from '@/composables/global/useEntityApprovalList';
 import { useListExport } from '@/composables/admin/useListExport';
 import { PAYMENT_APPROVAL_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
@@ -11,20 +8,7 @@ import { PAYMENT_TYPE_FILTER_OPTIONS } from '@/constants/constant';
 import { service as paymentMethodService } from '@/modules/admin/payment-methods/service';
 import { usePaymentStore } from '../store';
 
-const mapPaymentRow = (item) => ({
-    ...item,
-    property_unit: item.property_unit || formatPropertyUnit(item),
-    display_status: resolvePaymentListStatus(item),
-    // Submitted/frozen payment amount from payments.amount — never invent from live invoice balance.
-    amount: item.amount == null || item.amount === '' ? null : Number(item.amount),
-    paid_amount: item.paid_amount ?? item.amount,
-    balance: item.balance ?? 0,
-    payment_method_name: item.payment_method_name || '',
-    customer_name: item.customer_name || '',
-    invoice_number: item.invoice_number || '',
-    invoice_amount: item.invoice_amount ?? 0,
-});
-
+const mapPaymentRow = (item) => mapPaymentListRow(item);
 export const usePaymentApprovalList = () => {
     const paymentType = ref(null);
     const paymentMethodId = ref(null);

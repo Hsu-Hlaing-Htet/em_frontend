@@ -80,25 +80,51 @@
                 </template>
                 <template #loading>Loading receipts. Please wait.</template>
 
-                <Column field="receipt_number" header="Receipt #" :sortable="true" style="min-width: 170px">
+                <Column field="receipt_number" header="Receipt No" :sortable="true" style="min-width: 130px" frozen>
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'receiptDocument', params: { id: data.id } }"
                             class="font-medium text-[var(--admin-primary)] hover:underline"
                         >
-                            {{ data.receipt_number }}
+                            {{ data.receipt_number || '—' }}
                         </router-link>
                     </template>
                 </Column>
-                <Column field="customer_name" header="Customer Name" :sortable="true" style="min-width: 180px" />
-                <Column field="invoice_number" header="Invoice No." :sortable="true" style="min-width: 140px" />
-                <Column field="paid_amount" header="Amount Received (MMK)" :sortable="true" style="min-width: 160px">
+                <Column field="invoice_number" header="Invoice No" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">
-                        {{ formatCurrency(data.paid_amount ?? data.amount) }}
+                        {{ data.invoice_number || '—' }}
                     </template>
                 </Column>
-                <Column field="payment_date" header="Payment Date" :sortable="true" style="min-width: 135px" />
-                <Column field="payment_method_name" header="Payment Method" :sortable="true" style="min-width: 150px" />
+                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 160px; max-width: 240px">
+                    <template #body="{ data }">
+                        <span class="admin-contract-party-names">{{ data.customer_name || '—' }}</span>
+                    </template>
+                </Column>
+                <Column field="paid_amount" header="Payment (MMK)" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ formatCurrency(data.paid_amount) }}
+                    </template>
+                </Column>
+                <Column field="paid_by" header="Paid By" :sortable="true" style="min-width: 140px">
+                    <template #body="{ data }">
+                        {{ data.paid_by || '—' }}
+                    </template>
+                </Column>
+                <Column field="date" header="Date" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ data.date || data.payment_date || '—' }}
+                    </template>
+                </Column>
+                <Column field="payment_method_name" header="Method" :sortable="true" style="min-width: 120px">
+                    <template #body="{ data }">
+                        {{ data.payment_method_name || '—' }}
+                    </template>
+                </Column>
+                <Column field="approved_by_name" header="Approved By" :sortable="true" style="min-width: 140px">
+                    <template #body="{ data }">
+                        {{ data.approved_by_name || '—' }}
+                    </template>
+                </Column>
             </DataTable>
 
             <Loading v-if="isLoading" />

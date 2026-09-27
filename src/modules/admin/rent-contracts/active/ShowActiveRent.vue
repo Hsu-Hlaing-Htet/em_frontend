@@ -18,7 +18,7 @@
                 <Button
                     v-if="canCancel"
                     icon="pi pi-ban"
-                    label="Terminate Contract"
+                    label="Terminate"
                     severity="danger"
                     @click="openCancelDialog"
                 />
@@ -50,8 +50,10 @@
 
     <SendContractEmailDialog
         v-model="showSendEmailDialog"
-        :customer-name="state.customer_name"
+        :customer-name="state.primary_customer_name || state.customer_name"
         :email="state.customer_email"
+        :second-customer-name="state.second_customer_name"
+        :second-customer-email="state.second_customer_email"
         :contract-no="state.contract_no"
         :submitting="isSendingEmail"
         @confirm="sendEmail"

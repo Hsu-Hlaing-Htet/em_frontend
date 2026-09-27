@@ -1,16 +1,14 @@
 <template>
     <div class="flex flex-col gap-5">
-        <div class="admin-panel invoice-approval-panel relative">
+        <div class="admin-panel relative">
             <DataTable
                 ref="dt"
-                class="invoice-approval-table admin-clickable-rows"
                 data-key="id"
                 paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
                 responsive-layout="scroll"
                 sort-mode="multiple"
                 scroll-height="50vh"
-                table-style="min-width: 1210px"
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
@@ -22,6 +20,7 @@
                 :rows-per-page-options="[10, 25, 50]"
                 removable-sort
                 row-hover
+                class="admin-clickable-rows"
                 @page="onPage($event)"
                 @sort="onSort($event)"
                 @row-click="onRowClick"
@@ -113,7 +112,7 @@
                     field="invoice_number"
                     header="Invoice #"
                     :sortable="true"
-                    style="width: 160px; min-width: 160px"
+                    style="min-width: 150px"
                 >
                     <template #body="{ data }">
                         <router-link
@@ -129,35 +128,46 @@
                     field="customer_name"
                     header="Customer"
                     :sortable="true"
-                    style="width: 180px; min-width: 180px"
-                />
+                    style="min-width: 150px"
+                >
+                    <template #body="{ data }">
+                        <span class="admin-contract-party-names">{{ data.customer_name || '—' }}</span>
+                    </template>
+                </Column>
 
                 <Column
                     field="building_name"
                     header="Building"
                     :sortable="true"
-                    style="width: 190px; min-width: 190px"
+                    style="min-width: 180px"
                 />
 
                 <Column
                     field="room_number"
                     header="Room"
                     :sortable="true"
-                    style="width: 110px; min-width: 110px"
+                    style="min-width: 100px"
                 />
 
                 <Column
                     field="total_amount"
                     header="Total (MMK)"
                     :sortable="true"
-                    header-class="invoice-approval-total"
-                    body-class="invoice-approval-total"
-                    style="width: 140px; min-width: 140px; max-width: 140px"
+                    style="min-width: 130px"
                 >
                     <template #body="{ data }">
-                        <span class="invoice-approval-total__value">
-                            {{ formatCurrencyAmount(data.total_amount) }}
-                        </span>
+                        {{ formatCurrency(invoiceTotal(data)) }}
+                    </template>
+                </Column>
+
+                <Column
+                    field="issued_date"
+                    header="Issue Date"
+                    :sortable="true"
+                    style="min-width: 130px"
+                >
+                    <template #body="{ data }">
+                        {{ formatDate(data.issued_date) }}
                     </template>
                 </Column>
 
@@ -165,16 +175,29 @@
                     field="due_date"
                     header="Due Date"
                     :sortable="true"
-                    header-class="invoice-approval-nowrap"
-                    body-class="invoice-approval-nowrap"
-                    style="width: 150px; min-width: 150px"
+                    style="min-width: 130px"
                 >
                     <template #body="{ data }">
                         {{ formatDate(data.due_date) }}
                     </template>
                 </Column>
 
-                <Column header="Actions" :exportable="false" style="min-width: 120px">
+                <Column
+                    field="status"
+                    header="Status"
+                    :sortable="true"
+                    style="min-width: 110px"
+                >
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.payment_status || data.display_status || data.status" />
+                    </template>
+                </Column>
+
+                <Column
+                    header="Actions"
+                    :exportable="false"
+                    style="min-width: 120px"
+                >
                     <template #body="{ data }">
                         <ApprovalListActions
                             @approve="approveFromList(data)"
@@ -207,7 +230,9 @@ import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
 import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
-import { formatCurrencyAmount, formatDate } from '@/utils/formatter';
+import StatusBadge from '@/components/global/StatusBadge.vue';
+import { formatCurrencyAmount as formatCurrency, formatDate } from '@/utils/formatter';
+import { resolveInvoiceTotal } from '@/helpers/invoices/invoiceDetailHelpers';
 import { useInvoiceApprovalList } from './useInvoiceApprovalList';
 import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
@@ -221,6 +246,7 @@ export default defineComponent({
         Calendar,
         Loading,
         AdminListFilters,
+        StatusBadge,
         ApprovalListActions,
         RejectContractDialog,
         ListExportActions,
@@ -260,80 +286,10 @@ export default defineComponent({
             approveFromList,
             rejectFromList,
             onRejectConfirm,
-            formatCurrencyAmount,
+            formatCurrency,
             formatDate,
+            invoiceTotal: resolveInvoiceTotal,
         };
     },
 });
 </script>
-
-<style scoped>
-.invoice-approval-panel {
-    min-width: 0;
-    max-width: 100%;
-    overflow: hidden;
-}
-
-:deep(.invoice-approval-table),
-:deep(.invoice-approval-table .p-datatable-wrapper) {
-    min-width: 0;
-    max-width: 100%;
-}
-
-:deep(.invoice-approval-table .p-datatable-wrapper) {
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-:deep(.invoice-approval-table .p-datatable-table) {
-    width: 100%;
-    min-width: 1210px;
-}
-
-:deep(.invoice-approval-table .p-datatable-thead > tr > th) {
-    vertical-align: middle;
-}
-
-:deep(.invoice-approval-table .invoice-approval-nowrap) {
-    white-space: nowrap;
-}
-
-:deep(.invoice-approval-table .invoice-approval-total) {
-    width: 140px;
-    min-width: 140px;
-    max-width: 140px;
-    text-align: right !important;
-    white-space: nowrap;
-    vertical-align: middle;
-    font-size: inherit;
-    font-weight: inherit;
-}
-
-:deep(.invoice-approval-table .invoice-approval-total .p-column-header-content) {
-    justify-content: flex-end;
-    width: 100%;
-    white-space: nowrap;
-    font-size: inherit;
-    font-weight: inherit;
-}
-
-:deep(.invoice-approval-table .invoice-approval-total .p-column-title) {
-    white-space: nowrap;
-}
-
-.invoice-approval-total__value {
-    display: block;
-    width: 100%;
-    text-align: right;
-    white-space: nowrap;
-    font-size: inherit;
-    font-weight: inherit;
-    font-variant-numeric: tabular-nums;
-    line-height: inherit;
-}
-
-:deep(.invoice-approval-table .p-paginator) {
-    max-width: 100%;
-}
-
-</style>

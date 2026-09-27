@@ -108,35 +108,28 @@
                         </router-link>
                     </template>
                 </Column>
-                <Column field="customer_name" header="Customer Name" :sortable="true" style="min-width: 150px" />
-                <Column field="invoice_amount" header="Invoice Amount (MMK)" :sortable="true" style="min-width: 130px">
+                <Column field="customer_name" header="Customer" :sortable="true" style="min-width: 160px; max-width: 240px">
+                    <template #body="{ data }">
+                        <span class="admin-contract-party-names">{{ data.customer_name || '—' }}</span>
+                    </template>
+                </Column>
+                <Column field="invoice_amount" header="Total (MMK)" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         {{ formatCurrency(data.invoice_amount) }}
                     </template>
                 </Column>
-                <Column field="amount" header="Paid Amount (MMK)" :sortable="true" style="min-width: 130px">
+                <Column field="paid" header="Paid (MMK)" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
-                        {{ formatCurrency(data.amount) }}
+                        {{ formatCurrency(data.paid) }}
                     </template>
                 </Column>
-                <Column field="balance" header="Balance (MMK)" :sortable="true" style="min-width: 120px">
+                <Column field="paid_by" header="Paid By" :sortable="true" style="min-width: 140px">
                     <template #body="{ data }">
-                        {{ formatCurrency(data.balance) }}
+                        {{ data.paid_by || '—' }}
                     </template>
                 </Column>
-                <Column field="payment_type" header="Payment Type" :sortable="true" style="min-width: 110px">
-                    <template #body="{ data }">
-                        {{ formatPaymentTypeLabel(data.payment_type) }}
-                    </template>
-                </Column>
-
-                <Column field="payment_date" header="Payment Date" :sortable="true" style="min-width: 120px" />
-                <Column field="payment_method_name" header="Payment Method" :sortable="true" style="min-width: 130px" />
-                <Column field="status" header="Status" :sortable="true" style="min-width: 110px">
-                    <template #body="{ data }">
-                        <StatusBadge :value="data.display_status || data.status" />
-                    </template>
-                </Column>
+                <Column field="payment_date" header="Date" :sortable="true" style="min-width: 120px" />
+                <Column field="payment_method_name" header="Method" :sortable="true" style="min-width: 120px" />
             </DataTable>
 
             <Loading v-if="isLoading" />
@@ -153,8 +146,6 @@ import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
-import StatusBadge from '@/components/global/StatusBadge.vue';
-import { formatPaymentTypeLabel } from '@/helpers/payments/paymentListHelpers';
 import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
 import { usePaymentList } from './usePaymentList';
 import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
@@ -169,7 +160,6 @@ export default defineComponent({
         Calendar,
         Loading,
         AdminListFilters,
-        StatusBadge,
         ListExportActions,
     },
     setup() {
@@ -177,7 +167,6 @@ export default defineComponent({
 
         return {
             ...list,
-            formatPaymentTypeLabel,
             formatCurrency,
         };
     },

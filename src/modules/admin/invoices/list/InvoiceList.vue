@@ -119,8 +119,11 @@
                     header="Customer"
                     :sortable="true"
                     style="min-width: 150px"
-                />
-
+                >
+                    <template #body="{ data }">
+                        <span class="admin-contract-party-names">{{ data.customer_name || '—' }}</span>
+                    </template>
+                </Column>
                 <Column
                     field="building_name"
                     header="Building"
@@ -142,7 +145,7 @@
                     style="min-width: 130px"
                 >
                     <template #body="{ data }">
-                        {{ formatCurrency(data.total_amount) }}
+                        {{ formatCurrency(invoiceTotal(data)) }}
                     </template>
                 </Column>
 
@@ -192,6 +195,7 @@ import AdminListFilters from '@/components/admin/AdminListFilters.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import { INVOICE_LIST_STATUS_OPTIONS } from '@/constants/constant';
 import { formatCurrencyAmount as formatCurrency, formatDate } from '@/utils/formatter';
+import { resolveInvoiceTotal } from '@/helpers/invoices/invoiceDetailHelpers';
 import { useInvoiceList } from './useInvoiceList';
 import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
@@ -222,6 +226,7 @@ export default defineComponent({
             dateTypeOptions: DATE_TYPE_OPTIONS,
             formatCurrency,
             formatDate,
+            invoiceTotal: resolveInvoiceTotal,
         };
     },
 });

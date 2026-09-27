@@ -11,7 +11,7 @@
                 </router-link>
                 <Button
                     v-if="canShowApprove()"
-                    label="Approve"
+                    :label="workflowLoading.approve ? 'Approving...' : 'Approve'"
                     icon="pi pi-check"
                     severity="success"
                     :loading="workflowLoading.approve"
@@ -50,11 +50,8 @@
                 :invoice-rows="invoiceRows"
                 :sub-total="subTotalDisplay"
                 :late-fee="lateFeeDisplay"
-                :show-late-fee="showLateFee"
                 :total="totalDisplay"
-                received-label="Amount Received"
                 :received="receivedDisplay"
-                change-label="Change"
                 :change="refundDisplay"
                 :show-change="showChange"
                 :balance="balanceDisplay"

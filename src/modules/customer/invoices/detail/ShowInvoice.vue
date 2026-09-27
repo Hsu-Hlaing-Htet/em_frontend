@@ -22,7 +22,7 @@
                     <StatusBadge :value="state.status" />
                 </div>
                 <div class="customer-payment-invoice-document">
-                    <InvoiceDocumentSheet :html="documentHtml" />
+                    <InvoiceDocumentSheet :html="documentHtml" scale-to-fit />
                 </div>
             </section>
 
@@ -182,7 +182,12 @@
                     </div>
 
                     <div class="mt-8 flex flex-wrap justify-end gap-2">
-                        <Button type="submit" :label="$t('customer.submitPayment')" :loading="isSaving" />
+                        <Button
+                            type="submit"
+                            :label="isSaving ? 'Paying...' : $t('common.pay')"
+                            :loading="isSaving"
+                            :disabled="isSaving"
+                        />
                         <router-link :to="invoiceDocumentRoute">
                             <Button type="button" :label="$t('common.cancel')" severity="secondary" />
                         </router-link>
@@ -239,15 +244,10 @@ export default defineComponent({
 }
 
 .customer-payment-invoice-document {
-    overflow-x: auto;
-}
-
-.customer-payment-invoice-document :deep(.invoice-doc) {
     width: 100%;
-    max-width: 100%;
-    min-height: auto;
-    margin: 0;
-    padding: clamp(1rem, 3vw, 2rem);
+    /* Outer scroll only — document itself stays fixed A4 and is scaled by InvoiceDocumentSheet. */
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .customer-payment-form-grid {

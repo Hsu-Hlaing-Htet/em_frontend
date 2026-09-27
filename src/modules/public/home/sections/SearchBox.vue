@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import Dropdown from '@/components/global/AppDropdown.vue';
 import PropertyCard from '@/components/public/PropertyCard.vue';
 import { useSearchBox } from '@/composables/public/useSearchBox';
 

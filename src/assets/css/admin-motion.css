@@ -89,18 +89,36 @@
         transform 190ms ease-out !important;
 }
 
-/* —— Connected overlays (dropdowns / menus) —— */
-.p-connected-overlay-enter-from,
-.p-connected-overlay-leave-to {
+/* —— Connected overlays (dropdowns / menus) ——
+   Geometry must be final before first visible frame.
+   Do NOT animate transform/scale/width/left/top — that reads as stretch/shake
+   when combined with PrimeVue absolutePosition (top/left).
+   Opacity-only enter; instant leave to avoid ghost panels when switching. */
+.p-connected-overlay-enter-from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: none !important;
 }
 
-.p-connected-overlay-enter-active,
-.p-connected-overlay-leave-active {
-    transition:
-        opacity 160ms ease-out,
-        transform 160ms ease-out;
+.p-connected-overlay-enter-active {
+    transition: opacity 100ms ease-out !important;
+}
+
+.p-connected-overlay-enter-to {
+    opacity: 1;
+    transform: none !important;
+}
+
+.p-connected-overlay-leave-from,
+.p-connected-overlay-leave-active,
+.p-connected-overlay-leave-to {
+    opacity: 0 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+/* Override Aura non-Vue connected-overlay scaleY defaults if that class is present */
+.p-connected-overlay {
+    transform: none;
 }
 
 /* —— Mobile sidebar mask (Admin App.vue layout-mask) —— */

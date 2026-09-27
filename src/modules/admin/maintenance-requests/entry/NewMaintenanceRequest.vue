@@ -9,7 +9,7 @@
                     :options="roomOptions"
                     option-label="label"
                     option-value="value"
-                    filter
+                    searchable
                     class="w-full"
                 />
                 <small v-if="errors.has('room_id')" class="p-error">
@@ -24,7 +24,7 @@
                     :options="residentOptions"
                     option-label="label"
                     option-value="value"
-                    filter
+                    searchable
                     class="w-full"
                 />
                 <small v-if="errors.has('user_id')" class="p-error">

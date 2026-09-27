@@ -75,7 +75,7 @@
                         option-label="label"
                         option-value="value"
                         :disabled="!canEdit"
-                        filter
+                        searchable
                         class="w-full"
                     />
                     <small v-if="errors.has('room_id')" class="p-error">

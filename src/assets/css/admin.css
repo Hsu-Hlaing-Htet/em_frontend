@@ -388,8 +388,9 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 }
 
 /* Dropdown Overlay — shared with Create Contract / all AppDropdown usages.
-   Width is synced to the trigger via AppDropdown (--app-dropdown-width).
-   Do NOT force max-content here; that was shrinking panels under wide fields. */
+   Panel width is locked to the trigger via AppDropdown panelStyle
+   (width + minWidth + maxWidth) so long labels cannot expand the overlay.
+   Do not transition width/left/top/transform. */
 
 .p-dropdown-panel,
 .p-select-overlay,
@@ -411,16 +412,16 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     color: var(--admin-text) !important;
     box-shadow: var(--admin-shadow-soft);
     overflow: hidden;
+    /* Never animate geometry — prevents stretch/jitter after open. */
+    transition-property: opacity, background-color, color, border-color, box-shadow !important;
 }
 
 .p-dropdown-panel.app-dropdown-panel,
 .p-select-overlay.app-dropdown-panel {
-    /* Only apply when AppDropdown set --app-dropdown-width on the overlay.
-       Do NOT fall back to 100% — that makes body-appended panels viewport-wide
-       during PrimeVue alignOverlay, which pins left to 0. */
-    width: var(--app-dropdown-width) !important;
-    min-width: var(--app-dropdown-width) !important;
-    max-width: min(var(--app-dropdown-width), calc(100vw - 1rem)) !important;
+    /* Exact size comes from AppDropdown inline width/min/max (= trigger).
+       Keep overflow clipped so nowrap option text ellipsizes inside. */
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .p-dropdown-header,
@@ -430,17 +431,23 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     border-bottom: 1px solid var(--admin-border) !important;
     padding: 0.5rem 0.625rem !important;
     margin: 0 !important;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
 }
 
 .p-dropdown-filter-container,
 .p-select-filter-container {
     position: relative;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .p-dropdown-filter.p-inputtext,
 .p-select-filter {
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box;
     background: var(--admin-surface-solid) !important;
     color: var(--admin-text) !important;
@@ -484,7 +491,7 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     max-width: 100%;
 }
 
-/* option */
+/* option — single-line labels; closed trigger still ellipsizes via .p-dropdown-label */
 
 .p-select-option,
 .p-dropdown-item {
@@ -494,12 +501,16 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     min-width: 0;
     overflow: hidden;
     white-space: nowrap;
+    text-overflow: ellipsis;
     line-height: 1.35;
     font-weight: 400;
+    box-sizing: border-box;
 }
 
 .p-select-option-label,
 .p-dropdown-item-label {
+    display: block;
+    flex: 1 1 auto;
     min-width: 0;
     max-width: 100%;
     overflow: hidden;

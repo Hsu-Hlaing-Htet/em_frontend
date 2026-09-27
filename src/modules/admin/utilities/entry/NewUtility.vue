@@ -16,7 +16,7 @@
                         </label>
 
                         <Dropdown id="building_id" v-model="createState.building_id" :options="buildingOptions"
-                            option-label="label" option-value="value" placeholder="Select building" filter
+                            option-label="label" option-value="value" placeholder="Select building" searchable
                             class="w-full" />
                         <small v-if="errors.has('building_id')" class="p-error">
                             <div v-for="error in errors.get('building_id')" :key="error">{{ error }}</div>
@@ -30,7 +30,7 @@
                         </label>
 
                         <Dropdown id="room_id" v-model="createState.room_id" :options="roomOptions" option-label="label"
-                            option-value="value" placeholder="Select room" :disabled="!createState.building_id" filter
+                            option-value="value" placeholder="Select room" :disabled="!createState.building_id" searchable
                             class="w-full" />
                         <small v-if="errors.has('room_id')" class="p-error">
                             <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
@@ -77,7 +77,7 @@
                         <Column header="Utility Type" style="min-width: 160px">
                             <template #body="{ data }">
                                 <Dropdown :model-value="data.utility_type_id" :options="utilityTypeOptions"
-                                    option-label="label" option-value="value" placeholder="Select type" filter
+                                    option-label="label" option-value="value" placeholder="Select type" searchable
                                     class="w-full" @update:model-value="handleUtilityTypeChange(data.id, $event)" />
                                 <small v-if="data.rowError" class="p-error mt-1 block">{{ data.rowError }}</small>
                             </template>

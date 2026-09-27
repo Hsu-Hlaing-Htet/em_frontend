@@ -40,7 +40,7 @@
                             option-value="value"
                             placeholder="Building"
                             show-clear
-                            filter
+                            searchable
                             class="w-44"
                         />
                         <Dropdown

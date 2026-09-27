@@ -10,7 +10,7 @@
                         option-label="label"
                         option-value="value"
                         placeholder="Select Customer"
-                        filter
+                        searchable
                         filter-placeholder="Search customer"
                         class="w-full"
                         empty-message="No customers found."
@@ -50,7 +50,7 @@
                             option-label="label"
                             option-value="value"
                             placeholder="Select Customer"
-                            filter
+                            searchable
                             filter-placeholder="Search customer"
                             class="w-full"
                             empty-message="No customers found."

@@ -4,6 +4,7 @@ import api from '@/libs/axios';
 import { endpoint } from '@/services/endpoint';
 import { downloadBlob } from '@/utils/downloadFile';
 import { downloadPdfResponse, PDF_DOWNLOAD_HEADERS } from '@/utils/downloadPdfResponse';
+import { formatProjectDateTime } from '@/utils/timezone';
 import { escapeHtml } from './htmlUtils';
 import { renderDocumentPage } from './documentLayout';
 import { renderListDocumentBody } from './renderListDocument';
@@ -104,7 +105,7 @@ export function renderListDocumentPage({
     generatedBy = 'Admin',
     landscape = true,
 }) {
-    const generatedAt = new Date().toLocaleString();
+    const generatedAt = formatProjectDateTime(new Date());
     const filterHtml = filters.length
         ? `<ul class="list-export-filters">${filters.map((filter) => `
             <li><strong>${escapeHtml(filter.label)}:</strong> ${escapeHtml(filter.value || 'All')}</li>

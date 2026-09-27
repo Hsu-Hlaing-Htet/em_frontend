@@ -1,3 +1,5 @@
+import { formatProjectDateTime } from '@/utils/timezone';
+
 export const hasBillingValue = (value) => {
     if (value === null || value === undefined) {
         return false;
@@ -19,20 +21,7 @@ export const formatBillingDocumentDate = (value) => {
         return '';
     }
 
-    const normalized = String(value).includes('T')
-        ? value
-        : String(value).replace(' ', 'T');
-
-    const date = new Date(normalized);
-
-    if (Number.isNaN(date.getTime())) {
-        return String(value);
-    }
-
-    return date.toLocaleString('en-GB', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-    });
+    return formatProjectDateTime(value) || String(value);
 };
 
 export const billingDetailTableClasses = {

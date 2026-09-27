@@ -1,4 +1,5 @@
 import { formatCurrency, getStatusLabel } from '@/utils/formatter';
+import { formatProjectMonthYear } from '@/utils/timezone';
 
 export function formatUtilityReference({ billing_month, room_number, id }) {
     const month = billing_month?.slice(0, 7) || '0000-00';
@@ -19,11 +20,7 @@ export function formatBillingMonthLabel(billingMonth) {
         return '-';
     }
 
-    const date = new Date(billingMonth);
-
-    return Number.isNaN(date.getTime())
-        ? billingMonth
-        : date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return formatProjectMonthYear(billingMonth) || billingMonth;
 }
 
 export function formatReading(value) {

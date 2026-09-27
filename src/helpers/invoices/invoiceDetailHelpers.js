@@ -1,3 +1,5 @@
+import { formatProjectMonthYear } from '@/utils/timezone';
+
 export const INVOICE_TYPE_LABELS = {
     rent: 'Rent',
     utility: 'Utility',
@@ -33,6 +35,18 @@ export function resolveInvoicePaymentStatus(invoice) {
     return invoice?.payment_status || invoice?.status || 'issued';
 }
 
+/**
+ * Full invoice TOTAL = subtotal (total_amount) + late_fee.
+ * Prefers API `invoice_total` when present.
+ */
+export function resolveInvoiceTotal(invoice = {}) {
+    if (invoice.invoice_total !== null && invoice.invoice_total !== undefined && invoice.invoice_total !== '') {
+        return Number(invoice.invoice_total);
+    }
+
+    return Number(invoice.total_amount || 0) + Number(invoice.late_fee || 0);
+}
+
 export function formatInvoiceNotes(invoice) {
     if (invoice?.notes) {
         return invoice.notes;
@@ -51,14 +65,7 @@ export function formatBillingPeriod(invoice) {
     }
 
     if (invoice?.issued_date) {
-        const normalized = invoice.issued_date.includes('T')
-            ? invoice.issued_date
-            : `${invoice.issued_date}T00:00:00`;
-
-        return new Date(normalized).toLocaleDateString('en-GB', {
-            month: 'long',
-            year: 'numeric',
-        });
+        return formatProjectMonthYear(invoice.issued_date) || '—';
     }
 
     return '—';

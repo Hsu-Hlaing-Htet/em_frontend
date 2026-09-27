@@ -1,4 +1,5 @@
 import { formatCurrency } from '@/utils/formatter';
+import { formatProjectDateTime } from '@/utils/timezone';
 
 export { formatCurrency };
 
@@ -11,12 +12,7 @@ export function formatDate(value) {
         return '-';
     }
 
-    return new Date(value).toLocaleString([], {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
+    return formatProjectDateTime(value) || '-';
 }
 
 export function formatDetailRecord(item) {
@@ -40,7 +36,7 @@ export function formatDetailRecord(item) {
                 return [label, value ? 'Yes' : 'No'];
             }
 
-            return [label, String(value ?? '-')];
+            return [label, value];
         }),
     );
 }

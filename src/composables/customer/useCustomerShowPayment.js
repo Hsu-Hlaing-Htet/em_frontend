@@ -4,6 +4,7 @@ import { showApiErrorToast } from '@/utils/apiError';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { mapInvoiceLineItemRow } from '@/helpers/invoices/invoiceDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
+import { formatProjectDate } from '@/utils/timezone';
 import { useCustomerPaymentStore } from '@/modules/customer/payments/store';
 
 function normalizeRows(value) {
@@ -16,27 +17,6 @@ function normalizeRows(value) {
     }
 
     return [];
-}
-
-function formatDisplayDate(value) {
-    if (!value) {
-        return '—';
-    }
-
-    const raw = typeof value === 'string' && !value.includes('T')
-        ? `${value.slice(0, 10)}T00:00:00`
-        : value;
-    const date = new Date(raw);
-
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
-
-    return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
 }
 
 function formatMoney(value) {
@@ -74,12 +54,21 @@ export default function useCustomerShowPayment() {
         payment_method_name: '',
         reference_number: '',
         amount: null,
+        amount_received: null,
+        refund_amount: null,
+        invoice_subtotal: null,
+        invoice_late_fee: null,
+        invoice_amount: null,
+        financial_summary: null,
         created_at: '',
         status: '',
         proof_image_url: '',
         rejection_reason: '',
         receipt_id: null,
         receipt_number: '',
+        paid_by: '',
+        submitted_by_name: '',
+        submitted_by_user_id: null,
         invoice_summary: {
             items: [],
         },
@@ -116,6 +105,7 @@ export default function useCustomerShowPayment() {
     });
 
     const invoice = computed(() => state.invoice_summary || {});
+    const financialSummary = computed(() => state.financial_summary || null);
     const paymentId = computed(() => (state.id ? `PAY-${String(state.id).padStart(5, '0')}` : '—'));
     const paymentStatus = computed(() => state.status || state.display_status || '—');
     const isPending = computed(() => String(state.status || '').toLowerCase() === 'pending');
@@ -138,13 +128,49 @@ export default function useCustomerShowPayment() {
         return `Late fee: ${formatMoney(invoice.value.late_fee)} calculated for ${days} overdue day${days === 1 ? '' : 's'} using ${rule}.`;
     });
 
+    const financialRows = computed(() => {
+        const summary = financialSummary.value;
+
+        if (summary) {
+            const showChange = Boolean(summary.show_change);
+
+            return {
+                subtotal: formatMoney(summary.subtotal),
+                lateFee: formatMoney(summary.late_fee),
+                total: formatMoney(summary.total),
+                paid: formatMoney(summary.paid),
+                settlementLabel: showChange ? 'Change' : 'Balance',
+                settlementValue: formatMoney(showChange ? summary.change : (summary.balance ?? 0)),
+            };
+        }
+
+        const subtotal = Number(state.invoice_subtotal ?? invoice.value.total_amount ?? 0);
+        const lateFee = Number(state.invoice_late_fee ?? invoice.value.late_fee ?? 0);
+        const total = Number(state.invoice_amount ?? (subtotal + lateFee));
+        const paid = state.amount_received != null && state.amount_received !== ''
+            ? Number(state.amount_received)
+            : Number(state.amount ?? 0);
+        const change = Number(state.refund_amount || 0);
+        const showChange = change > 0;
+
+        return {
+            subtotal: formatMoney(subtotal),
+            lateFee: formatMoney(lateFee),
+            total: formatMoney(total),
+            paid: formatMoney(paid),
+            settlementLabel: showChange ? 'Change' : 'Balance',
+            settlementValue: formatMoney(showChange ? change : 0),
+        };
+    });
+
     const summaryItems = computed(() => [
         { label: 'Payment ID', value: paymentId.value },
         { label: 'Invoice No.', value: state.invoice_number || invoice.value.invoice_number || '—' },
         { label: 'Building', value: state.building_name || invoice.value.building_name || '—' },
         { label: 'Room', value: state.room_number || invoice.value.room_number || '—' },
-        { label: 'Payment Date', value: formatDisplayDate(state.payment_date) },
+        { label: 'Payment Date', value: formatProjectDate(state.payment_date) || '—' },
         { label: 'Payment Method', value: state.payment_method_name || '—' },
+        { label: 'Paid By', value: state.paid_by || '—' },
         { label: 'Reference No.', value: state.reference_number || state.invoice_number || '—' },
         { label: 'Submitted Date/Time', value: formatBillingDocumentDate(state.created_at) || '—' },
     ]);
@@ -176,6 +202,7 @@ export default function useCustomerShowPayment() {
         invoice,
         summaryItems,
         invoiceRows,
+        financialRows,
         paymentStatus,
         isPending,
         isRejected,

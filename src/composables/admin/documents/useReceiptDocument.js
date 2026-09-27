@@ -1,4 +1,5 @@
 import { computed } from 'vue';
+import { formatProjectDate, formatProjectDateTime, formatProjectMonthYear } from '@/utils/timezone';
 import { COMPANY_INFO } from '@/helpers/documents/companyInfo';
 import {
     buildReceiptCustomerInfo,
@@ -19,24 +20,7 @@ function formatReceiptCurrency(value, decimals = 0) {
 }
 
 function formatDisplayDate(value) {
-    if (!value) {
-        return '—';
-    }
-
-    const raw = typeof value === 'string' && !value.includes('T') && value.length <= 10
-        ? `${value.slice(0, 10)}T00:00:00`
-        : value;
-    const date = new Date(raw);
-
-    if (Number.isNaN(date.getTime())) {
-        return '—';
-    }
-
-    return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
+    return formatProjectDate(value) || '—';
 }
 
 function extractUtilityType(description = '') {
@@ -75,18 +59,7 @@ function buildPaymentFor(state) {
     let monthLabel = '';
 
     if (monthRaw) {
-        const date = new Date(
-            typeof monthRaw === 'string' && !monthRaw.includes('T') && monthRaw.length <= 10
-                ? `${monthRaw.slice(0, 10)}T00:00:00`
-                : monthRaw,
-        );
-
-        if (!Number.isNaN(date.getTime())) {
-            monthLabel = date.toLocaleDateString('en-GB', {
-                month: 'long',
-                year: 'numeric',
-            });
-        }
+        monthLabel = formatProjectMonthYear(monthRaw);
     }
 
     const items = Array.isArray(state.items) ? state.items : [];
@@ -168,24 +141,47 @@ export function useReceiptDocument(state) {
         const receiptDate = formatDisplayDate(state.issued_at || state.created_at);
         const paymentDate = formatDisplayDate(state.payment_date);
         const paymentMethod = state.payment_method_name || '—';
-        const lateFee = Number(state.late_fee || 0);
-        const baseTotal = Number(
-            state.invoice_base_amount
+        const summary = state.financial_summary || null;
+        const lateFee = Number(
+            summary?.late_fee
+            ?? state.late_fee
+            ?? 0,
+        );
+        const subtotal = Number(
+            summary?.subtotal
+            ?? state.invoice_base_amount
             ?? (Number(state.invoice_amount || 0) - lateFee),
         );
-        const totalAmount = Number.isFinite(baseTotal)
-            ? Math.max(baseTotal, 0) + Math.max(lateFee, 0)
-            : Number(state.invoice_amount || 0);
-        const amountDue = state.amount ?? totalAmount;
-        const paidAmount = state.amount_received ?? state.paid_amount ?? state.payment_amount ?? state.amount;
-        const refundAmount = state.refund_amount
-            ?? Math.max(Number(paidAmount || 0) - Number(amountDue || 0), 0);
+        const totalAmount = Number(
+            summary?.total
+            ?? (
+                Number.isFinite(subtotal)
+                    ? Math.max(subtotal, 0) + Math.max(lateFee, 0)
+                    : Number(state.invoice_amount || 0)
+            ),
+        );
+        const paidAmount = Number(
+            summary?.paid
+            ?? state.amount_received
+            ?? state.paid_amount
+            ?? state.payment_amount
+            ?? state.amount
+            ?? 0,
+        );
+        const showChange = summary
+            ? Boolean(summary.show_change)
+            : Number(state.refund_amount || 0) > 0;
+        const changeAmount = showChange
+            ? Number(summary?.change ?? state.refund_amount ?? 0)
+            : 0;
+        const balanceAmount = showChange
+            ? null
+            : Number(summary?.balance ?? 0);
         const building = state.building_name || '';
         const room = state.room_number || '';
         const propertyRoom = building && room
             ? `${building} / ${room}`
             : (building || room || '—');
-        const showLateFee = lateFee > 0;
 
         return {
             title: 'PAYMENT RECEIPT',
@@ -213,19 +209,14 @@ export function useReceiptDocument(state) {
                 payment_date: paymentDate,
             },
             items: buildChargeItems(state.items || []),
-            late_fee: showLateFee
-                ? {
-                    description: 'Late Fee',
-                    amount: formatReceiptCurrency(lateFee),
-                }
-                : null,
             totals: {
-                amount_due: formatReceiptCurrency(amountDue),
-                total_amount: formatReceiptCurrency(amountDue),
-                amount_received: formatReceiptCurrency(paidAmount),
-                refund_amount: formatReceiptCurrency(refundAmount),
-                show_change: Number(refundAmount) > 0,
-                remaining_balance: formatReceiptCurrency(state.balance),
+                subtotal: formatReceiptCurrency(Number.isFinite(subtotal) ? Math.max(subtotal, 0) : 0),
+                late_fee: formatReceiptCurrency(Math.max(lateFee, 0)),
+                total: formatReceiptCurrency(totalAmount),
+                paid: formatReceiptCurrency(paidAmount),
+                show_change: showChange,
+                change: showChange ? formatReceiptCurrency(changeAmount) : null,
+                balance: showChange ? null : formatReceiptCurrency(balanceAmount ?? 0),
             },
             confirmation: {
                 title: 'Payment received successfully.',
@@ -238,7 +229,7 @@ export function useReceiptDocument(state) {
             customerInfo: buildReceiptCustomerInfo(state),
             summaryNote: buildReceiptSummaryNote(state),
             amountReceived: {
-                label: 'Amount Received',
+                label: 'Paid',
                 amount: formatReceiptCurrency(paidAmount),
             },
         };

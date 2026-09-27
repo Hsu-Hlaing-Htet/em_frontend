@@ -82,13 +82,19 @@ export function customerNotificationRoute(item) {
     return { name: routeName, params: { id: item.resource_id } };
 }
 
+import {
+    formatProjectDate,
+    parseProjectDateTimeParts,
+    toProjectDate,
+} from '@/utils/timezone';
+
 export function formatRelativeTime(value, locale = 'en-GB') {
     if (!value) {
         return '—';
     }
 
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
+    const date = toProjectDate(value);
+    if (!date) {
         return value;
     }
 
@@ -113,11 +119,7 @@ export function formatRelativeTime(value, locale = 'en-GB') {
         return `${diffDays}d ago`;
     }
 
-    return new Intl.DateTimeFormat(locale, {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    }).format(date);
+    return formatProjectDate(value) || String(value);
 }
 
 export function formatContractTypeLabel(type) {
@@ -160,19 +162,23 @@ export function invoiceDueStatus(invoice) {
         return { label: 'Due', badgeValue: 'issued' };
     }
 
-    const due = new Date(`${invoice.due_date}T00:00:00`);
-    if (Number.isNaN(due.getTime())) {
+    const due = parseProjectDateTimeParts(invoice.due_date);
+    if (!due) {
         return { label: 'Due', badgeValue: 'issued' };
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = parseProjectDateTimeParts(new Date());
+    const dueKey = due.year * 10000 + due.month * 100 + due.day;
+    const todayKey = today.year * 10000 + today.month * 100 + today.day;
 
-    if (invoice.status === 'overdue' || due < today) {
+    if (invoice.status === 'overdue' || dueKey < todayKey) {
         return { label: 'Overdue', badgeValue: 'overdue' };
     }
 
-    const diffDays = Math.ceil((due.getTime() - today.getTime()) / 86400000);
+    const diffDays = Math.round(
+        (Date.UTC(due.year, due.month - 1, due.day)
+            - Date.UTC(today.year, today.month - 1, today.day)) / 86400000,
+    );
 
     if (diffDays <= 7) {
         return { label: 'Due Soon', badgeValue: 'pending' };

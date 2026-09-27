@@ -6,6 +6,7 @@ import { useAuthStore } from '@/modules/auth/store';
 import { service } from '@/modules/customer/service';
 import { showApiErrorToast } from '@/utils/apiError';
 import { formatCurrency } from '@/utils/formatter';
+import { formatProjectDate } from '@/utils/timezone';
 import { useCustomerNotificationStore } from '@/modules/customer/notifications/store';
 import {
     customerNotificationIcon,
@@ -128,22 +129,7 @@ export default function useCustomerDashboard() {
 
     const formatMoney = (value) => formatCurrency(Number(value || 0));
 
-    const formatDisplayDate = (value) => {
-        if (!value) {
-            return '—';
-        }
-
-        const date = new Date(`${value}T00:00:00`);
-        if (Number.isNaN(date.getTime())) {
-            return value;
-        }
-
-        return new Intl.DateTimeFormat(locale.value === 'my' ? 'my-MM' : 'en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-        }).format(date);
-    };
+    const formatDisplayDate = (value) => formatProjectDate(value) || '—';
 
     const formatDisplayDateTime = (value) => formatRelativeTime(value, locale.value === 'my' ? 'my-MM' : 'en-GB');
 

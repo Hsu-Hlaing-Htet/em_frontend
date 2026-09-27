@@ -18,6 +18,7 @@ import {
     formatDetailRecord,
     formatNumber,
 } from './utils/formatters';
+import { APP_TIMEZONE } from '@/utils/timezone';
 
 export function useDashboard() {
     const loading = ref(true);
@@ -151,16 +152,18 @@ export function useDashboard() {
             return 'Not synced yet';
         }
 
-        return lastUpdated.value.toLocaleTimeString([], {
+        return lastUpdated.value.toLocaleTimeString('en-GB', {
             hour: '2-digit',
             minute: '2-digit',
+            hour12: true,
+            timeZone: APP_TIMEZONE,
         });
     });
 
     const revenueSummaryCards = computed(() => [
         { label: 'Collected this month', value: formatCurrency(revenueSummary.value.collected_this_month) },
-        { label: 'Total paid', value: formatCurrency(revenueSummary.value.total_paid) },
-        { label: 'Outstanding', value: formatCurrency(revenueSummary.value.outstanding) },
+        { label: 'Total Paid', value: formatCurrency(revenueSummary.value.total_paid) },
+        { label: 'Balance', value: formatCurrency(revenueSummary.value.outstanding) },
         { label: 'Growth', value: `+${revenueSummary.value.growth_percent ?? 0}%` },
     ]);
 

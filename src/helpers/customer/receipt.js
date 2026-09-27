@@ -1,3 +1,9 @@
+import {
+    formatProjectDate,
+    formatProjectDateTimeParts,
+    parseProjectDateTimeParts,
+} from '@/utils/timezone';
+
 export function mapCustomerReceipt(row = {}) {
     const payment = row.payment || {};
     const invoiceNumber = payment.invoice_number ?? row.invoice_number ?? null;
@@ -22,51 +28,21 @@ export function formatCustomerReceiptDate(value) {
         return null;
     }
 
-    const raw = String(value).trim();
-    const dateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    const dateTime = raw.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})(?::(\d{2}))?/);
+    const parts = parseProjectDateTimeParts(value);
 
-    let date;
-    let includeTime = false;
-
-    if (dateOnly) {
-        date = new Date(`${dateOnly[1]}-${dateOnly[2]}-${dateOnly[3]}T00:00:00`);
-    } else if (dateTime) {
-        date = new Date(
-            Number(dateTime[1]),
-            Number(dateTime[2]) - 1,
-            Number(dateTime[3]),
-            Number(dateTime[4]),
-            Number(dateTime[5]),
-            Number(dateTime[6] || 0),
-        );
-        const hours = Number(dateTime[4]);
-        const minutes = Number(dateTime[5]);
-        const seconds = Number(dateTime[6] || 0);
-        includeTime = !(hours === 0 && minutes === 0 && seconds === 0);
-    } else {
-        date = new Date(raw);
+    if (!parts) {
+        return String(value).trim();
     }
 
-    if (Number.isNaN(date.getTime())) {
-        return raw;
+    if (parts.dateOnly) {
+        return formatProjectDate(value);
     }
 
-    const dayPart = date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
+    const hasMeaningfulTime = !(parts.hour === 0 && parts.minute === 0 && (parts.second || 0) === 0);
 
-    if (!includeTime) {
-        return dayPart;
+    if (!hasMeaningfulTime) {
+        return formatProjectDate(value);
     }
 
-    const timePart = date.toLocaleTimeString('en-GB', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-    });
-
-    return `${dayPart} · ${timePart}`;
+    return formatProjectDateTimeParts(value)?.display ?? formatProjectDate(value);
 }

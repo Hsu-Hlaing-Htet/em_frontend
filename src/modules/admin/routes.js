@@ -18,6 +18,7 @@ import invoiceRoutes from './invoices/routes';
 import paymentRoutes from './payments/routes';
 import receiptRoutes from './receipts/routes';
 import maintenanceRequestRoutes from './maintenance-requests/routes';
+import contactInquiryRoutes from './contact-inquiries/routes';
 import saleContractRoutes from './sale-contracts/routes';
 import rentContractRoutes from './rent-contracts/routes';
 import profileRoutes from './profile/routes';
@@ -51,6 +52,7 @@ export const adminRoutes = [
             ...paymentRoutes,
             ...receiptRoutes,
             ...maintenanceRequestRoutes,
+            ...contactInquiryRoutes,
             ...saleContractRoutes,
             ...rentContractRoutes,
             ...profileRoutes,

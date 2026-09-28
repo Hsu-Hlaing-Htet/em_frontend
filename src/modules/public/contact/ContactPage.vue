@@ -143,6 +143,12 @@ async function submit() {
         });
         resetForm();
     } catch (error) {
+        const fieldErrors = error.response?.data?.errors || error.response?.data?.data;
+
+        if (fieldErrors && typeof fieldErrors === 'object') {
+            errors.record(fieldErrors);
+        }
+
         toast.add({
             severity: 'warn',
             summary: 'Unable to send',

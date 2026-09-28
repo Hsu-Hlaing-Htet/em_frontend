@@ -94,6 +94,7 @@
     "payments": "Payments",
     "receipts": "Receipts",
     "maintenanceRequests": "Maintenance Requests",
+    "inquiries": "Inquiries",
     "approvals": "Approvals",
     "approvalSaleContracts": "Sale Contracts",
     "approvalRentContracts": "Rent Contracts",

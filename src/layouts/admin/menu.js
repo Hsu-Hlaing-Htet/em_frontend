@@ -86,6 +86,12 @@ const menuList = [
         to: '/admin/maintenance-requests',
     },
     {
+        labelKey: 'navigation.inquiries',
+        key: 'contact-inquiries',
+        icon: 'pi pi-inbox',
+        to: '/admin/contact-inquiries',
+    },
+    {
         labelKey: 'navigation.approvals',
         key: 'approvals',
         icon: 'pi pi-verified',

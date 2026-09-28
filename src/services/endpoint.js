@@ -68,6 +68,7 @@ export const endpoint = {
     payments: 'payments',
     receipts: 'receipts',
     maintenanceRequests: 'maintenance-requests',
+    contactInquiries: 'contact-inquiries',
     listExportPdf: 'list-exports/pdf',
     documentPreviewPdf: 'document-preview/pdf',
 };

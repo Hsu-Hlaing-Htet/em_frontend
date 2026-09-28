@@ -48,6 +48,9 @@ export const STATUS_DEFINITIONS = {
     medium: { tone: STATUS_TONES.warning, label: 'Medium', icon: 'pi pi-minus-circle' },
     low: { tone: STATUS_TONES.neutral, label: 'Low', icon: 'pi pi-arrow-down' },
 
+    // Contact inquiries
+    new: { tone: STATUS_TONES.warning, label: 'New', icon: 'pi pi-envelope' },
+    read: { tone: STATUS_TONES.success, label: 'Read', icon: 'pi pi-check' },
 };
 
 const DEFAULT_DEFINITION = {

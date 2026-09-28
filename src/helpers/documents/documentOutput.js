@@ -25,8 +25,6 @@ import {
     getBillingDocumentMeta,
     renderUtilityDocumentBody,
     renderUtilityDocumentLead,
-    renderPaymentDocumentBody,
-    renderPaymentDocumentLead,
 } from './renderBillingDocument';
 import { renderReceiptDocumentHtmlPage } from './renderReceiptDocument';
 import {
@@ -294,21 +292,7 @@ export function downloadUtilityDocumentPdf(document) {
     );
 }
 
-export function renderPaymentDocumentPage(document) {
-    const referenceNo = document?.header?.referenceNo || 'payment';
-
-    return renderDocumentPage({
-        pageTitle: `Payment Confirmation ${referenceNo}`,
-        documentTitle: 'Payment Confirmation',
-        meta: getBillingDocumentMeta(document, 'Payment Ref.'),
-        leadHtml: renderPaymentDocumentLead(),
-        bodyHtml: renderPaymentDocumentBody(document),
-        logoSrc: DOCUMENT_EXPORT_LOGO_SRC,
-    });
-}
-
 const utilityDocumentHandlers = createBillingDocumentHandlers(renderUtilityDocumentPage);
-const paymentDocumentHandlers = createBillingDocumentHandlers(renderPaymentDocumentPage);
 
 export function printUtilityDocument(document) {
     return utilityDocumentHandlers.print(document);
@@ -320,14 +304,6 @@ export function viewUtilityDocument(document) {
 
 export function exportUtilityDocument(document, filename) {
     return utilityDocumentHandlers.export(document, filename);
-}
-
-export function printPaymentDocument(document) {
-    return paymentDocumentHandlers.print(document);
-}
-
-export function exportPaymentDocument(document, filename) {
-    return paymentDocumentHandlers.export(document, filename);
 }
 
 export function printListDocument({

@@ -7,7 +7,3 @@ export {
     renderUtilityDocumentLead,
     renderUtilityDocumentBody,
 } from './renderUtilityDocument';
-export {
-    renderPaymentDocumentLead,
-    renderPaymentDocumentBody,
-} from './renderPaymentDocument';

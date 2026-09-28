@@ -96,15 +96,3 @@ export function buildInvoiceDocumentNote(state) {
 
     return parts.join(' ');
 }
-
-export function buildPaymentDocumentNote(state) {
-    return hasBillingValue(state.note) ? state.note : '';
-}
-
-export function buildPaymentReferenceValue(state) {
-    if (hasBillingValue(state.reference_number) && state.reference_number !== state.invoice_number) {
-        return state.reference_number;
-    }
-
-    return '';
-}

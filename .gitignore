@@ -1,11 +1,9 @@
 *.log
 .DS_Store
 .env
-.env.example
+.env.*
 /vendor
-/node_modules
 node_modules/
-.env
-node_modules/
-.env
 dist/
+.vite/
+coverage/

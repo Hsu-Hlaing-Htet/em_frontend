@@ -68,6 +68,13 @@ function isActive(link) {
             </nav>
 
             <div class="rw-header__actions">
+                <router-link
+                    :to="{ name: 'login' }"
+                    class="rw-lux-btn rw-lux-btn--compact rw-lux-btn--outline"
+                    @click="emit('close-mobile-menu')"
+                >
+                    Login
+                </router-link>
                 <button
                     type="button"
                     class="rw-header__menu-btn"
@@ -119,6 +126,16 @@ function isActive(link) {
                             {{ link.label }}
                         </router-link>
                     </nav>
+
+                    <div class="rw-drawer__actions">
+                        <router-link
+                            :to="{ name: 'login' }"
+                            class="rw-lux-btn rw-lux-btn--md rw-lux-btn--outline rw-lux-btn--block"
+                            @click="emit('close-mobile-menu')"
+                        >
+                            Login
+                        </router-link>
+                    </div>
                 </aside>
             </div>
         </Transition>
@@ -208,9 +225,9 @@ function isActive(link) {
     background: transparent;
     color: #a9adb5;
     font-family: var(--rw-font-sans, Inter, sans-serif);
-    font-size: 0.72rem;
+    font-size: 0.8125rem;
     font-weight: 500;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     cursor: pointer;
     transition: color 0.28s ease;
@@ -248,6 +265,15 @@ function isActive(link) {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    justify-self: end;
+    gap: 0.65rem;
+}
+
+/* Match nav link typography family without enlarging the outline control. */
+.rw-header__actions .rw-lux-btn--compact {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
 }
 
 .rw-header__menu-btn {
@@ -302,6 +328,11 @@ function isActive(link) {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     color: #f5f2ee;
     font-size: 0.95rem;
+}
+
+.rw-drawer__actions {
+    margin-top: 1.35rem;
+    padding-top: 0.35rem;
 }
 
 .rw-drawer-enter-active,

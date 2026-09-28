@@ -498,3 +498,112 @@ html[data-theme='dark'] [data-customer-layout] .btn {
     opacity: 0.55;
     box-shadow: none !important;
 }
+
+/*
+ * Shared luxury button language — Public header Login (secondary outline)
+ * and Auth Login submit (primary solid). Same radius/font/token/transition
+ * family as landing `.rw-btn`, with explicit hierarchy variants.
+ */
+.rw-lux-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 999px;
+    font-family: var(--rw-font-sans, Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background 0.35s ease,
+        color 0.35s ease,
+        border-color 0.35s ease,
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.rw-lux-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.rw-lux-btn--compact {
+    min-height: 34px;
+    padding: 0.35rem 0.95rem;
+    font-size: 0.7rem;
+}
+
+.rw-lux-btn--md {
+    min-height: 42px;
+    padding: 0.7rem 1.35rem;
+    font-size: 0.72rem;
+}
+
+.rw-lux-btn--block {
+    width: 100%;
+}
+
+/* Secondary — burgundy outline, transparent/dark surface (header Login) */
+.rw-lux-btn--outline {
+    background: transparent;
+    border-color: color-mix(in srgb, var(--rw-brand, #8f2338) 82%, #ffffff 18%);
+    color: #f5f2ee;
+    box-shadow: none;
+}
+
+.rw-lux-btn--outline:hover:not(:disabled),
+.rw-lux-btn--outline:focus-visible:not(:disabled) {
+    color: #ffffff;
+    border-color: var(--rw-brand, #8f2338);
+    background: color-mix(in srgb, var(--rw-brand, #8f2338) 16%, transparent);
+    transform: translateY(-1px);
+}
+
+.rw-lux-btn--outline:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* Primary — solid burgundy, white label (auth Login submit) */
+.rw-lux-btn--solid {
+    background: var(--rw-brand, #8f2338);
+    border-color: var(--rw-brand, #8f2338);
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.rw-lux-btn--solid:hover:not(:disabled),
+.rw-lux-btn--solid:focus-visible:not(:disabled) {
+    background: var(--rw-brand-hover, #a92b47);
+    border-color: var(--rw-brand-hover, #a92b47);
+    color: #ffffff;
+    box-shadow: var(--rw-btn-glow, 0 4px 14px rgba(143, 35, 56, 0.22));
+    transform: translateY(-1px);
+}
+
+.rw-lux-btn--solid:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rw-lux-btn {
+        transition: none;
+    }
+
+    .rw-lux-btn--outline:hover:not(:disabled),
+    .rw-lux-btn--outline:focus-visible:not(:disabled),
+    .rw-lux-btn--solid:hover:not(:disabled),
+    .rw-lux-btn--solid:focus-visible:not(:disabled),
+    .rw-lux-btn--outline:active:not(:disabled),
+    .rw-lux-btn--solid:active:not(:disabled) {
+        transform: none;
+    }
+}

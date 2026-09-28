@@ -4,13 +4,11 @@ import { mapPaymentListRow } from '@/helpers/payments/paymentListHelpers';
 import { useEntityApprovalList } from '@/composables/global/useEntityApprovalList';
 import { useListExport } from '@/composables/admin/useListExport';
 import { PAYMENT_APPROVAL_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
-import { PAYMENT_TYPE_FILTER_OPTIONS } from '@/constants/constant';
 import { service as paymentMethodService } from '@/modules/admin/payment-methods/service';
 import { usePaymentStore } from '../store';
 
 const mapPaymentRow = (item) => mapPaymentListRow(item);
 export const usePaymentApprovalList = () => {
-    const paymentType = ref(null);
     const paymentMethodId = ref(null);
     const paymentDateFrom = ref(null);
     const paymentDateTo = ref(null);
@@ -18,7 +16,6 @@ export const usePaymentApprovalList = () => {
     const store = usePaymentStore();
 
     const buildFilterParams = () => ({
-        payment_type: paymentType.value || undefined,
         payment_method_id: paymentMethodId.value || undefined,
         payment_date_from: toQueryDate(paymentDateFrom.value),
         payment_date_to: toQueryDate(paymentDateTo.value),
@@ -41,13 +38,11 @@ export const usePaymentApprovalList = () => {
         buildFilterParams,
         mapItems: (rows) => rows.map(mapPaymentRow),
         getWatchSources: () => [
-            paymentType,
             paymentMethodId,
             paymentDateFrom,
             paymentDateTo,
         ],
         resetFilters: () => {
-            paymentType.value = null;
             paymentMethodId.value = null;
             paymentDateFrom.value = null;
             paymentDateTo.value = null;
@@ -79,7 +74,6 @@ export const usePaymentApprovalList = () => {
         mapItem: mapPaymentRow,
         getFilterSummary: () => [
             { label: 'Search', value: list.search.value || '' },
-            { label: 'Payment Type', value: PAYMENT_TYPE_FILTER_OPTIONS.find((o) => o.value === paymentType.value)?.label || '' },
             { label: 'Payment Method', value: paymentMethodOptions.value.find((o) => o.value === paymentMethodId.value)?.label || '' },
             { label: 'From Date', value: toQueryDate(paymentDateFrom.value) || '' },
             { label: 'To Date', value: toQueryDate(paymentDateTo.value) || '' },
@@ -102,11 +96,9 @@ export const usePaymentApprovalList = () => {
 
     return {
         ...list,
-        paymentType,
         paymentMethodId,
         paymentDateFrom,
         paymentDateTo,
-        paymentTypeOptions: PAYMENT_TYPE_FILTER_OPTIONS.filter((option) => option.value !== null),
         paymentMethodOptions,
         isExporting,
         canExport,

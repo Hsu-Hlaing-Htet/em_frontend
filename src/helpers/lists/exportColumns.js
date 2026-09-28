@@ -1,5 +1,6 @@
 import { formatCurrencyAmount, getPaymentTypeLabel, getStatusLabel } from '@/utils/formatter';
 import { resolveInvoiceTotal } from '@/helpers/invoices/invoiceDetailHelpers';
+import { formatPaymentStatusLabel } from '@/helpers/payments/paymentListHelpers';
 
 const currency = (row, field) => formatCurrencyAmount(row[field]);
 const invoiceTotalCurrency = (row) => formatCurrencyAmount(resolveInvoiceTotal(row));
@@ -202,6 +203,12 @@ export const PAYMENT_EXPORT_COLUMNS = [
     { field: 'paid_by', header: 'Paid By' },
     { field: 'payment_date', header: 'Date', type: 'date' },
     { field: 'payment_method_name', header: 'Method' },
+    {
+        field: 'status',
+        header: 'Status',
+        format: (row) => row.status_label
+            || formatPaymentStatusLabel(row.display_status || row.status),
+    },
 ];
 
 export const PAYMENT_APPROVAL_EXPORT_COLUMNS = PAYMENT_EXPORT_COLUMNS;

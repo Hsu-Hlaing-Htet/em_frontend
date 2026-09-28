@@ -88,16 +88,9 @@ export const INVOICE_LIST_STATUS_OPTIONS = [
 
 export const PAYMENT_LIST_STATUS_OPTIONS = [
     { label: 'All', value: null },
-    { label: 'Paid', value: 'paid' },
+    // Backend stores approved/rejected; UI label for approved is Paid.
+    { label: 'Paid', value: 'approved' },
     { label: 'Rejected', value: 'rejected' },
-];
-
-export const PAYMENT_TYPE_FILTER_OPTIONS = [
-    { label: 'All types', value: null },
-    { label: 'Rent', value: 'rent' },
-    { label: 'Utility', value: 'utility' },
-    { label: 'Maintenance', value: 'maintenance' },
-    { label: 'Other', value: 'other' },
 ];
 
 export const PAYMENT_METHOD_STATUS_OPTIONS = [

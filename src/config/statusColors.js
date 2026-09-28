@@ -27,11 +27,11 @@ export const STATUS_DEFINITIONS = {
     pending_approval: { tone: STATUS_TONES.warning, label: 'Pending Approval', icon: 'pi pi-hourglass' },
     approved: { tone: STATUS_TONES.success, label: 'Approved', icon: 'pi pi-verified' },
     accepted: { tone: STATUS_TONES.info, label: 'Accepted', icon: 'pi pi-check' },
-    rejected: { tone: STATUS_TONES.danger, label: 'Rejected', icon: 'pi pi-ban' },
+    rejected: { tone: STATUS_TONES.danger, label: 'Rejected', icon: 'pi pi-times' },
 
     // Contract / lifecycle
     active: { tone: STATUS_TONES.success, label: 'Active', icon: 'pi pi-check' },
-    completed: { tone: STATUS_TONES.success, label: 'Completed', icon: 'pi pi-flag-fill' },
+    completed: { tone: STATUS_TONES.neutral, label: 'Completed', icon: 'pi pi-flag-fill' },
     cancelled: { tone: STATUS_TONES.danger, label: 'Cancelled', icon: 'pi pi-times' },
     terminated: { tone: STATUS_TONES.danger, label: 'Terminated', icon: 'pi pi-times' },
     in_progress: { tone: STATUS_TONES.accent, label: 'In Progress', icon: 'pi pi-spin pi-spinner' },
@@ -47,6 +47,7 @@ export const STATUS_DEFINITIONS = {
     high: { tone: STATUS_TONES.danger, label: 'High', icon: 'pi pi-exclamation-circle' },
     medium: { tone: STATUS_TONES.warning, label: 'Medium', icon: 'pi pi-minus-circle' },
     low: { tone: STATUS_TONES.neutral, label: 'Low', icon: 'pi pi-arrow-down' },
+
 };
 
 const DEFAULT_DEFINITION = {

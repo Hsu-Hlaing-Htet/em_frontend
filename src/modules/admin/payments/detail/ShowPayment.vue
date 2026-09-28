@@ -40,7 +40,6 @@
                 :payment-id="paymentId"
                 :submitted-at="formattedCreatedAt"
                 :status="paymentStatus"
-                :show-status="isApprovalView"
                 :invoice-number="state.invoice_number || invoiceSummary.invoice_number || '—'"
                 :customer-name="state.customer_name || '—'"
                 :building-name="state.building_name || '—'"

@@ -15,10 +15,7 @@ import {
 import { useListExport } from '@/composables/admin/useListExport';
 import { useClickableListRow } from '@/composables/admin/useClickableListRow';
 import { PAYMENT_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
-import {
-    PAYMENT_LIST_STATUS_OPTIONS,
-    PAYMENT_TYPE_FILTER_OPTIONS,
-} from '@/constants/constant';
+import { PAYMENT_LIST_STATUS_OPTIONS } from '@/constants/constant';
 import { service as paymentMethodService } from '@/modules/admin/payment-methods/service';
 import { usePaymentStore } from '../store';
 
@@ -28,7 +25,6 @@ export const usePaymentList = () => {
     const dt = ref();
     const { onRowClick } = useClickableListRow('showPayment');
     const search = ref('');
-    const paymentType = ref(null);
     const paymentMethodId = ref(null);
     const status = ref(null);
     const paymentDateFrom = ref(null);
@@ -59,7 +55,6 @@ export const usePaymentList = () => {
     const mapPaymentRow = (item) => mapPaymentListRow(item);
     const buildFilterQuery = () => omitEmptyParams({
         search: search.value?.trim() || undefined,
-        payment_type: paymentType.value || undefined,
         payment_method_id: paymentMethodId.value || undefined,
         status: status.value || undefined,
         payment_date_from: toQueryDate(paymentDateFrom.value),
@@ -68,9 +63,10 @@ export const usePaymentList = () => {
 
     const applyQueryToFilters = (query) => {
         search.value = readQueryString(query, 'search', '');
-        paymentType.value = readQueryString(query, 'payment_type', null);
         paymentMethodId.value = readQueryNumber(query, 'payment_method_id');
-        status.value = readQueryString(query, 'status', null);
+        const statusFromQuery = readQueryString(query, 'status', null);
+        // Legacy UI used "paid"; backend stores "approved".
+        status.value = statusFromQuery === 'paid' ? 'approved' : statusFromQuery;
         paymentDateFrom.value = readQueryDate(query, 'payment_date_from', parseDate);
         paymentDateTo.value = readQueryDate(query, 'payment_date_to', parseDate);
     };
@@ -145,7 +141,6 @@ export const usePaymentList = () => {
 
     const resetSearch = async () => {
         search.value = '';
-        paymentType.value = null;
         paymentMethodId.value = null;
         status.value = null;
         paymentDateFrom.value = null;
@@ -158,7 +153,6 @@ export const usePaymentList = () => {
     watch(
         [
             search,
-            paymentType,
             paymentMethodId,
             status,
             paymentDateFrom,
@@ -210,7 +204,6 @@ export const usePaymentList = () => {
         mapItem: mapPaymentRow,
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
-            { label: 'Payment Type', value: PAYMENT_TYPE_FILTER_OPTIONS.find((o) => o.value === paymentType.value)?.label || '' },
             { label: 'Payment Method', value: paymentMethodOptions.value.find((o) => o.value === paymentMethodId.value)?.label || '' },
             { label: 'Status', value: PAYMENT_LIST_STATUS_OPTIONS.find((o) => o.value === status.value)?.label || '' },
             { label: 'From Date', value: toQueryDate(paymentDateFrom.value) || '' },
@@ -226,12 +219,10 @@ export const usePaymentList = () => {
         lazyParams,
         dt,
         search,
-        paymentType,
         paymentMethodId,
         status,
         paymentDateFrom,
         paymentDateTo,
-        paymentTypeOptions: PAYMENT_TYPE_FILTER_OPTIONS.filter((option) => option.value !== null),
         paymentMethodOptions,
         statusOptions: PAYMENT_LIST_STATUS_OPTIONS,
         onPage,

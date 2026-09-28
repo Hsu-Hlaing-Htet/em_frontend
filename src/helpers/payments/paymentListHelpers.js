@@ -62,6 +62,31 @@ export function resolvePaymentListStatus(item) {
         : (raw || 'pending');
 }
 
+/** UI label for payment transaction status (does not change stored backend values). */
+export function formatPaymentStatusLabel(status) {
+    const raw = String(status || '').toLowerCase();
+
+    if (raw === 'approved' || raw === 'paid') {
+        return 'Paid';
+    }
+
+    if (raw === 'rejected') {
+        return 'Rejected';
+    }
+
+    if (raw === 'pending') {
+        return 'Pending';
+    }
+
+    if (!raw) {
+        return '—';
+    }
+
+    return raw
+        .replaceAll('_', ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 function toFiniteNumber(value) {
     if (value == null || value === '') {
         return null;
@@ -86,10 +111,13 @@ export function mapPaymentListRow(item) {
         ?? toFiniteNumber(item.amount_received)
         ?? applied;
 
+    const displayStatus = resolvePaymentListStatus(item);
+
     return {
         ...item,
         property_unit: item.property_unit || formatPropertyUnit(item),
-        display_status: resolvePaymentListStatus(item),
+        display_status: displayStatus,
+        status_label: formatPaymentStatusLabel(displayStatus),
         amount: applied,
         paid,
         invoice_amount: toFiniteNumber(item.invoice_amount) ?? 0,

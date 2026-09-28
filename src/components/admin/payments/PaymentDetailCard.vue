@@ -1,11 +1,14 @@
 <template>
     <section class="admin-panel payment-detail-card">
         <div class="payment-detail-card__head">
-            <h2 class="payment-detail-card__payment-id">{{ paymentId }}</h2>
-            <div class="payment-detail-card__head-meta">
-                <span class="payment-detail-card__datetime">{{ submittedAt }}</span>
-                <StatusBadge v-if="showStatus" :value="status" />
+            <div class="payment-detail-card__id-row">
+                <h2 class="payment-detail-card__payment-id">{{ paymentId }}</h2>
+                <StatusBadge
+                    v-if="statusBadgeValue"
+                    :value="statusBadgeValue"
+                />
             </div>
+            <span class="payment-detail-card__datetime">{{ submittedAt }}</span>
         </div>
 
         <div class="payment-detail-card__divider" />
@@ -197,10 +200,11 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import StatusBadge from '@/components/global/StatusBadge.vue';
+import { resolvePaymentListStatus } from '@/helpers/payments/paymentListHelpers';
 
 export default defineComponent({
     name: 'PaymentDetailCard',
@@ -218,7 +222,6 @@ export default defineComponent({
         paymentId: { type: String, default: '—' },
         submittedAt: { type: String, default: '—' },
         status: { type: String, default: '' },
-        showStatus: { type: Boolean, default: false },
         invoiceNumber: { type: String, default: '—' },
         customerName: { type: String, default: '—' },
         buildingName: { type: String, default: '—' },
@@ -244,6 +247,16 @@ export default defineComponent({
         approveDisabled: { type: Boolean, default: false },
     },
     emits: ['update:adminRemark', 'preview-proof', 'approve', 'reject'],
+    setup(props) {
+        // Map approved → paid for StatusBadge label (Paid), keep rejected/pending as-is.
+        const statusBadgeValue = computed(() => (
+            props.status ? resolvePaymentListStatus({ status: props.status }) : ''
+        ));
+
+        return {
+            statusBadgeValue,
+        };
+    },
 });
 </script>
 
@@ -260,19 +273,19 @@ export default defineComponent({
     gap: 0.75rem 1.25rem;
 }
 
+.payment-detail-card__id-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.65rem 0.85rem;
+    min-width: 0;
+}
+
 .payment-detail-card__payment-id {
     margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
     line-height: 1.35;
-}
-
-.payment-detail-card__head-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.55rem 0.85rem;
 }
 
 .payment-detail-card__datetime {

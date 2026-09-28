@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col gap-5">
-        <div class="admin-panel relative dashboard-panel">
+        <div class="admin-panel relative">
             <DataTable
                 ref="dt"
                 data-key="id"
@@ -8,7 +8,7 @@
                 current-page-report-template="Showing {first} to {last} of {totalRecords} entries"
                 responsive-layout="scroll"
                 sort-mode="multiple"
-                scroll-height="58vh"
+                scroll-height="50vh"
                 :scrollable="true"
                 :lazy="true"
                 :paginator="true"
@@ -34,15 +34,6 @@
                         @reset="resetSearch"
                     >
                         <Dropdown
-                            v-model="paymentType"
-                            :options="paymentTypeOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Payment Type"
-                            show-clear
-                            class="w-40"
-                        />
-                        <Dropdown
                             v-model="paymentMethodId"
                             :options="paymentMethodOptions"
                             option-label="label"
@@ -60,20 +51,20 @@
                             class="w-36"
                         />
                         <div class="admin-filter-group admin-filter-group--dates">
-                        <Calendar
-                            v-model="paymentDateFrom"
-                            placeholder="From Date"
-                            date-format="dd/mm/yy"
-                            show-icon
-                            class="w-40"
-                        />
-                        <Calendar
-                            v-model="paymentDateTo"
-                            placeholder="To Date"
-                            date-format="dd/mm/yy"
-                            show-icon
-                            class="w-40"
-                        />
+                            <Calendar
+                                v-model="paymentDateFrom"
+                                placeholder="From Date"
+                                date-format="dd/mm/yy"
+                                show-icon
+                                class="w-40"
+                            />
+                            <Calendar
+                                v-model="paymentDateTo"
+                                placeholder="To Date"
+                                date-format="dd/mm/yy"
+                                show-icon
+                                class="w-40"
+                            />
                         </div>
                         <template #actions>
                             <ListExportActions
@@ -84,7 +75,6 @@
                                 @export-excel="exportExcel"
                                 @print="printList"
                             />
-
                         </template>
                     </AdminListFilters>
                 </template>
@@ -130,6 +120,11 @@
                 </Column>
                 <Column field="payment_date" header="Date" :sortable="true" style="min-width: 120px" />
                 <Column field="payment_method_name" header="Method" :sortable="true" style="min-width: 120px" />
+                <Column field="status" header="Status" :sortable="true" style="min-width: 100px">
+                    <template #body="{ data }">
+                        <StatusBadge :value="data.display_status || data.status" />
+                    </template>
+                </Column>
             </DataTable>
 
             <Loading v-if="isLoading" />
@@ -146,6 +141,7 @@ import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import StatusBadge from '@/components/global/StatusBadge.vue';
 import { formatCurrencyAmount as formatCurrency } from '@/utils/formatter';
 import { usePaymentList } from './usePaymentList';
 import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
@@ -161,6 +157,7 @@ export default defineComponent({
         Loading,
         AdminListFilters,
         ListExportActions,
+        StatusBadge,
     },
     setup() {
         const list = usePaymentList();
@@ -172,11 +169,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style scoped>
-.dashboard-panel {
-    border-radius: 1rem;
-    border: 1px solid var(--admin-border);
-    box-shadow: var(--admin-shadow-soft);
-}
-</style>

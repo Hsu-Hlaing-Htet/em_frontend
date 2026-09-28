@@ -52,14 +52,6 @@
                             show-clear
                             class="w-44"
                         />
-                        <Dropdown
-                            v-model="dateType"
-                            :options="dateTypeOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="Date Type"
-                            class="w-40"
-                        />
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
                                 v-model="dateFrom"
@@ -199,11 +191,6 @@ import { resolveInvoiceTotal } from '@/helpers/invoices/invoiceDetailHelpers';
 import { useInvoiceList } from './useInvoiceList';
 import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
-const DATE_TYPE_OPTIONS = [
-    { label: 'Issue Date', value: 'issued' },
-    { label: 'Due Date', value: 'due' },
-];
-
 export default defineComponent({
     name: 'InvoiceList',
     components: {
@@ -223,7 +210,6 @@ export default defineComponent({
         return {
             ...list,
             statusOptions: INVOICE_LIST_STATUS_OPTIONS,
-            dateTypeOptions: DATE_TYPE_OPTIONS,
             formatCurrency,
             formatDate,
             invoiceTotal: resolveInvoiceTotal,

@@ -29,10 +29,8 @@ const mapInvoiceRow = (item) => ({
 export const useInvoiceApprovalList = () => {
     const buildingId = ref(null);
     const roomId = ref(null);
-    const issuedFrom = ref(null);
-    const issuedTo = ref(null);
-    const dueFrom = ref(null);
-    const dueTo = ref(null);
+    const dateFrom = ref(null);
+    const dateTo = ref(null);
     const lateFeeRuleOptions = ref([]);
     const savingLateFeeIds = ref([]);
     const store = useInvoiceStore();
@@ -48,10 +46,8 @@ export const useInvoiceApprovalList = () => {
     const buildFilterParams = () => ({
         building_id: buildingId.value || undefined,
         room_id: roomId.value || undefined,
-        issued_from: toQueryDate(issuedFrom.value),
-        issued_to: toQueryDate(issuedTo.value),
-        due_from: toQueryDate(dueFrom.value),
-        due_to: toQueryDate(dueTo.value),
+        due_from: toQueryDate(dateFrom.value),
+        due_to: toQueryDate(dateTo.value),
         payment_status: 'draft',
     });
 
@@ -79,18 +75,14 @@ export const useInvoiceApprovalList = () => {
         getWatchSources: () => [
             buildingId,
             roomId,
-            issuedFrom,
-            issuedTo,
-            dueFrom,
-            dueTo,
+            dateFrom,
+            dateTo,
         ],
         resetFilters: () => {
             buildingId.value = null;
             roomId.value = null;
-            issuedFrom.value = null;
-            issuedTo.value = null;
-            dueFrom.value = null;
-            dueTo.value = null;
+            dateFrom.value = null;
+            dateTo.value = null;
             roomOptions.value = [];
         },
     });
@@ -176,10 +168,8 @@ export const useInvoiceApprovalList = () => {
             { label: 'Search', value: list.search.value || '' },
             { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
             { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
-            { label: 'From Date', value: toQueryDate(issuedFrom.value) || '' },
-            { label: 'To Date', value: toQueryDate(issuedTo.value) || '' },
-            { label: 'Due From', value: toQueryDate(dueFrom.value) || '' },
-            { label: 'Due To', value: toQueryDate(dueTo.value) || '' },
+            { label: 'Due From', value: toQueryDate(dateFrom.value) || '' },
+            { label: 'Due To', value: toQueryDate(dateTo.value) || '' },
         ],
         hasData: computed(() => list.totalRecords.value > 0),
     });
@@ -200,10 +190,8 @@ export const useInvoiceApprovalList = () => {
         ...list,
         buildingId,
         roomId,
-        issuedFrom,
-        issuedTo,
-        dueFrom,
-        dueTo,
+        dateFrom,
+        dateTo,
         buildingOptions,
         roomOptions,
         lateFeeRuleOptions,

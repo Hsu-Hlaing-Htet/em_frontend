@@ -18,9 +18,6 @@ import { INVOICE_EXPORT_COLUMNS } from '@/helpers/lists/exportColumns';
 import { service as buildingService } from '@/modules/admin/buildings/service';
 import { useInvoiceStore } from '../store';
 
-const DATE_TYPE_ISSUED = 'issued';
-const DATE_TYPE_DUE = 'due';
-
 const mapInvoiceRow = (item) => ({
     ...item,
     customer_name: item.customer_name || '',
@@ -39,7 +36,6 @@ export const useInvoiceList = () => {
     const paymentStatusFilter = ref(null);
     const buildingId = ref(null);
     const buildingOptions = ref([]);
-    const dateType = ref(DATE_TYPE_ISSUED);
     const dateFrom = ref(null);
     const dateTo = ref(null);
     const totalRecords = ref(0);
@@ -73,29 +69,12 @@ export const useInvoiceList = () => {
         };
     };
 
-    const buildDateFilterParams = () => {
-        const from = toQueryDate(dateFrom.value);
-        const to = toQueryDate(dateTo.value);
-
-        if (dateType.value === DATE_TYPE_DUE) {
-            return {
-                due_from: from,
-                due_to: to,
-            };
-        }
-
-        return {
-            issued_from: from,
-            issued_to: to,
-        };
-    };
-
     const buildFilterQuery = () => omitEmptyParams({
         search: search.value?.trim() || undefined,
         payment_status: paymentStatusFilter.value || undefined,
         building_id: buildingId.value || undefined,
-        date_type: dateType.value || undefined,
-        ...buildDateFilterParams(),
+        due_from: toQueryDate(dateFrom.value),
+        due_to: toQueryDate(dateTo.value),
     });
 
     const applyQueryToFilters = (query) => {
@@ -103,20 +82,8 @@ export const useInvoiceList = () => {
         const statusFromQuery = readQueryString(query, 'payment_status', '') || null;
         paymentStatusFilter.value = statusFromQuery === 'unpaid' ? 'issued' : statusFromQuery;
         buildingId.value = readQueryNumber(query, 'building_id');
-
-        const queryDateType = readQueryString(query, 'date_type', '');
-        const hasDueDates = Boolean(query.due_from || query.due_to);
-        const hasIssuedDates = Boolean(query.issued_from || query.issued_to);
-
-        if (queryDateType === DATE_TYPE_DUE || (!queryDateType && hasDueDates && !hasIssuedDates)) {
-            dateType.value = DATE_TYPE_DUE;
-            dateFrom.value = readQueryDate(query, 'due_from', parseDate);
-            dateTo.value = readQueryDate(query, 'due_to', parseDate);
-        } else {
-            dateType.value = DATE_TYPE_ISSUED;
-            dateFrom.value = readQueryDate(query, 'issued_from', parseDate);
-            dateTo.value = readQueryDate(query, 'issued_to', parseDate);
-        }
+        dateFrom.value = readQueryDate(query, 'due_from', parseDate);
+        dateTo.value = readQueryDate(query, 'due_to', parseDate);
     };
 
     const syncFiltersToUrl = async () => {
@@ -158,9 +125,6 @@ export const useInvoiceList = () => {
             ...buildFilterQuery(),
         });
 
-        // date_type is UI-only; API still uses issued_*/due_* params
-        delete params.date_type;
-
         await store.fetchAll(params);
 
         const response = store.getAllResponse;
@@ -188,7 +152,6 @@ export const useInvoiceList = () => {
         search.value = '';
         paymentStatusFilter.value = null;
         buildingId.value = null;
-        dateType.value = DATE_TYPE_ISSUED;
         dateFrom.value = null;
         dateTo.value = null;
         resetPagination();
@@ -197,7 +160,7 @@ export const useInvoiceList = () => {
     };
 
     watch(
-        [search, paymentStatusFilter, buildingId, dateType, dateFrom, dateTo],
+        [search, paymentStatusFilter, buildingId, dateFrom, dateTo],
         () => {
             reloadFromFilters();
         },
@@ -218,6 +181,8 @@ export const useInvoiceList = () => {
         applyQueryToFilters(route.query);
         await loadBuildings();
         isHydratingFromUrl.value = false;
+        // Drop stale date_type / issued_* query keys from older URLs.
+        await syncFiltersToUrl();
         await loadingData();
     });
 
@@ -233,16 +198,10 @@ export const useInvoiceList = () => {
         filenameBase: 'invoices',
         columns: INVOICE_EXPORT_COLUMNS,
         emptyMessage: 'No invoices available to export.',
-        getFetchParams: () => {
-            const params = {
-                order: multisortConvert(lazyParams.value.multiSortMeta) || undefined,
-                ...buildFilterQuery(),
-            };
-
-            delete params.date_type;
-
-            return params;
-        },
+        getFetchParams: () => ({
+            order: multisortConvert(lazyParams.value.multiSortMeta) || undefined,
+            ...buildFilterQuery(),
+        }),
         fetchPage: async (params) => {
             await store.fetchAll(omitEmptyParams(params));
             return store.getAllResponse;
@@ -252,9 +211,8 @@ export const useInvoiceList = () => {
             { label: 'Search', value: search.value || '' },
             { label: 'Payment Status', value: paymentStatusFilter.value || '' },
             { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
-            { label: 'Date Type', value: dateType.value === DATE_TYPE_DUE ? 'Due Date' : 'Issue Date' },
-            { label: 'From', value: toQueryDate(dateFrom.value) || '' },
-            { label: 'To', value: toQueryDate(dateTo.value) || '' },
+            { label: 'Due From', value: toQueryDate(dateFrom.value) || '' },
+            { label: 'Due To', value: toQueryDate(dateTo.value) || '' },
         ],
         hasData: computed(() => totalRecords.value > 0),
     });
@@ -268,7 +226,6 @@ export const useInvoiceList = () => {
         search,
         paymentStatusFilter,
         buildingId,
-        dateType,
         dateFrom,
         dateTo,
         buildingOptions,

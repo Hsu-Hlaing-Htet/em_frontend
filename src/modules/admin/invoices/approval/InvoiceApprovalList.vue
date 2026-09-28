@@ -33,54 +33,36 @@
                         @update:search="search = $event"
                         @reset="resetSearch"
                     >
-                        <div class="admin-filter-group">
-                            <Dropdown
-                                v-model="buildingId"
-                                :options="buildingOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="Building"
-                                show-clear
-                                class="w-44"
-                            />
-                            <Dropdown
-                                v-model="roomId"
-                                :options="roomOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="Room"
-                                :disabled="!buildingId"
-                                show-clear
-                                class="w-36"
-                            />
-                        </div>
+                        <Dropdown
+                            v-model="buildingId"
+                            :options="buildingOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Building"
+                            show-clear
+                            class="w-44"
+                        />
+                        <Dropdown
+                            v-model="roomId"
+                            :options="roomOptions"
+                            option-label="label"
+                            option-value="value"
+                            placeholder="Room"
+                            :disabled="!buildingId"
+                            show-clear
+                            class="w-36"
+                        />
                         <div class="admin-filter-group admin-filter-group--dates">
                             <Calendar
-                                v-model="issuedFrom"
-                                placeholder="From Date"
+                                v-model="dateFrom"
+                                placeholder="From"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"
                             />
                             <Calendar
-                                v-model="issuedTo"
-                                placeholder="To Date"
-                                date-format="dd/mm/yy"
-                                show-icon
-                                class="w-40"
-                            />
-                        </div>
-                        <div class="admin-filter-group admin-filter-group--dates">
-                            <Calendar
-                                v-model="dueFrom"
-                                placeholder="Due From"
-                                date-format="dd/mm/yy"
-                                show-icon
-                                class="w-40"
-                            />
-                            <Calendar
-                                v-model="dueTo"
-                                placeholder="Due To"
+                                v-model="dateTo"
+                                placeholder="To"
                                 date-format="dd/mm/yy"
                                 show-icon
                                 class="w-40"

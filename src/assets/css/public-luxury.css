@@ -797,7 +797,7 @@
     display: none;
 }
 
-/* Nav dropdown: defeat global `* { overflow-x: hidden }` clipping */
+/* Nav dropdown: keep menus unclipped (header is outside the document overflow clip) */
 [data-public-layout] .rw-header,
 [data-public-layout] .rw-header__inner,
 [data-public-layout] .rw-nav,

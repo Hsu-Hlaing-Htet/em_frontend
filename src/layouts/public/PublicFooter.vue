@@ -202,6 +202,10 @@ const follow = PUBLIC_SOCIAL_LINKS;
     margin: 0;
     padding-inline: 0;
     padding-bottom: 1.15rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 @media (max-width: 960px) {

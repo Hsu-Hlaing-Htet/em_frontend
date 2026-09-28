@@ -7,7 +7,7 @@ import FloatingChat from '@/components/global/FloatingChat.vue';
 import { usePublicReveal } from '@/composables/public/usePublicReveal';
 
 const route = useRoute();
-const currentYear = new Date().getFullYear();
+const currentYear = 2026;
 const mobileMenuOpen = ref(false);
 const layoutRoot = ref(null);
 

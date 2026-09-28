@@ -23,7 +23,8 @@ const props = defineProps({
     },
     year: {
         type: Number,
-        default: () => new Date().getFullYear(),
+        // Product copy is locked to 2026 for this release.
+        default: 2026,
     },
 });
 

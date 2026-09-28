@@ -2752,18 +2752,10 @@ html[data-theme='dark'] .customer-portal-icon-badge.tone-blue {
     right: max(1.35rem, env(safe-area-inset-right, 0px));
 }
 
-[data-customer-layout] .rw-chat.is-near-footer {
-    --chat-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px));
-}
-
 @media (max-width: 767.98px) {
     [data-customer-layout] .rw-chat {
         --chat-bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
         right: max(0.85rem, env(safe-area-inset-right, 0px));
-    }
-
-    [data-customer-layout] .rw-chat.is-near-footer {
-        --chat-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px));
     }
 
     .customer-portal-home {

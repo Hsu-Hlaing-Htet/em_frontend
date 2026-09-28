@@ -206,7 +206,6 @@ const typing = ref(false);
 const loadingLabel = ref('');
 const messagesPanel = ref(null);
 const activePurpose = ref(props.listingPurpose);
-const nearFooter = ref(false);
 const rentShortcutView = ref('main');
 const rentQuestionsExpanded = ref(false);
 const rentSuggestionsCollapsed = ref(false);
@@ -214,8 +213,6 @@ const propertyShortcutView = ref('main');
 const propertyQuestionsExpanded = ref(false);
 const propertySuggestionsCollapsed = ref(false);
 const { pendingOpen, consumeAssistantOpenRequest } = useAssistantChat();
-
-let footerObserver = null;
 
 function createSupportMessage(text, id = null, properties = []) {
     return {
@@ -803,24 +800,11 @@ function onPropertySuggestedQuestion(questionText) {
 
 onMounted(() => {
     document.addEventListener('keydown', onEscape);
-
-    const footer = document.querySelector('[data-rosewood-footer], [data-public-footer]');
-    if (footer && typeof IntersectionObserver !== 'undefined') {
-        footerObserver = new IntersectionObserver(
-            ([entry]) => {
-                nearFooter.value = Boolean(entry?.isIntersecting);
-            },
-            { threshold: 0.08, rootMargin: '0px 0px 0px 0px' }
-        );
-        footerObserver.observe(footer);
-    }
 });
 
 onBeforeUnmount(() => {
     typing.value = false;
     document.removeEventListener('keydown', onEscape);
-    footerObserver?.disconnect();
-    footerObserver = null;
 });
 </script>
 
@@ -830,7 +814,6 @@ onBeforeUnmount(() => {
         class="rw-chat"
         :class="{
             'is-open': isOpen,
-            'is-near-footer': nearFooter,
             'rw-chat--rent': mode === 'rent',
             'rw-chat--property': mode === 'property',
         }"
@@ -1126,15 +1109,10 @@ onBeforeUnmount(() => {
     bottom: var(--chat-bottom);
     width: auto;
     font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    transition: bottom 0.28s ease;
 }
 
 .rw-chat.is-open {
     width: min(390px, calc(100vw - 32px));
-}
-
-.rw-chat.is-near-footer {
-    --chat-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
 }
 
 .rw-chat__trigger {
@@ -1640,8 +1618,7 @@ onBeforeUnmount(() => {
     background: rgba(255, 255, 255, 0.16);
 }
 
-/* Defeat global `* { overflow-x: hidden }` which computes overflow-y to auto
-   and creates nested scrollbars inside each bubble. */
+/* Keep chat bubbles non-scrolling; overflow belongs on the messages pane only. */
 .rw-chat--rent .rw-chat__message,
 .rw-chat--rent .rw-chat__bubble,
 .rw-chat--rent .rw-chat__welcome,
@@ -1888,10 +1865,6 @@ onBeforeUnmount(() => {
         width: min(380px, calc(100vw - 28px));
     }
 
-    .rw-chat.is-near-footer {
-        --chat-bottom: calc(130px + env(safe-area-inset-bottom, 0px));
-    }
-
     .rw-chat__trigger {
         width: 220px;
         min-height: 54px;
@@ -1917,10 +1890,6 @@ onBeforeUnmount(() => {
         left: 12px;
         right: 12px;
         width: calc(100vw - 24px);
-    }
-
-    .rw-chat.is-near-footer {
-        --chat-bottom: calc(128px + env(safe-area-inset-bottom, 0px));
     }
 
     .rw-chat__trigger {

@@ -14,11 +14,9 @@
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Visit Hsu_Hlaing_Htet on GitHub (opens in a new tab)"
-        >
-            Hsu_Hlaing_Htet<span
-                class="rosewood-footer__external-icon"
-                aria-hidden="true"
-            >↗</span>
-        </a>
+        >Hsu_Hlaing_Htet<span
+            class="rosewood-footer__external-icon"
+            aria-hidden="true"
+        >↗</span></a>
     </p>
 </template>

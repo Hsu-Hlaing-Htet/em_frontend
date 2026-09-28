@@ -1,4 +1,5 @@
-/* Shared Rosewood Royale footer bar — Public / Customer / Admin */
+/* Shared Rosewood Royale footer bar — Public / Customer / Admin
+   Always: centered, two stacked lines. Never left/right split. */
 
 .rosewood-footer {
     --rosewood-footer-text: var(--admin-text-muted, var(--rw-text-muted, #777b82));
@@ -6,6 +7,9 @@
     --rosewood-footer-link-hover: var(--rw-brand-hover, var(--rw-primary-deep, #a92b47));
     --rosewood-footer-border: var(--admin-border, var(--rw-border, rgba(255, 255, 255, 0.1)));
     --rosewood-footer-bg: transparent;
+    --rosewood-footer-gap: 0.35rem;
+    --rosewood-footer-pad-block: 1.15rem;
+    --rosewood-footer-pad-inline: 1.25rem;
 
     width: 100%;
     background: var(--rosewood-footer-bg);
@@ -14,32 +18,34 @@
 
 .rosewood-footer__inner {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem 1.5rem;
+    justify-content: center;
+    gap: var(--rosewood-footer-gap);
     width: min(100%, 80rem);
     margin: 0 auto;
-    padding: 1.15rem 1.5rem;
+    padding: var(--rosewood-footer-pad-block) var(--rosewood-footer-pad-inline);
     border-top: 1px solid var(--rosewood-footer-border);
+    text-align: center;
 }
 
 .rosewood-footer__legal,
 .rosewood-footer__developer {
     margin: 0;
-    font-size: 0.875rem;
+    max-width: 36rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
     line-height: 1.5;
     color: var(--rosewood-footer-text);
 }
 
 .rosewood-footer__developer-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-    margin-left: 0.2rem;
+    display: inline;
+    margin-left: 0.15rem;
     color: var(--rosewood-footer-link);
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: inherit;
+    font-weight: 500;
     text-decoration: underline;
     text-underline-offset: 0.18em;
     text-decoration-thickness: 1px;
@@ -61,9 +67,11 @@
 }
 
 .rosewood-footer__external-icon {
+    display: inline;
+    margin-left: 0.12rem;
     font-size: 0.75em;
     line-height: 1;
-    translate: 0 -0.05em;
+    font-weight: 400;
 }
 
 /* Public dark marketing footer embeds this bar */
@@ -74,36 +82,18 @@
     --rosewood-footer-border: rgba(255, 255, 255, 0.08);
 }
 
-/* Standalone portal footers (customer / admin) */
+/* Standalone portal footers (customer / admin / auth) */
 .rosewood-footer--portal {
     --rosewood-footer-bg: transparent;
     margin-top: auto;
 }
 
 .rosewood-footer--portal .rosewood-footer__inner {
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    padding: 1.35rem 1.5rem 1.5rem;
-}
-
-@media (min-width: 768px) {
-    .rosewood-footer--portal .rosewood-footer__inner {
-        flex-direction: row;
-        justify-content: space-between;
-        text-align: left;
-    }
+    padding-block: 1.15rem 1.25rem;
 }
 
 @media (max-width: 640px) {
-    .rosewood-footer__inner {
-        flex-direction: column;
-        align-items: flex-start;
-        padding-inline: 1rem;
-    }
-
-    .rosewood-footer--portal .rosewood-footer__inner {
-        align-items: center;
-        text-align: center;
+    .rosewood-footer {
+        --rosewood-footer-pad-inline: 1rem;
     }
 }

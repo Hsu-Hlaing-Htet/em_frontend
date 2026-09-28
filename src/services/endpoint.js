@@ -53,6 +53,7 @@ export const endpoint = {
     maintenanceCategories: 'maintenance-categories',
     maintenanceCategoryOptions: 'maintenance-categories/options',
     lateFees: 'late-fees',
+    lateFeeOptions: 'late-fees/options',
     paymentMethods: 'payment-methods',
     paymentPlans: 'payment-plans',
     contracts: 'contracts',

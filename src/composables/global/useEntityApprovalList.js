@@ -19,6 +19,17 @@ export const useEntityApprovalList = ({
     rejectErrorMessage = 'Unable to reject record.',
     buildApproveSuccessMessage = (item, response) => response?.message || `${getItemLabel(item)} approved successfully.`,
     buildRejectSuccessMessage = (item, response) => response?.message || `${getItemLabel(item)} has been rejected.`,
+    buildApprovePayload = (item) => {
+        const approvePayload = { id: item.id };
+
+        // Pass stored applied amount when present (Admin Cash). Backend also
+        // falls back to payment.amount / invoice balance when omitted.
+        if (item.amount != null && item.amount !== '') {
+            approvePayload.amount = Number(item.amount);
+        }
+
+        return approvePayload;
+    },
     buildFilterParams = () => ({}),
     mapItems = (rows) => rows,
     getWatchSources = () => [],
@@ -130,15 +141,7 @@ export const useEntityApprovalList = ({
         markApproving(item.id);
 
         try {
-            const approvePayload = { id: item.id };
-
-            // Pass stored applied amount when present (Admin Cash). Backend also
-            // falls back to payment.amount / invoice balance when omitted.
-            if (item.amount != null && item.amount !== '') {
-                approvePayload.amount = Number(item.amount);
-            }
-
-            await store[approveMethod](approvePayload);
+            await store[approveMethod](buildApprovePayload(item));
 
             const response = store.getActionResponse;
 

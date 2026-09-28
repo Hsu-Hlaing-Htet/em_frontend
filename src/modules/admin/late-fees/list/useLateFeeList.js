@@ -57,7 +57,6 @@ export const useLateFeeList = () => {
                 per: item.per,
                 grace_days: item.grace_days,
                 status: newStatus,
-                is_default: newStatus === 'active' ? item.is_default : false,
             });
             const response = store.getUpdateResponse;
 
@@ -70,42 +69,6 @@ export const useLateFeeList = () => {
             }
         } catch {
             item.status = previousStatus;
-        }
-    };
-
-    const toggleDefault = async (item, isDefault) => {
-        const previousDefault = item.is_default;
-
-        if (previousDefault === isDefault) {
-            return;
-        }
-
-        item.is_default = isDefault;
-
-        try {
-            await store.update({
-                id: item.id,
-                name: item.name,
-                type: item.type,
-                value: item.value,
-                per: item.per,
-                grace_days: item.grace_days,
-                status: item.status,
-                is_default: isDefault,
-            });
-            const response = store.getUpdateResponse;
-
-            if (response) {
-                EventBus.emit('show-toast', {
-                    severity: 'success',
-                    summary: '',
-                    detail: response.message,
-                });
-            }
-
-            await loadingData();
-        } catch {
-            item.is_default = previousDefault;
         }
     };
 
@@ -189,7 +152,6 @@ export const useLateFeeList = () => {
             value: item.value,
             per: item.per,
             grace_days: item.grace_days,
-            is_default: item.is_default ? 'Yes' : 'No',
             status: item.status,
         }),
         getFilterSummary: () => [
@@ -216,6 +178,5 @@ export const useLateFeeList = () => {
         exportExcel,
         printList,
         toggleStatus,
-        toggleDefault,
     };
 };

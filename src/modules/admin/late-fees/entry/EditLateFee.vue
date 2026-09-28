@@ -87,15 +87,6 @@
                 </small>
             </div>
 
-            <div class="field">
-                <label for="is_default" class="mb-2 block text-md">Default Rule</label>
-                <InputSwitch
-                    id="is_default"
-                    v-model="state.is_default"
-                    :disabled="state.status !== 'active'"
-                />
-            </div>
-
             <div class="flex justify-end gap-2 md:col-span-2">
                 <Button type="submit" label="Save" />
                 <router-link :to="{ name: 'lateFeeList' }">
@@ -113,14 +104,13 @@ import { defineComponent } from 'vue';
 import Dropdown from '@/components/global/AppDropdown.vue';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-import InputSwitch from 'primevue/inputswitch';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import useEditLateFee from './useEditLateFee';
 
 export default defineComponent({
     name: 'EditLateFee',
-    components: { Dropdown, InputText, InputNumber, InputSwitch, Button, Loading },
+    components: { Dropdown, InputText, InputNumber, Button, Loading },
     setup() {
         return useEditLateFee();
     },

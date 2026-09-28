@@ -7,7 +7,6 @@ import {
     printReceiptDocument,
     viewReceiptDocument,
     exportUtilityDocument,
-    downloadUtilityDocumentPdf,
     printUtilityDocument,
     viewUtilityDocument,
 } from '@/helpers/documents/documentOutput';
@@ -83,7 +82,10 @@ export function useUtilityDocumentActions(state, getDocument, service) {
         printDocument: printUtilityDocument,
         viewDocument: viewUtilityDocument,
         exportDocument: exportUtilityDocument,
-        downloadDocument: () => downloadUtilityDocumentPdf(getDocument()),
+        downloadDocument: (current) => service.downloadDocument({
+            id: current.id,
+            fallbackFilename: `UTL-${String(current.id).padStart(6, '0')}.pdf`,
+        }),
         sendDocumentEmail: (current) => service.sendDocumentEmail({
             id: current.id,
         }),

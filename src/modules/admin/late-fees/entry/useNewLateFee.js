@@ -25,7 +25,6 @@ export default function useNewLateFee() {
         per: 'day',
         grace_days: 0,
         status: 'active',
-        is_default: false,
     });
 
     bindErrorClearing(state, errors);

@@ -1,5 +1,5 @@
 import { computed } from 'vue';
-import { formatProjectDate, formatProjectDateTime, formatProjectMonthYear } from '@/utils/timezone';
+import { formatProjectDate } from '@/utils/timezone';
 import { COMPANY_INFO } from '@/helpers/documents/companyInfo';
 import {
     buildReceiptCustomerInfo,
@@ -48,80 +48,6 @@ function resolveItemDescription(item = {}) {
         || item.charge_type_name
         || item.description
         || 'Charge';
-}
-
-function buildPaymentFor(state) {
-    if (state.payment_for) {
-        return state.payment_for;
-    }
-
-    const monthRaw = state.billing_month;
-    let monthLabel = '';
-
-    if (monthRaw) {
-        monthLabel = formatProjectMonthYear(monthRaw);
-    }
-
-    const items = Array.isArray(state.items) ? state.items : [];
-    let hasRent = false;
-    let hasUtility = false;
-    const otherLabels = [];
-
-    items.forEach((item) => {
-        const slug = item.charge_type_slug;
-
-        if (slug === 'late-fee') {
-            return;
-        }
-
-        if (slug === 'monthly-rent') {
-            hasRent = true;
-
-            return;
-        }
-
-        if (slug === 'utility-charges' || extractUtilityType(item.description)) {
-            hasUtility = true;
-
-            return;
-        }
-
-        const label = item.charge_type_name || item.description;
-
-        if (label) {
-            otherLabels.push(label);
-        }
-    });
-
-    const parts = [];
-
-    if (hasRent) {
-        parts.push('Rent');
-    }
-
-    if (hasUtility) {
-        parts.push('Utility');
-    }
-
-    if (!parts.length && otherLabels.length) {
-        parts.push(otherLabels[0]);
-    }
-
-    if (!parts.length) {
-        parts.push(
-            state.payment_type === 'sale'
-                ? 'Sale'
-                : state.payment_type === 'utility'
-                    ? 'Utility'
-                    : state.payment_type === 'rent'
-                        ? 'Rent'
-                        : 'Charges',
-        );
-    }
-
-    const joined = parts.join(' & ');
-
-    return monthLabel ? `${monthLabel} ${joined}` : joined;
 }
 
 function buildChargeItems(items = []) {
@@ -177,11 +103,10 @@ export function useReceiptDocument(state) {
         const balanceAmount = showChange
             ? null
             : Number(summary?.balance ?? 0);
-        const building = state.building_name || '';
-        const room = state.room_number || '';
-        const propertyRoom = building && room
-            ? `${building} / ${room}`
-            : (building || room || '—');
+        const paidBy = state.paid_by || '—';
+        const approvedBy = state.payment_approved_by_name
+            || state.approved_by_name
+            || '—';
 
         return {
             title: 'PAYMENT RECEIPT',
@@ -200,11 +125,11 @@ export function useReceiptDocument(state) {
             },
             info: {
                 customer_name: state.customer_name || '—',
-                property_room: propertyRoom,
+                building: state.building_name || '—',
+                room: state.room_number || '—',
+                paid_by: paidBy,
                 invoice_number: invoiceNumber,
-                payment_for: buildPaymentFor(state),
-                receipt_number: receiptNumber,
-                receipt_date: receiptDate,
+                approved_by: approvedBy,
                 payment_method: paymentMethod,
                 payment_date: paymentDate,
             },
@@ -218,13 +143,13 @@ export function useReceiptDocument(state) {
                 change: showChange ? formatReceiptCurrency(changeAmount) : null,
                 balance: showChange ? null : formatReceiptCurrency(balanceAmount ?? 0),
             },
+            late_fee_notes: lateFee > 0 ? (state.late_fee_notes || null) : null,
             confirmation: {
                 title: 'Payment received successfully.',
                 message: 'This receipt confirms that the payment has been recorded successfully.',
             },
             footer: {
-                left: COMPANY_INFO.name,
-                right: 'System-generated receipt • No signature required',
+                confidential_notice: 'System-generated receipt · No signature required',
             },
             customerInfo: buildReceiptCustomerInfo(state),
             summaryNote: buildReceiptSummaryNote(state),

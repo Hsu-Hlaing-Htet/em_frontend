@@ -335,6 +335,7 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 .p-inputtext,
 .p-dropdown,
 .p-textarea,
+.p-inputtextarea,
 .p-password input,
 .p-calendar .p-inputtext {
     background: var(--admin-surface-solid);
@@ -377,6 +378,7 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 .p-inputtext:enabled:focus,
 .p-inputnumber-input:enabled:focus,
 .p-textarea:enabled:focus,
+.p-inputtextarea:enabled:focus,
 .p-password-input:enabled:focus {
     border-color: var(--admin-primary) !important;
 

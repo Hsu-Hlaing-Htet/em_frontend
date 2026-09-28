@@ -70,11 +70,10 @@ export function renderContractDocumentPage(document) {
 }
 
 function cleanContractPdfFilename(document, type) {
-    const label = type === 'rent' ? 'Rent' : 'Sale';
     const prefix = type === 'rent' ? 'R' : 'S';
     const contractNo = document?.header?.contractNo || `${prefix}-000000`;
 
-    return `Rosewood_Royale_${label}_Contract_${contractNo}.pdf`;
+    return `${contractNo}.pdf`;
 }
 
 async function downloadPreviewPdf(html, filename) {
@@ -284,7 +283,10 @@ export function renderUtilityDocumentPage(document) {
 }
 
 export function downloadUtilityDocumentPdf(document) {
-    const referenceNo = document?.header?.referenceNo || 'utility-bill';
+    const id = document?.id;
+    const referenceNo = typeof id === 'number' || (typeof id === 'string' && id !== '')
+        ? `UTL-${String(id).padStart(6, '0')}`
+        : (document?.header?.referenceNo || 'UTL-000000');
 
     return downloadPreviewPdf(
         renderUtilityDocumentPage(document),

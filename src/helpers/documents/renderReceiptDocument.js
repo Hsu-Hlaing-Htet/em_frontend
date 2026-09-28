@@ -48,26 +48,26 @@ export function renderReceiptDocumentBody(document) {
                     <span class="receipt-doc__info-value">${cell(document.info?.customer_name)}</span>
                 </div>
                 <div class="receipt-doc__info-row">
-                    <span class="receipt-doc__info-label">Property / Room</span>
-                    <span class="receipt-doc__info-value">${cell(document.info?.property_room)}</span>
+                    <span class="receipt-doc__info-label">Building</span>
+                    <span class="receipt-doc__info-value">${cell(document.info?.building)}</span>
                 </div>
+                <div class="receipt-doc__info-row">
+                    <span class="receipt-doc__info-label">Room</span>
+                    <span class="receipt-doc__info-value">${cell(document.info?.room)}</span>
+                </div>
+                <div class="receipt-doc__info-row">
+                    <span class="receipt-doc__info-label">Paid By</span>
+                    <span class="receipt-doc__info-value">${cell(document.info?.paid_by)}</span>
+                </div>
+            </div>
+            <div class="receipt-doc__info-col">
                 <div class="receipt-doc__info-row">
                     <span class="receipt-doc__info-label">Invoice No.</span>
                     <span class="receipt-doc__info-value">${cell(document.info?.invoice_number)}</span>
                 </div>
                 <div class="receipt-doc__info-row">
-                    <span class="receipt-doc__info-label">Payment For</span>
-                    <span class="receipt-doc__info-value">${cell(document.info?.payment_for)}</span>
-                </div>
-            </div>
-            <div class="receipt-doc__info-col">
-                <div class="receipt-doc__info-row">
-                    <span class="receipt-doc__info-label">Receipt No.</span>
-                    <span class="receipt-doc__info-value">${cell(document.info?.receipt_number)}</span>
-                </div>
-                <div class="receipt-doc__info-row">
-                    <span class="receipt-doc__info-label">Receipt Date</span>
-                    <span class="receipt-doc__info-value">${cell(document.info?.receipt_date)}</span>
+                    <span class="receipt-doc__info-label">Approved By</span>
+                    <span class="receipt-doc__info-value">${cell(document.info?.approved_by)}</span>
                 </div>
                 <div class="receipt-doc__info-row">
                     <span class="receipt-doc__info-label">Payment Method</span>
@@ -115,9 +115,29 @@ export function renderReceiptDocumentBody(document) {
         </div>
 
         <section class="receipt-doc__confirmation">
+            ${renderLateFeeNotes(document.late_fee_notes)}
             <p class="receipt-doc__confirmation-title">${cell(document.confirmation?.title || 'Payment received successfully.')}</p>
             <p class="receipt-doc__confirmation-message">${cell(document.confirmation?.message || 'This receipt confirms that the payment has been recorded successfully.')}</p>
         </section>
+    `;
+}
+
+function renderLateFeeNotes(notes) {
+    if (!notes?.rule || !Array.isArray(notes.calculation) || notes.calculation.length === 0) {
+        return '';
+    }
+
+    const calcLines = notes.calculation
+        .map((line) => `<p class="receipt-doc__late-fee-line">${cell(line)}</p>`)
+        .join('');
+
+    return `
+        <div class="receipt-doc__late-fee">
+            <p class="receipt-doc__late-fee-label">Late Fee Rule</p>
+            <p class="receipt-doc__late-fee-line">${cell(notes.rule)}</p>
+            <p class="receipt-doc__late-fee-label receipt-doc__late-fee-label--calc">Calculation</p>
+            ${calcLines}
+        </div>
     `;
 }
 
@@ -162,8 +182,16 @@ export function renderReceiptDocumentArticle(document, logoSrc) {
             ${renderReceiptDocumentBody(document)}
 
             <footer class="receipt-doc__foot">
-                <span>${escapeHtml(document.footer?.left || company.name || COMPANY_INFO.name)}</span>
-                <span>${escapeHtml(document.footer?.right || 'System-generated receipt • No signature required')}</span>
+                <div class="receipt-doc__foot-company">
+                    <strong>${escapeHtml(company.name || COMPANY_INFO.name)}</strong>
+                    <span>${escapeHtml(company.address || COMPANY_INFO.address)}</span><br>
+                    <span>${escapeHtml(company.phone || COMPANY_INFO.phone)}</span><br>
+                    <span>${escapeHtml(company.email || COMPANY_INFO.email)}</span>
+                </div>
+                <div class="receipt-doc__foot-confidential">
+                    <span class="receipt-doc__foot-confidential-label">Confidential</span>
+                    <span>${escapeHtml(document.footer?.confidential_notice || 'System-generated receipt · No signature required')}</span>
+                </div>
             </footer>
         </article>
     `;

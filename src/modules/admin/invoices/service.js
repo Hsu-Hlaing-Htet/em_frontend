@@ -32,7 +32,16 @@ const service = {
     },
 
     issue: async (params) => {
-        const result = await api.post(`${endpoint.invoices}/${params.id}/issue`);
+        const result = await api.post(`${endpoint.invoices}/${params.id}/issue`, {
+            late_fee_selection: params.late_fee_selection,
+        });
+        return result.data;
+    },
+
+    updateLateFeePolicy: async (params) => {
+        const result = await api.put(`${endpoint.invoices}/${params.id}/late-fee-policy`, {
+            late_fee_selection: params.late_fee_selection,
+        });
         return result.data;
     },
 

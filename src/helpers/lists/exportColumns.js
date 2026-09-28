@@ -131,7 +131,6 @@ export const LATE_FEE_EXPORT_COLUMNS = [
     { field: 'value', header: 'Value', type: 'number' },
     { field: 'per', header: 'Per' },
     { field: 'grace_days', header: 'Grace Days', type: 'number' },
-    { field: 'is_default', header: 'Default' },
     { field: 'status', header: 'Status', format: status },
 ];
 
@@ -191,6 +190,7 @@ export const INVOICE_EXPORT_COLUMNS = [
     { field: 'invoice_total', header: 'Total (MMK)', type: 'currency', format: invoiceTotalCurrency },
     { field: 'issued_date', header: 'Issue Date', type: 'date' },
     { field: 'due_date', header: 'Due Date', type: 'date' },
+    { field: 'late_fee_policy_label', header: 'Late Fee Rule' },
     { field: 'payment_status', header: 'Status', format: (row) => getStatusLabel(row.payment_status || row.status) },
 ];
 

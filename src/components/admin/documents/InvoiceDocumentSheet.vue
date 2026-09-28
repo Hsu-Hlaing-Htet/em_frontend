@@ -79,7 +79,7 @@ export default defineComponent({
             }
 
             return {
-                height: `${Math.ceil(naturalHeightPx.value * scale.value) + 8}px`,
+                height: `${Math.ceil(naturalHeightPx.value * scale.value)}px`,
             };
         });
 
@@ -114,6 +114,33 @@ export default defineComponent({
             scale.value = Math.min(1, available / natural);
         };
 
+        /**
+         * Canonical invoice HTML uses a beige page backdrop + 24px paper margin
+         * for standalone browser views. Inside this embed (Admin/Customer preview),
+         * that reads as a gray/beige strip above the white paper. Receipt avoids
+         * it because it is inlined under .pdf-frame { margin: 0 }. Mirror that
+         * for the iframe without changing PDF (@media print already zeros margin).
+         */
+        const applyEmbedPreviewStyles = (doc) => {
+            if (!doc?.head || doc.getElementById('invoice-doc-embed-overrides')) {
+                return;
+            }
+
+            const style = doc.createElement('style');
+            style.id = 'invoice-doc-embed-overrides';
+            style.textContent = `
+                html,
+                body.invoice-doc-body {
+                    background: #ffffff !important;
+                }
+
+                .invoice-doc {
+                    margin: 0 auto !important;
+                }
+            `;
+            doc.head.appendChild(style);
+        };
+
         const resizeFrame = async () => {
             await nextTick();
             const frame = frameEl.value;
@@ -123,13 +150,14 @@ export default defineComponent({
 
             try {
                 const doc = frame.contentDocument;
+                applyEmbedPreviewStyles(doc);
                 const height = Math.max(
                     doc?.body?.scrollHeight || 0,
                     doc?.documentElement?.scrollHeight || 0,
                     Math.round(297 * 3.78),
                 );
                 naturalHeightPx.value = height;
-                frame.style.height = `${height + 8}px`;
+                frame.style.height = `${height}px`;
             } catch {
                 naturalHeightPx.value = 1123;
                 frame.style.height = '1123px';
@@ -214,7 +242,7 @@ export default defineComponent({
     min-height: 297mm;
     margin: 0 auto;
     border: 0;
-    background: transparent;
+    background: #ffffff;
 }
 
 /* Fixed A4 iframe viewport — prevents @media (max-width: 768px) document reflow. */

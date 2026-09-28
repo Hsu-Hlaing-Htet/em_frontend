@@ -634,6 +634,7 @@ html[data-theme='dark'] .p-select-option:hover {
 .p-inputtext,
 .p-inputnumber-input,
 .p-textarea,
+.p-inputtextarea,
 .p-password-input,
 .p-dropdown,
 .p-dropdown-label,
@@ -788,7 +789,8 @@ html[data-theme='dark'] .p-datatable .p-datatable-thead > tr > th {
 }
 
 html[data-theme='dark'] .p-inputtext::placeholder,
-html[data-theme='dark'] .p-textarea::placeholder {
+html[data-theme='dark'] .p-textarea::placeholder,
+html[data-theme='dark'] .p-inputtextarea::placeholder {
     color: var(--rw-text-muted) !important;
 }
 

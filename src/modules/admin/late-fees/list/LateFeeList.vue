@@ -60,15 +60,6 @@
                 <Column field="value" header="Value" :sortable="true" style="min-width: 100px" />
                 <Column field="per" header="Per" :sortable="true" style="min-width: 100px" />
                 <Column field="grace_days" header="Grace Days" :sortable="true" style="min-width: 120px" />
-                <Column field="is_default" header="Default" style="min-width: 110px">
-                    <template #body="{ data }">
-                        <InputSwitch
-                            :model-value="Boolean(data.is_default)"
-                            :disabled="data.status !== 'active'"
-                            @update:model-value="(value) => toggleDefault(data, value)"
-                        />
-                    </template>
-                </Column>
                 <Column field="status" header="Status" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         <div class="flex items-center gap-3">

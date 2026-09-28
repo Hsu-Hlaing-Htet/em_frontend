@@ -27,7 +27,6 @@ export default function useEditLateFee() {
         per: 'day',
         grace_days: 0,
         status: 'active',
-        is_default: false,
     });
 
     bindErrorClearing(state, errors);
@@ -63,7 +62,6 @@ export default function useEditLateFee() {
                     per: response.data.per || 'day',
                     grace_days: Number(response.data.grace_days),
                     status: response.data.status || 'active',
-                    is_default: Boolean(response.data.is_default),
                 });
             }
         } catch (error) {

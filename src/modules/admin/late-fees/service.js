@@ -34,6 +34,15 @@ const service = {
         const result = await api.delete(`${endpoint.lateFees}/${params.id}`);
         return result.data;
     },
+
+    options: async () => {
+        try {
+            const result = await api.get(endpoint.lateFeeOptions);
+            return result.data;
+        } catch {
+            return null;
+        }
+    },
 };
 
 export { service };

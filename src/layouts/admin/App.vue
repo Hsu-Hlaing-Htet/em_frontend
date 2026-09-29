@@ -6,7 +6,7 @@
         :data-theme="themeMode"
         :data-sidebar-collapsed="staticMenuInactive ? 'true' : 'false'"
         :data-mobile-sidebar-open="mobileMenuActive ? 'true' : 'false'"
-        class="admin-background flex min-h-screen text-[var(--admin-text)] transition-colors duration-300"
+        class="admin-shell admin-background flex min-h-screen w-full max-w-full min-w-0 text-[var(--admin-text)] transition-colors duration-300"
         @click="onWrapperClick"
     >
         <nav
@@ -24,7 +24,7 @@
             <AppMenu :model="menu" @menuitem-click="onMenuItemClick" />
         </nav>
 
-        <div class="ml-[var(--sidebar-width)] flex min-h-screen flex-1 flex-col transition-all duration-300 max-lg:ml-0">
+        <div class="admin-main flex min-h-screen min-w-0 flex-1 flex-col transition-all duration-300">
             <TopBar
                 :mobile-menu-active="mobileMenuActive"
                 @menu-toggle="onMenuToggle"
@@ -32,7 +32,7 @@
             <main
                 id="main-content"
                 tabindex="-1"
-                class="flex-1 p-6 pt-[calc(var(--admin-topbar-height)+1.5rem)] max-sm:p-4 max-sm:pt-[calc(var(--admin-topbar-height)+1rem)]"
+                class="admin-main-content min-w-0 flex-1 p-6 pt-[calc(var(--admin-topbar-height)+1.5rem)] max-sm:p-4 max-sm:pt-[calc(var(--admin-topbar-height)+1rem)]"
             >
                 <AppBreadcrumb />
                 <router-view v-slot="{ Component, route }">
@@ -42,7 +42,7 @@
                     >
                         <div
                             :key="route.path"
-                            class="page-transition-root"
+                            class="page-transition-root min-w-0 max-w-full"
                         >
                             <component :is="Component" />
                         </div>

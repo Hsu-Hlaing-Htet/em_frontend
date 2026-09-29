@@ -17,8 +17,54 @@
     --sidebar-width: 280px;
     --rosewood-admin-serif: var(--rosewood-brand-font, 'Cormorant Garamond', Georgia, serif);
 
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     background: var(--admin-bg);
     color: var(--admin-text);
+}
+
+/* Shell: fill viewport; main uses remaining width beside fixed sidebar */
+.admin-shell {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.admin-main {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    max-width: calc(100% - var(--sidebar-width));
+    min-width: 0;
+    flex: 1 1 auto;
+    box-sizing: border-box;
+}
+
+.admin-main-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+[data-admin-layout] .page-transition-root {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.admin-topbar {
+    box-sizing: border-box;
+    width: auto;
+    max-width: 100%;
+}
+
+@media (max-width: 1023px) {
+    .admin-main {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+    }
 }
 
 [data-customer-layout] {
@@ -91,12 +137,88 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 }
 
 .admin-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     padding: 20px;
     border-radius: 6px;
     background: var(--admin-surface-solid);
     border: 1px solid var(--admin-border);
     box-shadow: var(--admin-shadow-soft);
     overflow: visible;
+}
+
+/* Constrain page roots so wide content stays inside the main column */
+[data-admin-layout] .page-transition-root > * {
+    max-width: 100%;
+    min-width: 0;
+}
+
+[data-admin-layout] .admin-panel .p-datatable {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+[data-admin-layout] .admin-panel .p-datatable-header,
+[data-admin-layout] .admin-panel .p-datatable-footer,
+[data-admin-layout] .admin-panel .p-paginator {
+    max-width: 100%;
+    min-width: 0;
+}
+
+/*
+ * Table scroll threshold (1280px):
+ * - >= 1280px: table fills available width; scrollbar only if content truly overflows
+ * - < 1280px: table keeps readable min-width; horizontal scroll ONLY inside the wrapper
+ * Never scroll the page/body for Admin list tables.
+ */
+.table-scroll-wrapper,
+[data-admin-layout] .admin-panel .p-datatable-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+[data-admin-layout] .admin-panel .p-datatable-wrapper {
+    overflow-y: auto;
+}
+
+/* Desktop (>= 1280): normal full-width table — no forced min-width scroll */
+@media (min-width: 1280px) {
+    [data-admin-layout] .admin-panel .p-datatable-table,
+    [data-admin-layout] .admin-panel .p-datatable .p-datatable-scrollable-table {
+        width: 100%;
+        min-width: 0;
+        table-layout: auto;
+    }
+}
+
+/* Narrow desktop / tablet (< 1280): keep readable columns; scroll inside wrapper */
+@media (max-width: 1279px) {
+    [data-admin-layout] .admin-panel .p-datatable-table,
+    [data-admin-layout] .admin-panel .p-datatable .p-datatable-scrollable-table {
+        width: max-content;
+        min-width: 100%;
+        table-layout: auto;
+    }
+}
+
+[data-admin-layout] .admin-panel .p-datatable .p-datatable-thead > tr > th,
+[data-admin-layout] .admin-panel .p-datatable .p-datatable-tbody > tr > td {
+    box-sizing: border-box;
+    vertical-align: top;
+}
+
+/* Short structured cells stay readable; longer text may wrap via existing helpers */
+[data-admin-layout] .admin-panel .p-datatable .p-datatable-tbody > tr > td .status-badge,
+[data-admin-layout] .admin-panel .p-datatable .rw-numeric,
+[data-admin-layout] .admin-panel .p-datatable .rw-money,
+[data-admin-layout] .admin-panel .p-datatable .rw-date {
+    white-space: nowrap;
 }
 
 .p-datatable-header .admin-list-toolbar {
@@ -147,6 +269,8 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     justify-content: flex-end;
     gap: 0.5rem;
     margin-left: auto;
+    flex: 0 0 auto;
+    max-width: 100%;
 }
 
 .admin-list-toolbar__search-row {
@@ -206,6 +330,31 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 
 .admin-filter-group--dates {
     flex: 0 1 20.5rem;
+}
+
+/* Tablet / narrower desktop: keep filters usable without clipping actions */
+@media (max-width: 1279px) {
+    .admin-list-toolbar__heading {
+        align-items: flex-start;
+    }
+
+    .admin-list-toolbar__heading-actions {
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+
+    .admin-list-toolbar__filters > .w-52,
+    .admin-list-toolbar__filters > .w-44,
+    .admin-list-toolbar__filters > .w-40,
+    .admin-list-toolbar__filters .p-dropdown.w-52,
+    .admin-list-toolbar__filters .p-dropdown.w-44,
+    .admin-list-toolbar__filters .p-calendar.w-40 {
+        max-width: 100%;
+    }
+
+    .admin-filter-group--dates {
+        flex: 1 1 16rem;
+    }
 }
 
 @media (max-width: 767px) {
@@ -359,7 +508,24 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 .p-paginator {
     background: transparent !important;
     border: none !important;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem 0.5rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
 
+[data-admin-layout] .p-paginator .p-paginator-current,
+[data-admin-layout] .p-paginator .p-dropdown {
+    max-width: 100%;
+}
+
+[data-admin-layout] .p-paginator .p-paginator-current {
+    white-space: normal;
 }
 
 .p-paginator-pages .p-paginator-page {
@@ -908,5 +1074,17 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 [data-admin-layout] .admin-residents-table.p-datatable .p-datatable-tbody > tr > td {
     padding: 0.625rem 0.875rem;
     vertical-align: middle;
+}
+
+/* Forms / detail grids: stay within the main column; collapse via existing Tailwind breakpoints */
+[data-admin-layout] .admin-panel .grid {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+[data-admin-layout] .admin-panel .grid > * {
+    min-width: 0;
+    max-width: 100%;
 }
 

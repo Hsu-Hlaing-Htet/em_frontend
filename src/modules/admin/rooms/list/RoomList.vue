@@ -222,21 +222,32 @@ export default defineComponent({
 .room-list-panel {
     min-width: 0;
     max-width: 100%;
-    overflow: hidden;
-}
-
-:deep(.room-list-table .p-datatable-wrapper) {
-    overflow-x: auto;
-}
-
-:deep(.room-list-table .p-datatable-table) {
-    width: 100%;
-    table-layout: auto;
 }
 
 :deep(.room-list-table .p-datatable-thead > tr > th),
 :deep(.room-list-table .p-datatable-tbody > tr > td) {
     white-space: nowrap;
     vertical-align: middle;
+}
+
+@media (min-width: 1280px) {
+    :deep(.room-list-table .p-datatable-table) {
+        width: 100%;
+        min-width: 0;
+        table-layout: auto;
+    }
+}
+
+@media (max-width: 1279px) {
+    :deep(.room-list-table .p-datatable-wrapper) {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    :deep(.room-list-table .p-datatable-table) {
+        width: max-content;
+        min-width: 100%;
+        table-layout: auto;
+    }
 }
 </style>

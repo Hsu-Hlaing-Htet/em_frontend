@@ -164,13 +164,25 @@ export const useInvoiceApprovalList = () => {
             return store.getAllResponse;
         },
         mapItem: mapInvoiceRow,
-        getFilterSummary: () => [
-            { label: 'Search', value: list.search.value || '' },
-            { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
-            { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
-            { label: 'Due From', value: toQueryDate(dateFrom.value) || '' },
-            { label: 'Due To', value: toQueryDate(dateTo.value) || '' },
-        ],
+        getFilterSummary: () => {
+            const dueFrom = toQueryDate(dateFrom.value) || '';
+            const dueTo = toQueryDate(dateTo.value) || '';
+            let dueDate = '';
+            if (dueFrom && dueTo) {
+                dueDate = `${dueFrom} - ${dueTo}`;
+            } else if (dueFrom) {
+                dueDate = `From ${dueFrom}`;
+            } else if (dueTo) {
+                dueDate = `Until ${dueTo}`;
+            }
+
+            return [
+                { label: 'Search', value: list.search.value || '' },
+                { label: 'Building', value: buildingOptions.value.find((o) => o.value === buildingId.value)?.label || '' },
+                { label: 'Room', value: roomOptions.value.find((o) => o.value === roomId.value)?.label || '' },
+                { label: 'Due Date', value: dueDate },
+            ];
+        },
         hasData: computed(() => list.totalRecords.value > 0),
     });
 

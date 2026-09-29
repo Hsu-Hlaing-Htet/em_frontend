@@ -519,13 +519,84 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
     box-sizing: border-box;
 }
 
-[data-admin-layout] .p-paginator .p-paginator-current,
-[data-admin-layout] .p-paginator .p-dropdown {
-    max-width: 100%;
+/*
+ * Admin pagination footer layout (structural):
+ * - Nav controls, "Showing …", and rows-per-page form ONE centered flex group
+ * - Equal leftover space on both sides keeps the footer visually balanced
+ * - Narrow widths wrap cleanly while staying centered (no absolute offsets)
+ */
+[data-admin-layout] .admin-panel .p-paginator {
+    --admin-paginator-meta-gap: 0.75rem;
+    --admin-paginator-rpp-slot: 5.25rem;
+    --admin-paginator-inline-pad: 0.75rem;
+
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    row-gap: 0.55rem;
+    min-height: 2.75rem;
+    padding-block: 0.45rem;
+    padding-inline: var(--admin-paginator-inline-pad);
 }
 
-[data-admin-layout] .p-paginator .p-paginator-current {
-    white-space: normal;
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-first,
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-prev,
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-pages,
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-next,
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-last,
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-current,
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-rpp-options {
+    position: static;
+    inset: auto;
+    transform: none;
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+/* Separate the entry report from page links without breaking centering */
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-current {
+    margin-inline-start: var(--admin-paginator-meta-gap);
+    max-width: min(24rem, 100%);
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-rpp-options {
+    margin-inline-start: 0.15rem;
+    width: var(--admin-paginator-rpp-slot);
+    min-width: var(--admin-paginator-rpp-slot);
+}
+
+[data-admin-layout] .admin-panel .p-paginator .p-paginator-current,
+[data-admin-layout] .admin-panel .p-paginator .p-dropdown {
+    max-width: min(24rem, 100%);
+}
+
+/* Narrow: keep the same centered group; allow natural wrap */
+@media (max-width: 1023.98px) {
+    [data-admin-layout] .admin-panel .p-paginator {
+        justify-content: center;
+        min-height: 0;
+        padding-block: 0.5rem;
+        row-gap: 0.65rem;
+    }
+
+    [data-admin-layout] .admin-panel .p-paginator .p-paginator-current {
+        margin-inline-start: 0;
+        max-width: 100%;
+        text-align: center;
+        white-space: normal;
+    }
+
+    [data-admin-layout] .admin-panel .p-paginator .p-paginator-rpp-options {
+        margin-inline-start: 0;
+        width: var(--admin-paginator-rpp-slot);
+        min-width: var(--admin-paginator-rpp-slot);
+    }
 }
 
 .p-paginator-pages .p-paginator-page {

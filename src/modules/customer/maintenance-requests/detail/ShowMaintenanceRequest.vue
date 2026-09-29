@@ -1,5 +1,13 @@
 <template>
-    <div class="customer-portal-page customer-mr-detail">
+    <CustomerResourceNotFound
+        v-if="!isLoading && notFound"
+        resource="maintenance"
+    />
+
+    <div
+        v-else
+        class="customer-portal-page customer-mr-detail"
+    >
         <CustomerPageHeader
             :title="$t('customer.maintenanceRequestDetails')"
             :subtitle="$t('customer.maintenanceRequestDetailsLead')"
@@ -158,6 +166,7 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
+import CustomerResourceNotFound from '@/components/customer/CustomerResourceNotFound.vue';
 import useCustomerShowMaintenanceRequest from '@/composables/customer/useCustomerShowMaintenanceRequest';
 
 const HISTORY_STATUS_LABELS = {
@@ -171,7 +180,13 @@ const HISTORY_STATUS_LABELS = {
 
 export default defineComponent({
     name: 'CustomerShowMaintenanceRequest',
-    components: { Button, Loading, StatusBadge, CustomerPageHeader },
+    components: {
+        Button,
+        Loading,
+        StatusBadge,
+        CustomerPageHeader,
+        CustomerResourceNotFound,
+    },
     setup() {
         const page = useCustomerShowMaintenanceRequest();
 

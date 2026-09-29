@@ -1,7 +1,7 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
-import { showApiErrorToast } from '@/utils/apiError';
+import { isApiNotFound, showApiErrorToast } from '@/utils/apiError';
 import { useInvoiceStore } from '../store';
 import { useLateFeeStore } from '@/modules/admin/late-fees/store';
 import { useInvoiceDocumentActions } from '@/composables/admin/documents/billingDocumentActions';
@@ -35,6 +35,7 @@ export default function useInvoiceDocumentPage(options = {}) {
     const lateFeeStore = useLateFeeStore();
     const documentService = options.service || service;
     const isLoading = ref(true);
+    const notFound = ref(false);
     const isApproving = ref(false);
     const isRejecting = ref(false);
     const isSavingLateFee = ref(false);
@@ -211,6 +212,7 @@ export default function useInvoiceDocumentPage(options = {}) {
     const loadInvoice = async ({ quiet = false } = {}) => {
         if (!quiet) {
             isLoading.value = true;
+            notFound.value = false;
             documentHtml.value = '';
         }
 
@@ -225,6 +227,11 @@ export default function useInvoiceDocumentPage(options = {}) {
                 }
             }
         } catch (error) {
+            if (options.notFoundOn404 && isApiNotFound(error)) {
+                notFound.value = true;
+                return;
+            }
+
             showApiErrorToast(error, 'Unable to load invoice document.');
         } finally {
             if (!quiet) {
@@ -392,6 +399,7 @@ export default function useInvoiceDocumentPage(options = {}) {
 
     return {
         isLoading,
+        notFound,
         isApprovalView,
         isApproving,
         isRejecting,

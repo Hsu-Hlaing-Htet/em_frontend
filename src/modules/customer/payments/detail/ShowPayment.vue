@@ -1,5 +1,13 @@
 <template>
-    <div class="customer-portal-page customer-payment-detail-page">
+    <CustomerResourceNotFound
+        v-if="!isLoading && notFound"
+        resource="payment"
+    />
+
+    <div
+        v-else
+        class="customer-portal-page customer-payment-detail-page"
+    >
         <CustomerPageHeader
             title="Payment Details"
             subtitle="View payment information and invoice summary"
@@ -146,6 +154,7 @@ import Dialog from 'primevue/dialog';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
+import CustomerResourceNotFound from '@/components/customer/CustomerResourceNotFound.vue';
 import useCustomerShowPayment from '@/composables/customer/useCustomerShowPayment';
 
 export default defineComponent({
@@ -156,6 +165,7 @@ export default defineComponent({
         Loading,
         StatusBadge,
         CustomerPageHeader,
+        CustomerResourceNotFound,
     },
     setup() {
         return useCustomerShowPayment();

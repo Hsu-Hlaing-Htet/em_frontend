@@ -1,7 +1,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
-import { showApiErrorToast } from '@/utils/apiError';
+import { isApiNotFound, showApiErrorToast } from '@/utils/apiError';
 import { mapCustomerReceipt } from '@/helpers/customer/receipt';
 import { useReceiptDocument } from '@/composables/admin/documents/useReceiptDocument';
 import { useCustomerReceiptStore } from '@/modules/customer/receipts/store';
@@ -10,6 +10,7 @@ export default function useCustomerShowReceipt() {
     const store = useCustomerReceiptStore();
     const route = useRoute();
     const isLoading = ref(true);
+    const notFound = ref(false);
     const isDownloading = ref(false);
 
     const state = reactive({
@@ -49,6 +50,7 @@ export default function useCustomerShowReceipt() {
 
     async function loadReceipt() {
         isLoading.value = true;
+        notFound.value = false;
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -60,6 +62,11 @@ export default function useCustomerShowReceipt() {
                 });
             }
         } catch (error) {
+            if (isApiNotFound(error)) {
+                notFound.value = true;
+                return;
+            }
+
             showApiErrorToast(error, 'Unable to load receipt.');
         } finally {
             isLoading.value = false;
@@ -98,6 +105,7 @@ export default function useCustomerShowReceipt() {
 
     return {
         isLoading,
+        notFound,
         isDownloading,
         state,
         document,

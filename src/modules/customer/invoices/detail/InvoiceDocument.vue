@@ -1,5 +1,13 @@
 <template>
-    <div v-if="!isLoading" class="customer-portal-page customer-document-page">
+    <CustomerResourceNotFound
+        v-if="!isLoading && notFound"
+        resource="invoice"
+    />
+
+    <div
+        v-else-if="!isLoading"
+        class="customer-portal-page customer-document-page"
+    >
         <CustomerPageHeader
             class="no-print"
             :title="$t('customer.invoiceDocument')"
@@ -39,6 +47,7 @@ import Loading from '@/components/global/Loading.vue';
 import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import InvoiceDocumentSheet from '@/components/admin/documents/InvoiceDocumentSheet.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
+import CustomerResourceNotFound from '@/components/customer/CustomerResourceNotFound.vue';
 import useInvoiceDocumentPage from '@/modules/admin/invoices/detail/useInvoiceDocumentPage';
 import { useCustomerInvoiceStore } from '@/modules/customer/invoices/store';
 import { service } from '@/modules/customer/service';
@@ -57,11 +66,13 @@ export default defineComponent({
         DocumentDownloadActions,
         InvoiceDocumentSheet,
         CustomerPageHeader,
+        CustomerResourceNotFound,
     },
     setup() {
         const invoiceDocument = useInvoiceDocumentPage({
             store: useCustomerInvoiceStore(),
             service: customerInvoiceDocumentService,
+            notFoundOn404: true,
             resolveBackRoute: () => ({ name: 'customerInvoiceList' }),
         });
 

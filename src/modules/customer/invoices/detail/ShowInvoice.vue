@@ -1,5 +1,13 @@
 <template>
-    <div v-if="!isLoading" class="customer-portal-page">
+    <CustomerResourceNotFound
+        v-if="!isLoading && notFound"
+        resource="invoice"
+    />
+
+    <div
+        v-else-if="!isLoading"
+        class="customer-portal-page"
+    >
         <CustomerPageHeader
             :title="$t('customer.payInvoice')"
             :subtitle="$t('customer.payInvoiceLead')"
@@ -214,6 +222,7 @@ import StatusBadge from '@/components/global/StatusBadge.vue';
 import Loading from '@/components/global/Loading.vue';
 import InvoiceDocumentSheet from '@/components/admin/documents/InvoiceDocumentSheet.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
+import CustomerResourceNotFound from '@/components/customer/CustomerResourceNotFound.vue';
 import useCustomerShowInvoice from '@/composables/customer/useCustomerShowInvoice';
 
 export default defineComponent({
@@ -227,6 +236,7 @@ export default defineComponent({
         Loading,
         InvoiceDocumentSheet,
         CustomerPageHeader,
+        CustomerResourceNotFound,
     },
     setup() {
         return useCustomerShowInvoice();

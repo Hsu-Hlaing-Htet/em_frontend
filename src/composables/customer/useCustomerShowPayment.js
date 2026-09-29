@@ -1,6 +1,6 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { showApiErrorToast } from '@/utils/apiError';
+import { isApiNotFound, showApiErrorToast } from '@/utils/apiError';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { mapInvoiceLineItemRow } from '@/helpers/invoices/invoiceDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
@@ -43,6 +43,7 @@ export default function useCustomerShowPayment() {
     const route = useRoute();
     const store = useCustomerPaymentStore();
     const isLoading = ref(true);
+    const notFound = ref(false);
     const showProofPreview = ref(false);
     const state = reactive({
         id: null,
@@ -76,6 +77,7 @@ export default function useCustomerShowPayment() {
 
     const loadPayment = async () => {
         isLoading.value = true;
+        notFound.value = false;
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -85,6 +87,11 @@ export default function useCustomerShowPayment() {
                 Object.assign(state, normalizePayment(response.data));
             }
         } catch (error) {
+            if (isApiNotFound(error)) {
+                notFound.value = true;
+                return;
+            }
+
             showApiErrorToast(error, 'Unable to load payment details.');
         } finally {
             isLoading.value = false;
@@ -197,6 +204,7 @@ export default function useCustomerShowPayment() {
 
     return {
         isLoading,
+        notFound,
         showProofPreview,
         state,
         invoice,

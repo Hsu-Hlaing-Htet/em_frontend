@@ -4,7 +4,7 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { formatDate, formatCurrency } from '@/utils/formatter';
-import { showApiErrorToast } from '@/utils/apiError';
+import { showApiErrorToast, isApiNotFound } from '@/utils/apiError';
 import { useCustomerInvoiceStore } from '@/modules/customer/invoices/store';
 import { useCustomerPaymentStore } from '@/modules/customer/payments/store';
 import { service } from '@/modules/customer/service';
@@ -15,6 +15,7 @@ export default function useCustomerShowInvoice() {
     const route = useRoute();
     const router = useRouter();
     const isLoading = ref(true);
+    const notFound = ref(false);
     const isSaving = ref(false);
     const isDownloading = ref(false);
     const errors = new Errors();
@@ -182,6 +183,7 @@ export default function useCustomerShowInvoice() {
 
     async function loadInvoice() {
         isLoading.value = true;
+        notFound.value = false;
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -223,10 +225,17 @@ export default function useCustomerShowInvoice() {
                     documentHtml.value = await service.previewInvoiceDocumentHtml(state.id);
                 } catch (previewError) {
                     documentHtml.value = '';
-                    showApiErrorToast(previewError, 'Unable to load invoice document preview.');
+                    if (!isApiNotFound(previewError)) {
+                        showApiErrorToast(previewError, 'Unable to load invoice document preview.');
+                    }
                 }
             }
         } catch (error) {
+            if (isApiNotFound(error)) {
+                notFound.value = true;
+                return;
+            }
+
             showApiErrorToast(error, 'Unable to load invoice.');
         } finally {
             isLoading.value = false;
@@ -366,6 +375,7 @@ export default function useCustomerShowInvoice() {
 
     return {
         isLoading,
+        notFound,
         isSaving,
         isDownloading,
         errors,

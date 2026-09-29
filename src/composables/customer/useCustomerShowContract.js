@@ -1,7 +1,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
-import { showApiErrorToast } from '@/utils/apiError';
+import { isApiNotFound, showApiErrorToast } from '@/utils/apiError';
 import { useContractDocument as useSaleContractDocument } from '@/composables/admin/documents/useSaleContractDocument';
 import { useContractDocument as useRentContractDocument } from '@/composables/admin/documents/useRentContractDocument';
 import {
@@ -20,6 +20,7 @@ export default function useCustomerShowContract() {
     const store = useCustomerContractStore();
     const route = useRoute();
     const isLoading = ref(true);
+    const notFound = ref(false);
     const isDownloading = ref(false);
 
     const state = reactive({
@@ -86,6 +87,7 @@ export default function useCustomerShowContract() {
 
     async function loadContract() {
         isLoading.value = true;
+        notFound.value = false;
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -107,6 +109,11 @@ export default function useCustomerShowContract() {
                 }
             }
         } catch (error) {
+            if (isApiNotFound(error)) {
+                notFound.value = true;
+                return;
+            }
+
             showApiErrorToast(error, 'Unable to load contract.');
         } finally {
             isLoading.value = false;
@@ -181,6 +188,7 @@ export default function useCustomerShowContract() {
 
     return {
         isLoading,
+        notFound,
         isDownloading,
         state,
         document,

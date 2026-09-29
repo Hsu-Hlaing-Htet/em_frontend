@@ -1,5 +1,10 @@
 import EventBus from '@/libs/AppEventBus';
 
+export function isApiNotFound(error) {
+    const status = error?.status ?? error?.response?.status;
+    return status === 404;
+}
+
 function normalizeApiMessage(message, status) {
     const text = String(message || '').trim();
     const lower = text.toLowerCase();
@@ -124,7 +129,11 @@ export function getApiErrorMessage(error, fallback = 'Something went wrong. Plea
     return normalizeApiMessage(data.message || fallback, status);
 }
 
-export function showApiErrorToast(error, fallback) {
+export function showApiErrorToast(error, fallback, options = {}) {
+    if (options.skipNotFound && isApiNotFound(error)) {
+        return;
+    }
+
     EventBus.emit('show-toast', {
         severity: 'error',
         summary: '',

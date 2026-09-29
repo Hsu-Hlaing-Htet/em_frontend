@@ -1,5 +1,13 @@
 <template>
-    <div v-if="!isLoading" class="customer-portal-page customer-document-page">
+    <CustomerResourceNotFound
+        v-if="!isLoading && notFound"
+        resource="receipt"
+    />
+
+    <div
+        v-else-if="!isLoading"
+        class="customer-portal-page customer-document-page"
+    >
         <CustomerPageHeader
             class="no-print"
             :title="$t('customer.receiptDocument')"
@@ -40,6 +48,7 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ReceiptDocumentSheet from '@/components/admin/documents/ReceiptDocumentSheet.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
+import CustomerResourceNotFound from '@/components/customer/CustomerResourceNotFound.vue';
 import useCustomerShowReceipt from '@/composables/customer/useCustomerShowReceipt';
 
 export default defineComponent({
@@ -49,6 +58,7 @@ export default defineComponent({
         Loading,
         ReceiptDocumentSheet,
         CustomerPageHeader,
+        CustomerResourceNotFound,
     },
     setup() {
         return useCustomerShowReceipt();

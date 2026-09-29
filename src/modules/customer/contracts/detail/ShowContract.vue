@@ -1,5 +1,13 @@
 <template>
-    <div v-if="!isLoading" class="customer-portal-page customer-document-page">
+    <CustomerResourceNotFound
+        v-if="!isLoading && notFound"
+        resource="contract"
+    />
+
+    <div
+        v-else-if="!isLoading"
+        class="customer-portal-page customer-document-page"
+    >
         <CustomerPageHeader
             class="no-print"
             :title="$t('customer.contractDocument')"
@@ -47,6 +55,7 @@ import Loading from '@/components/global/Loading.vue';
 import ContractPdfSheet from '@/components/admin/documents/ContractPdfSheet.vue';
 import DocumentDownloadActions from '@/components/admin/DocumentDownloadActions.vue';
 import CustomerPageHeader from '@/components/customer/CustomerPageHeader.vue';
+import CustomerResourceNotFound from '@/components/customer/CustomerResourceNotFound.vue';
 import useCustomerShowContract from '@/composables/customer/useCustomerShowContract';
 
 export default defineComponent({
@@ -57,6 +66,7 @@ export default defineComponent({
         DocumentDownloadActions,
         Loading,
         CustomerPageHeader,
+        CustomerResourceNotFound,
     },
     setup() {
         return useCustomerShowContract();

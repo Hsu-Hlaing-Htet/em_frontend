@@ -1,6 +1,6 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { showApiErrorToast } from '@/utils/apiError';
+import { isApiNotFound, showApiErrorToast } from '@/utils/apiError';
 import { useCustomerMaintenanceRequestStore } from '@/modules/customer/maintenance-requests/store';
 
 const mapCustomerStatus = (status) => {
@@ -19,6 +19,7 @@ export default function useCustomerShowMaintenanceRequest() {
     const store = useCustomerMaintenanceRequestStore();
     const route = useRoute();
     const isLoading = ref(true);
+    const notFound = ref(false);
 
     const state = reactive({
         id: null,
@@ -273,6 +274,7 @@ export default function useCustomerShowMaintenanceRequest() {
 
     const fetchRequest = async () => {
         isLoading.value = true;
+        notFound.value = false;
 
         try {
             await store.fetchOne({ id: route.params.id });
@@ -282,6 +284,11 @@ export default function useCustomerShowMaintenanceRequest() {
                 Object.assign(state, response.data);
             }
         } catch (error) {
+            if (isApiNotFound(error)) {
+                notFound.value = true;
+                return;
+            }
+
             showApiErrorToast(error, 'Unable to load maintenance request.');
         } finally {
             isLoading.value = false;
@@ -303,6 +310,7 @@ export default function useCustomerShowMaintenanceRequest() {
 
     return {
         isLoading,
+        notFound,
         state,
         customerStatus,
         isCompleted,

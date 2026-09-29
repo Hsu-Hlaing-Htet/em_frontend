@@ -3008,3 +3008,25 @@ html[data-theme='dark'] .customer-portal-icon-badge.tone-blue {
     }
 }
 
+/* Resource / route 404 inside the customer portal chrome */
+[data-customer-layout] .customer-resource-not-found,
+[data-customer-layout] .rw-status-page--embedded {
+    min-height: min(70vh, 36rem);
+    background: transparent;
+    padding: 1.5rem 0.75rem 2.5rem;
+}
+
+[data-customer-layout] .rw-status-page--embedded .rw-status-card {
+    background: var(--admin-surface, var(--rw-surface));
+    border-color: var(--admin-border, var(--rw-border));
+    box-shadow: none;
+}
+
+[data-customer-layout] .rw-status-page--embedded .rw-status-title {
+    color: var(--admin-text, var(--rw-primary-deep));
+}
+
+[data-customer-layout] .rw-status-page--embedded .rw-status-message {
+    color: var(--admin-text-muted, var(--rw-text-muted));
+}
+

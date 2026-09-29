@@ -130,11 +130,25 @@ export function renderListDocumentPage({
                 .pdf-sheet--list-landscape { width: 297mm; max-width: 297mm; }
                 .list-export-filters { margin: 0 0 1rem; padding: 0; list-style: none; font-size: 9pt; color: #6b6560; }
                 .list-export-filters li { margin: 0.15rem 0; }
+                .pdf-sheet--list-landscape .doc-table,
+                .pdf-sheet--list-portrait .doc-table {
+                    table-layout: fixed;
+                    width: 100%;
+                }
                 .doc-table thead { display: table-header-group; }
                 .doc-table tr { break-inside: avoid; page-break-inside: avoid; }
+                .list-col--invoice_number { width: 10%; white-space: nowrap; }
+                .list-col--customer_name { width: 22%; overflow-wrap: break-word; }
+                .list-col--building_name { width: 20%; overflow-wrap: break-word; }
+                .list-col--room_number { width: 6%; white-space: nowrap; }
+                .list-col--invoice_total { width: 14%; white-space: nowrap; }
+                .list-col--issued_date, .list-col--due_date { width: 9%; white-space: nowrap; }
+                .list-col--payment_status { width: 10%; white-space: nowrap; }
                 @media print {
+                    html { counter-reset: none; }
                     body { background: #fff !important; }
                     .pdf-sheet { box-shadow: none !important; border: none !important; margin: 0 !important; }
+                    .pdf-foot-page::after { content: 'Page ' counter(page); }
                 }
             `,
         );

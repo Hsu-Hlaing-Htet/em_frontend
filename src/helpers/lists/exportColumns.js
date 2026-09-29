@@ -183,6 +183,10 @@ export const UTILITY_EXPORT_COLUMNS = [
     { field: 'created_at', header: 'Created At', type: 'date' },
 ];
 
+const invoiceStatus = (row) => getStatusLabel(
+    row.payment_status || row.display_status || row.status,
+);
+
 export const INVOICE_EXPORT_COLUMNS = [
     { field: 'invoice_number', header: 'Invoice #' },
     { field: 'customer_name', header: 'Customer' },
@@ -191,8 +195,7 @@ export const INVOICE_EXPORT_COLUMNS = [
     { field: 'invoice_total', header: 'Total (MMK)', type: 'currency', format: invoiceTotalCurrency },
     { field: 'issued_date', header: 'Issue Date', type: 'date' },
     { field: 'due_date', header: 'Due Date', type: 'date' },
-    { field: 'late_fee_policy_label', header: 'Late Fee Rule' },
-    { field: 'payment_status', header: 'Status', format: (row) => getStatusLabel(row.payment_status || row.status) },
+    { field: 'payment_status', header: 'Status', format: invoiceStatus },
 ];
 
 export const PAYMENT_EXPORT_COLUMNS = [

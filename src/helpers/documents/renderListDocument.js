@@ -1,15 +1,17 @@
 import { escapeHtml } from './htmlUtils';
 
 export function renderListDocumentBody({ columns, rows }) {
+    const columnClass = (field) => `list-col list-col--${String(field).replace(/[^a-z0-9_-]/gi, '-')}`;
+
     const tableHead = columns.map((column) => `
-        <th>${escapeHtml(column.header)}</th>
+        <th class="${columnClass(column.field)}">${escapeHtml(column.header)}</th>
     `).join('');
 
     const tableBody = rows.map((row) => {
         const cells = columns.map((column) => {
             const value = column.format ? column.format(row) : (row[column.field] ?? '');
 
-            return `<td>${escapeHtml(String(value ?? ''))}</td>`;
+            return `<td class="${columnClass(column.field)}">${escapeHtml(String(value ?? ''))}</td>`;
         }).join('');
 
         return `<tr>${cells}</tr>`;

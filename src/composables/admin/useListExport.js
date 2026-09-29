@@ -137,6 +137,9 @@ export function useListExport({
                     columns: columns.map((column) => ({
                         field: column.field,
                         header: column.header,
+                        ...(column.width ? { width: column.width } : {}),
+                        ...(column.align ? { align: column.align } : {}),
+                        ...(column.nowrap ? { nowrap: true } : {}),
                     })),
                     rows: serializeRows(rows, columns),
                     filters: getFilterSummary(),

@@ -24,13 +24,15 @@ export function renderDocumentHeader({ documentTitle, meta = [], logoSrc }) {
     `;
 }
 
-export function renderDocumentFooter() {
+export function renderDocumentFooter({ rightText } = {}) {
+    const right = rightText == null ? COMPANY_INFO.address : rightText;
+
     return `
         <footer class="pdf-foot">
             <div class="pdf-foot-row">
                 <span>Confidential</span>
                 <span class="pdf-foot-page">Page 1</span>
-                <span class="pdf-foot-address">${escapeHtml(COMPANY_INFO.address)}</span>
+                <span class="pdf-foot-address">${escapeHtml(right)}</span>
             </div>
         </footer>
     `;
@@ -42,6 +44,7 @@ export function renderDocumentArticle({
     bodyHtml,
     leadHtml = '',
     logoSrc,
+    footerRightText,
 }) {
     return `
         <article id="pdf-print" class="pdf-sheet">
@@ -50,7 +53,7 @@ export function renderDocumentArticle({
                 ${leadHtml}
             </div>
             ${bodyHtml}
-            ${renderDocumentFooter()}
+            ${renderDocumentFooter({ rightText: footerRightText })}
         </article>
     `;
 }
@@ -62,6 +65,7 @@ export function renderDocumentPage({
     bodyHtml,
     leadHtml = '',
     logoSrc,
+    footerRightText,
 }) {
     return `<!DOCTYPE html>
 <html lang="en">
@@ -71,7 +75,7 @@ export function renderDocumentPage({
     <style>${documentFontStyles}\n${documentStyles}</style>
 </head>
 <body>
-    ${renderDocumentArticle({ documentTitle, meta, bodyHtml, leadHtml, logoSrc })}
+    ${renderDocumentArticle({ documentTitle, meta, bodyHtml, leadHtml, logoSrc, footerRightText })}
 </body>
 </html>`;
 }

@@ -13,39 +13,39 @@ export function createContractExportColumns(prefix) {
     const activeKey = `${prefix}_ACTIVE_EXPORT_COLUMNS`;
 
     const draftColumns = [
-        { field: 'contract_no', header: 'Contract No' },
-        { field: 'customer_name', header: 'Customer' },
-        { field: 'building_name', header: 'Building' },
-        { field: 'room_number', header: 'Room' },
-        { field: 'contract_total', header: 'Contract Total (MMK)', type: 'currency', format: (row) => currency(row, 'contract_total') },
-        { field: 'payment_type', header: 'Payment Plan Type', format: paymentType },
-        { field: 'status', header: 'Status', format: status },
-        { field: 'created_by', header: 'Created By' },
-        { field: 'created_at', header: 'Created Date', type: 'date' },
+        { field: 'contract_no', header: 'Contract No', width: '11%', nowrap: true },
+        { field: 'customer_name', header: 'Customer', width: '18%' },
+        { field: 'building_name', header: 'Building', width: '16%' },
+        { field: 'room_number', header: 'Room', width: '6%', align: 'center', nowrap: true },
+        { field: 'contract_total', header: 'Contract Total (MMK)', type: 'currency', format: (row) => currency(row, 'contract_total'), width: '12%', align: 'right', nowrap: true },
+        { field: 'payment_type', header: 'Payment Plan Type', format: paymentType, width: '12%' },
+        { field: 'status', header: 'Status', format: status, width: '9%', nowrap: true },
+        { field: 'created_by', header: 'Created By', width: '8%' },
+        { field: 'created_at', header: 'Created Date', type: 'date', width: '8%', nowrap: true },
     ];
 
     const approvalColumns = [
-        { field: 'contract_no', header: 'Contract No' },
-        { field: 'customer_name', header: 'Customer' },
-        { field: 'building_name', header: 'Building' },
-        { field: 'room_number', header: 'Room' },
-        { field: 'contract_total', header: 'Contract Total (MMK)', type: 'currency', format: (row) => currency(row, 'contract_total') },
-        { field: 'payment_type', header: 'Payment Plan Type', format: paymentType },
-        { field: 'created_by', header: 'Created By' },
-        { field: 'created_at', header: 'Created Date', type: 'date' },
+        { field: 'contract_no', header: 'Contract No', width: '12%', nowrap: true },
+        { field: 'customer_name', header: 'Customer', width: '20%' },
+        { field: 'building_name', header: 'Building', width: '18%' },
+        { field: 'room_number', header: 'Room', width: '6%', align: 'center', nowrap: true },
+        { field: 'contract_total', header: 'Contract Total (MMK)', type: 'currency', format: (row) => currency(row, 'contract_total'), width: '13%', align: 'right', nowrap: true },
+        { field: 'payment_type', header: 'Payment Plan Type', format: paymentType, width: '13%' },
+        { field: 'created_by', header: 'Created By', width: '9%' },
+        { field: 'created_at', header: 'Created Date', type: 'date', width: '9%', nowrap: true },
     ];
 
     const activeColumns = [
-        { field: 'contract_no', header: 'Contract No' },
-        { field: 'customer_name', header: 'Customer' },
-        { field: 'building_name', header: 'Building' },
-        { field: 'room_number', header: 'Room' },
-        { field: 'contract_total', header: 'Contract Total (MMK)', type: 'currency', format: (row) => currency(row, 'contract_total') },
-        { field: 'paid_amount', header: 'Total Paid (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount') },
-        { field: 'remaining_amount', header: 'Balance (MMK)', type: 'currency', format: (row) => currency(row, 'remaining_amount') },
-        { field: 'status', header: 'Status', format: status },
-        { field: 'created_at', header: 'Created At', type: 'date' },
-        { field: 'payment_type', header: 'Payment Plan Type', format: paymentType },
+        { field: 'contract_no', header: 'Contract No', width: '10%', nowrap: true },
+        { field: 'customer_name', header: 'Customer', width: '14%' },
+        { field: 'building_name', header: 'Building', width: '13%' },
+        { field: 'room_number', header: 'Room', width: '5%', align: 'center', nowrap: true },
+        { field: 'contract_total', header: 'Contract Total (MMK)', type: 'currency', format: (row) => currency(row, 'contract_total'), width: '11%', align: 'right', nowrap: true },
+        { field: 'paid_amount', header: 'Total Paid (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount'), width: '10%', align: 'right', nowrap: true },
+        { field: 'remaining_amount', header: 'Balance (MMK)', type: 'currency', format: (row) => currency(row, 'remaining_amount'), width: '10%', align: 'right', nowrap: true },
+        { field: 'status', header: 'Status', format: status, width: '8%', nowrap: true },
+        { field: 'created_at', header: 'Created At', type: 'date', width: '9%', nowrap: true },
+        { field: 'payment_type', header: 'Payment Plan Type', format: paymentType, width: '10%' },
     ];
 
     return {
@@ -165,22 +165,22 @@ export const UTILITY_RATE_EXPORT_COLUMNS = [
 ];
 
 export const MAINTENANCE_EXPORT_COLUMNS = [
-    { field: 'user_name', header: 'Resident' },
-    { field: 'title', header: 'Title' },
-    { field: 'room_number', header: 'Room' },
-    { field: 'category', header: 'Category' },
-    { field: 'priority', header: 'Priority' },
-    { field: 'status', header: 'Status', format: status },
-    { field: 'created_at', header: 'Created', type: 'date' },
+    { field: 'user_name', header: 'Resident', width: '16%' },
+    { field: 'title', header: 'Title', width: '24%' },
+    { field: 'room_number', header: 'Room', width: '8%', align: 'center', nowrap: true },
+    { field: 'category', header: 'Category', width: '14%' },
+    { field: 'priority', header: 'Priority', width: '10%', nowrap: true },
+    { field: 'status', header: 'Status', format: status, width: '12%', nowrap: true },
+    { field: 'created_at', header: 'Created', type: 'date', width: '16%', nowrap: true },
 ];
 
 export const UTILITY_EXPORT_COLUMNS = [
-    { field: 'customer_name', header: 'Customer' },
-    { field: 'room_number', header: 'Room' },
-    { field: 'total_amount', header: 'Total (MMK)', type: 'currency', format: (row) => currency(row, 'total_amount') },
-    { field: 'status', header: 'Status', format: status },
-    { field: 'created_by_name', header: 'Created By' },
-    { field: 'created_at', header: 'Created At', type: 'date' },
+    { field: 'customer_name', header: 'Customer', width: '24%' },
+    { field: 'room_number', header: 'Room', width: '10%', align: 'center', nowrap: true },
+    { field: 'total_amount', header: 'Total (MMK)', type: 'currency', format: (row) => currency(row, 'total_amount'), width: '16%', align: 'right', nowrap: true },
+    { field: 'status', header: 'Status', format: status, width: '12%', nowrap: true },
+    { field: 'created_by_name', header: 'Created By', width: '18%' },
+    { field: 'created_at', header: 'Created At', type: 'date', width: '20%', nowrap: true },
 ];
 
 const invoiceStatus = (row) => getStatusLabel(
@@ -188,27 +188,29 @@ const invoiceStatus = (row) => getStatusLabel(
 );
 
 export const INVOICE_EXPORT_COLUMNS = [
-    { field: 'invoice_number', header: 'Invoice #' },
-    { field: 'customer_name', header: 'Customer' },
-    { field: 'building_name', header: 'Building' },
-    { field: 'room_number', header: 'Room' },
-    { field: 'invoice_total', header: 'Total (MMK)', type: 'currency', format: invoiceTotalCurrency },
-    { field: 'issued_date', header: 'Issue Date', type: 'date' },
-    { field: 'due_date', header: 'Due Date', type: 'date' },
-    { field: 'payment_status', header: 'Status', format: invoiceStatus },
+    { field: 'invoice_number', header: 'Invoice #', width: '10%', nowrap: true },
+    { field: 'customer_name', header: 'Customer', width: '19%' },
+    { field: 'building_name', header: 'Building', width: '17%' },
+    { field: 'room_number', header: 'Room', width: '5%', align: 'center', nowrap: true },
+    { field: 'invoice_total', header: 'Total (MMK)', type: 'currency', format: invoiceTotalCurrency, width: '12%', align: 'right', nowrap: true },
+    { field: 'issued_date', header: 'Issue Date', type: 'date', width: '13%', nowrap: true },
+    { field: 'due_date', header: 'Due Date', type: 'date', width: '13%', nowrap: true },
+    { field: 'payment_status', header: 'Status', format: invoiceStatus, width: '11%', nowrap: true },
 ];
 
 export const PAYMENT_EXPORT_COLUMNS = [
-    { field: 'invoice_number', header: 'Invoice No' },
-    { field: 'customer_name', header: 'Customer' },
-    { field: 'invoice_amount', header: 'Total (MMK)', type: 'currency', format: (row) => currency(row, 'invoice_amount') },
-    { field: 'paid', header: 'Paid (MMK)', type: 'currency', format: (row) => currency(row, 'paid') },
-    { field: 'paid_by', header: 'Paid By' },
-    { field: 'payment_date', header: 'Date', type: 'date' },
-    { field: 'payment_method_name', header: 'Method' },
+    { field: 'invoice_number', header: 'Invoice No', width: '11%', nowrap: true },
+    { field: 'customer_name', header: 'Customer', width: '18%' },
+    { field: 'invoice_amount', header: 'Total (MMK)', type: 'currency', format: (row) => currency(row, 'invoice_amount'), width: '12%', align: 'right', nowrap: true },
+    { field: 'paid', header: 'Paid (MMK)', type: 'currency', format: (row) => currency(row, 'paid'), width: '12%', align: 'right', nowrap: true },
+    { field: 'paid_by', header: 'Paid By', width: '12%' },
+    { field: 'payment_date', header: 'Date', type: 'date', width: '11%', nowrap: true },
+    { field: 'payment_method_name', header: 'Method', width: '12%' },
     {
         field: 'status',
         header: 'Status',
+        width: '12%',
+        nowrap: true,
         format: (row) => row.status_label
             || formatPaymentStatusLabel(row.display_status || row.status),
     },
@@ -217,12 +219,12 @@ export const PAYMENT_EXPORT_COLUMNS = [
 export const PAYMENT_APPROVAL_EXPORT_COLUMNS = PAYMENT_EXPORT_COLUMNS;
 
 export const RECEIPT_EXPORT_COLUMNS = [
-    { field: 'receipt_number', header: 'Receipt No' },
-    { field: 'invoice_number', header: 'Invoice No' },
-    { field: 'customer_name', header: 'Customer' },
-    { field: 'paid_amount', header: 'Payment (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount') },
-    { field: 'paid_by', header: 'Paid By' },
-    { field: 'date', header: 'Date', type: 'date' },
-    { field: 'payment_method_name', header: 'Method' },
-    { field: 'approved_by_name', header: 'Approved By' },
+    { field: 'receipt_number', header: 'Receipt No', width: '12%', nowrap: true },
+    { field: 'invoice_number', header: 'Invoice No', width: '11%', nowrap: true },
+    { field: 'customer_name', header: 'Customer', width: '18%' },
+    { field: 'paid_amount', header: 'Payment (MMK)', type: 'currency', format: (row) => currency(row, 'paid_amount'), width: '12%', align: 'right', nowrap: true },
+    { field: 'paid_by', header: 'Paid By', width: '12%' },
+    { field: 'date', header: 'Date', type: 'date', width: '11%', nowrap: true },
+    { field: 'payment_method_name', header: 'Method', width: '12%' },
+    { field: 'approved_by_name', header: 'Approved By', width: '12%' },
 ];

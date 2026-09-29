@@ -119,36 +119,106 @@ export function renderListDocumentPage({
         ],
         bodyHtml: `${filterHtml}${renderListDocumentBody({ columns, rows })}`,
         logoSrc: DOCUMENT_EXPORT_LOGO_SRC,
+        footerRightText: 'Rosewood Royale',
     });
 
     return page
-        .replace('class="pdf-sheet"', `class="pdf-sheet ${orientationClass}"`)
+        .replace('class="pdf-sheet"', `class="pdf-sheet pdf-sheet--list ${orientationClass}"`)
         .replace(
             '<style>',
             `<style>
-                @page { size: ${landscape ? 'A4 landscape' : 'A4 portrait'}; margin: 12mm; }
-                .pdf-sheet--list-landscape { width: 297mm; max-width: 297mm; }
-                .list-export-filters { margin: 0 0 1rem; padding: 0; list-style: none; font-size: 9pt; color: #6b6560; }
-                .list-export-filters li { margin: 0.15rem 0; }
-                .pdf-sheet--list-landscape .doc-table,
-                .pdf-sheet--list-portrait .doc-table {
-                    table-layout: fixed;
-                    width: 100%;
+                @page { size: ${landscape ? 'A4 landscape' : 'A4 portrait'}; margin: 8mm 8mm 12mm 8mm; }
+                .pdf-sheet.pdf-sheet--list {
+                    width: 100% !important;
+                    max-width: none !important;
+                    min-height: 0 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    overflow-wrap: break-word;
+                    font-size: 10pt;
+                    line-height: 1.35;
                 }
+                .pdf-sheet--list .pdf-head { margin-bottom: 0.45rem; }
+                .pdf-sheet--list .pdf-head-row { gap: 0.75rem; margin-bottom: 0.4rem; }
+                .pdf-sheet--list .pdf-logo { width: 1.65rem; height: 1.65rem; }
+                .pdf-sheet--list .pdf-brand { gap: 0.65rem; }
+                .pdf-sheet--list .pdf-company { font-size: 9pt; letter-spacing: 0.1em; }
+                .pdf-sheet--list .pdf-company-sub { margin-top: 0.1rem; font-size: 7pt; }
+                .pdf-sheet--list .pdf-meta-item { margin-bottom: 0.25rem; gap: 0.05rem; }
+                .pdf-sheet--list .pdf-meta-label { font-size: 6pt; letter-spacing: 0.12em; }
+                .pdf-sheet--list .pdf-meta-value { font-size: 8pt; }
+                .pdf-sheet--list .pdf-doc-title { margin: 0; font-size: 12pt; letter-spacing: 0.12em; }
+                .pdf-sheet--list .pdf-rule--accent { width: 3rem; margin: 0.3rem auto 0; }
+                .list-export-filters {
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    column-gap: 1.25rem;
+                    row-gap: 0.15rem;
+                    margin: 0.4rem 0 0.55rem;
+                    padding: 0;
+                    list-style: none;
+                    font-size: 7.5pt;
+                    line-height: 1.3;
+                    color: #6b6560;
+                }
+                .list-export-filters li { margin: 0; min-width: 0; }
+                .list-export-filters strong { color: #1c1c1c; font-weight: 600; }
+                .pdf-sheet--list .pdf-block { margin-bottom: 0; }
+                .pdf-sheet--list .doc-table-wrap { margin-top: 0; overflow: visible; }
+                .pdf-sheet--list .doc-table {
+                    width: 100% !important;
+                    table-layout: fixed;
+                    border-collapse: collapse;
+                    font-size: 9pt;
+                }
+                .pdf-sheet--list .doc-table th,
+                .pdf-sheet--list .doc-table td {
+                    border: none;
+                    border-bottom: 1px solid rgba(28, 28, 28, 0.12);
+                    padding: 5px 9px;
+                    vertical-align: top;
+                    text-align: left;
+                    overflow-wrap: break-word;
+                    word-break: normal;
+                    box-sizing: border-box;
+                }
+                .pdf-sheet--list .doc-table th {
+                    background: rgba(122, 49, 73, 0.07);
+                    border-bottom: 1px solid rgba(122, 49, 73, 0.22);
+                    font-size: 7.5pt;
+                    font-weight: 600;
+                    letter-spacing: 0.04em;
+                    text-transform: uppercase;
+                    color: #5c3d47;
+                    padding-top: 6px;
+                    padding-bottom: 6px;
+                }
+                .list-col--align-center { text-align: center; }
+                .list-col--align-right { text-align: right; }
+                .list-col--nowrap { white-space: nowrap; overflow-wrap: normal; word-break: keep-all; overflow: hidden; }
+                .list-col--issued_date,
+                .list-col--due_date,
+                .list-col--payment_status,
+                .list-col--status,
+                .list-col--payment_date,
+                .list-col--date,
+                .list-col--created_at { padding-left: 11px; padding-right: 11px; }
                 .doc-table thead { display: table-header-group; }
                 .doc-table tr { break-inside: avoid; page-break-inside: avoid; }
-                .list-col--invoice_number { width: 10%; white-space: nowrap; }
-                .list-col--customer_name { width: 22%; overflow-wrap: break-word; }
-                .list-col--building_name { width: 20%; overflow-wrap: break-word; }
-                .list-col--room_number { width: 6%; white-space: nowrap; }
-                .list-col--invoice_total { width: 14%; white-space: nowrap; }
-                .list-col--issued_date, .list-col--due_date { width: 9%; white-space: nowrap; }
-                .list-col--payment_status { width: 10%; white-space: nowrap; }
                 @media print {
                     html { counter-reset: none; }
                     body { background: #fff !important; }
                     .pdf-sheet { box-shadow: none !important; border: none !important; margin: 0 !important; }
-                    .pdf-foot-page::after { content: 'Page ' counter(page); }
+                    .pdf-sheet--list .pdf-foot-page { font-size: 0; }
+                    .pdf-sheet--list .pdf-foot-page::after {
+                        content: 'Page ' counter(page);
+                        font-size: 7pt;
+                        letter-spacing: 0.08em;
+                        text-transform: none;
+                        color: #6b6560;
+                    }
                 }
             `,
         );

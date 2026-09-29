@@ -1,261 +1,302 @@
-# Rosewood Royale Frontend
+# Rosewood Royale — Frontend
 
-Vue 3 single-page application for the Rosewood Royale real-estate and property management platform.
+Vue 3 single-page application for Rosewood Royale Residences.
 
-## Project Overview
+This repository owns the public website, customer portal, admin portal, and AI chat UI. It talks only to the Laravel backend API. It does not call MySQL or the FastAPI AI service directly.
 
-This repository is the frontend for Rosewood Royale. It provides:
+Repository: [Hsu-Hlaing-Htet/em_frontend](https://github.com/Hsu-Hlaing-Htet/em_frontend)
 
-- A public marketing and property discovery website
-- An authenticated customer portal
-- An authenticated admin portal
-- A public Rosewood AI Concierge chat UI for property questions
+---
 
-The app talks to the Laravel backend API. It does not call the AI service directly.
+## Quick Start — Run Order
 
-## Tech Stack
+Start the full system in this order:
 
-From `package.json` and project configuration:
+1. **MySQL** — database `rosewood_royale` must be available
+2. **Laravel Backend** — Terminal 1
+3. **FastAPI AI Service** — Terminal 2 (needed for AI chat)
+4. **Vue Frontend** — Terminal 3 (this repository)
 
-- Vue 3
-- Vite
-- Vue Router
-- Pinia
-- PrimeVue / PrimeIcons
-- Vue I18n
-- Axios
-- Tailwind CSS (via `@tailwindcss/vite`)
-- SheetJS (`xlsx`) for spreadsheet-related features
+| Terminal | Service | Typical command | Local URL |
+| --- | --- | --- | --- |
+| — | MySQL | Start your local MySQL server | `127.0.0.1:3306` |
+| 1 | Laravel Backend | `php artisan serve` (in `em_backend`) | http://localhost:8000 |
+| 2 | FastAPI AI | `uvicorn app.main:app --reload --port 8001` (in `em_ai`) | http://localhost:8001 |
+| 3 | Vue Frontend | `npm run dev` (in `em_frontend`) | http://localhost:5173 |
 
-## Application Areas
-
-### Public Website
-
-Public routes live under `src/modules/public/` and include:
-
-- Home / landing
-- Properties listing (`/properties`)
-- Property detail (`/properties/:id`)
-- For sale (`/buy`) and for rent (`/rent`)
-- Services
-- About
-- Contact
-- Privacy and Terms
-
-The public layout also mounts the AI Concierge (`FloatingChat`) for property assistance.
-
-### Customer Portal
-
-Authenticated customer routes under `/customer`, including:
-
-- Dashboard
-- Contracts
-- Invoices
-- Payments
-- Receipts
-- Maintenance requests
-- Notifications
-- Profile
-
-### Admin Portal
-
-Authenticated admin routes under `/admin` (roles: `admin`, `super_admin`), including:
-
-- Dashboard
-- Buildings and rooms
-- Residents and staff
-- Roles
-- Sale and rent contracts (drafts, active, approvals)
-- Invoices, payments, and receipts (including approval flows)
-- Utilities (including bulk import and approvals)
-- Utility types, utility rates, charge types, payment plans, late fees, payment methods
-- Maintenance requests
-- Profile
-
-### Auth
-
-- Login
-- Forgot password
-- Reset password
-- Forced change password (when required)
-
-### AI Concierge
-
-The public site embeds `FloatingChat` in property mode. Questions are sent through the frontend public API helper (`askPropertyQuestion`) to the Laravel endpoint `public/ai/property/ask`. The Laravel backend is responsible for proxying to the FastAPI AI service.
-
-Architecture:
+Connection flow:
 
 ```text
-Vue Frontend → Laravel Backend → FastAPI AI Service
+Browser
+   |
+   v
+Vue Frontend (:5173)
+   |
+   v
+Laravel Backend (:8000)
+   | \
+   |  \--> FastAPI AI (:8001)
+   |
+   +-----> MySQL (:3306)
 ```
 
-## Project Structure
+---
 
-```text
-.
-├── index.html
-├── package.json
-├── vite.config.js
-├── public/                 # Static public assets
-└── src/
-    ├── main.js             # App bootstrap
-    ├── App.vue
-    ├── assets/             # CSS and images
-    ├── components/         # Shared UI (admin, customer, public, global)
-    ├── composables/
-    ├── config/
-    ├── constants/
-    ├── helpers/
-    ├── i18n/
-    ├── layouts/            # Public, customer, and admin shells
-    ├── locales/            # en / my translations
-    ├── modules/            # Feature modules (public, customer, admin, auth)
-    ├── pages/              # Global status pages (404, forbidden, …)
-    ├── routes/             # Root router assembly
-    ├── services/           # Axios client and endpoint helpers
-    ├── stores/
-    └── utils/
-```
+## First-Time Setup
 
-## Requirements
-
-- Node.js (compatible with the Vite 7 toolchain used by this project)
-- npm
-
-No Node engine range is pinned in `package.json`.
-
-## Installation
+Do this once after cloning.
 
 ```bash
-git clone https://github.com/Hsu-Hlaing-Htet/em_frontend.git
+git clone git@github.com:Hsu-Hlaing-Htet/em_frontend.git
 cd em_frontend
 npm install
+cp .env.example .env
 ```
 
-## Environment Setup
-
-Create a local `.env` in the project root (this file is gitignored).
-
-Variables used by this frontend (names only):
-
-| Variable | Purpose |
-|----------|---------|
-| `VITE_API_BASE_URL` | Base URL for the Laravel API (used by Axios in `src/services/api.js`) |
-| `VITE_ALLOWED_HOSTS` | Optional comma-separated hostnames Vite may serve (for tunneled local development) |
-
-Example shape (placeholder values only):
+Edit `.env` so the API base URL matches your Laravel server:
 
 ```bash
 VITE_API_BASE_URL=http://localhost:8000/api
 VITE_ALLOWED_HOSTS=
 ```
 
-Do not commit real secrets. Prefer local `.env` files that stay out of version control.
+You still need the backend, database, and (for AI) the AI service set up. Follow **First-Time Setup** in:
 
-## Running Locally
+- https://github.com/Hsu-Hlaing-Htet/em_backend
+- https://github.com/Hsu-Hlaing-Htet/em_ai
+
+---
+
+## Daily Development
+
+When returning to the project:
+
+1. Start MySQL
+2. In `em_backend`: `php artisan serve`
+3. In `em_ai` (with venv active): `uvicorn app.main:app --reload --port 8001`
+4. In `em_frontend`:
 
 ```bash
 npm run dev
 ```
 
-Vite is configured to listen on port **5173** (`strictPort: true` in `vite.config.js`), so the default local URL is:
+Open http://localhost:5173
 
-```text
-http://localhost:5173
-```
+Optional (tunnel / ngrok): set `VITE_ALLOWED_HOSTS` to the exact tunnel hostname (no scheme), matching Vite’s `allowedHosts` behavior.
 
-Ensure the Laravel backend is running and `VITE_API_BASE_URL` points at its API.
+---
 
-## Production Build
+## Running the Full Rosewood Royale System
+
+### Step 1 — Database
+
+Ensure MySQL is running and the backend can connect to database `rosewood_royale` (see backend `.env.example`).
+
+### Step 2 — Laravel Backend
 
 ```bash
-npm run build
+cd em_backend
+php artisan serve
 ```
 
-Output is written to `dist/`. There is no `preview` script defined in `package.json`.
+URL: http://localhost:8000  
+Health: http://localhost:8000/up  
+API prefix: http://localhost:8000/api
 
-## Backend Integration
+### Step 3 — FastAPI AI
 
-HTTP calls go through Axios (`src/services/api.js`) using `VITE_API_BASE_URL`. Authenticated requests attach a Bearer token from `localStorage` when present.
+```bash
+cd em_ai
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+uvicorn app.main:app --reload --port 8001
+```
 
-Related backend repository:
+URL: http://localhost:8001  
+Health: http://localhost:8001/health  
+Docs: http://localhost:8001/docs
 
-https://github.com/Hsu-Hlaing-Htet/em_backend
+### Step 4 — Vue Frontend
 
-## AI Integration
+```bash
+cd em_frontend
+npm run dev
+```
 
-Public AI Concierge requests are issued from the Vue app to the Laravel API path `public/ai/property/ask`. The frontend does not embed AI service URLs or API keys for that flow.
+URL: http://localhost:5173
 
-Related AI repository:
+Vite is configured with `port: 5173` and `strictPort: true`.
 
-https://github.com/Hsu-Hlaing-Htet/em_ai
+---
 
-## Main Routes
+## Verify Everything Is Working
 
-### Public
+- [ ] http://localhost:5173 loads the public site
+- [ ] Login works (request goes to Laravel via `VITE_API_BASE_URL`)
+- [ ] Admin or customer dashboard data loads (Laravel ↔ MySQL)
+- [ ] Public AI Concierge chat answers a property question (Vue → Laravel → FastAPI)
+- [ ] Logged-in customer rent chat works when AI and backend are both up (Vue → Laravel → FastAPI → Laravel data)
 
-| Path | Description |
-|------|-------------|
-| `/` | Home |
-| `/about` | About (`/aboutus` redirects here) |
-| `/properties` | Properties listing |
-| `/properties/:id` | Property detail |
-| `/buy` | For sale listing |
-| `/rent` | For rent listing |
-| `/services` | Services |
-| `/contact` | Contact |
-| `/privacy` | Privacy policy |
-| `/terms` | Terms and conditions |
+If AI is down, the rest of the app can still run; only AI chat depends on FastAPI.
 
-### Auth
+---
 
-| Path | Description |
-|------|-------------|
-| `/login` | Login |
-| `/forgot-password` | Forgot password |
-| `/reset-password` | Reset password |
-| `/change-password` | Forced password change |
+## Architecture
 
-### Customer (`/customer/...`)
+```text
+Browser
+   |
+   v
+Vue Frontend
+   |
+   v
+Laravel Backend
+   | \
+   |  \--> FastAPI AI
+   |
+   +-----> MySQL
+```
 
-| Path | Description |
-|------|-------------|
-| `/customer/dashboard` | Dashboard |
-| `/customer/contracts` | Contracts |
-| `/customer/invoices` | Invoices |
-| `/customer/payments` | Payments |
-| `/customer/receipts` | Receipts |
-| `/customer/maintenance-requests` | Maintenance requests |
-| `/customer/notifications` | Notifications |
-| `/customer/profile` | Profile |
+- **Vue** owns UI, routing, and API consumption.
+- **Laravel** owns authentication, business rules, and data access.
+- **MySQL** stores application data.
+- **Laravel** proxies AI requests to FastAPI; the browser never calls FastAPI directly.
+- **FastAPI** does not replace Laravel as the main backend.
 
-### Admin (`/admin/...`)
+---
 
-| Path area | Description |
-|-----------|-------------|
-| `/admin/dashboard` | Dashboard |
-| `/admin/buildings`, `/admin/rooms` | Property inventory |
-| `/admin/residents`, `/admin/staff`, `/admin/roles` | People and access |
-| `/admin/sale-contracts`, `/admin/rent-contracts` | Contracts |
-| `/admin/approvals/...` | Contract approvals |
-| `/admin/invoices`, `/admin/payments`, `/admin/receipts` | Billing |
-| `/admin/utilities` and related masters | Utilities and billing configuration |
-| `/admin/maintenance-requests` | Maintenance |
-| `/admin/profile` | Profile |
+## Repository Responsibility
 
-## Build / Development Commands
+This frontend owns:
+
+- Public marketing / property discovery site
+- Customer portal UI
+- Admin portal UI
+- Auth screens (login, forgot/reset/change password)
+- UI routing (`vue-router`)
+- HTTP client and endpoint helpers (Axios → Laravel)
+- AI Concierge chat UI (`FloatingChat` on public and customer layouts)
+- Document/list export triggers that call Laravel PDF/export APIs
+- Contact form UI (submissions go to Laravel)
+
+It does **not** own: database schema, business rules, mail delivery, or direct AI provider keys.
+
+---
+
+## Environment Configuration
+
+Create `.env` from `.env.example`. Do not commit secrets.
+
+| Variable | Purpose |
+| --- | --- |
+| `VITE_API_BASE_URL` | Laravel API base URL (Axios `baseURL` in `src/services/api.js`) |
+| `VITE_ALLOWED_HOSTS` | Optional comma-separated hostnames Vite may serve (tunneling) |
+
+Example placeholders:
+
+```bash
+VITE_API_BASE_URL=http://localhost:8000/api
+VITE_ALLOWED_HOSTS=
+```
+
+Backend CORS / `FRONTEND_URL` must allow http://localhost:5173 (see backend `.env.example`).
+
+---
+
+## Project Structure
+
+```text
+src/
+├── modules/        # Feature areas: public, customer, admin, auth
+├── components/     # Shared UI (admin, customer, public, global)
+├── layouts/        # Public, customer, admin shells
+├── services/       # Axios client and API endpoint map
+├── routes/         # Router assembly
+├── stores/         # Pinia stores
+├── composables/    # Shared Vue composables
+├── helpers/        # Domain helpers (documents, lists, invoices, …)
+├── assets/         # CSS and images
+├── locales/        # en / my translations
+└── pages/          # Global status pages (404, forbidden, …)
+```
+
+---
+
+## Tech Stack
+
+Confirmed from `package.json` and Vite config:
+
+- Vue `^3.5`
+- Vite `^7`
+- Vue Router `^4`
+- Pinia `^3`
+- PrimeVue `^3` / PrimeIcons
+- Vue I18n `^10`
+- Axios `^1` (devDependency; used as HTTP client)
+- Tailwind CSS `^4` via `@tailwindcss/vite`
+- SheetJS (`xlsx`) for spreadsheet features
+
+No Node engine range is pinned in `package.json`. Use a current Node.js LTS compatible with Vite 7.
+
+---
+
+## Common Commands
 
 | Command | Description |
-|---------|-------------|
-| `npm run dev` | Start Vite development server |
+| --- | --- |
+| `npm install` | Install dependencies |
+| `npm run dev` | Start Vite on http://localhost:5173 |
 | `npm run build` | Production build to `dist/` |
 
-## Security
+There is no `preview` or frontend unit-test script in `package.json`.
 
-- Do not commit secret environment values
-- Configure API access with environment variables (`VITE_API_BASE_URL`)
-- Never place private API keys directly in frontend source
-- Treat the browser bundle as public: anything shipped in the client can be inspected
+---
+
+## Testing
+
+This repository does not define an automated frontend test suite in `package.json`.
+
+Validate locally by:
+
+1. `npm run build` succeeding
+2. `npm run dev` and manual checks against a running Laravel API
+
+Backend and AI have their own test commands in those repositories.
+
+---
+
+## Troubleshooting
+
+**Frontend cannot reach backend**  
+→ Confirm Laravel is running on http://localhost:8000  
+→ Confirm `VITE_API_BASE_URL=http://localhost:8000/api`  
+→ Restart Vite after changing `.env`  
+→ Check backend `CORS_ALLOWED_ORIGINS` includes http://localhost:5173
+
+**Page loads but login fails**  
+→ Inspect Network tab for `/api/auth/login`  
+→ Confirm MySQL is up and backend migrations/seed completed  
+→ Confirm backend `.env` `APP_KEY` is set
+
+**Vite refuses the hostname (ngrok)**  
+→ Set `VITE_ALLOWED_HOSTS` to the exact tunnel hostname (no `https://`)
+
+**AI chat fails but the rest of the app works**  
+→ Confirm FastAPI on http://localhost:8001/health  
+→ Confirm backend `AI_SERVICE_BASE_URL=http://127.0.0.1:8001`  
+→ Confirm AI `.env` has a valid `OPENAI_API_KEY` and `BACKEND_BASE_URL`
+
+**Port 5173 already in use**  
+→ Vite uses `strictPort: true`; free port 5173 or stop the other process
+
+---
+
+## Deployment
+
+This repository builds a static SPA (`npm run build` → `dist/`). Host the built assets behind your chosen static host or reverse proxy and point `VITE_API_BASE_URL` (build-time) at the deployed Laravel API.
+
+Exact hosting provider for the frontend is not defined in this repository’s config files. Backend and AI deployment configs live in their own repos (`render.yaml` / Docker).
+
+---
 
 ## Related Repositories
 
@@ -263,8 +304,10 @@ https://github.com/Hsu-Hlaing-Htet/em_ai
 - Backend: https://github.com/Hsu-Hlaing-Htet/em_backend
 - AI: https://github.com/Hsu-Hlaing-Htet/em_ai
 
+---
+
 ## Developer
 
 Designed and Developed by Hsu_Hlaing_Htet
 
-GitHub: https://github.com/Hsu-Hlaing-Htet
+https://github.com/Hsu-Hlaing-Htet

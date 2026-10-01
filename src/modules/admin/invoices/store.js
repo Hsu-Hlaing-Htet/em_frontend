@@ -37,6 +37,13 @@ export const useInvoiceStore = defineStore('useInvoiceStore', {
             const response = await service.issue(params);
             this.actionResponse = response;
         },
+        async update(params) {
+            const response = await service.update(params);
+            this.actionResponse = response;
+            if (response?.data) {
+                this.detailResponse = response;
+            }
+        },
         async updateLateFeePolicy(params) {
             const response = await service.updateLateFeePolicy(params);
             this.actionResponse = response;

@@ -21,6 +21,7 @@
                 removable-sort
                 row-hover
                 class="admin-clickable-rows"
+                :pt="clickableRowsPt"
                 @page="onPage($event)"
                 @sort="onSort($event)"
                 @row-click="onRowClick"
@@ -95,16 +96,7 @@
                     header="Invoice #"
                     :sortable="true"
                     style="min-width: 7.5rem; width: 7.5rem"
-                >
-                    <template #body="{ data }">
-                        <router-link
-                            :to="{ name: 'invoiceApprovalDocument', params: { id: data.id } }"
-                            class="font-medium text-[var(--admin-primary)] hover:underline"
-                        >
-                            {{ data.invoice_number }}
-                        </router-link>
-                    </template>
-                </Column>
+                />
 
                 <Column
                     field="customer_name"
@@ -152,70 +144,28 @@
                         {{ formatDate(data.due_date) }}
                     </template>
                 </Column>
-
-                <Column
-                    field="late_fee_selection"
-                    header="Late Fee Rule"
-                    :exportable="false"
-                    style="min-width: 11.5rem; width: 11.5rem"
-                >
-                    <template #body="{ data }">
-                        <div class="invoice-approval-late-fee-cell" @click.stop>
-                            <Dropdown
-                                :model-value="data.late_fee_selection"
-                                :options="lateFeeRuleOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="Select Late Fee Rule"
-                                class="invoice-approval-late-fee-dropdown"
-                                @update:model-value="(value) => updateLateFeeSelection(data, value)"
-                            />
-                        </div>
-                    </template>
-                </Column>
-
-                <Column
-                    header="Action"
-                    :exportable="false"
-                    style="min-width: 5.5rem; width: 5.5rem"
-                    body-class="invoice-approval-action-cell"
-                >
-                    <template #body="{ data }">
-                        <ApprovalListActions
-                            @approve="approveFromList(data)"
-                            @reject="rejectFromList(data)"
-                        />
-                    </template>
-                </Column>
             </DataTable>
 
             <Loading v-if="isLoading" />
         </div>
-
-        <RejectContractDialog
-            v-model="showRejectDialog"
-            entity="invoice"
-            :close-on-confirm="false"
-            @confirm="onRejectConfirm"
-        />
     </div>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from '@/components/global/AppDropdown.vue';
 import Calendar from 'primevue/calendar';
 import Loading from '@/components/global/Loading.vue';
-import ApprovalListActions from '@/components/admin/ApprovalListActions.vue';
-import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
+import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 import { formatCurrencyAmount as formatCurrency, formatDate } from '@/utils/formatter';
 import { resolveInvoiceTotal } from '@/helpers/invoices/invoiceDetailHelpers';
+import { shouldIgnoreListRowClick } from '@/composables/admin/useClickableListRow';
 import { useInvoiceApprovalList } from './useInvoiceApprovalList';
-import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
 export default defineComponent({
     name: 'InvoiceApprovalList',
@@ -227,40 +177,55 @@ export default defineComponent({
         Calendar,
         Loading,
         AdminListFilters,
-        ApprovalListActions,
-        RejectContractDialog,
         ListExportActions,
     },
     setup() {
+        const router = useRouter();
         const list = useInvoiceApprovalList();
-        const showRejectDialog = ref(false);
-        const selectedItem = ref(null);
 
-        const rejectFromList = (item) => {
-            selectedItem.value = item;
-            showRejectDialog.value = true;
-        };
-
-        const onRejectConfirm = async (reason) => {
-            if (!selectedItem.value) {
+        const openApprovalDetail = (data) => {
+            if (!data?.id) {
                 return;
             }
 
-            const rejected = await list.rejectItem(selectedItem.value, {
-                rejection_reason: reason,
+            router.push({
+                name: 'invoiceApprovalDocument',
+                params: { id: data.id },
             });
-
-            if (rejected) {
-                selectedItem.value = null;
-                showRejectDialog.value = false;
-            }
         };
+
+        const clickableRowsPt = computed(() => ({
+            bodyRow: {
+                tabindex: 0,
+                onKeydown(event) {
+                    if (event.key !== 'Enter' && event.key !== ' ') {
+                        return;
+                    }
+
+                    if (event.target !== event.currentTarget) {
+                        return;
+                    }
+
+                    if (shouldIgnoreListRowClick(event)) {
+                        return;
+                    }
+
+                    const index = Number(event.currentTarget.getAttribute('data-p-index'));
+                    const data = list.items.value?.[index];
+
+                    if (!data?.id) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    openApprovalDetail(data);
+                },
+            },
+        }));
 
         return {
             ...list,
-            showRejectDialog,
-            rejectFromList,
-            onRejectConfirm,
+            clickableRowsPt,
             formatCurrency,
             formatDate,
             invoiceTotal: resolveInvoiceTotal,
@@ -268,28 +233,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style scoped>
-.invoice-approval-late-fee-cell {
-    max-width: 11.5rem;
-}
-
-.invoice-approval-late-fee-dropdown {
-    width: 11.5rem;
-    max-width: 100%;
-}
-
-.invoice-approval-late-fee-dropdown :deep(.p-dropdown) {
-    width: 100%;
-}
-
-.invoice-approval-late-fee-dropdown :deep(.p-dropdown-label) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.invoice-approval-action-cell {
-    vertical-align: middle;
-}
-</style>

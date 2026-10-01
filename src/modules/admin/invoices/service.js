@@ -34,7 +34,15 @@ const service = {
     issue: async (params) => {
         const result = await api.post(`${endpoint.invoices}/${params.id}/issue`, {
             late_fee_selection: params.late_fee_selection,
+            due_date: params.due_date,
+            items: params.items,
         });
+        return result.data;
+    },
+
+    update: async (params) => {
+        const { id, ...payload } = params;
+        const result = await api.put(`${endpoint.invoices}/${id}`, payload);
         return result.data;
     },
 

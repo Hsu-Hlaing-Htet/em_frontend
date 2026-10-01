@@ -481,6 +481,21 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 .p-datatable .p-datatable-tbody > tr:hover {
     background: var(--rw-hover-bg) !important;
 }
+
+/* Clickable list rows (navigate on row click / Enter / Space) */
+[data-admin-layout] .admin-clickable-rows.p-datatable .p-datatable-tbody > tr {
+    cursor: pointer;
+}
+
+[data-admin-layout] .admin-clickable-rows.p-datatable .p-datatable-tbody > tr:focus {
+    outline: none;
+}
+
+[data-admin-layout] .admin-clickable-rows.p-datatable .p-datatable-tbody > tr:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--admin-primary) 55%, transparent);
+    outline-offset: -2px;
+    background: var(--rw-hover-bg) !important;
+}
 .p-inputtext,
 .p-dropdown,
 .p-textarea,

@@ -11,6 +11,7 @@ import {
     lateFeeSelectionFromInvoice,
 } from '@/helpers/invoices/lateFeePolicyHelpers';
 import { service } from '../service';
+import { createInvoiceApprovalReviewForm } from './useInvoiceApprovalReviewForm';
 
 function normalizeList(value) {
     if (Array.isArray(value)) {
@@ -36,7 +37,7 @@ export default function useInvoiceDocumentPage(options = {}) {
     const documentService = options.service || service;
     const isLoading = ref(true);
     const notFound = ref(false);
-    const isApproving = ref(false);
+    const isConfirming = ref(false);
     const isRejecting = ref(false);
     const isSavingLateFee = ref(false);
     const showApproveDialog = ref(false);
@@ -45,6 +46,7 @@ export default function useInvoiceDocumentPage(options = {}) {
     const lateFeeSelection = ref(null);
     const approvalRemark = ref('');
     const remarkError = ref('');
+    const review = createInvoiceApprovalReviewForm();
 
     const state = reactive({
         id: null,
@@ -222,7 +224,13 @@ export default function useInvoiceDocumentPage(options = {}) {
 
             if (response?.data) {
                 applyInvoiceResponse(response.data);
-                if (!quiet) {
+                if (route.meta.approvalContext && String(response.data.status || '').toLowerCase() === 'draft') {
+                    await review.syncFromInvoice(response.data);
+                    // Keep preview HTML available for the View action.
+                    if (!quiet) {
+                        await loadDocumentHtml(state.id);
+                    }
+                } else if (!quiet) {
                     await loadDocumentHtml(state.id);
                 }
             }
@@ -240,73 +248,38 @@ export default function useInvoiceDocumentPage(options = {}) {
         }
     };
 
-    const onLateFeeSelectionChange = async (selection) => {
-        if (!canApproveInvoice.value || !state.id || isSavingLateFee.value) {
+    const onLateFeeSelectionChange = (selection) => {
+        if (!canApproveInvoice.value) {
             return;
         }
 
-        const previous = lateFeeSelection.value;
         lateFeeSelection.value = selection;
-        isSavingLateFee.value = true;
-
-        try {
-            await store.updateLateFeePolicy({
-                id: state.id,
-                late_fee_selection: selection,
-            });
-            const response = store.getActionResponse;
-            if (response?.data) {
-                applyInvoiceResponse(response.data);
-                await loadDocumentHtml(state.id);
-            }
-        } catch (error) {
-            lateFeeSelection.value = previous;
-            showApiErrorToast(error, 'Unable to update Late Fee Rule.');
-        } finally {
-            isSavingLateFee.value = false;
-        }
+        review.clearErrors();
     };
 
-    const requestApprove = () => {
-        if (!canApproveInvoice.value || isApproving.value || isRejecting.value) {
+    const confirmInvoice = async () => {
+        if (!canApproveInvoice.value || isConfirming.value) {
             return;
         }
 
-        remarkError.value = '';
-
-        if (lateFeeSelection.value == null || lateFeeSelection.value === '') {
+        if (!review.validate(lateFeeSelection.value)) {
             EventBus.emit('show-toast', {
                 severity: 'warn',
                 summary: '',
-                detail: 'Please select a Late Fee Rule.',
+                detail: review.errors.late_fee_selection
+                    || review.errors.due_date
+                    || review.errors.items
+                    || 'Please complete the required invoice fields.',
             });
             return;
         }
 
-        showApproveDialog.value = true;
-    };
-
-    const approveInvoice = async () => {
-        if (!canApproveInvoice.value || isApproving.value) {
-            return;
-        }
-
-        if (lateFeeSelection.value == null || lateFeeSelection.value === '') {
-            EventBus.emit('show-toast', {
-                severity: 'warn',
-                summary: '',
-                detail: 'Please select a Late Fee Rule.',
-            });
-            showApproveDialog.value = false;
-            return;
-        }
-
-        isApproving.value = true;
+        isConfirming.value = true;
 
         try {
             await store.issue({
                 id: state.id,
-                late_fee_selection: lateFeeSelection.value,
+                ...review.buildIssuePayload(lateFeeSelection.value),
             });
             const response = store.getActionResponse;
 
@@ -317,21 +290,31 @@ export default function useInvoiceDocumentPage(options = {}) {
             EventBus.emit('show-toast', {
                 severity: 'success',
                 summary: '',
-                detail: response?.message || 'Invoice issued successfully.',
+                detail: response?.message || 'Invoice confirmed successfully.',
             });
-
-            showApproveDialog.value = false;
 
             await router.push({ name: 'invoiceList' });
         } catch (error) {
-            showApiErrorToast(error, 'Unable to approve invoice.');
+            showApiErrorToast(error, 'Unable to confirm invoice.');
+            await loadInvoice({ quiet: true });
+            if (state.status === 'draft') {
+                await review.syncFromInvoice(state);
+            }
         } finally {
-            isApproving.value = false;
+            isConfirming.value = false;
         }
     };
 
+    const requestApprove = () => {
+        confirmInvoice();
+    };
+
+    const approveInvoice = async () => {
+        await confirmInvoice();
+    };
+
     const requestReject = async () => {
-        if (!canRejectInvoice.value || isRejecting.value || isApproving.value) {
+        if (!canRejectInvoice.value || isRejecting.value || isConfirming.value) {
             return;
         }
 
@@ -401,7 +384,7 @@ export default function useInvoiceDocumentPage(options = {}) {
         isLoading,
         notFound,
         isApprovalView,
-        isApproving,
+        isConfirming,
         isRejecting,
         isSavingLateFee,
         showApproveDialog,
@@ -419,8 +402,11 @@ export default function useInvoiceDocumentPage(options = {}) {
         lateFeeSelection,
         approvalRemark,
         remarkError,
+        reviewForm: review.form,
+        reviewErrors: review.errors,
         onLateFeeSelectionChange,
         requestApprove,
+        confirmInvoice,
         requestReject,
         approveInvoice,
         rejectInvoice,

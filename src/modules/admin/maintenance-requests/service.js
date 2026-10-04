@@ -58,9 +58,15 @@ const service = {
     },
 
     complete: async (params) => {
+        const feeRaw = params.maintenance_fee_amount ?? params.maintenance_fee;
+        const fee = feeRaw === null || feeRaw === undefined || feeRaw === ''
+            ? null
+            : Number(feeRaw);
+
         const result = await api.post(`${endpoint.maintenanceRequests}/${params.id}/complete`, {
             resolution_note: params.resolution_note,
-            maintenance_fee_amount: params.maintenance_fee_amount,
+            maintenance_fee: fee,
+            maintenance_fee_amount: fee,
             charge_description: params.charge_description,
         });
         return result.data;

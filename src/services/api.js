@@ -15,6 +15,18 @@ api.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Let the browser set multipart boundary. A bare
+    // Content-Type: multipart/form-data (or the default application/json)
+    // breaks file uploads.
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+        if (typeof config.headers?.set === 'function') {
+            config.headers.set('Content-Type', undefined);
+        } else if (config.headers) {
+            delete config.headers['Content-Type'];
+            delete config.headers['content-type'];
+        }
+    }
+
     return config;
 });
 

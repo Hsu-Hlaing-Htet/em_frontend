@@ -75,7 +75,7 @@ export default function useCustomerNewMaintenanceRequest() {
         photoFile.value = null;
         photoPreviewUrl.value = '';
         isDragging.value = false;
-        errors.clear('photo');
+        errors.clear('attachment');
 
         if (fileInputEl.value) {
             fileInputEl.value.value = '';
@@ -90,11 +90,11 @@ export default function useCustomerNewMaintenanceRequest() {
         }
 
         if (!String(file.type || '').startsWith('image/')) {
-            errors.record({ photo: ['Please choose an image file.'] });
+            errors.record({ attachment: ['Please choose an image file.'] });
             return;
         }
 
-        errors.clear('photo');
+        errors.clear('attachment');
         photoFile.value = file;
         photoPreviewUrl.value = URL.createObjectURL(file);
     };
@@ -147,9 +147,9 @@ export default function useCustomerNewMaintenanceRequest() {
         isSaving.value = true;
 
         try {
-            // Photo remains UI-only until backend supports attachments on maintenance_requests.
             await store.create({
                 ...state,
+                attachment: photoFile.value || null,
             });
             const response = store.getCreateResponse;
 

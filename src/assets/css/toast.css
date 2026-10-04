@@ -93,8 +93,17 @@
     color: var(--rw-toast-title);
 }
 
+/* Mouse: no sticky ring. Keyboard: one outline only (no box-shadow layer). */
+.p-toast .p-toast-icon-close:focus,
+.p-toast .p-toast-icon-close:focus:not(:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 .p-toast .p-toast-icon-close:focus-visible {
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--rw-toast-accent) 28%, transparent);
+    outline: 2px solid color-mix(in srgb, var(--rw-toast-accent, var(--rw-brand, #8f2338)) 55%, transparent);
+    outline-offset: 2px;
+    box-shadow: none !important;
 }
 
 /* ---------- Public / default (light pastel) type surfaces ---------- */
@@ -236,8 +245,16 @@ html[data-theme='dark'] .p-toast .p-toast-message-info:not(.rw-glass-toast) {
     color: var(--rw-toast-title);
 }
 
+.p-toast .p-toast-message.rw-glass-toast .p-toast-icon-close:focus,
+.p-toast .p-toast-message.rw-glass-toast .p-toast-icon-close:focus:not(:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 .p-toast .p-toast-message.rw-glass-toast .p-toast-icon-close:focus-visible {
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--rw-toast-accent) 35%, transparent);
+    outline: 2px solid color-mix(in srgb, var(--rw-toast-accent) 55%, transparent);
+    outline-offset: 2px;
+    box-shadow: none !important;
 }
 
 /* Semantic accents — icon + thin edge + light tint only */

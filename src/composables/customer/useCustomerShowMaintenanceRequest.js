@@ -1,6 +1,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { isApiNotFound, showApiErrorToast } from '@/utils/apiError';
+import { resolvePublicStorageUrl } from '@/helpers/storageUrl';
 import { useCustomerMaintenanceRequestStore } from '@/modules/customer/maintenance-requests/store';
 
 const mapCustomerStatus = (status) => {
@@ -281,7 +282,11 @@ export default function useCustomerShowMaintenanceRequest() {
             const response = store.getOneResponse;
 
             if (response?.data) {
-                Object.assign(state, response.data);
+                Object.assign(state, response.data, {
+                    attachment_url: resolvePublicStorageUrl(
+                        response.data.attachment_url || response.data.attachment_path,
+                    ),
+                });
             }
         } catch (error) {
             if (isApiNotFound(error)) {

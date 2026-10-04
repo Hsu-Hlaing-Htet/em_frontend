@@ -68,10 +68,22 @@ summary:focus:not(:focus-visible),
 .p-paginator-element:focus:not(:focus-visible),
 .p-tabview-nav-link:focus:not(:focus-visible),
 .p-menuitem-link:focus:not(:focus-visible),
+.p-toast-icon-close:focus:not(:focus-visible),
 .theme-toggle:focus:not(:focus-visible),
 .theme-toggle--plain:focus:not(:focus-visible),
 .admin-user-profile > button:focus:not(:focus-visible),
 .customer-user-profile > button:focus:not(:focus-visible) {
+    box-shadow: none !important;
+}
+
+/* PrimeVue dropdown / select: Aura applies outline on .p-focus for mouse opens too */
+.p-dropdown:not(.p-disabled).p-focus:not(:focus-visible),
+.p-select:not(.p-disabled).p-focus:not(:focus-visible),
+.p-dropdown:focus:not(:focus-visible),
+.p-select:focus:not(:focus-visible),
+.p-dropdown.p-focus:not(:focus-visible),
+.p-select.p-focus:not(:focus-visible) {
+    outline: none !important;
     box-shadow: none !important;
 }
 
@@ -112,9 +124,10 @@ summary:focus-visible,
 /* Prefer outline-only for keyboard — avoid outline + glow double rings */
 .p-button:focus-visible,
 .p-link:focus-visible,
+.p-toast-icon-close:focus-visible,
 .theme-toggle:focus-visible,
 .theme-toggle--plain:focus-visible {
-    box-shadow: none;
+    box-shadow: none !important;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -148,18 +161,14 @@ input[type='radio']:focus-visible {
     outline-offset: var(--rw-focus-outline-offset);
 }
 
-/* PrimeVue dropdown / select trigger — keep open-state chrome, no mouse outline */
-.p-dropdown:focus:not(:focus-visible),
-.p-select:focus:not(:focus-visible),
-.p-dropdown.p-focus:not(:focus-visible),
-.p-select.p-focus:not(:focus-visible) {
-    outline: none;
-}
-
+/* PrimeVue dropdown / select trigger — keyboard gets one ring (mouse cleared above) */
 .p-dropdown:focus-visible,
-.p-select:focus-visible {
+.p-select:focus-visible,
+.p-dropdown:not(.p-disabled).p-focus:focus-visible,
+.p-select:not(.p-disabled).p-focus:focus-visible {
     outline: var(--rw-focus-outline);
     outline-offset: var(--rw-focus-outline-offset);
+    box-shadow: none !important;
 }
 
 /* Skip link remains always visible when focused (a11y) */

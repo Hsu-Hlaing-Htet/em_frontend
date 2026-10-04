@@ -80,12 +80,19 @@
             <div class="customer-mr-detail__section">
                 <p class="customer-mr-detail__section-label">{{ $t('customer.attachment') }}</p>
                 <div class="customer-mr-detail__attachment">
-                    <img
+                    <a
                         v-if="state.attachment_url"
-                        :src="state.attachment_url"
-                        alt="Uploaded attachment"
-                        class="customer-mr-detail__attachment-img"
+                        :href="state.attachment_url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="customer-mr-detail__attachment-link"
                     >
+                        <img
+                            :src="state.attachment_url"
+                            alt="Uploaded attachment"
+                            class="customer-mr-detail__attachment-img"
+                        >
+                    </a>
                     <p v-else class="customer-mr-detail__attachment-empty">
                         {{ $t('customer.noAttachment') }}
                     </p>
@@ -332,6 +339,11 @@ export default defineComponent({
     border-radius: 0.5rem;
     padding: 0.75rem;
     background: color-mix(in srgb, var(--admin-border) 18%, transparent);
+}
+
+.customer-mr-detail__attachment-link {
+    display: inline-flex;
+    max-width: 100%;
 }
 
 .customer-mr-detail__attachment-img {

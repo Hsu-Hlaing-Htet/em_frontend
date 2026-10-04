@@ -50,14 +50,6 @@
                     <StatusBadge v-if="request.status" :value="request.status" />
                 </span>
             </router-link>
-
-            <Button
-                v-if="hasMore()"
-                :label="$t('common.loadMore')"
-                class="customer-load-more btn"
-                :loading="isLoadingMore"
-                @click="loadMore"
-            />
         </div>
 
         <CustomerEmptyState

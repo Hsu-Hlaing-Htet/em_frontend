@@ -627,11 +627,11 @@ html:not([data-theme]) .admin-sidebar .rosewood-brand .rosewood-brand__name {
 }
 
 
-.p-inputtext:enabled:focus,
-.p-inputnumber-input:enabled:focus,
-.p-textarea:enabled:focus,
-.p-inputtextarea:enabled:focus,
-.p-password-input:enabled:focus {
+[data-admin-layout] .p-inputtext:enabled:focus,
+[data-admin-layout] .p-inputnumber-input:enabled:focus,
+[data-admin-layout] .p-textarea:enabled:focus,
+[data-admin-layout] .p-inputtextarea:enabled:focus,
+[data-admin-layout] .p-password-input:enabled:focus {
     border-color: var(--admin-primary) !important;
 
     box-shadow:

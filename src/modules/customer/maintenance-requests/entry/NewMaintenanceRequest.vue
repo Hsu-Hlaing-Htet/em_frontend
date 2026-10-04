@@ -170,8 +170,8 @@
                         </div>
                     </div>
 
-                    <small v-if="errors.has('photo')" class="p-error customer-maintenance-field__error">
-                        <span v-for="error in errors.get('photo')" :key="error">{{ error }}</span>
+                    <small v-if="errors.has('attachment')" class="p-error customer-maintenance-field__error">
+                        <span v-for="error in errors.get('attachment')" :key="error">{{ error }}</span>
                     </small>
                 </div>
 

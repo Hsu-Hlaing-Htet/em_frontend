@@ -3,6 +3,7 @@
         data-customer-layout
         :data-theme="themeMode"
         class="customer-shell admin-background min-h-screen text-[var(--admin-text)] transition-colors duration-300"
+        @click="clearPortalPointerFocus"
     >
         <header class="customer-portal-header language-switcher-surface">
             <div class="customer-portal-header-inner">
@@ -142,6 +143,25 @@ function clearBrandPointerFocus(event) {
     if (event?.detail > 0) {
         event.currentTarget?.blur?.();
     }
+}
+
+/** Same sticky pointer focus can linger on PrimeVue buttons after mouse click. */
+function clearPortalPointerFocus(event) {
+    if (!(event?.detail > 0)) {
+        return;
+    }
+
+    const target = event.target?.closest?.('button.p-button, button.p-button.p-component, .p-button');
+
+    if (!target || target.disabled || target.closest?.('.p-dropdown, .p-select')) {
+        return;
+    }
+
+    requestAnimationFrame(() => {
+        if (document.activeElement === target) {
+            target.blur?.();
+        }
+    });
 }
 
 async function loadHeaderMeta() {

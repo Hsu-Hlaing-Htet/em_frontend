@@ -165,12 +165,13 @@ const service = {
         formData.append('priority', params.priority);
         formData.append('description', params.description || '');
 
-        // Photo upload is UI-only for now; backend maintenance_requests has no photo column.
-        // Do not send unsupported fields that would confuse validation.
+        if (params.attachment instanceof File || params.attachment instanceof Blob) {
+            formData.append('attachment', params.attachment);
+        }
 
-        const result = await api.post(endpoint.customerMaintenanceRequests, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
+        // Do not set Content-Type manually — api interceptor clears it for FormData
+        // so the browser can attach the multipart boundary.
+        const result = await api.post(endpoint.customerMaintenanceRequests, formData);
         return result.data;
     },
 

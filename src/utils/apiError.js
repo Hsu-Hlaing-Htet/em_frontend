@@ -18,6 +18,15 @@ function normalizeApiMessage(message, status) {
     }
 
     if (lower.includes('required')) {
+        // Prefer specific backend required messages over a generic label.
+        if (
+            text.length > 24
+            && !lower.startsWith('the ')
+            && text !== 'This field is required.'
+        ) {
+            return text;
+        }
+
         return 'This field is required.';
     }
 
@@ -120,6 +129,21 @@ export function getApiErrorMessage(error, fallback = 'Something went wrong. Plea
 
             if (fieldKey === 'proof' && String(firstMessage || '').toLowerCase().includes('required')) {
                 return 'Payment proof is required.';
+            }
+
+            if (fieldKey === 'charge_description') {
+                return normalizeApiMessage(
+                    firstMessage || 'Charge description is required when a maintenance fee is charged.',
+                    status,
+                );
+            }
+
+            if (fieldKey === 'maintenance_fee' || fieldKey === 'maintenance_fee_amount') {
+                return normalizeApiMessage(firstMessage || 'Maintenance fee must be a valid amount.', status);
+            }
+
+            if (fieldKey === 'resolution_note' && String(firstMessage || '').toLowerCase().includes('required')) {
+                return 'Completion note is required.';
             }
 
             return normalizeApiMessage(firstMessage, status);

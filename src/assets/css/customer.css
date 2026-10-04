@@ -2707,16 +2707,66 @@ html[data-theme='dark'] .customer-portal-icon-badge.tone-blue {
     }
 }
 
-/* Customer Portal: keyboard focus uses shared tokens; mouse clicks leave no ring */
-.customer-shell :focus-visible {
+/* Customer Portal: keyboard focus uses shared tokens; mouse clicks leave no ring.
+   Exclude PrimeVue controls that already define a single :focus-visible treatment
+   so we do not stack catch-all outline + component outline/border. */
+.customer-shell :focus-visible:not(.p-button):not(.p-dropdown):not(.p-select):not(.p-inputtext):not(.p-textarea):not(.p-inputtextarea):not(.p-toast-icon-close) {
     outline: var(--rw-focus-outline, 2px solid var(--rw-focus-color, var(--rw-focus-ring)));
     outline-offset: var(--rw-focus-outline-offset, 2px);
 }
 
 .customer-shell a:focus:not(:focus-visible),
 .customer-shell button:focus:not(:focus-visible),
-.customer-shell [role='button']:focus:not(:focus-visible) {
-    outline: none;
+.customer-shell [role='button']:focus:not(:focus-visible),
+.customer-shell .p-button:focus:not(:focus-visible),
+.customer-shell .p-button.p-focus:not(:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Submit / portal buttons: one keyboard ring only (no border + glow stack) */
+[data-customer-layout] .p-button:focus-visible,
+[data-customer-layout] .customer-maintenance-btn-submit.p-button:focus-visible {
+    outline: 2px solid var(--rw-focus-color, var(--rw-brand, #8f2338)) !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
+
+/* Dropdowns opened by mouse keep normal border; keyboard gets one ring */
+[data-customer-layout] .p-dropdown:not(.p-disabled).p-focus:not(:focus-visible),
+[data-customer-layout] .p-select:not(.p-disabled).p-focus:not(:focus-visible),
+[data-customer-layout] .p-dropdown:focus:not(:focus-visible),
+[data-customer-layout] .p-select:focus:not(:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+[data-customer-layout] .p-dropdown:focus-visible,
+[data-customer-layout] .p-select:focus-visible,
+[data-customer-layout] .p-dropdown:not(.p-disabled).p-focus:focus-visible,
+[data-customer-layout] .p-select:not(.p-disabled).p-focus:focus-visible {
+    outline: 2px solid var(--rw-focus-color, var(--rw-brand, #8f2338)) !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
+
+/* Form fields: border feedback only — no extra focus glow rings.
+   Validation / invalid borders are unaffected. */
+[data-customer-layout] .p-inputtext:enabled:focus,
+[data-customer-layout] .p-inputnumber-input:enabled:focus,
+[data-customer-layout] .p-textarea:enabled:focus,
+[data-customer-layout] .p-inputtextarea:enabled:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+[data-customer-layout] .p-inputtext:enabled:focus-visible,
+[data-customer-layout] .p-inputnumber-input:enabled:focus-visible,
+[data-customer-layout] .p-textarea:enabled:focus-visible,
+[data-customer-layout] .p-inputtextarea:enabled:focus-visible {
+    border-color: var(--admin-primary, var(--rw-brand, #8f2338)) !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 /* theme.css intentionally removes outline for the user-profile trigger;

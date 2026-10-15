@@ -87,13 +87,13 @@
                     <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Charge Description</p>
                     <p class="text-sm font-medium">{{ state.charge_description }}</p>
                 </div>
-                <div v-if="state.invoice_id">
+                <div v-if="state.invoice_id && state.invoice_number">
                     <p class="mb-1 text-sm text-[var(--admin-text-muted)]">Invoice</p>
                     <router-link
                         :to="{ name: 'showInvoice', params: { id: state.invoice_id } }"
                         class="text-sm font-medium text-[var(--admin-accent)] underline"
                     >
-                        {{ state.invoice_number || `INV-${state.invoice_id}` }}
+                        {{ state.invoice_number }}
                     </router-link>
                 </div>
                 <div v-if="rejectionOrCancellationReason" class="md:col-span-2">
@@ -190,7 +190,7 @@
                 </div>
             </div>
 
-            <div v-if="showInProgressActions" class="mb-5 flex flex-wrap justify-end gap-2">
+            <div v-if="showInProgressActions" class="flex flex-wrap justify-end gap-2">
                 <Button
                     label="Work Done"
                     icon="pi pi-check"
@@ -208,25 +208,6 @@
                     :disabled="workflowLoading.complete"
                     @click="openCancelDialog"
                 />
-            </div>
-
-            <div>
-                <h3 class="mb-3 text-base font-semibold">Update History</h3>
-                <DataTable
-                    :value="state.status_history || []"
-                    responsive-layout="scroll"
-                    class="w-full"
-                >
-                    <template #empty>No updates yet.</template>
-                    <Column field="at" header="Date & Time" style="min-width: 160px" />
-                    <Column field="status" header="Status" style="min-width: 120px">
-                        <template #body="{ data }">
-                            <StatusBadge :value="data.status" />
-                        </template>
-                    </Column>
-                    <Column field="updated_by" header="Updated By" style="min-width: 140px" />
-                    <Column field="remarks" header="Remarks" style="min-width: 200px" />
-                </DataTable>
             </div>
         </section>
     </div>
@@ -329,8 +310,6 @@
 import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
@@ -345,8 +324,6 @@ export default defineComponent({
     components: {
         Button,
         Calendar,
-        Column,
-        DataTable,
         Dialog,
         InputText,
         InputNumber,

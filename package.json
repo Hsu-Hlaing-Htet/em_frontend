@@ -4,7 +4,14 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "test:system": "playwright test tests/system",
+        "test:system:tb1": "playwright test tests/system/timebox1.spec.js",
+        "test:system:tb2": "playwright test tests/system/timebox2.spec.js",
+        "test:system:tb3": "playwright test tests/system/timebox3.spec.js",
+        "test:system:tb4": "playwright test tests/system/timebox4.spec.js",
+        "test:system:tb5": "playwright test tests/system/timebox5.spec.js",
+        "test:system:cross": "playwright test tests/system/cross-module.spec.js"
     },
     "dependencies": {
         "pinia": "^3.0.4",
@@ -17,6 +24,7 @@
         "xlsx": "^0.18.5"
     },
     "devDependencies": {
+        "@playwright/test": "^1.64.1",
         "@tailwindcss/vite": "^4.0.0",
         "@vitejs/plugin-vue": "^6.0.1",
         "axios": "^1.11.0",

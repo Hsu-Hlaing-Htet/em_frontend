@@ -11,6 +11,11 @@
         "test:system:tb3": "playwright test tests/system/timebox3.spec.js",
         "test:system:tb4": "playwright test tests/system/timebox4.spec.js",
         "test:system:tb5": "playwright test tests/system/timebox5.spec.js",
+        "test:system:tb1:report": "PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/timebox-1 playwright test tests/system/timebox1.spec.js --reporter=list,html",
+        "test:system:tb2:report": "PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/timebox-2 playwright test tests/system/timebox2.spec.js --reporter=list,html",
+        "test:system:tb3:report": "PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/timebox-3 playwright test tests/system/timebox3.spec.js --reporter=list,html",
+        "test:system:tb4:report": "PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/timebox-4 playwright test tests/system/timebox4.spec.js --reporter=list,html",
+        "test:system:tb5:report": "PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report/timebox-5 playwright test tests/system/timebox5.spec.js --reporter=list,html",
         "test:system:cross": "playwright test tests/system/cross-module.spec.js"
     },
     "dependencies": {

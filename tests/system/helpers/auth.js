@@ -35,7 +35,7 @@ export async function loginAs(page, user) {
         localStorage.clear();
         sessionStorage.clear();
     });
-    await page.goto('/login', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 });
     await expectLoginForm(page);
     await page.locator('#login-email').fill(user.email);
     await page.locator('#login-password').fill(user.password);
@@ -53,6 +53,7 @@ export async function loginAs(page, user) {
     }
 
     await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 30_000 });
+    await page.waitForLoadState('domcontentloaded');
 }
 
 export async function loginAsAdmin(page) {
@@ -65,4 +66,17 @@ export async function loginAsCustomer(page) {
 
 export async function loginAsOtherCustomer(page) {
     await loginAs(page, USERS.otherCustomer);
+}
+
+export async function selectDropdown(page, label, option) {
+    const field = page.locator('.field').filter({ hasText: label }).first();
+
+    await field.locator('.p-dropdown').click();
+    await page.getByRole('option', { name: option, exact: true }).click();
+}
+
+export async function fillField(page, label, value) {
+    const field = page.locator('.field').filter({ hasText: label }).first();
+
+    await field.locator('input, textarea').first().fill(value);
 }

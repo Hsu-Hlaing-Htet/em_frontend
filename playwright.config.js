@@ -8,6 +8,7 @@ const backendRoot = path.resolve(__dirname, '../backend');
 // Use localhost (not 127.0.0.1) so Origin matches backend CORS_ALLOWED_ORIGINS.
 const FRONTEND_URL = process.env.PW_FRONTEND_URL || 'http://localhost:5174';
 const BACKEND_URL = process.env.PW_BACKEND_URL || 'http://127.0.0.1:8010';
+const HTML_REPORT_DIR = process.env.PLAYWRIGHT_HTML_OUTPUT_DIR || 'playwright-report/default';
 
 export default defineConfig({
     testDir: './tests/system',
@@ -16,7 +17,10 @@ export default defineConfig({
     retries: 0,
     timeout: 90_000,
     expect: { timeout: 15_000 },
-    reporter: [['list']],
+    reporter: [
+        ['list'],
+        ['html', { outputFolder: HTML_REPORT_DIR, open: 'never' }],
+    ],
     globalSetup: './tests/system/global-setup.js',
     globalTeardown: './tests/system/global-teardown.js',
     use: {

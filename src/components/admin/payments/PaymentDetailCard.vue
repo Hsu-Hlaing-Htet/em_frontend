@@ -118,12 +118,16 @@
                 <div>
                     <p class="payment-detail-card__label">Payment Proof</p>
                     <button
-                        v-if="proofPreview"
+                        v-if="hasProofPreview"
                         type="button"
                         class="payment-detail-card__proof"
                         @click="$emit('preview-proof')"
                     >
-                        <img :src="proofPreview" alt="Payment proof preview">
+                        <img
+                            :src="proofPreview"
+                            alt="Payment proof preview"
+                            @error="onProofError"
+                        >
                     </button>
                     <div v-else class="payment-detail-card__proof is-empty">
                         No payment proof uploaded.
@@ -167,12 +171,16 @@
             <h3 class="payment-detail-card__section-title">Payment Proof</h3>
             <div class="payment-detail-card__proof-view-grid">
                 <button
-                    v-if="proofPreview"
+                    v-if="hasProofPreview"
                     type="button"
                     class="payment-detail-card__proof"
                     @click="$emit('preview-proof')"
                 >
-                    <img :src="proofPreview" alt="Payment proof preview">
+                    <img
+                        :src="proofPreview"
+                        alt="Payment proof preview"
+                        @error="onProofError"
+                    >
                 </button>
                 <div v-else class="payment-detail-card__proof is-empty">
                     No payment proof uploaded.
@@ -200,7 +208,7 @@
 </template>
 
 <script>
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
 import StatusBadge from '@/components/global/StatusBadge.vue';
@@ -252,9 +260,21 @@ export default defineComponent({
         const statusBadgeValue = computed(() => (
             props.status ? resolvePaymentListStatus({ status: props.status }) : ''
         ));
+        const proofFailed = ref(false);
+        const hasProofPreview = computed(() => Boolean(props.proofPreview) && !proofFailed.value);
+
+        watch(() => props.proofPreview, () => {
+            proofFailed.value = false;
+        });
+
+        const onProofError = () => {
+            proofFailed.value = true;
+        };
 
         return {
             statusBadgeValue,
+            hasProofPreview,
+            onProofError,
         };
     },
 });

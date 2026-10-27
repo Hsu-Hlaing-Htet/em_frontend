@@ -105,7 +105,7 @@
                 </Column>
                 <Column field="status" header="Status" :sortable="true" style="min-width: 130px">
                     <template #body="{ data }">
-                        <StatusBadge :value="data.status" />
+                        <StatusBadge :value="data.status" context="maintenance-request" />
                     </template>
                 </Column>
                 <Column field="created_at" header="Created" :sortable="true" style="min-width: 160px">

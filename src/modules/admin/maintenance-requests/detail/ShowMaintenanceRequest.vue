@@ -15,7 +15,7 @@
                     </p>
                     <h2 class="m-0 mt-1 text-lg font-semibold">Request Information</h2>
                 </div>
-                <StatusBadge :value="statusBadgeValue" />
+                <StatusBadge :value="statusBadgeValue" context="maintenance-request" />
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">

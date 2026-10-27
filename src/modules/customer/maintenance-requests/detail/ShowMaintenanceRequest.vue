@@ -30,7 +30,7 @@
                     {{ state.request_number || `MR-${String(state.id).padStart(6, '0')}` }}
                 </p>
                 <div class="customer-mr-detail__meta-end">
-                    <StatusBadge :value="statusBadgeValue" />
+                    <StatusBadge :value="statusBadgeValue" context="maintenance-request" />
                     <p class="customer-mr-detail__datetime">{{ state.created_at || '—' }}</p>
                 </div>
             </div>

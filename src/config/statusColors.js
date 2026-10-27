@@ -72,7 +72,7 @@ function formatStatusLabel(status) {
         .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export function resolveStatusDefinition(status) {
+export function resolveStatusDefinition(status, context = '') {
     const normalizedStatus = normalizeStatus(status);
 
     if (!normalizedStatus) {
@@ -83,6 +83,10 @@ export function resolveStatusDefinition(status) {
     }
 
     const definition = STATUS_DEFINITIONS[normalizedStatus];
+
+    if (context === 'maintenance-request' && normalizedStatus === 'completed') {
+        return { ...definition, tone: STATUS_TONES.success };
+    }
 
     if (definition) {
         return definition;

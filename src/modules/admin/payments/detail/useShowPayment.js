@@ -4,6 +4,7 @@ import EventBus from '@/libs/AppEventBus';
 import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelpers';
 import { mapInvoiceLineItemRow } from '@/helpers/invoices/invoiceDetailHelpers';
 import { formatCurrency, formatDate } from '@/utils/formatter';
+import { resolvePublicStorageUrl } from '@/helpers/storageUrl';
 import { showApiErrorToast } from '@/utils/apiError';
 import { service as invoiceService } from '@/modules/admin/invoices/service';
 import { usePaymentStore } from '../store';
@@ -176,7 +177,9 @@ export default function useShowPayment() {
                 const payment = normalizePaymentDetail(response.data);
 
                 Object.assign(state, payment);
-                proofPreview.value = payment.proof_image_url || '';
+                proofPreview.value = resolvePublicStorageUrl(
+                    payment.proof_image_url || payment.proof_image_path,
+                );
                 adminRemark.value = '';
                 await loadInvoiceSummary(payment.invoice_id);
             }

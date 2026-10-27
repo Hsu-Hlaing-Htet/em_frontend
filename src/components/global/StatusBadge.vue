@@ -13,6 +13,11 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    /** Optional domain for context-specific status tones. */
+    context: {
+        type: String,
+        default: '',
+    },
     showIcon: {
         type: Boolean,
         default: true,
@@ -21,7 +26,7 @@ const props = defineProps({
 
 const statusValue = computed(() => props.value || props.status);
 
-const config = computed(() => resolveStatusDefinition(statusValue.value));
+const config = computed(() => resolveStatusDefinition(statusValue.value, props.context));
 
 const toneClass = computed(() => `status-badge--${config.value.tone}`);
 

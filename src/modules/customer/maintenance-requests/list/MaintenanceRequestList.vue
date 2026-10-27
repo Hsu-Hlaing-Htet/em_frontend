@@ -47,7 +47,7 @@
                         <span class="customer-record-created-sep" aria-hidden="true"> · </span>
                         <span class="customer-record-created-time">{{ createdAtParts(request.created_at).time }}</span>
                     </time>
-                    <StatusBadge v-if="request.status" :value="request.status" />
+                    <StatusBadge v-if="request.status" :value="request.status" context="maintenance-request" />
                 </span>
             </router-link>
         </div>

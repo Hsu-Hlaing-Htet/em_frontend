@@ -135,15 +135,6 @@ export const LATE_FEE_EXPORT_COLUMNS = [
     { field: 'status', header: 'Status', format: status },
 ];
 
-export const PAYMENT_PLAN_EXPORT_COLUMNS = [
-    { field: 'name', header: 'Name' },
-    { field: 'payment_type', header: 'Payment Type', format: paymentType },
-    { field: 'duration_months', header: 'Duration (months)', type: 'number' },
-    { field: 'interest_percentage', header: 'Interest %', type: 'number' },
-    { field: 'status', header: 'Status', format: status },
-    { field: 'created_at', header: 'Created At', type: 'date' },
-];
-
 export const PAYMENT_METHOD_EXPORT_COLUMNS = [
     { field: 'name', header: 'Name' },
     { field: 'type', header: 'Type' },

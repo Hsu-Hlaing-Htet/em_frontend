@@ -55,7 +55,6 @@ export const endpoint = {
     lateFees: 'late-fees',
     lateFeeOptions: 'late-fees/options',
     paymentMethods: 'payment-methods',
-    paymentPlans: 'payment-plans',
     contracts: 'contracts',
     saleContractDrafts: 'sale-contract-drafts',
     saleContractsApproved: 'sale-contracts/approved',

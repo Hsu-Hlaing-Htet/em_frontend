@@ -5,6 +5,7 @@ import { formatBillingDocumentDate } from '@/helpers/billing/billingDetailHelper
 import { mapInvoiceLineItemRow } from '@/helpers/invoices/invoiceDetailHelpers';
 import { formatCurrency } from '@/utils/formatter';
 import { formatProjectDate } from '@/utils/timezone';
+import { resolvePublicStorageUrl } from '@/helpers/storageUrl';
 import { useCustomerPaymentStore } from '@/modules/customer/payments/store';
 
 function normalizeRows(value) {
@@ -84,7 +85,13 @@ export default function useCustomerShowPayment() {
             const response = store.getOneResponse;
 
             if (response?.data) {
-                Object.assign(state, normalizePayment(response.data));
+                const payment = normalizePayment(response.data);
+
+                Object.assign(state, payment, {
+                    proof_image_url: resolvePublicStorageUrl(
+                        payment.proof_image_url || payment.proof_image_path,
+                    ),
+                });
             }
         } catch (error) {
             if (isApiNotFound(error)) {

@@ -164,12 +164,6 @@ const menuList = [
                 to: '/admin/maintenance-categories',
             },
             {
-                labelKey: 'navigation.paymentPlans',
-                key: 'payment-plans',
-                icon: 'pi pi-calendar',
-                to: '/admin/payment-plans',
-            },
-            {
                 labelKey: 'navigation.lateFees',
                 key: 'late-fees',
                 icon: 'pi pi-clock',

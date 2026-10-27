@@ -57,19 +57,9 @@ export const PAYMENT_TYPE_OPTIONS = [
     { label: 'Installment', value: 'installment' },
 ];
 
-export const PAYMENT_PLAN_TYPE_OPTIONS = [
-    { label: 'Full', value: 'full' },
-    { label: 'Installment', value: 'installment' },
-];
-
 export const PAYMENT_PLAN_TYPE_FILTER_OPTIONS = [
     { label: 'Full Payment', value: 'full' },
     { label: 'Installment', value: 'installment' },
-];
-
-export const PAYMENT_PLAN_STATUS_OPTIONS = [
-    { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' },
 ];
 
 export const INVOICE_STATUS_OPTIONS = [

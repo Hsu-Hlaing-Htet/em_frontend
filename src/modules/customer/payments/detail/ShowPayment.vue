@@ -126,7 +126,11 @@
                     class="customer-payment-proof-button"
                     @click="showProofPreview = true"
                 >
-                    <img :src="state.proof_image_url" alt="Payment proof">
+                    <img
+                        :src="state.proof_image_url"
+                        alt="Payment proof"
+                        @error="state.proof_image_url = ''"
+                    >
                 </button>
                 <p v-else class="customer-payment-detail-muted">No payment proof uploaded.</p>
 

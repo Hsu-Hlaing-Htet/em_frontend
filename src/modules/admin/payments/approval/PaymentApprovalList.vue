@@ -100,11 +100,6 @@
                         {{ formatCurrency(data.invoice_amount) }}
                     </template>
                 </Column>
-                <Column field="paid" header="Paid (MMK)" :sortable="true" style="min-width: 120px">
-                    <template #body="{ data }">
-                        {{ formatCurrency(data.paid) }}
-                    </template>
-                </Column>
                 <Column field="paid_by" header="Paid By" :sortable="true" style="min-width: 140px">
                     <template #body="{ data }">
                         {{ data.paid_by || '—' }}

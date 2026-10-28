@@ -246,6 +246,9 @@ No Node engine range is pinned in `package.json`. Use a current Node.js LTS comp
 | `npm install` | Install dependencies |
 | `npm run dev` | Start Vite on http://localhost:5173 |
 | `npm run build` | Production build to `dist/` |
+| `npm run test:system` | Run the Playwright system suite |
+| `npm run test:system:tb1` … `npm run test:system:tb5` | Run a timebox-specific Playwright suite |
+| `npm run test:system:cross` | Run cross-module Playwright coverage |
 
 There is no `preview` or frontend unit-test script in `package.json`.
 
@@ -253,14 +256,16 @@ There is no `preview` or frontend unit-test script in `package.json`.
 
 ## Testing
 
-This repository does not define an automated frontend test suite in `package.json`.
+Playwright system-test commands are defined in `package.json` and live under `tests/system/`:
 
-Validate locally by:
+```bash
+npm run build
+npm run test:system
+# or a focused suite, for example:
+npm run test:system:tb5
+```
 
-1. `npm run build` succeeding
-2. `npm run dev` and manual checks against a running Laravel API
-
-Backend and AI have their own test commands in those repositories.
+The system tests require the services and test environment they exercise. Generated `.last-*` state files are local test artifacts and are ignored. Manual checks against a running Laravel API remain useful. Backend and AI have their own test commands in those repositories.
 
 ---
 

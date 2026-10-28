@@ -12,3 +12,7 @@ playwright-report/
 blob-report/
 playwright/.cache/
 tests/system/.last-maint-title
+
+# Local deployment link metadata and generated browser-test state.
+.vercel/
+tests/system/.last-*

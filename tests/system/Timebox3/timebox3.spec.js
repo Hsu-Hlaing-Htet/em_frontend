@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin } from './helpers/auth.js';
+import { loginAsAdmin } from '../helpers/auth.js';
 
 test.describe('Timebox 3 — Utilities foundation', () => {
     test('admin can open utility types management', async ({ page }) => {

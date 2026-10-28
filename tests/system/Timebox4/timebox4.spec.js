@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loginAsAdmin, loginAsCustomer } from './helpers/auth.js';
+import { loginAsAdmin, loginAsCustomer } from '../helpers/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const proofImage = path.join(__dirname, 'fixtures/pw-proof.png');
+const proofImage = path.join(__dirname, '../fixtures/pw-proof.png');
 
 test.describe.configure({ mode: 'serial' });
 

@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loginAsAdmin, loginAsCustomer, loginAsOtherCustomer } from './helpers/auth.js';
+import { loginAsAdmin, loginAsCustomer, loginAsOtherCustomer } from '../helpers/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const titleFile = path.join(__dirname, '.last-maint-title');
+const titleFile = path.join(__dirname, '../.last-maint-title');
 
 test.describe.configure({ mode: 'serial' });
 

@@ -10,13 +10,7 @@ export default async function globalSetup() {
     const output = execFileSync('php', [prepare], {
         cwd: backendRoot,
         encoding: 'utf8',
-        env: {
-            ...process.env,
-            DB_DATABASE: 'rosewood_system_test',
-            DB_CONNECTION: 'mysql',
-            DB_HOST: '127.0.0.1',
-            MAIL_MAILER: 'array',
-        },
+        env: process.env,
     });
 
     if (!output.includes('rosewood_system_test')) {

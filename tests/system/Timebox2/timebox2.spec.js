@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin, loginAsCustomer, loginAsOtherCustomer } from './helpers/auth.js';
+import { loginAsAdmin, loginAsCustomer, loginAsOtherCustomer } from '../helpers/auth.js';
 
 test.describe('Timebox 2 — Contracts & customer ownership', () => {
     test('admin can view the seeded active rent room in the UI', async ({ page }) => {

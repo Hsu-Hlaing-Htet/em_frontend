@@ -5,13 +5,13 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "test:system": "playwright test tests/system",
-        "test:system:tb1": "playwright test tests/system/timebox1.spec.js",
-        "test:system:tb2": "playwright test tests/system/timebox2.spec.js",
-        "test:system:tb3": "playwright test tests/system/timebox3.spec.js",
-        "test:system:tb4": "playwright test tests/system/timebox4.spec.js",
-        "test:system:tb5": "playwright test tests/system/timebox5.spec.js",
-        "test:system:cross": "playwright test tests/system/cross-module.spec.js"
+        "test:system": "python3 ../backend/scripts/verify_timebox_tests.py --system-suite all",
+        "test:system:tb1": "python3 ../backend/scripts/verify_timebox_tests.py --system-suite Timebox1",
+        "test:system:tb2": "python3 ../backend/scripts/verify_timebox_tests.py --system-suite Timebox2",
+        "test:system:tb3": "python3 ../backend/scripts/verify_timebox_tests.py --system-suite Timebox3",
+        "test:system:tb4": "python3 ../backend/scripts/verify_timebox_tests.py --system-suite Timebox4",
+        "test:system:tb5": "python3 ../backend/scripts/verify_timebox_tests.py --system-suite Timebox5",
+        "test:system:cross": "python3 ../backend/scripts/verify_timebox_tests.py --system-suite cross"
     },
     "dependencies": {
         "pinia": "^3.0.4",

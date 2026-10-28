@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin, loginAsCustomer } from './helpers/auth.js';
+import { loginAsAdmin, loginAsCustomer } from '../helpers/auth.js';
 
 test.describe('Cross-module System workflow', () => {
     test('seeded invoice remains visible across admin and customer portals', async ({ page }) => {

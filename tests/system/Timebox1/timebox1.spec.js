@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin, loginAsCustomer } from './helpers/auth.js';
+import { loginAsAdmin, loginAsCustomer } from '../helpers/auth.js';
 
 test.describe('Timebox 1 — Auth & Property foundation', () => {
     test('admin can log in and open the admin dashboard', async ({ page }) => {

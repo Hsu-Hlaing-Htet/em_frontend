@@ -112,7 +112,7 @@ export const useStaffList = () => {
             await store.fetchAll(params);
             return store.getAllResponse;
         },
-        mapItem: (item) => ({ name: item.name, email: item.email, phone: item.phone || item.profile?.phone || '', nrc: item.nrc || item.profile?.nrc || '', gender: item.gender || item.profile?.gender || '', created_at: item.created_at }),
+        mapItem: (item) => ({ name: item.name, role_name: item.role_name?.replaceAll('_', ' ') || '', email: item.email, phone: item.phone || item.profile?.phone || '', nrc: item.nrc || item.profile?.nrc || '', gender: item.gender || item.profile?.gender || '', created_at: item.created_at }),
         getFilterSummary: () => [
             { label: 'Search', value: search.value || '' },
         ],

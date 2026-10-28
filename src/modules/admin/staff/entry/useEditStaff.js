@@ -4,25 +4,24 @@ import { useConfirm } from 'primevue/useconfirm';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
-import { useRoleStore } from '@/modules/admin/roles/store';
-import { GENDER_OPTIONS} from '@/constants/constant';
+import { GENDER_OPTIONS, STAFF_ROLE_NAMES } from '@/constants/constant';
 import { useStaffStore } from '../store';
+import { useRoleStore } from '@/modules/admin/roles/store';
+import { formatRoleName } from '@/utils/formatter';
 import { formatDate, parseDate } from '@/utils/formatter';
 import { showApiErrorToast } from '@/utils/apiError';
 import { findDuplicateAccountEmailError } from '@/helpers/accounts/accountUniqueness';
 
-const STAFF_ROLE_NAMES = ['super_admin', 'admin'];
-
 export default function useEditStaff() {
     const store = useStaffStore();
     const roleStore = useRoleStore();
+    const roleOptions = ref([]);
     const router = useRouter();
     const route = useRoute();
     const confirm = useConfirm();
     const isLoading = ref(true);
     const errors = new Errors();
     const submitted = ref(false);
-    const roleOptions = ref([]);
 
     const state = reactive({
         id: null,
@@ -48,18 +47,7 @@ export default function useEditStaff() {
 
     onMounted(async () => {
         try {
-            await roleStore.fetchAll({ per_page: 100 });
-            const response = roleStore.getAllResponse;
-
-            if (response?.data?.data) {
-                roleOptions.value = response.data.data
-                    .filter((role) => STAFF_ROLE_NAMES.includes(role.name))
-                    .map((role) => ({
-                        label: role.name.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-                        value: role.id,
-                    }));
-            }
-
+            await fetchRoles();
             await fetchStaff();
         } catch (error) {
             showApiErrorToast(error, 'Unable to load staff form data.');
@@ -70,6 +58,8 @@ export default function useEditStaff() {
     onBeforeUnmount(() => {
         store.$reset();
         store.$dispose();
+        roleStore.$reset();
+        roleStore.$dispose();
     });
 
     const fetchStaff = async () => {
@@ -99,6 +89,13 @@ export default function useEditStaff() {
         } finally {
             isLoading.value = false;
         }
+    };
+
+    const fetchRoles = async () => {
+        await roleStore.fetchAll({ per_page: 100 });
+        roleOptions.value = (roleStore.getAllResponse?.data?.data || [])
+            .filter((role) => STAFF_ROLE_NAMES.includes(role.name))
+            .map((role) => ({ label: formatRoleName(role.name), value: role.id }));
     };
 
     const showConfirmDialog = (id) => {

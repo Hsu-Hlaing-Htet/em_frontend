@@ -22,7 +22,7 @@
                     Role
                 </p>
                 <p class="text-base font-medium text-[var(--admin-text)]">
-                    {{ state.role_name || '—' }}
+                    {{ formatRoleName(state.role_name) || '—' }}
                 </p>
             </div>
 
@@ -99,12 +99,13 @@ import { defineComponent } from 'vue';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import useShowStaff from './useShowStaff';
+import { formatRoleName } from '@/utils/formatter';
 
 export default defineComponent({
     name: 'ShowStaff',
     components: { Button, Loading },
     setup() {
-        return useShowStaff();
+        return { ...useShowStaff(), formatRoleName };
     },
 });
 </script>

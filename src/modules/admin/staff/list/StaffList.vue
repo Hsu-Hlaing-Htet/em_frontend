@@ -58,7 +58,7 @@
                 </template>
                 <template #loading>Loading staff. Please wait.</template>
 
-                <Column field="name" header="Name" :sortable="true" style="min-width: 160px">
+                <Column field="name" header="Name" :sortable="true" style="min-width: 120px">
                     <template #body="{ data }">
                         <router-link
                             :to="{ name: 'showStaff', params: { id: data.id } }"
@@ -68,11 +68,14 @@
                         </router-link>
                     </template>
                 </Column>
+                <Column field="role_name" header="Role" style="min-width: 100px">
+                    <template #body="{ data }">{{ formatRoleName(data.role_name) }}</template>
+                </Column>
                 <Column field="email" header="Email" :sortable="true" style="min-width: 90px" />
-                <Column field="phone" header="Phone" style="min-width: 160px" />
+                <Column field="phone" header="Phone" style="min-width: 90px" />
                 <Column field="nrc" header="NRC" style="min-width: 100px" />
                 <Column field="gender" header="Gender" style="min-width: 90px" />
-                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 140px">
+                <Column field="created_at" header="Created At" :sortable="true" style="min-width: 90px">
                     <template #body="{ data }">
                         {{ formatDate(data.created_at) || '—' }}
                     </template>
@@ -113,7 +116,7 @@ import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import ListExportActions from '@/components/admin/ListExportActions.vue';
 import AdminListFilters from '@/components/admin/AdminListFilters.vue';
-import { formatDate } from '@/utils/formatter';
+import { formatDate, formatRoleName } from '@/utils/formatter';
 import { useStaffList } from './useStaffList';
 import AdminEmptyState from '@/components/admin/AdminEmptyState.vue';
 
@@ -124,7 +127,7 @@ export default defineComponent({
     setup() {
         return {
             ...useStaffList(),
-            formatDate,
+            formatDate, formatRoleName,
         };
     },
 });

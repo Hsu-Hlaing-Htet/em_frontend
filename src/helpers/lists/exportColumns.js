@@ -102,6 +102,7 @@ export const RESIDENT_EXPORT_COLUMNS = [
 
 export const STAFF_EXPORT_COLUMNS = [
     { field: 'name', header: 'Name' },
+    { field: 'role_name', header: 'Role' },
     { field: 'email', header: 'Email' },
     { field: 'phone', header: 'Phone' },
     { field: 'nrc', header: 'NRC' },

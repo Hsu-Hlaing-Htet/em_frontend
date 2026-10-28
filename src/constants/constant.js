@@ -57,6 +57,11 @@ export const PAYMENT_TYPE_OPTIONS = [
     { label: 'Installment', value: 'installment' },
 ];
 
+export const STAFF_ROLE_NAMES = [
+    'manager', 'accountant', 'receptionist', 'security_guard',
+    'cleaner', 'maintenance_staff', 'electrician', 'plumber',
+];
+
 export const PAYMENT_PLAN_TYPE_FILTER_OPTIONS = [
     { label: 'Full Payment', value: 'full' },
     { label: 'Installment', value: 'installment' },

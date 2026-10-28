@@ -4,20 +4,21 @@ import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import { applyValidation, bindErrorClearing } from '@/utils/formValidation';
 import { showApiErrorToast } from '@/utils/apiError';
-import { useRoleStore } from '@/modules/admin/roles/store';
-import { GENDER_OPTIONS } from '@/constants/constant';
+import { GENDER_OPTIONS, STAFF_ROLE_NAMES } from '@/constants/constant';
 import { useStaffStore } from '../store';
+import { useRoleStore } from '@/modules/admin/roles/store';
+import { formatRoleName } from '@/utils/formatter';
 import { formatDate } from '@/utils/formatter';
 import { findDuplicateAccountEmailError } from '@/helpers/accounts/accountUniqueness';
 
 export default function useNewStaff() {
     const store = useStaffStore();
     const roleStore = useRoleStore();
+    const roleOptions = ref([]);
     const router = useRouter();
     const isLoading = ref(false);
     const errors = new Errors();
     const submitted = ref(false);
-    const roleOptions = ref([]);
 
     const state = reactive({
         role_id: null,
@@ -34,28 +35,17 @@ export default function useNewStaff() {
     bindErrorClearing(state, errors);
 
     onMounted(async () => {
-        try {
-            await roleStore.fetchAll({ per_page: 100 });
-            const response = roleStore.getAllResponse;
-
-            if (response?.data?.data) {
-                roleOptions.value = response.data.data
-                .filter((role) => role.name.toLowerCase() !== 'customer')
-                .map((role) => ({
-                    label: role.name
-                        .replaceAll('_', ' ')
-                        .replace(/\b\w/g, (char) => char.toUpperCase()),
-                    value: role.id,
-                }));
-            }
-        } catch (error) {
-            showApiErrorToast(error, 'Unable to load staff form data.');
-        }
+        await roleStore.fetchAll({ per_page: 100 });
+        roleOptions.value = (roleStore.getAllResponse?.data?.data || [])
+            .filter((role) => STAFF_ROLE_NAMES.includes(role.name))
+            .map((role) => ({ label: formatRoleName(role.name), value: role.id }));
     });
 
     onBeforeUnmount(() => {
         store.$reset();
         store.$dispose();
+        roleStore.$reset();
+        roleStore.$dispose();
     });
 
     const handleSubmit = async () => {
@@ -98,7 +88,7 @@ export default function useNewStaff() {
                 EventBus.emit('show-toast', {
                     severity: 'success',
                     summary: '',
-                    detail: response.message || 'Staff member created. A welcome email with a temporary password was sent.',
+                    detail: response.message || 'Staff member created.',
                 });
             }
         } catch (error) {

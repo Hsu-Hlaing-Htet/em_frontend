@@ -129,6 +129,14 @@ export function getPaymentTypeLabel(type) {
     return labels[type] || type || '-';
 }
 
+export function formatRoleName(name) {
+    return String(name || '')
+        .split('_')
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
 export { getStatusLabel } from '@/config/statusColors';
 
 export { formatDate, parseDate };

@@ -73,7 +73,7 @@ const routes = [
                     breadcrumbs: [
                         { title: 'Invoice List', routeName: 'invoiceList' },
                         { title: 'Approvals', routeName: 'invoiceApprovalList' },
-                        { title: 'Document', routeName: 'invoiceApprovalDocument' },
+                        { title: 'Approval Detail', routeName: 'invoiceApprovalDocument' },
                     ],
                 },
             },

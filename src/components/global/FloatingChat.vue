@@ -1904,6 +1904,20 @@ onBeforeUnmount(() => {
         font-size: 0.68rem;
     }
 
+    .rw-chat--property .rw-chat__trigger {
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        min-height: 52px;
+        margin-left: auto;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    .rw-chat--property .rw-chat__trigger-copy {
+        display: none;
+    }
+
     .rw-chat.is-open .rw-chat__panel {
         max-height: 75vh;
         height: min(75vh, 36rem);

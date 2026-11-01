@@ -93,3 +93,18 @@ export const emptyUtilityItem = () => ({
     rowError: '',
     currentReadingError: '',
 });
+
+// Send only editable fields; workflow and audit fields are server-owned.
+export const buildUtilityUpdatePayload = (state, items) => ({
+    room_id: state.room_id,
+    contract_id: state.contract_id,
+    billing_month: formatBillingMonth(state.billing_month),
+    reading_date: formatUtilityDate(state.reading_date),
+    utility_items: items.map((item) => ({
+        id: item.id || undefined,
+        utility_type_id: item.utility_type_id,
+        previous_reading: item.previous_reading,
+        current_reading: item.current_reading,
+        unit_price: item.unit_price,
+    })),
+});

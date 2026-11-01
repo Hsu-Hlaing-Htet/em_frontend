@@ -5,7 +5,7 @@
                 <h2 class="invoice-approval-detail-card__title">{{ form.invoice_number || '—' }}</h2>
             </div>
             <span class="invoice-approval-detail-card__meta">
-                {{ billingPeriodLabel }}
+                {{ billingPeriodLabel }} · {{ statusLabel }}
             </span>
         </div>
         <div class="invoice-approval-detail-card__divider">
@@ -71,7 +71,7 @@
                             <th class="is-center">Previous Unit</th>
                             <th class="is-center">Current Unit</th>
                             <th class="is-center">Usage</th>
-                            <th class="is-num">Unit Price</th>
+                            <th class="is-num">Rate / Fixed Amount</th>
                             <th class="is-num">Amount</th>
                         </tr>
                     </thead>
@@ -99,6 +99,7 @@
                             </td>
                             <td class="is-num">
                                 <InputNumber
+                                    v-if="item.is_metered"
                                     v-model="item.unit_price"
                                     class="w-full invoice-approval-detail-card__cell-input"
                                     :disabled="disabled"
@@ -106,6 +107,7 @@
                                     :max-fraction-digits="2"
                                     @update:model-value="onItemChange(item)"
                                 />
+                                <span v-else>{{ formatMoney(item.amount) }}</span>
                             </td>
                             <td class="is-num">{{ formatMoney(item.amount) }}</td>
                         </tr>
@@ -225,6 +227,10 @@ export default defineComponent({
         'confirm',
     ],
     setup(props) {
+        const statusLabel = computed(() => {
+            const status = String(props.form.status || 'draft');
+            return status.charAt(0).toUpperCase() + status.slice(1);
+        });
         const subtotal = computed(() => roundMoney(
             (props.form.items || []).reduce((sum, item) => sum + Number(item.amount || 0), 0),
         ));
@@ -267,6 +273,7 @@ export default defineComponent({
         };
 
         return {
+            statusLabel,
             subtotal,
             displayTotal,
             billingPeriodLabel,

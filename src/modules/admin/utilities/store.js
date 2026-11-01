@@ -85,10 +85,6 @@ export const useUtilityStore = defineStore('useUtilityStore', {
             const response = await service.delete(params);
             this.deleteResponse = response;
         },
-        async submit(params) {
-            const response = await service.submit(params);
-            this.actionResponse = response;
-        },
         async approve(params) {
             const response = await service.approve(params);
             this.actionResponse = response;

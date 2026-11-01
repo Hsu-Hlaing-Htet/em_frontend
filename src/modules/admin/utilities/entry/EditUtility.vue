@@ -1,65 +1,16 @@
 <template>
-    <div class="flex flex-col gap-5">
-        <div class="flex flex-wrap items-center justify-between gap-3 px-1">
-            <WorkflowActionBar
-                v-if="!isApprovalView"
-                :can-submit="canSubmit() || canResubmit()"
-                :submit-label="submitLabel"
-                :submitting="workflowLoading.submit"
-                @submit="runWorkflow('submit')"
-            />
-            <div class="ml-auto flex flex-wrap items-center gap-2">
-                <router-link
-                    v-if="documentRoute"
-                    :to="documentRoute"
-                >
-                    <Button
-                        icon="pi pi-file"
-                        label="View"
-                        severity="secondary"
-                    />
-                </router-link>
-                <Button
-                    v-if="isApprovalView && canApprove()"
-                    type="button"
-                    icon="pi pi-check"
-                    label="Approve"
-                    severity="success"
-                    :loading="workflowLoading.approve"
-                    :disabled="workflowLoading.approve || workflowLoading.reject"
-                    @click="showApproveDialog = true"
-                />
-                <Button
-                    v-if="isApprovalView && canReject()"
-                    type="button"
-                    icon="pi pi-times"
-                    label="Reject"
-                    severity="danger"
-                    outlined
-                    :loading="workflowLoading.reject"
-                    :disabled="workflowLoading.approve || workflowLoading.reject"
-                    @click="showRejectDialog = true"
-                />
-                <StatusBadge v-if="state.status && !isApprovalView" :value="state.status" />
-                <router-link v-if="isApprovalView" :to="backRoute">
-                    <Button type="button" label="Back" severity="secondary" />
-                </router-link>
-            </div>
+    <div class="flex min-w-0 flex-col gap-5">
+        <div v-if="state.status" class="flex justify-end px-1">
+            <StatusBadge :value="state.status" />
         </div>
 
-        <ApproveRecordDialog
-            v-model="showApproveDialog"
-            entity="utility"
-            :submitting="workflowLoading.approve"
-            @confirm="runWorkflow('approve')"
-        />
-        <RejectContractDialog
-            v-model="showRejectDialog"
-            entity="utility"
-            :submitting="workflowLoading.reject"
-            :close-on-confirm="false"
-            @confirm="runWorkflow('reject', { rejection_reason: $event })"
-        />
+        <div v-if="state.status === 'rejected'" role="alert" class="utility-rejection-alert flex items-start gap-3 rounded border p-4">
+            <i class="pi pi-exclamation-circle mt-1 shrink-0" aria-hidden="true" />
+            <div class="min-w-0">
+                <strong class="block">Rejection reason</strong>
+                <p class="m-0 mt-1 whitespace-pre-wrap break-words">{{ state.rejection_reason || 'No reason was recorded for this rejection.' }}</p>
+            </div>
+        </div>
 
         <div class="admin-panel relative">
             <form
@@ -82,6 +33,7 @@
                         <div v-for="error in errors.get('room_id')" :key="error">{{ error }}</div>
                     </small>
                 </div>
+                <small v-if="errors.has('contract_id')" class="p-error md:col-span-2">{{ errors.first('contract_id') }}</small>
                 <div class="field">
                     <label for="billing_month" class="mb-2 block text-md">Billing Month</label>
                     <Calendar
@@ -114,7 +66,7 @@
                     </small>
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="min-w-0 md:col-span-2">
                     <div class="mb-3 flex items-center justify-between">
                         <h3 class="m-0 text-md font-medium">Utility Items</h3>
                         <Button
@@ -129,7 +81,7 @@
 
                     <DataTable :value="items" data-key="id" responsive-layout="scroll">
                         <Column header="Type" style="min-width: 160px">
-                            <template #body="{ data }">
+                            <template #body="{ data, index }">
                                 <Dropdown
                                     v-model="data.utility_type_id"
                                     :options="utilityTypeOptions"
@@ -140,10 +92,13 @@
                                     class="w-full"
                                 />
                                 <small v-if="data.rowError" class="p-error mt-1 block">{{ data.rowError }}</small>
+                                <small v-if="errors.has(`utility_items.${index}.utility_type_id`)" class="p-error mt-1 block">
+                                    {{ errors.first(`utility_items.${index}.utility_type_id`) }}
+                                </small>
                             </template>
                         </Column>
                         <Column header="Previous" style="min-width: 110px">
-                            <template #body="{ data }">
+                            <template #body="{ data, index }">
                                 <InputNumber
                                     v-model="data.previous_reading"
                                     :disabled="!canEdit"
@@ -151,10 +106,13 @@
                                     :min="0"
                                     @update:model-value="recalcItem(data)"
                                 />
+                                <small v-if="errors.has(`utility_items.${index}.previous_reading`)" class="p-error mt-1 block">
+                                    {{ errors.first(`utility_items.${index}.previous_reading`) }}
+                                </small>
                             </template>
                         </Column>
                         <Column header="Current" style="min-width: 110px">
-                            <template #body="{ data }">
+                            <template #body="{ data, index }">
                                 <InputNumber
                                     v-model="data.current_reading"
                                     :disabled="!canEdit"
@@ -165,13 +123,16 @@
                                 <small v-if="data.currentReadingError" class="p-error mt-1 block">
                                     {{ data.currentReadingError }}
                                 </small>
+                                <small v-if="errors.has(`utility_items.${index}.current_reading`)" class="p-error mt-1 block">
+                                    {{ errors.first(`utility_items.${index}.current_reading`) }}
+                                </small>
                             </template>
                         </Column>
                         <Column header="Usage" style="min-width: 90px">
                             <template #body="{ data }">{{ data.usage }}</template>
                         </Column>
                         <Column header="Unit Price (MMK)" style="min-width: 110px">
-                            <template #body="{ data }">
+                            <template #body="{ data, index }">
                                 <InputNumber
                                     v-model="data.unit_price"
                                     :disabled="!canEdit"
@@ -179,10 +140,13 @@
                                     :min="0"
                                     @update:model-value="recalcItem(data)"
                                 />
+                                <small v-if="errors.has(`utility_items.${index}.unit_price`)" class="p-error mt-1 block">
+                                    {{ errors.first(`utility_items.${index}.unit_price`) }}
+                                </small>
                             </template>
                         </Column>
                         <Column header="Amount (MMK)" style="min-width: 100px">
-                            <template #body="{ data }">{{ formatCurrencyAmount(data.amount) }}</template>
+                            <template #body="{ data }">{{ formatUtilityAmount(data.amount) }}</template>
                         </Column>
                         <Column v-if="canEdit" header="" style="width: 60px">
                             <template #body="{ index }">
@@ -206,16 +170,19 @@
                         <div v-for="error in errors.get('unit_price')" :key="error">{{ error }}</div>
                     </small>
 
-                    <p class="mt-3 text-right text-md font-medium">
-                        Total: {{ totalAmount.toFixed(2) }}
+                    <p class="mt-4 text-right text-md font-semibold tabular-nums">
+                        Total: {{ formatUtilityAmount(totalAmount) }} MMK
                     </p>
                 </div>
 
-                <div v-if="canEdit" class="flex justify-end gap-2 md:col-span-2">
-                    <Button type="submit" label="Save" :disabled="isSaving || !canSave" />
-                    <router-link :to="backRoute">
-                        <Button type="button" label="Cancel" severity="secondary" />
-                    </router-link>
+                <div v-if="canEdit" class="border-t border-[var(--admin-border)] pt-4 md:col-span-2">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
+                        <router-link :to="backRoute" class="w-full sm:w-auto">
+                            <Button type="button" label="Cancel" severity="secondary" text class="min-h-[44px] w-full" />
+                        </router-link>
+                        <Button type="submit" label="Save" icon="pi pi-save" class="min-h-[44px] w-full sm:w-auto"
+                            :loading="isSaving" :disabled="!canSave" />
+                    </div>
                 </div>
             </form>
 
@@ -234,11 +201,14 @@ import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import Loading from '@/components/global/Loading.vue';
 import StatusBadge from '@/components/global/StatusBadge.vue';
-import WorkflowActionBar from '@/components/admin/WorkflowActionBar.vue';
-import ApproveRecordDialog from '@/components/admin/ApproveRecordDialog.vue';
-import RejectContractDialog from '@/components/admin/contracts/RejectContractDialog.vue';
-import { formatCurrencyAmount } from '@/utils/formatter';
+import { CURRENCY_LOCALE } from '@/utils/formatter';
 import useEditUtility from './useEditUtility';
+
+const amountFormatter = new Intl.NumberFormat(CURRENCY_LOCALE, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
+const formatUtilityAmount = (value) => amountFormatter.format(Number(value ?? 0));
 
 export default defineComponent({
     name: 'EditUtility',
@@ -251,15 +221,31 @@ export default defineComponent({
         Button,
         Loading,
         StatusBadge,
-        WorkflowActionBar,
-        ApproveRecordDialog,
-        RejectContractDialog,
     },
     setup() {
         return {
             ...useEditUtility(),
-            formatCurrencyAmount,
+            formatUtilityAmount,
         };
     },
 });
 </script>
+
+<style scoped>
+.utility-rejection-alert {
+    background: #fff1f2;
+    border-color: #fda4af;
+    color: #881337;
+}
+
+/* Keep the reason readable even when portal typography supplies a text color. */
+.utility-rejection-alert :is(strong, p, i) {
+    color: inherit;
+}
+
+:global([data-theme='dark'] .utility-rejection-alert) {
+    background: #4c0519;
+    border-color: #be123c;
+    color: #fecdd3;
+}
+</style>

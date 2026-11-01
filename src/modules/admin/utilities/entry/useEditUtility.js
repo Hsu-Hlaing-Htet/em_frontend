@@ -1,5 +1,5 @@
 import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import EventBus from '@/libs/AppEventBus';
 import { Errors } from '@/utils/validation';
 import {
@@ -14,29 +14,19 @@ import { showApiErrorToast } from '@/utils/apiError';
 import { useUtilityStore } from '../store';
 import { useRoomStore } from '@/modules/admin/rooms/store';
 import { useUtilityTypeStore } from '@/modules/admin/utility-types/store';
-import { emptyUtilityItem, formatBillingMonth, formatUtilityDate, getCurrentReadingError } from '../utils/utilityFormHelpers';
+import { emptyUtilityItem, buildUtilityUpdatePayload, getCurrentReadingError } from '../utils/utilityFormHelpers';
 
 export default function useEditUtility() {
     const store = useUtilityStore();
     const roomStore = useRoomStore();
     const utilityTypeStore = useUtilityTypeStore();
     const route = useRoute();
-    const router = useRouter();
     const isLoading = ref(false);
     const isSaving = ref(false);
     const errors = new Errors();
     const roomOptions = ref([]);
     const utilityTypeOptions = ref([]);
-    const workflowLoading = ref({ submit: false, approve: false, reject: false });
-    const showApproveDialog = ref(false);
-    const showRejectDialog = ref(false);
-
-    const isApprovalView = computed(() => route.meta.approvalContext === true);
-    const backRoute = computed(() => (
-        isApprovalView.value
-            ? { name: 'utilityApprovalList' }
-            : { name: 'utilityList' }
-    ));
+    const backRoute = { name: 'utilityList' };
 
     const state = reactive({
         id: null,
@@ -45,11 +35,10 @@ export default function useEditUtility() {
         billing_month: null,
         reading_date: null,
         total_amount: 0,
-        status: 'draft',
+        status: 'pending',
     });
 
     const items = ref([emptyUtilityItem()]);
-
     bindErrorClearing(state, errors);
 
     onMounted(async () => {
@@ -128,11 +117,8 @@ export default function useEditUtility() {
         items.value.reduce((sum, item) => sum + Number(item.amount || 0), 0)
     ));
 
-    const hasItemValidationErrors = computed(() => (
-        items.value.some((item) => Boolean(item.currentReadingError) || Boolean(item.rowError))
-    ));
-
-    const canSave = computed(() => canEdit.value && !hasItemValidationErrors.value);
+    const canSave = computed(() => canEdit.value && Boolean(state.id)
+        && !isLoading.value && !isSaving.value);
 
     const validateItems = () => {
         let valid = true;
@@ -193,6 +179,7 @@ export default function useEditUtility() {
     };
 
     const handleSubmit = async () => {
+        if (!canSave.value) return;
         errors.clear();
 
         const stateValid = applyValidation(errors, state, [
@@ -208,31 +195,25 @@ export default function useEditUtility() {
 
         isSaving.value = true;
 
-        const payload = {
-            ...state,
-            billing_month: formatBillingMonth(state.billing_month),
-            reading_date: formatUtilityDate(state.reading_date),
-            utility_items: items.value.map((item) => ({
-                id: item.id || undefined,
-                utility_type_id: item.utility_type_id,
-                previous_reading: item.previous_reading,
-                current_reading: item.current_reading,
-                unit_price: item.unit_price,
-            })),
-        };
+        const payload = buildUtilityUpdatePayload(state, items.value);
+        const utilityId = state.id;
 
         try {
-            await store.update({ ...payload, id: state.id });
+            await store.update({ ...payload, id: utilityId });
             const response = store.getUpdateResponse;
 
             if (response) {
-                Object.assign(state, response.data);
+                if (response.data?.id && Number(response.data.id) !== Number(utilityId)) {
+                    throw new Error('The saved utility ID did not match the edited record.');
+                }
+                Object.assign(state, response.data, { id: utilityId });
                 items.value = (response.data.items || []).map((item) => ({ ...item }));
                 EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
             }
         } catch (error) {
-            if (error.status === 422 && error.data?.data) {
-                errors.record(error.data.data);
+            if (error.status === 422 && (error.data?.data || error.data?.errors)) {
+                errors.record(error.data.data || error.data.errors, false);
+                showApiErrorToast(error, 'Unable to save utility.');
             } else {
                 showApiErrorToast(error, 'Unable to save utility.');
             }
@@ -241,70 +222,10 @@ export default function useEditUtility() {
         }
     };
 
-    const runWorkflow = async (action, payload = {}) => {
-        const isReviewAction = ['approve', 'reject'].includes(action);
-
-        if (
-            (isReviewAction && state.status !== 'pending')
-            || workflowLoading.value.approve
-            || workflowLoading.value.reject
-            || workflowLoading.value[action]
-        ) {
-            return;
-        }
-
-        workflowLoading.value[action] = true;
-        const isResubmit = action === 'submit' && state.status === 'rejected';
-
-        try {
-            await store[action]({ id: state.id, ...payload });
-            const response = store.getActionResponse;
-
-            if (response) {
-                Object.assign(state, response.data);
-                EventBus.emit('show-toast', { severity: 'success', summary: '', detail: response.message });
-
-                if (isReviewAction) {
-                    showApproveDialog.value = false;
-                    showRejectDialog.value = false;
-                }
-
-                if (isApprovalView.value) {
-                    if (action === 'approve') {
-                        await router.push({ name: 'invoiceApprovalList' });
-                    } else if (action === 'reject') {
-                        await router.push({ name: 'utilityApprovalList' });
-                    }
-                } else if (isResubmit) {
-                    await router.push({ name: 'utilityList' });
-                }
-            }
-        } catch (error) {
-            showApiErrorToast(error, `Unable to ${action} utility.`);
-        } finally {
-            workflowLoading.value[action] = false;
-        }
-    };
-
-    const canEdit = computed(() => !isApprovalView.value && ['draft', 'rejected'].includes(state.status));
-    const canSubmit = () => !isApprovalView.value && state.status === 'draft';
-    const canResubmit = () => !isApprovalView.value && state.status === 'rejected';
-    const submitLabel = computed(() => (state.status === 'rejected' ? 'Resubmit' : 'Submit'));
-    const canApprove = () => state.status === 'pending';
-    const canReject = () => isApprovalView.value
-        ? state.status === 'pending'
-        : ['draft', 'pending'].includes(state.status);
-
-    const documentRoute = computed(() => (
-        state.id
-            ? { name: 'utilityDocument', params: { id: state.id } }
-            : null
-    ));
+    const canEdit = computed(() => ['pending', 'rejected'].includes(state.status));
 
     return {
-        isApprovalView,
         backRoute,
-        documentRoute,
         isLoading,
         isSaving,
         errors,
@@ -317,16 +238,7 @@ export default function useEditUtility() {
         removeItem,
         recalcItem,
         handleSubmit,
-        workflowLoading,
-        showApproveDialog,
-        showRejectDialog,
-        runWorkflow,
         canEdit,
         canSave,
-        canSubmit,
-        canResubmit,
-        submitLabel,
-        canApprove,
-        canReject,
     };
 }

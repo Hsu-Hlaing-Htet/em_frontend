@@ -18,7 +18,7 @@ export default function useShowUtility() {
     const route = useRoute();
     const router = useRouter();
     const isLoading = ref(true);
-    const workflowLoading = ref({ submit: false, approve: false, reject: false });
+    const workflowLoading = ref({ approve: false, reject: false });
     const showApproveDialog = ref(false);
     const showRejectDialog = ref(false);
     const showSendEmailDialog = ref(false);
@@ -165,8 +165,7 @@ export default function useShowUtility() {
         }
     };
 
-    const canEdit = computed(() => !isApprovalView.value && state.status === 'rejected');
-    const canSubmit = () => !isApprovalView.value && state.status === 'draft';
+    const canEdit = computed(() => !isApprovalView.value && ['pending', 'rejected'].includes(state.status));
     const canApprove = () => isApprovalView.value && state.status === 'pending';
     const canReject = () => isApprovalView.value && state.status === 'pending';
 
@@ -199,7 +198,7 @@ export default function useShowUtility() {
     ));
     const pageSubtitle = computed(() => (
         isApprovalView.value
-            ? 'Review submitted utility readings and verify the bill'
+            ? 'Review pending utility readings and verify the bill'
             : 'View utility reading information and billing summary'
     ));
 
@@ -215,7 +214,6 @@ export default function useShowUtility() {
         showRejectDialog,
         runWorkflow,
         canEdit,
-        canSubmit,
         canApprove,
         canReject,
         canSendUtility,

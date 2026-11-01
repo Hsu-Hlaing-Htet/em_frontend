@@ -61,11 +61,6 @@ const service = {
         return result.data;
     },
 
-    submit: async (params) => {
-        const result = await api.post(`${endpoint.utilities}/${params.id}/submit`);
-        return result.data;
-    },
-
     approve: async (params) => {
         const result = await api.post(`${endpoint.utilities}/${params.id}/approve`);
         return result.data;

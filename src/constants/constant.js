@@ -128,7 +128,6 @@ export const MAINTENANCE_PRIORITY_OPTIONS = [
 ];
 
 export const UTILITY_STATUS_OPTIONS = [
-    { label: 'Draft', value: 'draft' },
     { label: 'Pending', value: 'pending' },
     { label: 'Approved', value: 'approved' },
     { label: 'Rejected', value: 'rejected' },

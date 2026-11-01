@@ -91,6 +91,7 @@ export function createInvoiceApprovalReviewForm() {
         billing_month: null,
         late_fee: 0,
         type: '',
+        status: '',
         items: [],
     });
 
@@ -120,6 +121,7 @@ export function createInvoiceApprovalReviewForm() {
         form.billing_month = parseDateValue(invoice.billing_month || invoice.billing_period);
         form.late_fee = Number(invoice.late_fee || 0);
         form.type = invoice.type || invoice.invoice_type || '';
+        form.status = invoice.status || '';
         form.items = normalizeList(invoice.items).map(mapFormItem);
     };
 
@@ -160,20 +162,11 @@ export function createInvoiceApprovalReviewForm() {
     const buildIssuePayload = (lateFeeSelection) => ({
         late_fee_selection: lateFeeSelection,
         due_date: toQueryDate(form.due_date) || undefined,
-        items: form.items.map((item) => {
-            if (item.is_metered) {
-                return {
-                    id: item.id,
-                    current_reading: item.current_reading,
-                    unit_price: item.unit_price,
-                };
-            }
-
-            return {
-                id: item.id,
-                unit_price: item.unit_price,
-            };
-        }),
+        items: form.items.filter((item) => item.is_metered).map((item) => ({
+            id: item.id,
+            current_reading: item.current_reading,
+            unit_price: item.unit_price,
+        })),
     });
 
     return {
